@@ -1,10 +1,15 @@
-
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import MetricCard from "@/components/MetricCard";
-import MetricChart from "@/components/MetricChart";
-import { Activity, Zap, Clock, AlertTriangle, Trophy, Settings } from "lucide-react";
+import { 
+  Activity, 
+  Zap, 
+  Clock, 
+  AlertTriangle, 
+  Trophy 
+} from "lucide-react";
 
 // Mock data
 const fpsData = Array.from({ length: 30 }, (_, i) => ({
@@ -187,13 +192,18 @@ export const GamePerformanceOverview: React.FC = () => {
           </h3>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <button className="cyber-panel flex items-center p-3 hover:border-cyber-green/50 transition-colors">
+            <button 
+              className="cyber-panel flex items-center p-3 hover:border-cyber-green/50 transition-colors 
+                         bg-cyber-darkblue/70 border border-cyber-green/30 
+                         quick-optimization-button"
+              data-type="fps-boost"
+            >
               <div className="p-2 rounded-full bg-cyber-green/20 mr-3">
-                <Zap className="h-5 w-5 text-cyber-green" />
+                <Zap className="h-5 w-5 text-cyber-green button-icon" />
               </div>
               <div className="text-left">
-                <div className="text-sm font-tech text-cyber-green">Boost FPS</div>
-                <div className="text-xs text-gray-400">+15-20% performance</div>
+                <div className="text-sm font-tech text-cyber-green button-text">Boost FPS</div>
+                <div className="text-xs text-gray-400 performance-tag">+15-20% performance</div>
               </div>
             </button>
             

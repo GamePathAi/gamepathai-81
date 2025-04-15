@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -130,6 +129,33 @@
     background-color: rgba(75, 85, 99, 0.2) !important;
     color: #E5E7EB !important;
     border: 1px solid rgba(75, 85, 99, 0.3) !important;
+  }
+
+  .quick-optimization-button {
+    background: linear-gradient(to right, rgba(19, 24, 44, 0.9), rgba(19, 24, 44, 0.8)) !important;
+    border: 1px solid rgba(51, 195, 240, 0.5) !important;
+    transition: all 0.3s ease;
+  }
+
+  .quick-optimization-button[data-type="fps-boost"] {
+    background-color: rgba(30, 41, 59, 0.8) !important; 
+    border: 1px solid #33C3F0 !important; 
+    box-shadow: 0 0 8px rgba(51, 195, 240, 0.3) !important; 
+  }
+
+  .quick-optimization-button .button-text,
+  .quick-optimization-button .button-icon {
+    color: #33C3F0 !important;
+  }
+
+  .quick-optimization-button .performance-tag {
+    color: #10B981 !important;
+  }
+
+  .quick-optimization-button:hover {
+    background-color: rgba(51, 195, 240, 0.2) !important;
+    border: 1px solid #33C3F0 !important;
+    transform: scale(1.02);
   }
 }
 
