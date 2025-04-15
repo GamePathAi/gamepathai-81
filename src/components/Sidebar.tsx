@@ -47,10 +47,6 @@ const Sidebar: React.FC = () => {
     { icon: Lock, label: "VPN Integration", path: "/vpn-integration", isPremium: true },
   ];
 
-  // Get regular and premium items
-  const regularItems = navItems.filter(item => !item.isPremium);
-  const premiumItems = navItems.filter(item => item.isPremium);
-
   return (
     <div className="w-64 bg-cyber-black border-r border-cyber-purple/30 flex-shrink-0 h-full overflow-y-auto hidden md:block">
       <div className="p-4">
@@ -87,15 +83,15 @@ const Sidebar: React.FC = () => {
           </div>
         </div>
         
-        {/* Main Navigation */}
+        {/* Combined Navigation with Regular and Premium Items */}
         <div className="space-y-1 mb-6">
-          {regularItems.map((item, index) => (
+          {/* Regular items */}
+          {navItems.filter(item => !item.isPremium).map((item, index) => (
             <SidebarItem 
               key={index}
               icon={item.icon} 
               label={item.label} 
               to={item.path}
-              isPremium={item.isPremium} 
             />
           ))}
         </div>
@@ -104,7 +100,7 @@ const Sidebar: React.FC = () => {
         <div className="mb-6">
           <div className="text-xs text-gray-400 font-tech mb-2 px-4">PREMIUM FEATURES</div>
           <div className="space-y-1">
-            {premiumItems.map((item, index) => (
+            {navItems.filter(item => item.isPremium).map((item, index) => (
               <SidebarItem 
                 key={index}
                 icon={item.icon} 
