@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -157,6 +156,32 @@
     background-color: rgba(51, 195, 240, 0.2) !important;
     border: 1px solid #33C3F0 !important;
     transform: scale(1.02);
+  }
+  
+  /* Button contrast fixes - NEW */
+  .button-light, button[data-theme="light"] {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    color: #0a0a1b !important;
+    font-weight: 500 !important;
+    border: 1px solid rgba(51, 195, 240, 0.3) !important;
+  }
+  
+  .button-light:hover, button[data-theme="light"]:hover {
+    background-color: rgba(255, 255, 255, 1) !important;
+    box-shadow: 0 0 8px rgba(51, 195, 240, 0.3) !important;
+  }
+  
+  /* Inactive tabs and buttons fix - NEW */
+  [role="tab"][data-state="inactive"],
+  button:disabled {
+    color: #6B7280 !important;
+    font-weight: 500 !important;
+  }
+  
+  .toggle-button:not(.active) {
+    color: #6B7280 !important;
+    background-color: rgba(75, 85, 99, 0.1) !important;
+    font-weight: 500 !important;
   }
   
   /* TEXT VISIBILITY FIXES - Advanced Optimizer Page */

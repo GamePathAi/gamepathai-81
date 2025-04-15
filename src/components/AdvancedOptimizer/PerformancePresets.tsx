@@ -309,7 +309,7 @@ export const PerformancePresets = () => {
       
       <div className="flex justify-end gap-3">
         <Button 
-          variant="outline" 
+          variant="cyber"
           className="border-cyber-purple text-cyber-purple hover:bg-cyber-purple/20 font-tech"
         >
           Save As Custom Preset

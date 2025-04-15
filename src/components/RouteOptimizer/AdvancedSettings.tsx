@@ -119,7 +119,10 @@ const AdvancedSettings: React.FC = () => {
                     className="bg-cyber-darkblue border-cyber-purple/30 text-white"
                     placeholder="8.8.8.8"
                   />
-                  <Button variant="outline" size="sm" className="bg-cyber-darkblue text-gray-300 border-gray-600/50">
+                  <Button 
+                    variant="cyber"
+                    size="sm"
+                  >
                     Test
                   </Button>
                 </div>
@@ -134,7 +137,10 @@ const AdvancedSettings: React.FC = () => {
                     className="bg-cyber-darkblue border-cyber-purple/30 text-white"
                     placeholder="8.8.4.4"
                   />
-                  <Button variant="outline" size="sm" className="bg-cyber-darkblue text-gray-300 border-gray-600/50">
+                  <Button 
+                    variant="cyber"
+                    size="sm"
+                  >
                     Test
                   </Button>
                 </div>
@@ -143,6 +149,7 @@ const AdvancedSettings: React.FC = () => {
             
             <div className="grid grid-cols-2 gap-3 mt-4">
               <Button 
+                variant="cyber"
                 className="bg-gradient-to-r from-cyber-purple to-cyber-blue text-white border-0 hover:opacity-90" 
                 onClick={handleSaveDNS}
               >
@@ -151,8 +158,8 @@ const AdvancedSettings: React.FC = () => {
               </Button>
               
               <Button
-                variant="outline" 
-                className="bg-cyber-darkblue text-gray-300 border border-gray-600/50 hover:bg-cyber-darkblue/80"
+                variant="cyber"
+                className="border-cyber-purple/30 text-cyber-blue"
               >
                 Recommended DNS
               </Button>
@@ -345,8 +352,8 @@ const AdvancedSettings: React.FC = () => {
       
       <div className="flex justify-end">
         <Button
-          variant="outline" 
-          className="bg-cyber-darkblue text-gray-300 border border-gray-600/50 hover:bg-cyber-darkblue/80"
+          variant="cyber"
+          className="border-cyber-blue text-cyber-blue hover:bg-cyber-blue/10"
           onClick={handleRestoreDefaults}
         >
           Restore Defaults

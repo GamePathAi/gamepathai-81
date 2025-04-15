@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -223,11 +224,11 @@ const OptimizationControls = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <Button variant="outline" className="border-cyber-blue text-cyber-blue hover:bg-cyber-blue/20">
+                <Button variant="cyber" className="border-cyber-blue">
                   <MemoryStick className="mr-2 h-4 w-4" />
                   Clean Memory
                 </Button>
-                <Button variant="outline" className="border-cyber-purple text-cyber-purple hover:bg-cyber-purple/20">
+                <Button variant="cyber" className="border-cyber-purple text-cyber-purple hover:bg-cyber-purple/20">
                   <HardDrive className="mr-2 h-4 w-4" />
                   Optimize Storage
                 </Button>

@@ -69,23 +69,22 @@ const AdvancedOptimizer = () => {
           </p>
           <div className="flex flex-wrap gap-2">
             <Button 
-              variant="outline" 
+              variant="cyberLight" 
               size="sm"
-              className="border-cyber-blue text-cyber-blue hover:bg-cyber-blue/20 font-tech"
             >
               Backup Settings
             </Button>
             <Button 
-              variant="outline" 
+              variant="cyberLight" 
               size="sm"
-              className="border-cyber-green text-cyber-green hover:bg-cyber-green/20 font-tech"
+              className="text-cyber-green border-cyber-green/30 hover:shadow-cyber-green/20"
             >
               Safe Mode
             </Button>
             <Button 
-              variant="outline" 
+              variant="cyberLight" 
               size="sm"
-              className="border-cyber-orange text-cyber-orange hover:bg-cyber-orange/20 font-tech"
+              className="text-cyber-orange border-cyber-orange/30 hover:shadow-cyber-orange/20"
             >
               Reset All
             </Button>
