@@ -1,8 +1,7 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Cpu, HardDrive, Thermometer, Zap, Ram } from "lucide-react";
+import { Cpu, HardDrive, Thermometer, Zap, MemoryStick } from "lucide-react";
 import MetricChart from "./MetricChart";
 
 interface SystemStatusProps {
@@ -133,7 +132,7 @@ const SystemStatusPanel: React.FC<SystemStatusProps> = ({
             <div className="cyber-panel space-y-2">
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
-                  <Ram className="mr-2 text-cyber-orange" size={16} />
+                  <MemoryStick className="mr-2 text-cyber-orange" size={16} />
                   <span className="text-sm font-tech">RAM</span>
                 </div>
                 <div className="text-xs text-cyber-orange">{hardware.ram.usage}%</div>
@@ -160,7 +159,6 @@ const SystemStatusPanel: React.FC<SystemStatusProps> = ({
             </div>
           </div>
 
-          {/* Temperature Chart */}
           <div className="mt-4 cyber-panel">
             <div className="flex items-center mb-2">
               <Thermometer className="mr-2 text-red-400" size={16} />
@@ -175,7 +173,6 @@ const SystemStatusPanel: React.FC<SystemStatusProps> = ({
             </div>
           </div>
 
-          {/* Bottlenecks */}
           <div className="mt-4">
             <div className="text-sm font-tech mb-2">Current Bottlenecks</div>
             {bottlenecks.map((bottleneck, idx) => (

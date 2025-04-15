@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Zap, Cpu, HardDrive, Thermometer, Settings, Ram } from "lucide-react";
+import { Zap, Cpu, HardDrive, Thermometer, Settings, MemoryStick } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 
@@ -224,7 +224,7 @@ const OptimizationControls = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <Button variant="outline" className="border-cyber-blue text-cyber-blue hover:bg-cyber-blue/20">
-                  <Ram className="mr-2 h-4 w-4" />
+                  <MemoryStick className="mr-2 h-4 w-4" />
                   Clean Memory
                 </Button>
                 <Button variant="outline" className="border-cyber-purple text-cyber-purple hover:bg-cyber-purple/20">
