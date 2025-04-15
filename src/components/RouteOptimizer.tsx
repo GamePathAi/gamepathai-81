@@ -14,7 +14,7 @@ interface RouteProps {
 }
 
 const RouteOptimizer: React.FC = () => {
-  const [routes, setRoutes] = useState<RouteProps[]>(generateRoutes());
+  const [routes, setRoutes] = useState<RouteProps[]>(generateRoutes() as RouteProps[]);
   const [selectedRoute, setSelectedRoute] = useState<string>(routes.find(r => r.status === "active")?.id || "1");
 
   const handleSelectRoute = (routeId: string) => {
@@ -108,7 +108,7 @@ const RouteOptimizer: React.FC = () => {
         <Button
           variant="outline"
           className="bg-cyber-darkblue text-gray-300 border border-gray-600/50 hover:bg-cyber-darkblue/80"
-          onClick={() => setRoutes(generateRoutes())}
+          onClick={() => setRoutes(generateRoutes() as RouteProps[])}
         >
           SCAN
         </Button>

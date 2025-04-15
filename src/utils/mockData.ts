@@ -17,7 +17,7 @@ export const generateGames = () => [
     image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=400&h=200&q=80",
     isOptimized: true,
     genre: "FPS",
-    optimizationType: "both"
+    optimizationType: "both" as const
   },
   {
     id: "2",
@@ -25,7 +25,7 @@ export const generateGames = () => [
     image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=400&h=200&q=80",
     isOptimized: true,
     genre: "RPG",
-    optimizationType: "network"
+    optimizationType: "network" as const
   },
   {
     id: "3",
@@ -33,7 +33,7 @@ export const generateGames = () => [
     image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=400&h=200&q=80",
     isOptimized: false,
     genre: "Racing",
-    optimizationType: "none"
+    optimizationType: "none" as const
   },
   {
     id: "4",
@@ -41,7 +41,7 @@ export const generateGames = () => [
     image: "https://images.unsplash.com/photo-1551103782-8ab07afd45c1?auto=format&fit=crop&w=400&h=200&q=80",
     isOptimized: true,
     genre: "MOBA",
-    optimizationType: "system"
+    optimizationType: "system" as const
   }
 ];
 
@@ -91,21 +91,21 @@ export const generateRoutes = () => [
     id: "1",
     name: "Direct",
     latency: Math.floor(Math.random() * 20) + 20,
-    status: "active",
+    status: "active" as const,
     hops: Math.floor(Math.random() * 5) + 5
   },
   {
     id: "2",
     name: "Optimized",
     latency: Math.floor(Math.random() * 10) + 15,
-    status: "recommended",
+    status: "recommended" as const,
     hops: Math.floor(Math.random() * 3) + 3
   },
   {
     id: "3",
     name: "Stable",
     latency: Math.floor(Math.random() * 15) + 25,
-    status: "available",
+    status: "available" as const,
     hops: Math.floor(Math.random() * 2) + 4
   }
 ];

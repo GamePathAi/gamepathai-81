@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { generateMetrics, generateGames, generatePingData } from "@/utils/mockData";
 import { toast } from "sonner";
 
+type OptimizationType = "network" | "system" | "both" | "none";
+
 const Dashboard: React.FC = () => {
   const [metrics, setMetrics] = useState(generateMetrics());
   const [games] = useState(generateGames());
@@ -91,7 +93,13 @@ const Dashboard: React.FC = () => {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {games.map(game => (
-              <GameCard key={game.id} game={game} />
+              <GameCard 
+                key={game.id} 
+                game={{
+                  ...game,
+                  optimizationType: game.optimizationType as OptimizationType
+                }} 
+              />
             ))}
           </div>
         </div>
