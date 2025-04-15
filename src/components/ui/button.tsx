@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
@@ -19,16 +18,13 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        // Enhanced contrast variants
         cyber: "bg-cyber-darkblue border border-cyber-blue/50 text-cyber-blue hover:bg-cyber-blue/20 font-tech",
         cyberOutline: "bg-transparent border border-cyber-blue/50 text-cyber-blue hover:bg-cyber-blue/10 font-tech",
         cyberLight: "bg-white/90 border border-cyber-blue/30 text-cyber-darkblue font-medium hover:bg-white shadow-sm hover:shadow-cyber-blue/20",
         cyberGlass: "backdrop-blur-sm bg-white/10 border border-white/20 text-white hover:bg-white/20 font-tech",
-        // New enhanced contrast variants for light buttons
-        cyberAction: "bg-white/90 border border-cyber-blue/40 text-cyber-darkblue font-semibold hover:bg-white shadow-sm hover:shadow-cyber-blue/30",
-        cyberSchedule: "bg-white/95 border border-cyber-blue/40 text-cyber-darkblue font-semibold hover:bg-white shadow-sm hover:shadow-cyber-blue/30",
-        cyberOptimize: "bg-white/90 border border-cyber-purple/40 text-cyber-darkblue font-semibold hover:bg-white shadow-sm hover:shadow-cyber-purple/30",
-        cyberMonitor: "bg-white/95 border border-cyber-blue/40 text-cyber-darkblue font-semibold hover:bg-white shadow-sm hover:shadow-cyber-blue/30",
+        cyberAction: "bg-white/90 border border-cyber-blue/40 text-cyber-darkblue font-semibold hover:bg-white hover:shadow-sm hover:shadow-cyber-blue/30",
+        cyberSafe: "bg-white/90 border border-cyber-green/40 text-cyber-darkblue font-semibold hover:bg-white hover:shadow-sm hover:shadow-cyber-green/30",
+        cyberReset: "bg-white/90 border border-cyber-orange/40 text-cyber-darkblue font-semibold hover:bg-white hover:shadow-sm hover:shadow-cyber-orange/30",
       },
       size: {
         default: "h-10 px-4 py-2",

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import Layout from "@/components/Layout";
@@ -71,20 +70,21 @@ const AdvancedOptimizer = () => {
             <Button 
               variant="cyberAction" 
               size="sm"
+              className="text-cyber-blue border-cyber-blue/40 hover:bg-cyber-blue/10"
             >
               Backup Settings
             </Button>
             <Button 
               variant="cyberAction" 
               size="sm"
-              className="text-cyber-green border-cyber-green/40 hover:shadow-cyber-green/30"
+              className="text-cyber-green border-cyber-green/40 hover:bg-cyber-green/10"
             >
               Safe Mode
             </Button>
             <Button 
               variant="cyberAction" 
               size="sm"
-              className="text-cyber-orange border-cyber-orange/40 hover:shadow-cyber-orange/30"
+              className="text-cyber-orange border-cyber-orange/40 hover:bg-cyber-orange/10"
             >
               Reset All
             </Button>
