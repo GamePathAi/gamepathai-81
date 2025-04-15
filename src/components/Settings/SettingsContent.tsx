@@ -21,13 +21,17 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-const SettingsContent = () => {
+// Define an interface for the onChange prop
+interface SettingsChangeProps {
+  onChange?: () => void;
+}
+
+const SettingsContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState("general");
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
   const handleSaveChanges = () => {
-    // Save settings logic would go here
     toast.success("Settings saved successfully", {
       description: "Your preferences have been updated."
     });
@@ -39,7 +43,6 @@ const SettingsContent = () => {
   };
 
   const confirmReset = () => {
-    // Reset logic would go here
     toast.success("Settings reset to defaults", {
       description: "All settings have been restored to default values."
     });
@@ -52,21 +55,25 @@ const SettingsContent = () => {
   };
 
   const renderActiveTabContent = () => {
+    const settingsChangeProps: SettingsChangeProps = {
+      onChange: handleSettingChange
+    };
+
     switch (activeTab) {
       case "general":
-        return <GeneralSettings onChange={handleSettingChange} />;
+        return <GeneralSettings {...settingsChangeProps} />;
       case "performance":
-        return <PerformanceSettings onChange={handleSettingChange} />;
+        return <PerformanceSettings {...settingsChangeProps} />;
       case "connection":
-        return <ConnectionSettings onChange={handleSettingChange} />;
+        return <ConnectionSettings {...settingsChangeProps} />;
       case "interface":
-        return <InterfaceSettings onChange={handleSettingChange} />;
+        return <InterfaceSettings {...settingsChangeProps} />;
       case "security":
-        return <SecuritySettings onChange={handleSettingChange} />;
+        return <SecuritySettings {...settingsChangeProps} />;
       case "advanced":
-        return <AdvancedSettings onChange={handleSettingChange} />;
+        return <AdvancedSettings {...settingsChangeProps} />;
       default:
-        return <GeneralSettings onChange={handleSettingChange} />;
+        return <GeneralSettings {...settingsChangeProps} />;
     }
   };
 
