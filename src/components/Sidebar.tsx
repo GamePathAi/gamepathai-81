@@ -1,6 +1,5 @@
-
 import React from "react";
-import { Home, Activity, Cpu, Network, Gauge, Zap, Lock, ChevronRight, Brain } from "lucide-react";
+import { Home, Activity, Cpu, Network, Gauge, Zap, Lock, ChevronRight, Brain, Settings } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 
@@ -33,6 +32,66 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ icon: Icon, label, to, isPrem
 };
 
 const Sidebar: React.FC = () => {
+  const navItems = [
+    {
+      icon: <Home size={20} />,
+      label: "Dashboard",
+      path: "/",
+      tooltip: "Dashboard",
+    },
+    {
+      icon: <Activity size={20} />,
+      label: "Network Metrics",
+      path: "/network-metrics",
+      tooltip: "Network Metrics",
+    },
+    {
+      icon: <Cpu size={20} />,
+      label: "System Optimization",
+      path: "/system-optimization",
+      tooltip: "System Optimization",
+    },
+    {
+      icon: <Network size={20} />,
+      label: "Route Optimizer",
+      path: "/route-optimizer",
+      tooltip: "Route Optimizer",
+    },
+    {
+      icon: <Gauge size={20} />,
+      label: "Performance",
+      path: "/performance",
+      tooltip: "Performance",
+    },
+    {
+      icon: <Brain size={20} />,
+      label: "Advanced Optimizer",
+      path: "/advanced-optimizer",
+      tooltip: "Advanced Optimizer",
+      isPremium: true,
+    },
+    {
+      icon: <Zap size={20} />,
+      label: "Power Manager",
+      path: "/power-manager",
+      tooltip: "Power Manager",
+      isPremium: true,
+    },
+    {
+      icon: <Lock size={20} />,
+      label: "VPN Integration",
+      path: "/vpn-integration",
+      tooltip: "VPN Integration",
+      isPremium: true,
+    },
+    {
+      icon: <Settings size={20} />,
+      label: "Settings",
+      path: "/settings",
+      tooltip: "GamePath Settings",
+    },
+  ];
+
   return (
     <div className="w-64 bg-cyber-black border-r border-cyber-purple/30 flex-shrink-0 h-full overflow-y-auto hidden md:block">
       <div className="p-4">
@@ -69,11 +128,9 @@ const Sidebar: React.FC = () => {
         </div>
         
         <div className="space-y-1 mb-6">
-          <SidebarItem icon={Home} label="Dashboard" to="/" />
-          <SidebarItem icon={Activity} label="Network Metrics" to="/network-metrics" />
-          <SidebarItem icon={Cpu} label="System Optimization" to="/system-optimization" />
-          <SidebarItem icon={Network} label="Route Optimizer" to="/route-optimizer" />
-          <SidebarItem icon={Gauge} label="Performance" to="/performance" />
+          {navItems.map((item, index) => (
+            <SidebarItem key={index} icon={item.icon} label={item.label} to={item.path} isPremium={item.isPremium} />
+          ))}
         </div>
         
         <div className="mb-6">

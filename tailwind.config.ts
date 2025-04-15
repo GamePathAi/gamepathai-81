@@ -74,7 +74,7 @@ export default {
 					red: '#F43F5E',             // Vermelho (Packet Loss)
 					orange: '#F97316',          // Laranja (Jitter)
 					green: '#10B981',           // Verde (FPS/Optimized)
-					secondary: '#8B9CB6'         // Texto secundário
+					secondary: '#8B9CB6',        // Texto secundário
 				}
 			},
 			borderRadius: {

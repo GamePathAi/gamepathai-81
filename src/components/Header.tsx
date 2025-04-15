@@ -3,6 +3,8 @@ import React from "react";
 import { Bell, Settings, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GamePathLogo from "./GamePathLogo";
+import { Link } from "react-router-dom";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const Header: React.FC = () => {
   return (
@@ -21,13 +23,29 @@ const Header: React.FC = () => {
             CONNECTED
           </span>
           
-          <Button variant="ghost" size="icon" className="text-cyber-blue hover:text-cyber-purple hover:bg-cyber-blue/10">
-            <Bell size={20} />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-cyber-blue hover:text-cyber-purple hover:bg-cyber-blue/10">
+                <Bell size={20} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Notifications</p>
+            </TooltipContent>
+          </Tooltip>
           
-          <Button variant="ghost" size="icon" className="text-cyber-blue hover:text-cyber-purple hover:bg-cyber-blue/10">
-            <Settings size={20} />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link to="/settings">
+                <Button variant="ghost" size="icon" className="text-cyber-blue hover:text-cyber-purple hover:bg-cyber-blue/10">
+                  <Settings size={20} />
+                </Button>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Settings</p>
+            </TooltipContent>
+          </Tooltip>
           
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 rounded-full border-2 border-cyber-purple flex items-center justify-center bg-cyber-darkblue">

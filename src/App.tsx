@@ -13,7 +13,8 @@ import RouteOptimizerPage from "./pages/RouteOptimizer";
 import Performance from "./pages/Performance";
 import AdvancedOptimizer from "./pages/AdvancedOptimizer";
 import VPNIntegration from "./pages/VPNIntegration";
-import PowerManager from "./pages/PowerManager"; // New import
+import PowerManager from "./pages/PowerManager";
+import Settings from "./pages/Settings"; // New import
 
 const queryClient = new QueryClient();
 
@@ -32,7 +33,8 @@ const App = () => (
             <Route path="/performance" element={<Performance />} />
             <Route path="/advanced-optimizer" element={<AdvancedOptimizer />} />
             <Route path="/vpn-integration" element={<VPNIntegration />} />
-            <Route path="/power-manager" element={<PowerManager />} /> {/* New route */}
+            <Route path="/power-manager" element={<PowerManager />} />
+            <Route path="/settings" element={<Settings />} /> {/* New route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
