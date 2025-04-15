@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import Layout from "@/components/Layout";
 import MetricCard from "@/components/MetricCard";
@@ -18,9 +19,9 @@ const NetworkMetrics: React.FC = () => {
   
   const statusIndicator = () => {
     const ping = metricsData.ping.current;
-    if (ping < 30) return { status: "Ótimo", color: "text-green-400" };
-    if (ping < 60) return { status: "Bom", color: "text-cyber-blue" };
-    return { status: "Ruim", color: "text-red-400" };
+    if (ping < 30) return { status: "Excellent", color: "text-green-400" };
+    if (ping < 60) return { status: "Good", color: "text-cyber-blue" };
+    return { status: "Poor", color: "text-red-400" };
   };
 
   const indicator = statusIndicator();
@@ -39,12 +40,12 @@ const NetworkMetrics: React.FC = () => {
               Network Metrics
             </h2>
             <p className="text-gray-400 text-sm">
-              Análise detalhada do desempenho da sua rede
+              Detailed analysis of your network performance
             </p>
           </div>
           
           <div className="flex items-center bg-cyber-darkblue/60 backdrop-blur-sm rounded-md p-2 border border-cyber-blue/20">
-            <span className="text-sm mr-2 font-tech">Status da Rede:</span>
+            <span className="text-sm mr-2 font-tech">Network Status:</span>
             <span className={`font-tech ${indicator.color} flex items-center`}>
               <span className={`inline-block w-2 h-2 ${indicator.color === 'text-green-400' ? 'bg-green-400' : indicator.color === 'text-cyber-blue' ? 'bg-cyber-blue' : 'bg-red-400'} rounded-full mr-1 animate-pulse`}></span>
               {indicator.status}
@@ -128,10 +129,10 @@ const NetworkMetrics: React.FC = () => {
           <CardHeader className="pb-0">
             <CardTitle className="text-lg font-tech text-cyber-blue flex items-center">
               <BarChart className="mr-2" size={18} />
-              {selectedMetric === "ping" ? "Latência (ms)" : 
+              {selectedMetric === "ping" ? "Latency (ms)" : 
                selectedMetric === "jitter" ? "Jitter (ms)" : 
-               selectedMetric === "packetLoss" ? "Perda de Pacotes (%)" : 
-               "Velocidade de Download (Mbps)"}
+               selectedMetric === "packetLoss" ? "Packet Loss (%)" : 
+               "Download Speed (Mbps)"}
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-4">
@@ -155,15 +156,15 @@ const NetworkMetrics: React.FC = () => {
         
         <Tabs defaultValue="diagnostics" className="w-full">
           <TabsList className="bg-cyber-darkblue border border-cyber-purple/30 mb-4">
-            <TabsTrigger value="diagnostics" className="font-tech">Diagnóstico</TabsTrigger>
+            <TabsTrigger value="diagnostics" className="font-tech">Diagnostics</TabsTrigger>
             <TabsTrigger value="route-tracing" className="font-tech">Route Tracing</TabsTrigger>
-            <TabsTrigger value="history" className="font-tech">Histórico</TabsTrigger>
+            <TabsTrigger value="history" className="font-tech">History</TabsTrigger>
           </TabsList>
           
           <TabsContent value="diagnostics" className="space-y-4">
             <Card className="cyber-panel">
               <CardHeader>
-                <CardTitle className="text-lg font-tech text-cyber-blue">Problemas Detectados</CardTitle>
+                <CardTitle className="text-lg font-tech text-cyber-blue">Detected Issues</CardTitle>
               </CardHeader>
               <CardContent>
                 {metricsData.issues.length > 0 ? (
@@ -177,7 +178,7 @@ const NetworkMetrics: React.FC = () => {
                         <p className="text-xs text-gray-400 mt-1">{issue.description}</p>
                         <div className="mt-2">
                           <Button size="sm" variant="outline" className="text-xs border-cyber-orange/30 text-cyber-orange hover:bg-cyber-orange/20">
-                            Solução Sugerida
+                            Suggested Solution
                           </Button>
                         </div>
                       </div>
@@ -186,7 +187,7 @@ const NetworkMetrics: React.FC = () => {
                 ) : (
                   <div className="p-4 border border-green-500/30 bg-green-500/10 rounded flex items-center">
                     <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                    <span className="font-tech">Nenhum problema detectado na rede!</span>
+                    <span className="font-tech">No network issues detected!</span>
                   </div>
                 )}
               </CardContent>
@@ -194,7 +195,7 @@ const NetworkMetrics: React.FC = () => {
             
             <Card className="cyber-panel">
               <CardHeader>
-                <CardTitle className="text-lg font-tech text-cyber-blue">Recomendações de Otimização</CardTitle>
+                <CardTitle className="text-lg font-tech text-cyber-blue">Optimization Recommendations</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -207,7 +208,7 @@ const NetworkMetrics: React.FC = () => {
                       <p className="text-xs text-gray-400 mt-1">{rec.description}</p>
                       <div className="mt-2">
                         <Button size="sm" className="text-xs bg-cyber-blue hover:bg-cyber-blue/80">
-                          Aplicar
+                          Apply
                         </Button>
                       </div>
                     </div>
@@ -220,7 +221,7 @@ const NetworkMetrics: React.FC = () => {
           <TabsContent value="route-tracing" className="space-y-4">
             <Card className="cyber-panel">
               <CardHeader>
-                <CardTitle className="text-lg font-tech text-cyber-blue">Análise de Rota</CardTitle>
+                <CardTitle className="text-lg font-tech text-cyber-blue">Route Analysis</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="relative">
@@ -254,8 +255,8 @@ const NetworkMetrics: React.FC = () => {
                 
                 <div className="mt-4 p-3 border border-cyber-purple/30 bg-cyber-purple/10 rounded">
                   <div className="flex justify-between text-sm font-tech">
-                    <div>Total de Saltos: <span className="text-cyber-purple">{metricsData.routeHops.length}</span></div>
-                    <div>Latência Total: <span className="text-cyber-purple">{metricsData.routeHops.reduce((sum, hop) => sum + hop.latency, 0)}ms</span></div>
+                    <div>Total Hops: <span className="text-cyber-purple">{metricsData.routeHops.length}</span></div>
+                    <div>Total Latency: <span className="text-cyber-purple">{metricsData.routeHops.reduce((sum, hop) => sum + hop.latency, 0)}ms</span></div>
                   </div>
                 </div>
               </CardContent>
@@ -265,7 +266,7 @@ const NetworkMetrics: React.FC = () => {
           <TabsContent value="history" className="space-y-4">
             <Card className="cyber-panel">
               <CardHeader>
-                <CardTitle className="text-lg font-tech text-cyber-blue">Histórico de Desempenho</CardTitle>
+                <CardTitle className="text-lg font-tech text-cyber-blue">Performance History</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -313,7 +314,7 @@ const NetworkMetrics: React.FC = () => {
                 </div>
                 
                 <Button variant="ghost" className="w-full mt-4 border border-cyber-blue/20 font-tech text-cyber-blue">
-                  Carregar Mais Histórico
+                  Load More History
                 </Button>
               </CardContent>
             </Card>
