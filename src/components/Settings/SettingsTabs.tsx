@@ -1,7 +1,6 @@
 
 import React from "react";
-import { Cog, Monitor, Wifi, Palette, Shield, Terminal } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Monitor, Settings, Cpu, Network, LayoutDashboard, ShieldCheck, Code } from "lucide-react";
 
 interface SettingsTabsProps {
   activeTab: string;
@@ -10,38 +9,41 @@ interface SettingsTabsProps {
 
 const SettingsTabs: React.FC<SettingsTabsProps> = ({ activeTab, setActiveTab }) => {
   const tabs = [
-    { id: "general", label: "General", icon: Cog },
-    { id: "performance", label: "Performance", icon: Monitor },
-    { id: "connection", label: "Connection", icon: Wifi },
-    { id: "interface", label: "Interface", icon: Palette },
-    { id: "security", label: "Security", icon: Shield },
-    { id: "advanced", label: "Advanced", icon: Terminal },
+    { id: "general", label: "General", icon: Settings },
+    { id: "performance", label: "Performance", icon: Cpu },
+    { id: "connection", label: "Connection", icon: Network },
+    { id: "overlay", label: "In-Game Overlay", icon: Monitor },
+    { id: "interface", label: "Interface", icon: LayoutDashboard },
+    { id: "security", label: "Security", icon: ShieldCheck },
+    { id: "advanced", label: "Advanced", icon: Code }
   ];
-
+  
   return (
-    <Tabs 
-      value={activeTab} 
-      onValueChange={setActiveTab} 
-      className="w-full"
-    >
-      <div className="overflow-x-auto scrollbar-none px-4 py-4 border-b border-cyber-blue/20">
-        <TabsList className="w-full justify-start md:justify-center">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <TabsTrigger 
-                key={tab.id} 
-                value={tab.id}
-                className="px-4 py-2 min-w-[100px] data-[state=active]:text-cyber-blue data-[state=active]:bg-cyber-blue/20"
-              >
-                <Icon size={16} className="mr-1.5" />
-                {tab.label}
-              </TabsTrigger>
-            );
-          })}
-        </TabsList>
+    <div className="border-b border-cyber-blue/30">
+      <div className="flex flex-nowrap overflow-x-auto p-1 bg-cyber-black/50">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          
+          return (
+            <button
+              key={tab.id}
+              className={`
+                flex items-center px-4 py-3 whitespace-nowrap transition-colors
+                ${isActive 
+                  ? "text-cyber-blue border-b-2 border-cyber-blue" 
+                  : "text-gray-400 hover:text-gray-300 border-b-2 border-transparent"
+                }
+              `}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <Icon size={18} className="mr-2" />
+              <span className="font-tech text-sm">{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
-    </Tabs>
+    </div>
   );
 };
 

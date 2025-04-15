@@ -9,6 +9,7 @@ import ConnectionSettings from "./Tabs/ConnectionSettings";
 import InterfaceSettings from "./Tabs/InterfaceSettings";
 import SecuritySettings from "./Tabs/SecuritySettings";
 import AdvancedSettings from "./Tabs/AdvancedSettings";
+import InGameOverlaySettings from "./Tabs/InGameOverlaySettings";
 import { toast } from "sonner";
 import { 
   AlertDialog,
@@ -66,6 +67,8 @@ const SettingsContent: React.FC = () => {
         return <PerformanceSettings {...settingsChangeProps} />;
       case "connection":
         return <ConnectionSettings {...settingsChangeProps} />;
+      case "overlay":
+        return <InGameOverlaySettings {...settingsChangeProps} />;
       case "interface":
         return <InterfaceSettings {...settingsChangeProps} />;
       case "security":
