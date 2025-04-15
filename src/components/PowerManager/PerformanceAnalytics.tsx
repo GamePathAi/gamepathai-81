@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,6 @@ import {
   Calendar, 
   Download, 
   Cpu, 
-  Gpu, 
   Battery, 
   Thermometer,
   TrendingUp,
@@ -281,7 +279,7 @@ const PerformanceAnalytics = () => {
                   
                   <div className="bg-cyber-darkblue/60 border border-cyber-blue/20 rounded p-3">
                     <div className="flex items-center">
-                      <Gpu size={16} className="mr-2 text-cyber-purple" />
+                      <Cpu size={16} className="mr-2 text-cyber-purple" />
                       <span className="text-sm font-tech">GPU Power</span>
                     </div>
                     <div className="text-xl font-tech text-cyber-purple mt-1">{Math.round(averagePower * 0.5)}W</div>
@@ -339,7 +337,7 @@ const PerformanceAnalytics = () => {
                   
                   <div className="bg-cyber-darkblue/60 border border-cyber-blue/20 rounded p-3">
                     <div className="flex items-center">
-                      <Gpu size={16} className="mr-2 text-cyber-purple" />
+                      <Cpu size={16} className="mr-2 text-cyber-purple" />
                       <span className="text-sm font-tech">GPU Avg</span>
                     </div>
                     <div className="text-xl font-tech text-cyber-orange mt-1">{averageTemp - 8}°C</div>

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,7 +9,6 @@ import {
   Fan, 
   ActivitySquare, 
   Cpu, 
-  Gpu, 
   BarChart, 
   HardDrive, 
   Lock, 
@@ -29,7 +27,6 @@ const ThermalManagement = () => {
   const [adaptiveMode, setAdaptiveMode] = useState(true);
   const [throttlingProtection, setThrottlingProtection] = useState(true);
   
-  // Mock temperature data
   const temperatureHistory = {
     cpu: Array(20).fill(0).map((_, i) => ({
       time: `${i}m ago`,
@@ -64,25 +61,21 @@ const ThermalManagement = () => {
           <span className="text-xs text-gray-400">Current: {cpuFanSpeed}%</span>
         </div>
         
-        {/* Fan curve graph visualization */}
         <div className="h-24 bg-cyber-darkblue border border-cyber-blue/10 rounded mb-4 p-2 relative">
           <div className="absolute inset-0 p-2">
             <div className="h-full relative">
-              {/* Temperature markers */}
               {[30, 50, 70, 90].map((temp, i) => (
                 <div key={i} className="absolute bottom-0 text-[10px] text-gray-400" style={{ left: `${(temp-30)/60*100}%` }}>
                   {temp}°C
                 </div>
               ))}
               
-              {/* Fan speed markers */}
               {[0, 25, 50, 75, 100].map((speed, i) => (
                 <div key={i} className="absolute left-0 text-[10px] text-gray-400" style={{ bottom: `${speed}%` }}>
                   {speed}%
                 </div>
               ))}
               
-              {/* Fan curve line */}
               <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
                 <path 
                   d="M0,80 L30,60 L60,30 L100,0" 
@@ -95,7 +88,6 @@ const ThermalManagement = () => {
           </div>
         </div>
         
-        {/* Control points */}
         <div className="space-y-3">
           <div className="space-y-1">
             <div className="flex justify-between text-xs text-gray-400">
@@ -147,25 +139,21 @@ const ThermalManagement = () => {
           <span className="text-xs text-gray-400">Current: {gpuFanSpeed}%</span>
         </div>
         
-        {/* Fan curve graph visualization */}
         <div className="h-24 bg-cyber-darkblue border border-cyber-blue/10 rounded mb-4 p-2 relative">
           <div className="absolute inset-0 p-2">
             <div className="h-full relative">
-              {/* Temperature markers */}
               {[30, 50, 70, 90].map((temp, i) => (
                 <div key={i} className="absolute bottom-0 text-[10px] text-gray-400" style={{ left: `${(temp-30)/60*100}%` }}>
                   {temp}°C
                 </div>
               ))}
               
-              {/* Fan speed markers */}
               {[0, 25, 50, 75, 100].map((speed, i) => (
                 <div key={i} className="absolute left-0 text-[10px] text-gray-400" style={{ bottom: `${speed}%` }}>
                   {speed}%
                 </div>
               ))}
               
-              {/* Fan curve line */}
               <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
                 <path 
                   d="M0,90 L20,80 L50,50 L70,20 L100,0" 
@@ -178,7 +166,6 @@ const ThermalManagement = () => {
           </div>
         </div>
         
-        {/* Control points */}
         <div className="space-y-3">
           <div className="space-y-1">
             <div className="flex justify-between text-xs text-gray-400">
