@@ -27,7 +27,7 @@ const AdvancedOptimizer = () => {
         <title>Advanced Optimizer | GamePath AI</title>
       </Helmet>
       
-      <div className="space-y-6">
+      <div className="space-y-6 advanced-optimizer-page">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <h1 className="text-2xl font-tech neon-purple">Advanced Optimizer</h1>
           <div className="flex items-center gap-3">
@@ -61,9 +61,9 @@ const AdvancedOptimizer = () => {
         <div className="cyber-panel bg-gradient-to-r from-cyber-darkblue to-cyber-darkblue/80 border-cyber-purple/20">
           <div className="flex items-center gap-2 mb-3">
             <AlertTriangle size={18} className="text-cyber-orange" />
-            <h2 className="font-tech text-cyber-orange">Advanced Mode</h2>
+            <h2 className="font-tech text-cyber-orange section-title">Advanced Mode</h2>
           </div>
-          <p className="text-sm text-gray-300 mb-4">
+          <p className="text-sm text-gray-300 mb-4 section-description">
             You're accessing premium optimization features designed for advanced users. 
             Some settings may affect system stability if configured incorrectly.
           </p>

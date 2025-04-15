@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -156,6 +157,83 @@
     background-color: rgba(51, 195, 240, 0.2) !important;
     border: 1px solid #33C3F0 !important;
     transform: scale(1.02);
+  }
+  
+  /* TEXT VISIBILITY FIXES - Advanced Optimizer Page */
+  /* 1. Slider text fixes */
+  .slider-label, .slider-value, .slider-min, .slider-max {
+    color: #E5E7EB !important;
+    font-weight: 500 !important;
+  }
+  
+  .slider-current-value {
+    color: #33C3F0 !important;
+    font-weight: 600 !important;
+  }
+  
+  /* 2. Section and panel text fixes */
+  .section-title, .panel-title, h2, h3 {
+    color: #33C3F0 !important;
+    font-weight: 600 !important;
+    text-shadow: 0 0 8px rgba(51, 195, 240, 0.3) !important;
+  }
+  
+  .section-description, .feature-description, p {
+    color: #E5E7EB !important;
+  }
+  
+  /* 3. Status and settings text fixes */
+  .status-text, .config-value, .setting-value {
+    color: #10B981 !important;
+  }
+  
+  .setting-label, .config-label {
+    color: #E5E7EB !important;
+  }
+  
+  /* 4. Alert and warning text fixes */
+  .warning-text, .caution-text {
+    color: #F97316 !important;
+    font-weight: 500 !important;
+  }
+  
+  .alert-text, .error-text {
+    color: #F43F5E !important;
+    font-weight: 500 !important;
+  }
+  
+  /* 5. Fallback for all texts in the Advanced Optimizer page */
+  .text-gray-400, .text-gray-500, .text-xs, .text-sm {
+    color: #E5E7EB !important;
+  }
+  
+  /* Global text visibility fixes */
+  .cyber-card h3, .cyber-card h4, .font-tech, .text-lg {
+    color: #33C3F0 !important;
+  }
+  
+  /* Fix specifically for labels in various sections */
+  label, .text-sm.font-tech {
+    color: #E5E7EB !important;
+  }
+  
+  /* Fix for values and metrics */
+  .font-tech.text-cyber-blue, .text-lg.font-tech {
+    color: #33C3F0 !important;
+  }
+  
+  /* Fix for hardware section specific items */
+  .bg-cyber-darkblue .text-xs, .bg-cyber-darkblue .text-sm {
+    color: #E5E7EB !important;
+  }
+  
+  .bg-cyber-darkblue .text-lg, .bg-cyber-darkblue .font-tech {
+    color: #33C3F0 !important;
+  }
+  
+  /* Fix for fan curve graph text */
+  .h-24.bg-cyber-darkblue .text-sm {
+    color: #E5E7EB !important;
   }
 }
 
