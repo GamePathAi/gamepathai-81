@@ -1,10 +1,11 @@
 
 import React from "react";
-import { Bell, Settings, User } from "lucide-react";
+import { Settings, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GamePathLogo from "./GamePathLogo";
 import { Link } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import NotificationCenter from "./NotificationCenter";
 
 const Header: React.FC = () => {
   return (
@@ -23,16 +24,7 @@ const Header: React.FC = () => {
             CONNECTED
           </span>
           
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-cyber-blue hover:text-cyber-purple hover:bg-cyber-blue/10">
-                <Bell size={20} />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Notifications</p>
-            </TooltipContent>
-          </Tooltip>
+          <NotificationCenter />
           
           <Tooltip>
             <TooltipTrigger asChild>

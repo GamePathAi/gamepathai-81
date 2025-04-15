@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -26,7 +25,12 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ onChange }) => {
     language: "english",
     checkUpdatesAuto: true,
     notifyBeforeDownload: true,
-    autoInstallUpdates: false
+    autoInstallUpdates: false,
+    notifyOptimization: true,
+    notifyPerformance: true,
+    notifyConnection: true,
+    notifyUpdates: true,
+    notifyTrial: true,
   });
 
   const handleSwitchChange = (key: string, value: boolean) => {
@@ -119,6 +123,90 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ onChange }) => {
               <SelectItem value="german">German</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-lg font-bold text-cyber-blue">Notifications</h2>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="show-notifications">Enable notifications</Label>
+              <p className="text-sm text-gray-400">Show system notifications for important events</p>
+            </div>
+            <Switch
+              id="show-notifications"
+              checked={settings.showNotifications}
+              onCheckedChange={(value) => handleSwitchChange("showNotifications", value)}
+            />
+          </div>
+          
+          <div className="space-y-3 pl-1">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="notify-optimization">Optimization alerts</Label>
+                <p className="text-sm text-gray-400">Route and system optimizations</p>
+              </div>
+              <Switch
+                id="notify-optimization"
+                checked={settings.notifyOptimization}
+                onCheckedChange={(value) => handleSwitchChange("notifyOptimization", value)}
+                disabled={!settings.showNotifications}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="notify-performance">Performance alerts</Label>
+                <p className="text-sm text-gray-400">Temperature and resource usage warnings</p>
+              </div>
+              <Switch
+                id="notify-performance"
+                checked={settings.notifyPerformance}
+                onCheckedChange={(value) => handleSwitchChange("notifyPerformance", value)}
+                disabled={!settings.showNotifications}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="notify-connection">Network alerts</Label>
+                <p className="text-sm text-gray-400">Connection issues and stability problems</p>
+              </div>
+              <Switch
+                id="notify-connection"
+                checked={settings.notifyConnection}
+                onCheckedChange={(value) => handleSwitchChange("notifyConnection", value)}
+                disabled={!settings.showNotifications}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="notify-updates">Updates notifications</Label>
+                <p className="text-sm text-gray-400">New versions and patch notes</p>
+              </div>
+              <Switch
+                id="notify-updates"
+                checked={settings.notifyUpdates}
+                onCheckedChange={(value) => handleSwitchChange("notifyUpdates", value)}
+                disabled={!settings.showNotifications}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="notify-trial">Trial & subscription notices</Label>
+                <p className="text-sm text-gray-400">Reminders about your subscription status</p>
+              </div>
+              <Switch
+                id="notify-trial"
+                checked={settings.notifyTrial}
+                onCheckedChange={(value) => handleSwitchChange("notifyTrial", value)}
+                disabled={!settings.showNotifications}
+              />
+            </div>
+          </div>
         </div>
       </section>
 
