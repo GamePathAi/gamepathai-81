@@ -1,14 +1,17 @@
+
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import MetricCard from "@/components/MetricCard";
+import MetricChart from "@/components/MetricChart";
 import { 
   Activity, 
   Zap, 
   Clock, 
   AlertTriangle, 
-  Trophy 
+  Trophy,
+  Settings 
 } from "lucide-react";
 
 // Mock data
