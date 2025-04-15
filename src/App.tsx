@@ -11,7 +11,8 @@ import NotFound from "./pages/NotFound";
 import SystemOptimization from "./pages/SystemOptimization";
 import RouteOptimizerPage from "./pages/RouteOptimizer";
 import Performance from "./pages/Performance";
-import AdvancedOptimizer from "./pages/AdvancedOptimizer"; // New import
+import AdvancedOptimizer from "./pages/AdvancedOptimizer";
+import VPNIntegration from "./pages/VPNIntegration"; // New import
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/route-optimizer" element={<RouteOptimizerPage />} />
             <Route path="/performance" element={<Performance />} />
             <Route path="/advanced-optimizer" element={<AdvancedOptimizer />} />
+            <Route path="/vpn-integration" element={<VPNIntegration />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
