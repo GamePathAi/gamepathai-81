@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Cpu, HardDrive, Memory, Thermometer, Zap } from "lucide-react";
+import { Cpu, HardDrive, Thermometer, Zap, Ram } from "lucide-react";
 import MetricChart from "./MetricChart";
 
 interface SystemStatusProps {
@@ -133,7 +133,7 @@ const SystemStatusPanel: React.FC<SystemStatusProps> = ({
             <div className="cyber-panel space-y-2">
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
-                  <Memory className="mr-2 text-cyber-orange" size={16} />
+                  <Ram className="mr-2 text-cyber-orange" size={16} />
                   <span className="text-sm font-tech">RAM</span>
                 </div>
                 <div className="text-xs text-cyber-orange">{hardware.ram.usage}%</div>

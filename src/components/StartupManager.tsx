@@ -97,7 +97,7 @@ const StartupManager = () => {
                 <TableCell className="font-tech">
                   <div className="flex items-center">
                     {!item.recommended && (
-                      <AlertCircle className="w-4 h-4 mr-2 text-yellow-500" title="Not recommended for best gaming performance" />
+                      <AlertCircle className="w-4 h-4 mr-2 text-yellow-500" aria-label="Not recommended for best gaming performance" />
                     )}
                     {item.name}
                   </div>
