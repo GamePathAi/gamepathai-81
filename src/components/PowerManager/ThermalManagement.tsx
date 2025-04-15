@@ -15,7 +15,8 @@ import {
   AlertTriangle,
   AlertCircle,
   Brain,
-  ZapOff
+  ZapOff,
+  Monitor
 } from "lucide-react";
 import { toast } from "sonner";
 import MetricChart from "@/components/MetricChart";
@@ -441,7 +442,7 @@ const ThermalManagement = () => {
               <div className="bg-cyber-darkblue/60 border border-cyber-blue/20 rounded p-3">
                 <div className="flex justify-between items-center mb-2">
                   <div className="flex items-center">
-                    <Gpu size={16} className="mr-2 text-cyber-purple" />
+                    <Monitor size={16} className="mr-2 text-cyber-purple" />
                     <span className="text-sm font-tech">GPU</span>
                   </div>
                   <span className="text-lg font-tech text-cyber-orange">65°C</span>
@@ -501,7 +502,7 @@ const ThermalManagement = () => {
                 <div>
                   <div className="flex justify-between items-center mb-2">
                     <div className="flex items-center">
-                      <Gpu size={16} className="mr-2 text-cyber-purple" />
+                      <Monitor size={16} className="mr-2 text-cyber-purple" />
                       <span className="text-sm font-tech">GPU Temperature</span>
                     </div>
                     <span className="text-xs text-gray-400">Last 20 minutes</span>
