@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import Layout from "@/components/Layout";
 import MetricCard from "@/components/MetricCard";
@@ -9,9 +8,11 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { generateNetworkMetricsData } from "@/utils/mockData";
 
+type MetricType = "ping" | "jitter" | "packetLoss" | "download";
+
 const NetworkMetrics: React.FC = () => {
   const [timeRange, setTimeRange] = useState<"24h" | "7d" | "30d">("24h");
-  const [selectedMetric, setSelectedMetric] = useState<string>("ping");
+  const [selectedMetric, setSelectedMetric] = useState<MetricType>("ping");
   
   const metricsData = generateNetworkMetricsData(timeRange);
   
@@ -24,10 +25,14 @@ const NetworkMetrics: React.FC = () => {
 
   const indicator = statusIndicator();
 
+  const ensureTrendType = (trend: string): "up" | "down" | "stable" => {
+    if (trend === "up" || trend === "down") return trend;
+    return "stable";
+  };
+
   return (
     <Layout>
       <div className="space-y-6">
-        {/* Header Section */}
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-tech font-bold bg-gradient-to-r from-cyber-blue to-cyber-purple text-transparent bg-clip-text">
@@ -47,7 +52,6 @@ const NetworkMetrics: React.FC = () => {
           </div>
         </div>
         
-        {/* Time Range Selector */}
         <div className="flex justify-end">
           <div className="inline-flex bg-cyber-darkblue rounded-md border border-cyber-purple/30">
             <Button 
@@ -74,13 +78,12 @@ const NetworkMetrics: React.FC = () => {
           </div>
         </div>
         
-        {/* Main Metrics Summary */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <MetricCard
             title="PING"
             value={metricsData.ping.current}
             unit="ms"
-            trend={metricsData.ping.trend}
+            trend={ensureTrendType(metricsData.ping.trend)}
             trendValue={`${Math.abs(metricsData.ping.change)}ms`}
             icon={<Activity size={18} />}
             className="cursor-pointer hover:border-cyber-blue transition-colors"
@@ -91,7 +94,7 @@ const NetworkMetrics: React.FC = () => {
             title="JITTER"
             value={metricsData.jitter.current}
             unit="ms"
-            trend={metricsData.jitter.trend}
+            trend={ensureTrendType(metricsData.jitter.trend)}
             trendValue={`${Math.abs(metricsData.jitter.change)}ms`}
             icon={<Zap size={18} />}
             className="cursor-pointer hover:border-cyber-blue transition-colors"
@@ -102,7 +105,7 @@ const NetworkMetrics: React.FC = () => {
             title="PACKET LOSS"
             value={metricsData.packetLoss.current}
             unit="%"
-            trend={metricsData.packetLoss.trend}
+            trend={ensureTrendType(metricsData.packetLoss.trend)}
             trendValue={`${Math.abs(metricsData.packetLoss.change)}%`}
             icon={<AlertTriangle size={18} />}
             className="cursor-pointer hover:border-cyber-blue transition-colors"
@@ -113,7 +116,7 @@ const NetworkMetrics: React.FC = () => {
             title="DOWNLOAD"
             value={metricsData.download.current}
             unit="Mbps"
-            trend={metricsData.download.trend}
+            trend={ensureTrendType(metricsData.download.trend)}
             trendValue={`${Math.abs(metricsData.download.change)}Mbps`}
             icon={<Server size={18} />}
             className="cursor-pointer hover:border-cyber-blue transition-colors"
@@ -121,7 +124,6 @@ const NetworkMetrics: React.FC = () => {
           />
         </div>
         
-        {/* Main Chart */}
         <Card className="cyber-panel">
           <CardHeader className="pb-0">
             <CardTitle className="text-lg font-tech text-cyber-blue flex items-center">
@@ -135,7 +137,7 @@ const NetworkMetrics: React.FC = () => {
           <CardContent className="pt-4">
             <div className="h-80 w-full">
               <MetricChart 
-                data={metricsData[selectedMetric as keyof typeof metricsData].history}
+                data={metricsData[selectedMetric].history}
                 color={selectedMetric === "packetLoss" ? "#F43F5E" : "#33C3F0"}
                 height={320}
                 strokeWidth={3}
@@ -144,14 +146,13 @@ const NetworkMetrics: React.FC = () => {
             </div>
             
             <div className="mt-4 flex justify-between items-center text-xs text-gray-400 font-tech">
-              <div>MIN: <span className="text-cyber-blue">{metricsData[selectedMetric as keyof typeof metricsData].min}</span></div>
-              <div>AVG: <span className="text-cyber-blue">{metricsData[selectedMetric as keyof typeof metricsData].avg}</span></div>
-              <div>MAX: <span className="text-cyber-blue">{metricsData[selectedMetric as keyof typeof metricsData].max}</span></div>
+              <div>MIN: <span className="text-cyber-blue">{metricsData[selectedMetric].min}</span></div>
+              <div>AVG: <span className="text-cyber-blue">{metricsData[selectedMetric].avg}</span></div>
+              <div>MAX: <span className="text-cyber-blue">{metricsData[selectedMetric].max}</span></div>
             </div>
           </CardContent>
         </Card>
         
-        {/* Detailed Analysis Section */}
         <Tabs defaultValue="diagnostics" className="w-full">
           <TabsList className="bg-cyber-darkblue border border-cyber-purple/30 mb-4">
             <TabsTrigger value="diagnostics" className="font-tech">Diagnóstico</TabsTrigger>
