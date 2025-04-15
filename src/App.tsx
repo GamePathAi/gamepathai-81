@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NetworkMetrics from "./pages/NetworkMetrics";
 import NotFound from "./pages/NotFound";
+import SystemOptimization from "./pages/SystemOptimization";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/network-metrics" element={<NetworkMetrics />} />
+          <Route path="/system-optimization" element={<SystemOptimization />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
