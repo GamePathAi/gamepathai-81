@@ -6,6 +6,7 @@ import GamePathLogo from "./GamePathLogo";
 import { Link } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import NotificationCenter from "./NotificationCenter";
+import ConnectionToggle from "./ConnectionToggle";
 
 const Header: React.FC = () => {
   return (
@@ -19,10 +20,7 @@ const Header: React.FC = () => {
         </div>
         
         <div className="flex items-center space-x-4">
-          <span className="font-tech text-xs px-2 py-1 rounded bg-cyber-blue/20 border border-cyber-blue/50">
-            <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-1 animate-pulse"></span>
-            CONNECTED
-          </span>
+          <ConnectionToggle />
           
           <NotificationCenter />
           
