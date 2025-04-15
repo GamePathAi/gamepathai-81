@@ -10,7 +10,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "bg-gradient-to-r from-cyber-purple to-cyber-blue text-white hover:opacity-90",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
@@ -19,14 +19,14 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        cyber: "bg-cyber-darkblue border border-cyber-blue/50 text-cyber-blue hover:bg-cyber-blue/20 font-tech",
-        cyberOutline: "bg-transparent border border-cyber-blue/50 text-cyber-blue hover:bg-cyber-blue/10 font-tech",
+        cyber: "bg-cyber-darkblue border border-cyber-blue text-cyber-blue hover:bg-cyber-blue/20 font-tech",
+        cyberOutline: "bg-transparent border border-cyber-blue text-cyber-blue hover:bg-cyber-blue/10 font-tech",
         cyberLight: "bg-white/90 border border-cyber-blue/30 text-cyber-darkblue font-medium hover:bg-white shadow-sm hover:shadow-cyber-blue/20",
         cyberGlass: "backdrop-blur-sm bg-white/10 border border-white/20 text-white hover:bg-white/20 font-tech",
-        cyberAction: "bg-white/90 border border-cyber-blue/40 text-cyber-darkblue font-semibold hover:bg-white hover:shadow-sm hover:shadow-cyber-blue/30",
-        cyberSafe: "bg-white/90 border border-cyber-green/40 text-cyber-darkblue font-semibold hover:bg-white hover:shadow-sm hover:shadow-cyber-green/30",
-        cyberReset: "bg-white/90 border border-cyber-orange/40 text-cyber-darkblue font-semibold hover:bg-white hover:shadow-sm hover:shadow-cyber-orange/30",
-        cyberGreen: "bg-white/90 border border-cyber-green/40 text-cyber-darkblue font-bold hover:bg-white/100 hover:shadow-sm hover:shadow-cyber-green/30",
+        cyberAction: "bg-gradient-to-r from-cyber-purple to-cyber-blue text-white font-semibold hover:opacity-90 shadow-sm hover:shadow-cyber-blue/30",
+        cyberSafe: "bg-gradient-to-r from-green-500 to-cyber-green text-white font-semibold hover:opacity-90 shadow-sm hover:shadow-cyber-green/30",
+        cyberReset: "bg-gradient-to-r from-yellow-500 to-cyber-orange text-white font-semibold hover:opacity-90 shadow-sm hover:shadow-cyber-orange/30",
+        cyberGreen: "bg-gradient-to-r from-green-600 to-green-400 text-white font-bold hover:opacity-95 shadow-sm hover:shadow-green-400/30",
       },
       size: {
         default: "h-10 px-4 py-2",

@@ -63,15 +63,18 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Cyberpunk theme colors
+				// Cyberpunk theme colors - updated with exact specs
 				cyber: {
-					black: '#0F0F1B',
-					darkblue: '#1A1F2C',
-					blue: '#33C3F0',
-					purple: '#8B5CF6',
+					black: '#0a0a1b',           // Background principal
+					darkblue: '#121223',         // Background de painéis
+					cardblue: '#151530',         // Background de cards  
+					blue: '#33C3F0',            // Azul neon (valores/destaques)
+					purple: '#8B5CF6',          // Roxo (CPU/GPU)
 					pink: '#D946EF',
-					red: '#F43F5E',
-					orange: '#F97316'
+					red: '#F43F5E',             // Vermelho (Packet Loss)
+					orange: '#F97316',          // Laranja (Jitter)
+					green: '#10B981',           // Verde (FPS/Optimized)
+					secondary: '#8B9CB6'         // Texto secundário
 				}
 			},
 			borderRadius: {
