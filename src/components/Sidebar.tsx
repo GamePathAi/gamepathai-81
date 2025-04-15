@@ -1,10 +1,11 @@
+
 import React from "react";
 import { Home, Activity, Cpu, Network, Gauge, Zap, Lock, ChevronRight, Brain, Settings } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 interface SidebarItemProps {
-  icon: React.ElementType;
+  icon: React.ElementType; // Changed from React.ElementType to React.ElementType
   label: string;
   to: string;
   isPremium?: boolean;
@@ -34,58 +35,58 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ icon: Icon, label, to, isPrem
 const Sidebar: React.FC = () => {
   const navItems = [
     {
-      icon: <Home size={20} />,
+      icon: Home, // Changed from JSX element to component reference
       label: "Dashboard",
       path: "/",
       tooltip: "Dashboard",
     },
     {
-      icon: <Activity size={20} />,
+      icon: Activity, // Changed from JSX element to component reference
       label: "Network Metrics",
       path: "/network-metrics",
       tooltip: "Network Metrics",
     },
     {
-      icon: <Cpu size={20} />,
+      icon: Cpu, // Changed from JSX element to component reference
       label: "System Optimization",
       path: "/system-optimization",
       tooltip: "System Optimization",
     },
     {
-      icon: <Network size={20} />,
+      icon: Network, // Changed from JSX element to component reference
       label: "Route Optimizer",
       path: "/route-optimizer",
       tooltip: "Route Optimizer",
     },
     {
-      icon: <Gauge size={20} />,
+      icon: Gauge, // Changed from JSX element to component reference
       label: "Performance",
       path: "/performance",
       tooltip: "Performance",
     },
     {
-      icon: <Brain size={20} />,
+      icon: Brain, // Changed from JSX element to component reference
       label: "Advanced Optimizer",
       path: "/advanced-optimizer",
       tooltip: "Advanced Optimizer",
       isPremium: true,
     },
     {
-      icon: <Zap size={20} />,
+      icon: Zap, // Changed from JSX element to component reference
       label: "Power Manager",
       path: "/power-manager",
       tooltip: "Power Manager",
       isPremium: true,
     },
     {
-      icon: <Lock size={20} />,
+      icon: Lock, // Changed from JSX element to component reference
       label: "VPN Integration",
       path: "/vpn-integration",
       tooltip: "VPN Integration",
       isPremium: true,
     },
     {
-      icon: <Settings size={20} />,
+      icon: Settings, // Changed from JSX element to component reference
       label: "Settings",
       path: "/settings",
       tooltip: "GamePath Settings",
