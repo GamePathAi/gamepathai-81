@@ -109,6 +109,14 @@ export default {
 						boxShadow: '0 0 15px rgba(139, 92, 246, 0.9), 0 0 25px rgba(139, 92, 246, 0.7)'
 					}
 				},
+				'pulse-slow': {
+					'0%, 100%': { 
+						opacity: '1'
+					},
+					'50%': { 
+						opacity: '0.6'
+					}
+				},
 				'scan-line': {
 					'0%': { transform: 'translateY(-100%)' },
 					'100%': { transform: 'translateY(100%)' }
@@ -122,6 +130,7 @@ export default {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'pulse-neon': 'pulse-neon 2s infinite',
+				'pulse-slow': 'pulse-slow 4s infinite',
 				'scan-line': 'scan-line 2s linear infinite',
 				'data-flow': 'data-flow 3s linear infinite'
 			},

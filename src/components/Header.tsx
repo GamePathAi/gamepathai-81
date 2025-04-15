@@ -2,16 +2,14 @@
 import React from "react";
 import { Bell, Settings, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import GamePathLogo from "./GamePathLogo";
 
 const Header: React.FC = () => {
   return (
     <header className="bg-cyber-darkblue border-b border-cyber-purple/30 backdrop-blur-sm sticky top-0 z-10">
       <div className="container mx-auto flex justify-between items-center h-16 px-4">
         <div className="flex items-center">
-          <div className="mr-2 relative">
-            <div className="w-8 h-8 rounded-full bg-cyber-blue animate-pulse-neon"></div>
-            <div className="absolute inset-0 bg-cyber-blue/10 rounded-full animate-ping"></div>
-          </div>
+          <GamePathLogo size={32} className="mr-2" />
           <h1 className="text-2xl font-tech font-bold bg-gradient-to-r from-cyber-blue via-cyber-purple to-cyber-pink text-transparent bg-clip-text">
             GamePath AI
           </h1>
