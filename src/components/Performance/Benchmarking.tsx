@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -11,14 +12,42 @@ import {
   Share2,
   Monitor, 
   CpuIcon, 
-  Gpu,
+  Database, // Replaced Gpu with Database which is available in lucide-react
   LineChart,
   RefreshCw,
   Download,
   Star,
   ChevronRight,
-  Zap
+  Zap,
+  ChevronDown,
+  Pause,
+  MoveHorizontal,
+  Users,
+  Search,
+  ArrowDownToLine,
+  Medal,
+  BarChart2
 } from "lucide-react";
+import { 
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem
+} from "@/components/ui/dropdown-menu";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { 
+  ResponsiveContainer, 
+  LineChart as RechartsLineChart, 
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip as RechartsTooltip,
+  ReferenceLine,
+  Line,
+  ComposedChart,
+  Bar,
+  Legend
+} from 'recharts';
 
 // Mock benchmark data
 const generateBenchmarkData = () => {
@@ -142,11 +171,7 @@ export const Benchmarking: React.FC = () => {
                 <div className="text-gray-400">BENCHMARK PROGRESS</div>
                 <div className="text-cyber-blue">{benchmarkProgress}%</div>
               </div>
-              <Progress value={benchmarkProgress} className="h-2 bg-gray-700">
-                <div className="h-full bg-gradient-to-r from-cyber-blue to-cyber-pink relative overflow-hidden" style={{ width: `${benchmarkProgress}%` }}>
-                  <div className="absolute inset-0 bg-white/20 animate-data-flow"></div>
-                </div>
-              </Progress>
+              <Progress value={benchmarkProgress} className="h-2 bg-gray-700" />
               
               <div className="mt-6 flex items-center justify-between">
                 <div className="flex-1">
@@ -231,7 +256,7 @@ export const Benchmarking: React.FC = () => {
                     
                     <div className="h-64">
                       <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={benchmarkData} margin={{ top: 10, right: 10, left: 0, bottom: 10 }}>
+                        <RechartsLineChart data={benchmarkData} margin={{ top: 10, right: 10, left: 0, bottom: 10 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                           <XAxis 
                             dataKey="second" 
@@ -239,7 +264,7 @@ export const Benchmarking: React.FC = () => {
                             label={{ value: 'Time (seconds)', position: 'insideBottom', offset: -10, fill: 'rgba(255,255,255,0.5)' }}
                           />
                           <YAxis stroke="rgba(255,255,255,0.5)" />
-                          <Tooltip 
+                          <RechartsTooltip 
                             contentStyle={{ 
                               backgroundColor: '#121223', 
                               borderColor: 'rgba(16, 185, 129, 0.3)',
@@ -257,7 +282,7 @@ export const Benchmarking: React.FC = () => {
                             dot={false} 
                             activeDot={{ r: 6, stroke: '#10B981', strokeWidth: 2, fill: '#0F0F1B' }} 
                           />
-                        </LineChart>
+                        </RechartsLineChart>
                       </ResponsiveContainer>
                     </div>
                   </CardContent>
@@ -270,7 +295,7 @@ export const Benchmarking: React.FC = () => {
                     
                     <div className="h-64">
                       <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={benchmarkData} margin={{ top: 10, right: 10, left: 0, bottom: 10 }}>
+                        <RechartsLineChart data={benchmarkData} margin={{ top: 10, right: 10, left: 0, bottom: 10 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                           <XAxis 
                             dataKey="second" 
@@ -278,7 +303,7 @@ export const Benchmarking: React.FC = () => {
                             label={{ value: 'Time (seconds)', position: 'insideBottom', offset: -10, fill: 'rgba(255,255,255,0.5)' }}
                           />
                           <YAxis stroke="rgba(255,255,255,0.5)" />
-                          <Tooltip 
+                          <RechartsTooltip 
                             contentStyle={{ 
                               backgroundColor: '#121223', 
                               borderColor: 'rgba(249, 115, 22, 0.3)',
@@ -296,7 +321,7 @@ export const Benchmarking: React.FC = () => {
                             dot={false} 
                             activeDot={{ r: 6, stroke: '#F97316', strokeWidth: 2, fill: '#0F0F1B' }} 
                           />
-                        </LineChart>
+                        </RechartsLineChart>
                       </ResponsiveContainer>
                     </div>
                   </CardContent>
@@ -323,17 +348,17 @@ export const Benchmarking: React.FC = () => {
                         <h4 className="text-sm font-tech text-cyber-blue mb-2">BOTTLENECK ANALYSIS</h4>
                         <div className="flex items-center mb-2">
                           <div className="w-32 text-xs text-gray-400">CPU Bottleneck:</div>
-                          <Progress value={15} className="h-1.5 bg-gray-700" indicatorClassName="bg-cyber-green" />
+                          <Progress value={15} className="h-1.5 bg-gray-700" />
                           <div className="ml-2 text-xs text-cyber-green">15%</div>
                         </div>
                         <div className="flex items-center mb-2">
                           <div className="w-32 text-xs text-gray-400">GPU Bottleneck:</div>
-                          <Progress value={85} className="h-1.5 bg-gray-700" indicatorClassName="bg-cyber-pink" />
+                          <Progress value={85} className="h-1.5 bg-gray-700" />
                           <div className="ml-2 text-xs text-cyber-pink">85%</div>
                         </div>
                         <div className="flex items-center">
                           <div className="w-32 text-xs text-gray-400">RAM Bottleneck:</div>
-                          <Progress value={5} className="h-1.5 bg-gray-700" indicatorClassName="bg-cyber-blue" />
+                          <Progress value={5} className="h-1.5 bg-gray-700" />
                           <div className="ml-2 text-xs text-cyber-blue">5%</div>
                         </div>
                         <p className="text-xs text-gray-300 mt-2">
@@ -413,7 +438,7 @@ export const Benchmarking: React.FC = () => {
                           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                           <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" />
                           <YAxis stroke="rgba(255,255,255,0.5)" />
-                          <Tooltip 
+                          <RechartsTooltip 
                             contentStyle={{ 
                               backgroundColor: '#121223', 
                               borderColor: 'rgba(51, 195, 240, 0.3)',
@@ -443,7 +468,7 @@ export const Benchmarking: React.FC = () => {
                           <div className="text-gray-400">VS PREVIOUS</div>
                           <div className="text-cyber-green">+21%</div>
                         </div>
-                        <Progress value={21} max={50} className="h-2 bg-gray-700" indicatorClassName="bg-cyber-green" />
+                        <Progress value={21} max={50} className="h-2 bg-gray-700" />
                         <div className="flex justify-between text-xs mt-1">
                           <div className="text-gray-400">94 FPS</div>
                           <div className="text-cyber-green">114 FPS</div>
@@ -455,7 +480,7 @@ export const Benchmarking: React.FC = () => {
                           <div className="text-gray-400">VS POTENTIAL</div>
                           <div className="text-cyber-blue">-8%</div>
                         </div>
-                        <Progress value={92} className="h-2 bg-gray-700" indicatorClassName="bg-cyber-blue" />
+                        <Progress value={92} className="h-2 bg-gray-700" />
                         <div className="flex justify-between text-xs mt-1">
                           <div className="text-gray-400">114 FPS</div>
                           <div className="text-cyber-blue">124 FPS</div>
@@ -504,7 +529,7 @@ export const Benchmarking: React.FC = () => {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="outline" size="sm" className="bg-transparent border-cyber-blue/30 text-cyber-blue h-8">
-                              <BarChart className="h-3 w-3 mr-2" />
+                              <BarChart2 className="h-3 w-3 mr-2" />
                               <span className="text-xs">Chart Type</span>
                             </Button>
                           </DropdownMenuTrigger>
@@ -523,7 +548,7 @@ export const Benchmarking: React.FC = () => {
                           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                           <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" />
                           <YAxis stroke="rgba(255,255,255,0.5)" />
-                          <Tooltip 
+                          <RechartsTooltip 
                             contentStyle={{ 
                               backgroundColor: '#121223', 
                               borderColor: 'rgba(139, 92, 246, 0.3)',
