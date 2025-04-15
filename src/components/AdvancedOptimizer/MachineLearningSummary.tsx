@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -63,7 +64,7 @@ export const MachineLearningSummary = () => {
             <CardHeader className="pb-2">
               <h3 className="text-lg font-tech flex items-center">
                 <Brain className="mr-2 text-cyber-purple" size={18} />
-                Deep Learning Optimization
+                <span className="text-cyber-blue">Deep Learning Optimization</span>
               </h3>
             </CardHeader>
             <CardContent>
@@ -108,7 +109,7 @@ export const MachineLearningSummary = () => {
                 </div>
                 <div className="bg-cyber-darkblue rounded-md p-3 border border-cyber-blue/20">
                   <div className="text-xs text-cyber-blue mb-1">Games Analyzed</div>
-                  <div className="text-lg font-tech text-cyber-green">17</div>
+                  <div className="text-lg font-tech text-cyber-purple">17</div>
                 </div>
                 <div className="bg-cyber-darkblue rounded-md p-3 border border-cyber-green/20">
                   <div className="text-xs text-cyber-green mb-1">Days Active</div>
