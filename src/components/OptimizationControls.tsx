@@ -234,7 +234,7 @@ const OptimizationControls = () => {
               </div>
 
               <div className="mt-4">
-                <Button variant="cyberOptimize" className="w-full">
+                <Button variant="cyberAction" className="w-full">
                   <Zap className="mr-2 h-4 w-4" />
                   Apply Advanced Settings
                 </Button>

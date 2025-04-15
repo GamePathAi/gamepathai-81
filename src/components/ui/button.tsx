@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
@@ -25,6 +26,7 @@ const buttonVariants = cva(
         cyberAction: "bg-white/90 border border-cyber-blue/40 text-cyber-darkblue font-semibold hover:bg-white hover:shadow-sm hover:shadow-cyber-blue/30",
         cyberSafe: "bg-white/90 border border-cyber-green/40 text-cyber-darkblue font-semibold hover:bg-white hover:shadow-sm hover:shadow-cyber-green/30",
         cyberReset: "bg-white/90 border border-cyber-orange/40 text-cyber-darkblue font-semibold hover:bg-white hover:shadow-sm hover:shadow-cyber-orange/30",
+        cyberGreen: "bg-white/90 border border-cyber-green/40 text-cyber-darkblue font-bold hover:bg-white/100 hover:shadow-sm hover:shadow-cyber-green/30",
       },
       size: {
         default: "h-10 px-4 py-2",
