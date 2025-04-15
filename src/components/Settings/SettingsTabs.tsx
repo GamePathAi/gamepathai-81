@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Monitor, Settings, Cpu, Network, LayoutDashboard, ShieldCheck, Code } from "lucide-react";
+import { Monitor, Settings, Cpu, Network, LayoutDashboard, ShieldCheck, Code, Video } from "lucide-react";
 
 interface SettingsTabsProps {
   activeTab: string;
@@ -13,6 +13,7 @@ const SettingsTabs: React.FC<SettingsTabsProps> = ({ activeTab, setActiveTab }) 
     { id: "performance", label: "Performance", icon: Cpu },
     { id: "connection", label: "Connection", icon: Network },
     { id: "overlay", label: "In-Game Overlay", icon: Monitor },
+    { id: "recording", label: "Screen Recording", icon: Video },
     { id: "interface", label: "Interface", icon: LayoutDashboard },
     { id: "security", label: "Security", icon: ShieldCheck },
     { id: "advanced", label: "Advanced", icon: Code }

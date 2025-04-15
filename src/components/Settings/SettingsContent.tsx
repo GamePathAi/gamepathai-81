@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Cog, Save, RotateCcw, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import InterfaceSettings from "./Tabs/InterfaceSettings";
 import SecuritySettings from "./Tabs/SecuritySettings";
 import AdvancedSettings from "./Tabs/AdvancedSettings";
 import InGameOverlaySettings from "./Tabs/InGameOverlaySettings";
+import ScreenRecordingSettings from "./Tabs/ScreenRecordingSettings";
 import { toast } from "sonner";
 import { 
   AlertDialog,
@@ -22,9 +22,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-// Define an interface for the onChange prop
 interface SettingsChangeProps {
-  onChange: () => void; // Make onChange required, not optional
+  onChange: () => void;
 }
 
 const SettingsContent: React.FC = () => {
@@ -69,6 +68,8 @@ const SettingsContent: React.FC = () => {
         return <ConnectionSettings {...settingsChangeProps} />;
       case "overlay":
         return <InGameOverlaySettings {...settingsChangeProps} />;
+      case "recording":
+        return <ScreenRecordingSettings {...settingsChangeProps} />;
       case "interface":
         return <InterfaceSettings {...settingsChangeProps} />;
       case "security":
