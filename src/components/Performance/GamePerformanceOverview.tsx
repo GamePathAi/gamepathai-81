@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import MetricCard from "@/components/MetricCard";
 import MetricChart from "@/components/MetricChart";
-import { Activity, Zap, Clock, AlertTriangle, Trophy } from "lucide-react";
+import { Activity, Zap, Clock, AlertTriangle, Trophy, Settings } from "lucide-react";
 
 // Mock data
 const fpsData = Array.from({ length: 30 }, (_, i) => ({

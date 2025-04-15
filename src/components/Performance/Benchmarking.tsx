@@ -1,45 +1,24 @@
-
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 import { 
+  Trophy, 
   Play, 
-  Pause, 
-  BarChart3, 
   Clock, 
-  ChevronDown, 
-  Medal, 
-  Users, 
-  TrendingUp,
-  MoveHorizontal,
+  BarChart3, 
+  Share2,
+  Monitor, 
+  CpuIcon, 
+  Gpu,
+  LineChart,
+  RefreshCw,
+  Download,
+  Star,
   ChevronRight,
-  ArrowDownToLine,
-  Search,
-  BarChart2,
-  BarChart,
-  Share2
+  Zap
 } from "lucide-react";
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer, 
-  ComposedChart,
-  Bar,
-  ReferenceLine,
-  Legend
-} from "recharts";
 
 // Mock benchmark data
 const generateBenchmarkData = () => {
