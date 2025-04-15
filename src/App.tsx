@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import SystemOptimization from "./pages/SystemOptimization";
 import RouteOptimizerPage from "./pages/RouteOptimizer";
 import Performance from "./pages/Performance";
+import AdvancedOptimizer from "./pages/AdvancedOptimizer"; // New import
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/system-optimization" element={<SystemOptimization />} />
             <Route path="/route-optimizer" element={<RouteOptimizerPage />} />
             <Route path="/performance" element={<Performance />} />
+            <Route path="/advanced-optimizer" element={<AdvancedOptimizer />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

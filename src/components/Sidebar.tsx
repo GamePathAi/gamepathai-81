@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Home, Activity, Cpu, Network, Gauge, Zap, Lock, ChevronRight, Code } from "lucide-react";
+import { Home, Activity, Cpu, Network, Gauge, Zap, Lock, ChevronRight, Brain } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 
@@ -79,6 +79,7 @@ const Sidebar: React.FC = () => {
         <div className="mb-6">
           <div className="text-xs text-gray-400 font-tech mb-2 px-4">PREMIUM FEATURES</div>
           <div className="space-y-1">
+            <SidebarItem icon={Brain} label="Advanced Optimizer" to="/advanced-optimizer" isPremium />
             <SidebarItem icon={Zap} label="Advanced Optimizer" to="/advanced-optimizer" isPremium />
             <SidebarItem icon={Lock} label="VPN Integration" to="/vpn-integration" isPremium />
           </div>
