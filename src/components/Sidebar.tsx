@@ -80,7 +80,7 @@ const Sidebar: React.FC = () => {
           <div className="text-xs text-gray-400 font-tech mb-2 px-4">PREMIUM FEATURES</div>
           <div className="space-y-1">
             <SidebarItem icon={Brain} label="Advanced Optimizer" to="/advanced-optimizer" isPremium />
-            <SidebarItem icon={Zap} label="Advanced Optimizer" to="/advanced-optimizer" isPremium />
+            <SidebarItem icon={Zap} label="Power Manager" to="/power-manager" isPremium />
             <SidebarItem icon={Lock} label="VPN Integration" to="/vpn-integration" isPremium />
           </div>
         </div>

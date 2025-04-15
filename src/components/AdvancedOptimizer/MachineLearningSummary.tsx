@@ -1,9 +1,12 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Brain, Clock, TrendingUp, Award } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { 
+  Brain, Cpu as CpuIcon, 
+  Network as NetworkIcon, 
+  Zap, LineChart, BarChart3, 
+  ArrowUp, ArrowDown, Timer, Activity 
+} from "lucide-react";
 
 // Mock data for visualization
 const learningProgress = [
@@ -188,9 +191,9 @@ export const MachineLearningSummary = () => {
             {optimizationEvents.map((event, idx) => (
               <div key={idx} className="mb-6 relative">
                 <div className="absolute -left-10 w-5 h-5 rounded-full border-2 border-cyber-blue bg-cyber-darkblue">
-                  {event.category === "system" && <Cpu size={12} className="m-0.5 text-cyber-blue" />}
+                  {event.category === "system" && <CpuIcon size={12} className="m-0.5 text-cyber-blue" />}
                   {event.category === "memory" && <Brain size={12} className="m-0.5 text-cyber-blue" />}
-                  {event.category === "network" && <Network size={12} className="m-0.5 text-cyber-blue" />}
+                  {event.category === "network" && <NetworkIcon size={12} className="m-0.5 text-cyber-blue" />}
                   {event.category === "thermal" && <TrendingUp size={12} className="m-0.5 text-cyber-blue" />}
                 </div>
                 <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">

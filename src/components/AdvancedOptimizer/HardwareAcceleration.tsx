@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,7 +5,7 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Cpu, Memory, Gauge, Fan, Shield, AlertTriangle } from "lucide-react";
+import { Cpu, HardDrive, Gauge, Fan, Shield, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
 export const HardwareAcceleration = () => {
@@ -111,7 +110,7 @@ export const HardwareAcceleration = () => {
         <Card className="cyber-card border-cyber-blue/30">
           <CardHeader className="pb-2">
             <h3 className="text-lg font-tech flex items-center">
-              <Memory className="mr-2 text-cyber-blue" size={18} />
+              <HardDrive className="mr-2 text-cyber-blue" size={18} />
               Memory Timing Adjustments
             </h3>
           </CardHeader>
