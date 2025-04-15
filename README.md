@@ -1,10 +1,16 @@
-# Welcome to your Lovable project
+# GamePath AI
 
-## Project info
+## Sobre o Projeto
 
-**URL**: https://lovable.dev/projects/db6489aa-54d3-41db-9507-31b855d86e89
+GamePath AI é uma aplicação avançada de otimização de conexão para jogos online, utilizando inteligência artificial para melhorar a performance de rede e sistema.
 
-## How can I edit this code?
+## Recursos Principais
+
+- Roteamento inteligente de rede
+- Métricas de desempenho em tempo real
+- Otimização automática baseada em IA
+
+## Como Começar
 
 There are several ways of editing your application.
 

@@ -13,7 +13,7 @@ const Header: React.FC = () => {
             <div className="absolute inset-0 bg-cyber-blue/10 rounded-full animate-ping"></div>
           </div>
           <h1 className="text-2xl font-tech font-bold bg-gradient-to-r from-cyber-blue via-cyber-purple to-cyber-pink text-transparent bg-clip-text">
-            CyberLink Nexus
+            GamePath AI
           </h1>
         </div>
         
