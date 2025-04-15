@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,24 +8,27 @@ import NetworkMetrics from "./pages/NetworkMetrics";
 import NotFound from "./pages/NotFound";
 import SystemOptimization from "./pages/SystemOptimization";
 import RouteOptimizerPage from "./pages/RouteOptimizer";
+import { HelmetProvider } from "react-helmet-async";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/network-metrics" element={<NetworkMetrics />} />
-          <Route path="/system-optimization" element={<SystemOptimization />} />
-          <Route path="/route-optimizer" element={<RouteOptimizerPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <HelmetProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/network-metrics" element={<NetworkMetrics />} />
+            <Route path="/system-optimization" element={<SystemOptimization />} />
+            <Route path="/route-optimizer" element={<RouteOptimizerPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </HelmetProvider>
   </QueryClientProvider>
 );
 
