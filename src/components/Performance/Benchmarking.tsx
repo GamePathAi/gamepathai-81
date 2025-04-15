@@ -12,7 +12,7 @@ import {
   Share2,
   Monitor, 
   CpuIcon, 
-  Database, // Replaced Gpu with Database which is available in lucide-react
+  Database,
   LineChart,
   RefreshCw,
   Download,
@@ -26,7 +26,8 @@ import {
   Search,
   ArrowDownToLine,
   Medal,
-  BarChart2
+  BarChart2,
+  TrendingUp // Added correct import
 } from "lucide-react";
 import { 
   DropdownMenu,

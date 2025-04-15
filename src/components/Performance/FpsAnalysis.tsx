@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -15,7 +16,7 @@ import {
   Filter,
   SlidersHorizontal,
   Download,
-  Label
+  Tag // Replaced Label with Tag which is available in lucide-react
 } from "lucide-react";
 
 // Mock data
