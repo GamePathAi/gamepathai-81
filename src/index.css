@@ -35,13 +35,15 @@
 
     --radius: 0.5rem;
     
-    /* Cyberpunk theme colors */
-    --cyber-black: #0d1117;
-    --cyber-darkblue: #161b22;
-    --cyber-blue: #3b82f6;
-    --cyber-pink: #ec4899;
-    --cyber-purple: #8b5cf6;
-    --cyber-orange: #f97316;
+    /* Cyberpunk theme colors - UPDATED */
+    --cyber-black: #0a0a1b;
+    --cyber-darkblue: #121223;
+    --cyber-blue: #33C3F0;
+    --cyber-purple: #8B5CF6;
+    --cyber-pink: #D946EF;
+    --cyber-orange: #F97316;
+    --cyber-green: #10B981;
+    --cyber-red: #F43F5E;
   }
 
   .dark {
@@ -82,21 +84,52 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    background-color: var(--cyber-black) !important;
+    color: #e5e7eb !important;
   }
 }
 
-/* Custom utility classes */
+/* Custom utility classes - UPDATED */
 @layer components {
   .cyber-panel {
-    @apply bg-black/20 backdrop-blur-sm rounded border border-cyber-blue/30 p-4;
+    @apply backdrop-blur-sm rounded border p-4;
+    background-color: var(--cyber-darkblue) !important;
+    border-color: rgba(51, 195, 240, 0.3) !important;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.15) !important;
   }
   
   .cyber-btn {
     @apply bg-gradient-to-r from-cyber-purple to-cyber-blue text-white font-tech px-4 py-2 rounded border-0 hover:opacity-90;
+    box-shadow: 0 0 15px rgba(51, 195, 240, 0.5);
   }
   
   .font-tech {
     font-family: 'Share Tech Mono', monospace, system-ui;
+  }
+  
+  /* Status tags */
+  .tag-fully-optimized {
+    background-color: rgba(16, 185, 129, 0.2) !important;
+    color: var(--cyber-green) !important;
+    border: 1px solid rgba(16, 185, 129, 0.3) !important;
+  }
+
+  .tag-network-optimized {
+    background-color: rgba(51, 195, 240, 0.2) !important;
+    color: var(--cyber-blue) !important;
+    border: 1px solid rgba(51, 195, 240, 0.3) !important;
+  }
+
+  .tag-system-optimized {
+    background-color: rgba(139, 92, 246, 0.2) !important;
+    color: var(--cyber-purple) !important;
+    border: 1px solid rgba(139, 92, 246, 0.3) !important;
+  }
+
+  .tag-not-optimized {
+    background-color: rgba(75, 85, 99, 0.2) !important;
+    color: #E5E7EB !important;
+    border: 1px solid rgba(75, 85, 99, 0.3) !important;
   }
 }
 
@@ -155,5 +188,82 @@
   
   .animate-data-flow {
     animation: data-flow 2s infinite linear;
+  }
+  
+  /* Neon glow effects */
+  .neon-blue {
+    text-shadow: 0 0 5px rgba(51, 195, 240, 0.7), 0 0 10px rgba(51, 195, 240, 0.5);
+    color: var(--cyber-blue);
+  }
+  
+  .neon-purple {
+    text-shadow: 0 0 5px rgba(139, 92, 246, 0.7), 0 0 10px rgba(139, 92, 246, 0.5);
+    color: var(--cyber-purple);
+  }
+  
+  .neon-green {
+    text-shadow: 0 0 5px rgba(16, 185, 129, 0.7), 0 0 10px rgba(16, 185, 129, 0.5);
+    color: var(--cyber-green);
+  }
+  
+  .neon-orange {
+    text-shadow: 0 0 5px rgba(249, 115, 22, 0.7), 0 0 10px rgba(249, 115, 22, 0.5);
+    color: var(--cyber-orange);
+  }
+  
+  .neon-red {
+    text-shadow: 0 0 5px rgba(244, 63, 94, 0.7), 0 0 10px rgba(244, 63, 94, 0.5);
+    color: var(--cyber-red);
+  }
+  
+  .neon-pink {
+    text-shadow: 0 0 5px rgba(217, 70, 239, 0.7), 0 0 10px rgba(217, 70, 239, 0.5);
+    color: var(--cyber-pink);
+  }
+  
+  /* Card & Panel Styles */
+  .card, .cyber-card {
+    background-color: var(--cyber-darkblue) !important;
+    border: 1px solid rgba(51, 195, 240, 0.3) !important;
+    box-shadow: 0 0 10px rgba(51, 195, 240, 0.1) !important;
+  }
+  
+  /* Graph Colors */
+  [data-metric="ping"] path, .ping-graph path {
+    stroke: var(--cyber-blue) !important;
+    stroke-width: 2px !important;
+  }
+
+  [data-metric="packet-loss"] path, .loss-graph path {
+    stroke: var(--cyber-red) !important;
+    stroke-width: 2px !important;
+  }
+
+  [data-metric="fps"] path, .fps-graph path {
+    stroke: var(--cyber-green) !important;
+    stroke-width: 2px !important;
+  }
+
+  [data-metric="cpu"] path, .cpu-graph path {
+    stroke: var(--cyber-purple) !important;
+    stroke-width: 2px !important;
+  }
+
+  [data-metric="gpu"] path, .gpu-graph path {
+    stroke: var(--cyber-pink) !important;
+    stroke-width: 2px !important;
+  }
+
+  [data-metric="jitter"] path, .jitter-graph path {
+    stroke: var(--cyber-orange) !important;
+    stroke-width: 2px !important;
+  }
+  
+  /* Glassmorphism */
+  .cyber-glass {
+    background: rgba(18, 18, 35, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(51, 195, 240, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(10, 10, 10, 0.37);
   }
 }
