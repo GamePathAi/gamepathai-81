@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import Layout from "@/components/Layout";
 import MetricCard from "@/components/MetricCard";
@@ -173,9 +172,17 @@ const NetworkMetrics: React.FC = () => {
                       <div key={index} className="p-3 border border-cyber-orange/30 bg-cyber-orange/10 rounded">
                         <div className="flex items-center">
                           <AlertTriangle size={16} className="text-cyber-orange mr-2" />
-                          <span className="font-tech text-sm">{issue.title}</span>
+                          <span className="font-tech text-sm">
+                            {issue.title === "Perda de pacotes identificada" 
+                              ? "Packet Loss Detected" 
+                              : issue.title}
+                          </span>
                         </div>
-                        <p className="text-xs text-gray-400 mt-1">{issue.description}</p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          {issue.description === "Sua conexão está perdendo dados, o que pode causar teleporte e dessincronização."
+                            ? "Your connection is losing data, which can cause teleporting and desynchronization."
+                            : issue.description}
+                        </p>
                         <div className="mt-2">
                           <Button size="sm" variant="outline" className="text-xs border-cyber-orange/30 text-cyber-orange hover:bg-cyber-orange/20">
                             Suggested Solution
@@ -203,9 +210,21 @@ const NetworkMetrics: React.FC = () => {
                     <div key={index} className="p-3 border border-cyber-blue/30 bg-cyber-blue/5 rounded">
                       <div className="flex items-center">
                         <Zap size={16} className="text-cyber-blue mr-2" />
-                        <span className="font-tech text-sm">{rec.title}</span>
+                        <span className="font-tech text-sm">
+                          {rec.title === "Otimizar rota de rede" 
+                            ? "Optimize Network Route" 
+                            : rec.title === "Usar servidor mais próximo"
+                            ? "Use Nearest Server"
+                            : rec.title}
+                        </span>
                       </div>
-                      <p className="text-xs text-gray-400 mt-1">{rec.description}</p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        {rec.description === "Analisar e selecionar a rota mais eficiente para seus servidores de jogo favoritos."
+                          ? "Analyze and select the most efficient route to your favorite game servers."
+                          : rec.description === "Conectar-se a servidores geograficamente mais próximos para reduzir a latência."
+                          ? "Connect to geographically closer servers to reduce latency."
+                          : rec.description}
+                      </p>
                       <div className="mt-2">
                         <Button size="sm" className="text-xs bg-cyber-blue hover:bg-cyber-blue/80">
                           Apply
