@@ -3,112 +3,157 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
-
 @layer base {
   :root {
-    --background: 240 25% 8%;
-    --foreground: 210 40% 98%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
 
-    --card: 240 25% 12%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
 
-    --popover: 240 25% 8%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 199 84% 55%;
+    --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 270 67% 47%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
 
-    --muted: 240 25% 16%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 345 82% 59%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 240 25% 20%;
-    --input: 240 25% 16%;
-    --ring: 199 84% 55%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
+    
+    /* Cyberpunk theme colors */
+    --cyber-black: #0d1117;
+    --cyber-darkblue: #161b22;
+    --cyber-blue: #3b82f6;
+    --cyber-pink: #ec4899;
+    --cyber-purple: #8b5cf6;
+    --cyber-orange: #f97316;
   }
 
-  * {
-    @apply border-border;
-  }
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
 
-  body {
-    @apply bg-cyber-black text-foreground font-tech;
-    background-image: linear-gradient(to bottom right, rgba(15, 15, 27, 0.95), rgba(26, 31, 44, 0.95)), 
-                     radial-gradient(circle at 50% 50%, rgba(51, 195, 240, 0.1), transparent 30%);
-    background-attachment: fixed;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
   }
 }
 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Custom utility classes */
 @layer components {
   .cyber-panel {
-    @apply bg-cyber-darkblue border border-cyber-purple/50 rounded-md p-4 shadow-lg relative;
-  }
-  
-  .cyber-panel::before {
-    content: '';
-    @apply absolute inset-0 border border-cyber-blue/30 rounded-md;
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-    transform: translate(4px, 4px);
-    z-index: -1;
-  }
-  
-  .cyber-border {
-    @apply border-2 border-cyber-purple relative;
-    box-shadow: 0 0 10px rgba(139, 92, 246, 0.5), 0 0 20px rgba(139, 92, 246, 0.3);
+    @apply bg-black/20 backdrop-blur-sm rounded border border-cyber-blue/30 p-4;
   }
   
   .cyber-btn {
-    @apply px-4 py-2 bg-cyber-darkblue text-cyan-400 uppercase font-tech font-semibold tracking-wide border-l-2 border-t-2 border-r-2 border-b-2 border-cyber-blue relative overflow-hidden transition-all duration-300;
+    @apply bg-gradient-to-r from-cyber-purple to-cyber-blue text-white font-tech px-4 py-2 rounded border-0 hover:opacity-90;
   }
   
-  .cyber-btn:hover {
-    @apply bg-cyber-blue/20 text-white;
-    box-shadow: 0 0 15px rgba(51, 195, 240, 0.8);
-  }
-  
-  .cyber-btn::before {
-    content: '';
-    @apply absolute inset-0 bg-gradient-to-r from-cyber-blue/0 via-cyber-blue/30 to-cyber-blue/0;
-    transform: translateX(-100%);
-    transition: transform 0.5s;
-  }
-  
-  .cyber-btn:hover::before {
-    transform: translateX(100%);
-  }
-  
-  .glassmorphism {
-    @apply bg-cyber-darkblue/60 backdrop-blur-md border border-white/10;
-  }
-  
-  .scan-line {
-    @apply absolute inset-0 pointer-events-none overflow-hidden;
-  }
-  
-  .scan-line::after {
-    content: '';
-    @apply absolute left-0 right-0 h-[2px] bg-cyber-blue/30;
-    animation: scan-line 2s linear infinite;
+  .font-tech {
+    font-family: 'Share Tech Mono', monospace, system-ui;
   }
 }
 
 @layer utilities {
-  .font-tech {
-    font-family: 'Share Tech Mono', monospace;
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--cyber-purple) var(--cyber-black);
   }
   
-  .font-cyber {
-    font-family: 'Rajdhani', sans-serif;
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: var(--cyber-darkblue);
+    border-radius: 4px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--cyber-purple);
+    border-radius: 4px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--cyber-blue);
+  }
+  
+  .scan-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: rgba(139, 92, 246, 0.5);
+    animation: scan 2s linear infinite;
+    z-index: 1;
+  }
+  
+  @keyframes scan {
+    0% {
+      top: 0;
+    }
+    100% {
+      top: 100%;
+    }
+  }
+  
+  @keyframes data-flow {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  
+  .animate-data-flow {
+    animation: data-flow 2s infinite linear;
   }
 }

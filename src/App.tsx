@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import NetworkMetrics from "./pages/NetworkMetrics";
 import NotFound from "./pages/NotFound";
 import SystemOptimization from "./pages/SystemOptimization";
+import RouteOptimizerPage from "./pages/RouteOptimizer";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/network-metrics" element={<NetworkMetrics />} />
           <Route path="/system-optimization" element={<SystemOptimization />} />
+          <Route path="/route-optimizer" element={<RouteOptimizerPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
