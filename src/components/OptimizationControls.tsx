@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -235,7 +234,7 @@ const OptimizationControls = () => {
               </div>
 
               <div className="mt-4">
-                <Button className="w-full bg-gradient-to-r from-cyber-blue to-cyber-purple hover:opacity-90">
+                <Button variant="cyberOptimize" className="w-full">
                   <Zap className="mr-2 h-4 w-4" />
                   Apply Advanced Settings
                 </Button>

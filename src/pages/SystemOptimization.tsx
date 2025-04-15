@@ -7,6 +7,7 @@ import StartupManager from "@/components/StartupManager";
 import ThermalMonitor from "@/components/ThermalMonitor";
 import { getSystemData } from "@/utils/mockData";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 const SystemOptimization = () => {
   const [systemData, setSystemData] = useState<any>(null);

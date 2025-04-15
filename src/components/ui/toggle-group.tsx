@@ -46,8 +46,8 @@ const ToggleGroupItem = React.forwardRef<
           variant: context.variant || variant,
           size: context.size || size,
         }),
-        // Enhanced contrast when not selected
-        "data-[state=off]:text-gray-300 data-[state=off]:font-medium",
+        // Enhanced contrast when not selected - improved visibility
+        "data-[state=off]:text-gray-500 data-[state=off]:font-medium",
         className
       )}
       {...props}

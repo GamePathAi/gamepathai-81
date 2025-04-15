@@ -24,6 +24,11 @@ const buttonVariants = cva(
         cyberOutline: "bg-transparent border border-cyber-blue/50 text-cyber-blue hover:bg-cyber-blue/10 font-tech",
         cyberLight: "bg-white/90 border border-cyber-blue/30 text-cyber-darkblue font-medium hover:bg-white shadow-sm hover:shadow-cyber-blue/20",
         cyberGlass: "backdrop-blur-sm bg-white/10 border border-white/20 text-white hover:bg-white/20 font-tech",
+        // New enhanced contrast variants for light buttons
+        cyberAction: "bg-white/90 border border-cyber-blue/40 text-cyber-darkblue font-semibold hover:bg-white shadow-sm hover:shadow-cyber-blue/30",
+        cyberSchedule: "bg-white/95 border border-cyber-blue/40 text-cyber-darkblue font-semibold hover:bg-white shadow-sm hover:shadow-cyber-blue/30",
+        cyberOptimize: "bg-white/90 border border-cyber-purple/40 text-cyber-darkblue font-semibold hover:bg-white shadow-sm hover:shadow-cyber-purple/30",
+        cyberMonitor: "bg-white/95 border border-cyber-blue/40 text-cyber-darkblue font-semibold hover:bg-white shadow-sm hover:shadow-cyber-blue/30",
       },
       size: {
         default: "h-10 px-4 py-2",

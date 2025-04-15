@@ -158,20 +158,48 @@
     transform: scale(1.02);
   }
   
-  /* Button contrast fixes - NEW */
+  /* Button contrast fixes - ENHANCED */
   .button-light, button[data-theme="light"] {
-    background-color: rgba(255, 255, 255, 0.9) !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
     color: #0a0a1b !important;
-    font-weight: 500 !important;
-    border: 1px solid rgba(51, 195, 240, 0.3) !important;
+    font-weight: 600 !important;
+    border: 1px solid rgba(51, 195, 240, 0.4) !important;
   }
   
   .button-light:hover, button[data-theme="light"]:hover {
     background-color: rgba(255, 255, 255, 1) !important;
-    box-shadow: 0 0 8px rgba(51, 195, 240, 0.3) !important;
+    box-shadow: 0 0 10px rgba(51, 195, 240, 0.4) !important;
   }
   
-  /* Inactive tabs and buttons fix - NEW */
+  /* Schedule and Add buttons fix */
+  .schedule-button, .add-button, [data-action="schedule"], [data-action="add"] {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    color: #121223 !important; 
+    font-weight: 600 !important;
+    border: 1px solid rgba(51, 195, 240, 0.4) !important;
+  }
+  
+  .schedule-button:hover, .add-button:hover, [data-action="schedule"]:hover, [data-action="add"]:hover {
+    background-color: #ffffff !important;
+    box-shadow: 0 0 10px rgba(51, 195, 240, 0.4) !important;
+  }
+  
+  /* Thermal monitoring and system optimization buttons */
+  .monitor-button, [data-action="monitor"] {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    color: #121223 !important;
+    font-weight: 600 !important;
+    border: 1px solid rgba(16, 185, 129, 0.4) !important;
+  }
+  
+  .optimize-button, [data-action="optimize"] {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    color: #121223 !important;
+    font-weight: 600 !important;
+    border: 1px solid rgba(139, 92, 246, 0.4) !important;
+  }
+  
+  /* Inactive tabs and buttons fix */
   [role="tab"][data-state="inactive"],
   button:disabled {
     color: #6B7280 !important;
