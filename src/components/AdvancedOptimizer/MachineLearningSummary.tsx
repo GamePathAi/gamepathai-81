@@ -67,7 +67,7 @@ export const MachineLearningSummary = () => {
               </h3>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-400 mb-4">
+              <p className="text-sm text-cyber-blue mb-4">
                 Our AI has been studying your system behavior and game usage patterns to create a personalized optimization profile
               </p>
               
@@ -135,7 +135,7 @@ export const MachineLearningSummary = () => {
               <div className="bg-cyber-darkblue rounded-md p-3 border border-cyber-blue/20">
                 <div className="flex items-center gap-2 mb-1">
                   <TrendingUp size={14} className="text-cyber-green" />
-                  <div className="text-sm font-tech text-cyber-green">CPU Thread Optimization</div>
+                  <div className="text-sm font-tech text-cyber-purple">CPU Thread Optimization</div>
                 </div>
                 <p className="text-xs text-cyber-blue mb-2">
                   Your usage pattern suggests high multithreading needs during gaming sessions
@@ -151,7 +151,7 @@ export const MachineLearningSummary = () => {
               <div className="bg-cyber-darkblue rounded-md p-3 border border-cyber-green/20">
                 <div className="flex items-center gap-2 mb-1">
                   <TrendingUp size={14} className="text-cyber-purple" />
-                  <div className="text-sm font-tech text-cyber-purple">Memory Timing Profile</div>
+                  <div className="text-sm font-tech text-cyber-blue">Memory Timing Profile</div>
                 </div>
                 <p className="text-xs text-cyber-blue mb-2">
                   RAM timings could benefit from adjustments for your specific games
@@ -167,7 +167,7 @@ export const MachineLearningSummary = () => {
               <div className="bg-cyber-darkblue rounded-md p-3 border border-cyber-purple/20">
                 <div className="flex items-center gap-2 mb-1">
                   <TrendingUp size={14} className="text-cyber-blue" />
-                  <div className="text-sm font-tech text-cyber-blue">Network Pattern Detected</div>
+                  <div className="text-sm font-tech text-cyber-purple">Network Pattern Detected</div>
                 </div>
                 <p className="text-xs text-cyber-blue mb-2">
                   Traffic shaping could improve multiplayer experience during peak hours
@@ -205,7 +205,7 @@ export const MachineLearningSummary = () => {
                   <h4 className="font-tech text-cyber-blue">{event.title}</h4>
                   <span className="text-xs text-cyber-purple">{event.date}</span>
                 </div>
-                <p className="text-sm text-gray-300 mt-1">{event.description}</p>
+                <p className="text-sm text-cyber-blue mt-1">{event.description}</p>
                 <div className={`text-xs px-2 py-1 rounded mt-2 inline-block
                   ${event.impact === "High" 
                     ? "bg-cyber-green/20 text-cyber-green border border-cyber-green/30" 
