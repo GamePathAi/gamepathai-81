@@ -12,7 +12,7 @@ import {
 import { 
   Cpu, 
   Tv2, 
-  Memory, 
+  Database, 
   HardDrive, 
   Thermometer, 
   Clock, 
@@ -173,7 +173,7 @@ export const ResourceMonitor: React.FC = () => {
             GPU
           </TabsTrigger>
           <TabsTrigger value="ram" className="font-tech data-[state=active]:bg-cyber-blue/20 data-[state=active]:text-cyber-blue">
-            <Memory size={16} className="mr-2" />
+            <Database size={16} className="mr-2" />
             RAM
           </TabsTrigger>
           <TabsTrigger value="disk" className="font-tech data-[state=active]:bg-cyber-orange/20 data-[state=active]:text-cyber-orange">
@@ -216,7 +216,7 @@ export const ResourceMonitor: React.FC = () => {
                       </div>
                       <div className="text-cyber-blue">4.2 GHz</div>
                     </div>
-                    <Progress value={80} className="h-1 bg-gray-700" indicatorClassName="bg-cyber-blue" />
+                    <Progress value={80} className="h-1 bg-gray-700" />
                   </div>
                   
                   <div>
@@ -227,7 +227,7 @@ export const ResourceMonitor: React.FC = () => {
                       </div>
                       <div className="text-cyber-green">105W</div>
                     </div>
-                    <Progress value={65} className="h-1 bg-gray-700" indicatorClassName="bg-cyber-green" />
+                    <Progress value={65} className="h-1 bg-gray-700" />
                   </div>
                 </div>
                 
@@ -364,12 +364,12 @@ export const ResourceMonitor: React.FC = () => {
                   <div>
                     <div className="flex justify-between text-xs mb-1">
                       <div className="text-gray-400">
-                        <Memory className="h-3 w-3 inline mr-1" />
+                        <Database className="h-3 w-3 inline mr-1" />
                         VRAM
                       </div>
                       <div className="text-cyber-pink">5.8 / 8 GB</div>
                     </div>
-                    <Progress value={72.5} className="h-1 bg-gray-700" indicatorClassName="bg-cyber-pink" />
+                    <Progress value={72.5} className="h-1 bg-gray-700" />
                   </div>
                   
                   <div>
@@ -380,7 +380,7 @@ export const ResourceMonitor: React.FC = () => {
                       </div>
                       <div className="text-cyber-blue">1945 MHz</div>
                     </div>
-                    <Progress value={85} className="h-1 bg-gray-700" indicatorClassName="bg-cyber-blue" />
+                    <Progress value={85} className="h-1 bg-gray-700" />
                   </div>
                 </div>
                 
@@ -618,7 +618,7 @@ export const ResourceMonitor: React.FC = () => {
                       <div className="text-gray-400">DISK CAPACITY</div>
                       <div className="text-cyber-orange">658 GB / 931 GB</div>
                     </div>
-                    <Progress value={70} className="h-2 bg-gray-700" indicatorClassName="bg-cyber-orange" />
+                    <Progress value={70} className="h-2 bg-gray-700" />
                   </div>
                   
                   <div className="grid grid-cols-2 gap-4">
