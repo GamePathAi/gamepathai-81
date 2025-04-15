@@ -117,10 +117,10 @@ const Sidebar: React.FC = () => {
         </div>
         
         {/* Upgrade CTA */}
-        <div className="p-4 bg-gradient-to-r from-cyber-purple/20 to-cyber-blue/20 rounded-md border border-cyber-purple/30 relative overflow-hidden">
+        <div className="p-4 bg-gradient-to-r from-cyber-purple/20 to-cyber-blue/20 rounded-md border border-cyber-purple/30 relative overflow-hidden upgrade-pro-btn">
           <div className="mb-2 font-tech font-semibold text-cyber-blue">Upgrade to Pro</div>
           <p className="text-xs text-gray-300 mb-3">Get access to premium features and advanced optimizations</p>
-          <button className="cyber-btn text-xs py-1 w-full">
+          <button className="cyber-btn text-xs py-1 w-full relative">
             UPGRADE
           </button>
           
