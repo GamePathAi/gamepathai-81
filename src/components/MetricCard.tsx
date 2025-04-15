@@ -11,6 +11,7 @@ interface MetricCardProps {
   trendValue?: string;
   className?: string;
   chartComponent?: React.ReactNode;
+  onClick?: () => void;
 }
 
 const MetricCard: React.FC<MetricCardProps> = ({
@@ -21,7 +22,8 @@ const MetricCard: React.FC<MetricCardProps> = ({
   trend,
   trendValue,
   className,
-  chartComponent
+  chartComponent,
+  onClick
 }) => {
   const getTrendColor = () => {
     if (trend === "down" && title.toLowerCase().includes("ping") || 
@@ -48,7 +50,11 @@ const MetricCard: React.FC<MetricCardProps> = ({
   };
 
   return (
-    <div className={cn("cyber-panel", className)}>
+    <div 
+      className={cn("cyber-panel", className)}
+      onClick={onClick}
+      style={onClick ? { cursor: 'pointer' } : {}}
+    >
       <div className="flex justify-between items-start mb-2">
         <div className="text-xs font-tech text-gray-400">{title}</div>
         {icon && <div className="text-cyber-blue">{icon}</div>}

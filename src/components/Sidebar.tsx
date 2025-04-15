@@ -1,17 +1,22 @@
 
 import React from "react";
 import { Home, Activity, Cpu, Network, Gauge, Zap, Lock, ChevronRight, Code } from "lucide-react";
+import { useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface SidebarItemProps {
   icon: React.ElementType;
   label: string;
-  isActive?: boolean;
+  to: string;
   isPremium?: boolean;
 }
 
-const SidebarItem: React.FC<SidebarItemProps> = ({ icon: Icon, label, isActive, isPremium }) => {
+const SidebarItem: React.FC<SidebarItemProps> = ({ icon: Icon, label, to, isPremium }) => {
+  const location = useLocation();
+  const isActive = location.pathname === to;
+  
   return (
-    <div className={`
+    <Link to={to} className={`
       flex items-center px-4 py-3 cursor-pointer transition-all duration-300 group
       ${isActive ? "bg-cyber-purple/20 border-l-2 border-cyber-purple" : "border-l-2 border-transparent hover:border-cyber-blue hover:bg-cyber-blue/10"}
     `}>
@@ -23,7 +28,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ icon: Icon, label, isActive, 
         </span>
       )}
       <ChevronRight size={16} className={`ml-2 transition-transform ${isActive ? "transform rotate-90 text-cyber-purple" : "text-gray-500"}`} />
-    </div>
+    </Link>
   );
 };
 
@@ -64,19 +69,18 @@ const Sidebar: React.FC = () => {
         </div>
         
         <div className="space-y-1 mb-6">
-          <SidebarItem icon={Home} label="Dashboard" isActive />
-          <SidebarItem icon={Activity} label="Network Metrics" />
-          <SidebarItem icon={Cpu} label="System Optimization" />
-          <SidebarItem icon={Network} label="Route Optimizer" />
-          <SidebarItem icon={Gauge} label="Performance" />
+          <SidebarItem icon={Home} label="Dashboard" to="/" />
+          <SidebarItem icon={Activity} label="Network Metrics" to="/network-metrics" />
+          <SidebarItem icon={Cpu} label="System Optimization" to="/system-optimization" />
+          <SidebarItem icon={Network} label="Route Optimizer" to="/route-optimizer" />
+          <SidebarItem icon={Gauge} label="Performance" to="/performance" />
         </div>
         
         <div className="mb-6">
           <div className="text-xs text-gray-400 font-tech mb-2 px-4">PREMIUM FEATURES</div>
           <div className="space-y-1">
-            <SidebarItem icon={Zap} label="Advanced Optimizer" isPremium />
-            <SidebarItem icon={Lock} label="VPN Integration" isPremium />
-            <SidebarItem icon={Code} label="Custom Scripts" isPremium />
+            <SidebarItem icon={Zap} label="Advanced Optimizer" to="/advanced-optimizer" isPremium />
+            <SidebarItem icon={Lock} label="VPN Integration" to="/vpn-integration" isPremium />
           </div>
         </div>
         
