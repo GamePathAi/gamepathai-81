@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -5,8 +6,14 @@ import {
   Brain, Cpu as CpuIcon, 
   Network as NetworkIcon, 
   Zap, LineChart, BarChart3, 
-  ArrowUp, ArrowDown, Timer, Activity 
+  ArrowUp, ArrowDown, Timer, Activity,
+  Award, TrendingUp, Clock 
 } from "lucide-react";
+import { 
+  AreaChart, Area, XAxis, YAxis, 
+  Tooltip as RechartsTooltip, 
+  ResponsiveContainer 
+} from "recharts";
 
 // Mock data for visualization
 const learningProgress = [
@@ -77,7 +84,7 @@ export const MachineLearningSummary = () => {
                     </defs>
                     <XAxis dataKey="name" stroke="#6B7280" fontSize={12} />
                     <YAxis stroke="#6B7280" fontSize={12} />
-                    <Tooltip 
+                    <RechartsTooltip 
                       contentStyle={{ 
                         backgroundColor: '#121223', 
                         border: '1px solid rgba(139, 92, 246, 0.3)',
@@ -215,3 +222,4 @@ export const MachineLearningSummary = () => {
     </div>
   );
 };
+
