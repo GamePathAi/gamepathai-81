@@ -288,7 +288,7 @@ export const GameServerAccess: React.FC<{ isVPNActive: boolean }> = ({ isVPNActi
                   </span>
                 </div>
                 <Button 
-                  className={`w-full ${isVPNActive ? 'bg-cyber-orange/20 text-cyber-orange hover:bg-cyber-orange/30 border border-cyber-orange/30' : 'bg-gray-800 text-gray-400'}`}
+                  className="w-full bg-cyber-orange/20 text-cyber-orange hover:bg-cyber-orange/30 border border-cyber-orange/30"
                   disabled={!isVPNActive}
                 >
                   <Zap size={16} className="mr-2" />
