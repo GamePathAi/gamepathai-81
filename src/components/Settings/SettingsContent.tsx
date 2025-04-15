@@ -23,7 +23,7 @@ import {
 
 // Define an interface for the onChange prop
 interface SettingsChangeProps {
-  onChange?: () => void;
+  onChange: () => void; // Make onChange required, not optional
 }
 
 const SettingsContent: React.FC = () => {

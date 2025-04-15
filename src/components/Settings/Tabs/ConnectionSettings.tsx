@@ -13,7 +13,11 @@ interface ConnectionProfile {
   latency: number;
 }
 
-const ConnectionSettings: React.FC = () => {
+interface ConnectionSettingsProps {
+  onChange: () => void;
+}
+
+const ConnectionSettings: React.FC<ConnectionSettingsProps> = ({ onChange }) => {
   const [settings, setSettings] = useState({
     autoOptimize: true,
     prioritizeGameTraffic: true,
@@ -35,6 +39,7 @@ const ConnectionSettings: React.FC = () => {
       ...settings,
       [setting]: !settings[setting as keyof typeof settings],
     });
+    onChange();
   };
 
   const handleDNSChange = (type: "primary" | "secondary") => (e: ChangeEvent<HTMLInputElement>) => {
@@ -42,6 +47,7 @@ const ConnectionSettings: React.FC = () => {
       ...settings,
       [type === "primary" ? "customDNSPrimary" : "customDNSSecondary"]: e.target.value,
     });
+    onChange();
   };
 
   const handleDNSTypeChange = (value: string) => {
@@ -49,10 +55,12 @@ const ConnectionSettings: React.FC = () => {
       ...settings,
       useDefaultDNS: value === "default",
     });
+    onChange();
   };
 
   const removeProfile = (id: number) => {
     setProfiles(profiles.filter(profile => profile.id !== id));
+    onChange();
   };
 
   return (
