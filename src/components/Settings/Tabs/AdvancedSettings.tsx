@@ -20,6 +20,7 @@ import {
   Trash2,
   Play,
   FileText,
+  Lock,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -44,6 +45,8 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ onChange }) => {
   });
 
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  // Simulating the Pro status - in a real app, this would come from authentication/subscription state
+  const isPro = false;
 
   const handleSwitchChange = (key: string, value: boolean) => {
     setSettings({ ...settings, [key]: value });
@@ -63,6 +66,12 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ onChange }) => {
   const handleFactoryReset = () => {
     setResetDialogOpen(false);
     // Implementation would go here
+    onChange();
+  };
+
+  const showUpgradeModal = () => {
+    // In a real app, this would open a modal for upgrading
+    console.log("Show upgrade modal");
   };
 
   return (
@@ -137,20 +146,44 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ onChange }) => {
           <h2 className="text-lg font-bold text-cyber-blue">Custom Scripts</h2>
           <Badge className="bg-cyber-purple text-white">PRO</Badge>
         </div>
-        <p className="text-sm text-gray-400">
-          Write custom scripts to fine-tune your system performance
-        </p>
-        <div className="space-y-4">
-          <Textarea
-            value={settings.customScript}
-            onChange={(e) => handleTextareaChange("customScript", e.target.value)}
-            className="font-mono text-sm min-h-[150px] bg-cyber-black border-cyber-blue/30"
-          />
-          <Button variant="cyber" size="sm" disabled={!settings.customScript.trim()}>
-            <Play size={16} className="mr-1.5" />
-            Run Script
-          </Button>
-        </div>
+        
+        {isPro ? (
+          <>
+            <p className="text-sm text-gray-400">
+              Write custom scripts to fine-tune your system performance
+            </p>
+            <div className="space-y-4">
+              <Textarea
+                value={settings.customScript}
+                onChange={(e) => handleTextareaChange("customScript", e.target.value)}
+                className="font-mono text-sm min-h-[150px] bg-cyber-black border-cyber-blue/30"
+              />
+              <Button variant="cyber" size="sm" disabled={!settings.customScript.trim()}>
+                <Play size={16} className="mr-1.5" />
+                Run Script
+              </Button>
+            </div>
+          </>
+        ) : (
+          <div className="p-4 border border-cyber-purple/30 bg-cyber-purple/5 rounded-md">
+            <div className="flex items-center space-x-2 mb-2">
+              <Lock size={18} className="text-cyber-purple" />
+              <p className="text-sm font-medium text-cyber-purple">Premium Feature</p>
+            </div>
+            <p className="text-sm text-gray-300 mb-3">
+              Create and run custom optimization scripts for your specific gaming setup.
+              Unlock this feature by upgrading to Pro.
+            </p>
+            <Button 
+              variant="cyber" 
+              size="sm" 
+              className="bg-gradient-to-r from-cyber-purple to-cyber-blue"
+              onClick={showUpgradeModal}
+            >
+              Upgrade to Pro
+            </Button>
+          </div>
+        )}
       </section>
 
       <section className="space-y-4">

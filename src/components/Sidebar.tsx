@@ -5,7 +5,7 @@ import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 interface SidebarItemProps {
-  icon: React.ElementType; // Changed from React.ElementType to React.ElementType
+  icon: React.ElementType;
   label: string;
   to: string;
   isPremium?: boolean;
@@ -33,69 +33,28 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ icon: Icon, label, to, isPrem
 };
 
 const Sidebar: React.FC = () => {
+  // Define navigation items once - no duplication
   const navItems = [
-    {
-      icon: Home, // Changed from JSX element to component reference
-      label: "Dashboard",
-      path: "/",
-      tooltip: "Dashboard",
-    },
-    {
-      icon: Activity, // Changed from JSX element to component reference
-      label: "Network Metrics",
-      path: "/network-metrics",
-      tooltip: "Network Metrics",
-    },
-    {
-      icon: Cpu, // Changed from JSX element to component reference
-      label: "System Optimization",
-      path: "/system-optimization",
-      tooltip: "System Optimization",
-    },
-    {
-      icon: Network, // Changed from JSX element to component reference
-      label: "Route Optimizer",
-      path: "/route-optimizer",
-      tooltip: "Route Optimizer",
-    },
-    {
-      icon: Gauge, // Changed from JSX element to component reference
-      label: "Performance",
-      path: "/performance",
-      tooltip: "Performance",
-    },
-    {
-      icon: Brain, // Changed from JSX element to component reference
-      label: "Advanced Optimizer",
-      path: "/advanced-optimizer",
-      tooltip: "Advanced Optimizer",
-      isPremium: true,
-    },
-    {
-      icon: Zap, // Changed from JSX element to component reference
-      label: "Power Manager",
-      path: "/power-manager",
-      tooltip: "Power Manager",
-      isPremium: true,
-    },
-    {
-      icon: Lock, // Changed from JSX element to component reference
-      label: "VPN Integration",
-      path: "/vpn-integration",
-      tooltip: "VPN Integration",
-      isPremium: true,
-    },
-    {
-      icon: Settings, // Changed from JSX element to component reference
-      label: "Settings",
-      path: "/settings",
-      tooltip: "GamePath Settings",
-    },
+    { icon: Home, label: "Dashboard", path: "/" },
+    { icon: Activity, label: "Network Metrics", path: "/network-metrics" },
+    { icon: Cpu, label: "System Optimization", path: "/system-optimization" },
+    { icon: Network, label: "Route Optimizer", path: "/route-optimizer" },
+    { icon: Gauge, label: "Performance", path: "/performance" },
+    { icon: Settings, label: "Settings", path: "/settings" },
+    // Premium items 
+    { icon: Brain, label: "Advanced Optimizer", path: "/advanced-optimizer", isPremium: true },
+    { icon: Zap, label: "Power Manager", path: "/power-manager", isPremium: true },
+    { icon: Lock, label: "VPN Integration", path: "/vpn-integration", isPremium: true },
   ];
+
+  // Get regular and premium items
+  const regularItems = navItems.filter(item => !item.isPremium);
+  const premiumItems = navItems.filter(item => item.isPremium);
 
   return (
     <div className="w-64 bg-cyber-black border-r border-cyber-purple/30 flex-shrink-0 h-full overflow-y-auto hidden md:block">
       <div className="p-4">
+        {/* Connection Status Panel */}
         <div className="mb-6 bg-cyber-darkblue/80 rounded-md p-3 border border-cyber-blue/20 backdrop-blur-sm">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-gray-400 font-tech">CONNECTION STATUS</span>
@@ -128,21 +87,36 @@ const Sidebar: React.FC = () => {
           </div>
         </div>
         
+        {/* Main Navigation */}
         <div className="space-y-1 mb-6">
-          {navItems.map((item, index) => (
-            <SidebarItem key={index} icon={item.icon} label={item.label} to={item.path} isPremium={item.isPremium} />
+          {regularItems.map((item, index) => (
+            <SidebarItem 
+              key={index}
+              icon={item.icon} 
+              label={item.label} 
+              to={item.path}
+              isPremium={item.isPremium} 
+            />
           ))}
         </div>
         
+        {/* Premium Features Section */}
         <div className="mb-6">
           <div className="text-xs text-gray-400 font-tech mb-2 px-4">PREMIUM FEATURES</div>
           <div className="space-y-1">
-            <SidebarItem icon={Brain} label="Advanced Optimizer" to="/advanced-optimizer" isPremium />
-            <SidebarItem icon={Zap} label="Power Manager" to="/power-manager" isPremium />
-            <SidebarItem icon={Lock} label="VPN Integration" to="/vpn-integration" isPremium />
+            {premiumItems.map((item, index) => (
+              <SidebarItem 
+                key={index}
+                icon={item.icon} 
+                label={item.label} 
+                to={item.path}
+                isPremium={item.isPremium} 
+              />
+            ))}
           </div>
         </div>
         
+        {/* Upgrade CTA */}
         <div className="p-4 bg-gradient-to-r from-cyber-purple/20 to-cyber-blue/20 rounded-md border border-cyber-purple/30 relative overflow-hidden">
           <div className="mb-2 font-tech font-semibold text-cyber-blue">Upgrade to Pro</div>
           <p className="text-xs text-gray-300 mb-3">Get access to premium features and advanced optimizations</p>
