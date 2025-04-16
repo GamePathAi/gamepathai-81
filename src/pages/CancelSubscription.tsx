@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
@@ -369,12 +370,12 @@ const CancelSubscription = () => {
                         Special Offer
                         {isDiscountOffer(getCurrentOffer().primary) && (
                           <Badge variant="outline" className="ml-2 bg-cyber-blue/20 text-cyber-blue">
-                            {getCurrentOffer().primary.discount}% OFF
+                            {isDiscountOffer(getCurrentOffer().primary) ? getCurrentOffer().primary.discount : ''}% OFF
                           </Badge>
                         )}
                       </h3>
                       <p className="text-sm text-gray-400">
-                        {mockSubscription.plan} for {isDiscountOffer(getCurrentOffer().primary) && getCurrentOffer().primary.duration}
+                        {mockSubscription.plan} for {isDiscountOffer(getCurrentOffer().primary) ? getCurrentOffer().primary.duration : ''}
                       </p>
                     </div>
                     <div className="text-right">
@@ -400,7 +401,7 @@ const CancelSubscription = () => {
                     <div className="text-right">
                       {isPriceBasedOffer(getCurrentOffer().secondary) ? (
                         <p className="font-medium text-cyber-purple">
-                          ${getCurrentOffer().secondary.price}/month
+                          ${isPriceBasedOffer(getCurrentOffer().secondary) ? getCurrentOffer().secondary.price : ''}/month
                         </p>
                       ) : (
                         <Badge variant="outline" className="bg-cyber-purple/20 text-cyber-purple">
@@ -432,7 +433,7 @@ const CancelSubscription = () => {
               >
                 <CheckCircle className="h-4 w-4 mr-2" />
                 {!secondaryOfferShown && isDiscountOffer(getCurrentOffer().primary)
-                  ? `Apply ${getCurrentOffer().primary.discount}% Discount`
+                  ? `Apply ${isDiscountOffer(getCurrentOffer().primary) ? getCurrentOffer().primary.discount : ''}% Discount`
                   : `Accept ${getCurrentOffer().secondary.title}`
                 }
               </Button>
