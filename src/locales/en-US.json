@@ -1,0 +1,11 @@
+
+{
+  "header": {
+    "appName": "GamePath AI",
+    "features": "Features",
+    "technology": "Technology", 
+    "pricing": "Pricing",
+    "login": "Login",
+    "getStarted": "Get Started"
+  }
+}

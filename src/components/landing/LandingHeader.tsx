@@ -1,11 +1,13 @@
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import GamePathLogo from "@/components/GamePathLogo";
 import { Menu, X } from "lucide-react";
+import { LanguageSelector } from "../LanguageSelector";
+import { useTranslation } from "react-i18next";
 
 const LandingHeader: React.FC = () => {
+  const { t } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -19,9 +21,9 @@ const LandingHeader: React.FC = () => {
   }, []);
 
   const navLinks = [
-    { name: "Features", path: "/features" },
-    { name: "Technology", path: "/technology" },
-    { name: "Pricing", path: "/pricing" }
+    { name: t('header.features'), path: "/features" },
+    { name: t('header.technology'), path: "/technology" },
+    { name: t('header.pricing'), path: "/pricing" }
   ];
 
   return (
@@ -34,7 +36,7 @@ const LandingHeader: React.FC = () => {
           <Link to="/" className="flex items-center space-x-2">
             <GamePathLogo size={32} className="text-cyber-blue" />
             <span className="text-xl font-tech font-bold bg-gradient-to-r from-cyber-blue via-cyber-purple to-cyber-pink text-transparent bg-clip-text">
-              GamePath AI
+              {t('header.appName')}
             </span>
           </Link>
 
@@ -51,16 +53,17 @@ const LandingHeader: React.FC = () => {
             ))}
           </nav>
 
-          {/* CTA Buttons */}
+          {/* Language Selector and CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
+            <LanguageSelector />
             <Button variant="cyberOutline" size="sm" asChild>
-              <Link to="/dashboard">Login</Link>
+              <Link to="/dashboard">{t('header.login')}</Link>
             </Button>
             <Button variant="cyberAction" size="sm" asChild>
-              <Link to="/pricing">Get Started</Link>
+              <Link to="/pricing">{t('header.getStarted')}</Link>
             </Button>
           </div>
-
+          
           {/* Mobile Menu Button */}
           <button 
             className="md:hidden text-white hover:text-cyber-blue"
@@ -87,10 +90,10 @@ const LandingHeader: React.FC = () => {
             ))}
             <div className="flex flex-col space-y-3 pt-2">
               <Button variant="cyberOutline" size="sm" asChild>
-                <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>Login</Link>
+                <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>{t('header.login')}</Link>
               </Button>
               <Button variant="cyberAction" size="sm" asChild>
-                <Link to="/pricing" onClick={() => setMobileMenuOpen(false)}>Get Started</Link>
+                <Link to="/pricing" onClick={() => setMobileMenuOpen(false)}>{t('header.getStarted')}</Link>
               </Button>
             </div>
           </div>
