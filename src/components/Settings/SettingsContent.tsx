@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Cog, Save, RotateCcw, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import SecuritySettings from "./Tabs/SecuritySettings";
 import AdvancedSettings from "./Tabs/AdvancedSettings";
 import InGameOverlaySettings from "./Tabs/InGameOverlaySettings";
 import ScreenRecordingSettings from "./Tabs/ScreenRecordingSettings";
+import SubscriptionSettings from "./Tabs/SubscriptionSettings";
 import { toast } from "sonner";
 import { 
   AlertDialog,
@@ -74,6 +76,8 @@ const SettingsContent: React.FC = () => {
         return <InterfaceSettings {...settingsChangeProps} />;
       case "security":
         return <SecuritySettings {...settingsChangeProps} />;
+      case "subscription":
+        return <SubscriptionSettings {...settingsChangeProps} />;
       case "advanced":
         return <AdvancedSettings {...settingsChangeProps} />;
       default:
