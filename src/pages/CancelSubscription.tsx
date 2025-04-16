@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
@@ -45,8 +44,43 @@ const cancelReasons = [
   { id: "other", label: "Other reason" }
 ];
 
+// Define precise types for retention offers
+interface PriceBasedOffer {
+  title: string;
+  description: string;
+  price: number;
+}
+
+interface DiscountOffer {
+  title: string;
+  description: string;
+  discount: number;
+  duration: string;
+}
+
+interface PauseOffer {
+  title: string;
+  description: string;
+  duration: string;
+}
+
+type OfferType = PriceBasedOffer | DiscountOffer | PauseOffer;
+
+// Type guards for specific offer types
+const isPriceBasedOffer = (offer: OfferType): offer is PriceBasedOffer => {
+  return 'price' in offer;
+};
+
+const isDiscountOffer = (offer: OfferType): offer is DiscountOffer => {
+  return 'discount' in offer && 'duration' in offer;
+};
+
+const isPauseOffer = (offer: OfferType): offer is PauseOffer => {
+  return 'duration' in offer && !('discount' in offer) && !('price' in offer);
+};
+
 // Retention offers based on cancel reason
-const retentionOffers = {
+const retentionOffers: Record<string, { primary: OfferType; secondary: OfferType }> = {
   too_expensive: {
     primary: {
       title: "20% Off for 3 Months",
@@ -213,7 +247,7 @@ const CancelSubscription = () => {
         </div>
 
         <div className="md:hidden mb-6">
-          <Progress value={(step / 4) * 100} className="h-2 bg-gray-700" indicatorClassName="bg-cyber-blue" />
+          <Progress value={(step / 4) * 100} className="h-2 bg-gray-700" />
           <div className="flex justify-between text-xs text-gray-400 mt-1">
             <span>Reason</span>
             <span>Options</span>
@@ -333,18 +367,22 @@ const CancelSubscription = () => {
                     <div>
                       <h3 className="font-medium flex items-center">
                         Special Offer
-                        <Badge variant="cyber" className="ml-2">
-                          {getCurrentOffer().primary.discount}% OFF
-                        </Badge>
+                        {isDiscountOffer(getCurrentOffer().primary) && (
+                          <Badge variant="outline" className="ml-2 bg-cyber-blue/20 text-cyber-blue">
+                            {getCurrentOffer().primary.discount}% OFF
+                          </Badge>
+                        )}
                       </h3>
                       <p className="text-sm text-gray-400">
-                        {mockSubscription.plan} for {getCurrentOffer().primary.duration}
+                        {mockSubscription.plan} for {isDiscountOffer(getCurrentOffer().primary) && getCurrentOffer().primary.duration}
                       </p>
                     </div>
                     <div className="text-right">
                       <p className="font-medium line-through text-gray-500">${mockSubscription.price}/month</p>
                       <p className="font-medium text-cyber-blue">
-                        ${(mockSubscription.price * (1 - getCurrentOffer().primary.discount / 100)).toFixed(2)}/month
+                        ${isDiscountOffer(getCurrentOffer().primary) ? 
+                          (mockSubscription.price * (1 - getCurrentOffer().primary.discount / 100)).toFixed(2) : 
+                          mockSubscription.price}/month
                       </p>
                     </div>
                   </div>
@@ -353,20 +391,20 @@ const CancelSubscription = () => {
                     <div>
                       <h3 className="font-medium">{getCurrentOffer().secondary.title}</h3>
                       <p className="text-sm text-gray-400">
-                        {getCurrentOffer().secondary.price 
+                        {isPriceBasedOffer(getCurrentOffer().secondary) 
                           ? `${mockSubscription.interval}ly billing` 
-                          : `Pause for ${getCurrentOffer().secondary.duration}`
+                          : `Pause for ${isPauseOffer(getCurrentOffer().secondary) ? getCurrentOffer().secondary.duration : ""}`
                         }
                       </p>
                     </div>
                     <div className="text-right">
-                      {getCurrentOffer().secondary.price ? (
+                      {isPriceBasedOffer(getCurrentOffer().secondary) ? (
                         <p className="font-medium text-cyber-purple">
                           ${getCurrentOffer().secondary.price}/month
                         </p>
                       ) : (
-                        <Badge variant="cyber" className="bg-cyber-purple/20 text-cyber-purple">
-                          No charge for {getCurrentOffer().secondary.duration}
+                        <Badge variant="outline" className="bg-cyber-purple/20 text-cyber-purple">
+                          No charge for {isPauseOffer(getCurrentOffer().secondary) ? getCurrentOffer().secondary.duration : ""}
                         </Badge>
                       )}
                     </div>
@@ -393,7 +431,7 @@ const CancelSubscription = () => {
                 onClick={() => handleOfferResponse(true)}
               >
                 <CheckCircle className="h-4 w-4 mr-2" />
-                {!secondaryOfferShown 
+                {!secondaryOfferShown && isDiscountOffer(getCurrentOffer().primary)
                   ? `Apply ${getCurrentOffer().primary.discount}% Discount`
                   : `Accept ${getCurrentOffer().secondary.title}`
                 }

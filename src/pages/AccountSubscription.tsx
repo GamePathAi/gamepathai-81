@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
@@ -46,7 +45,23 @@ const mockSubscriptionData = {
   ]
 };
 
-const addOnsInfo = {
+// Define more precise types for add-ons
+interface BaseAddOn {
+  name: string;
+  description: string;
+  monthlyPrice: number;
+}
+
+interface IncludedAddOn extends BaseAddOn {
+  included: string[];
+}
+
+// Type guard to check if an add-on has the 'included' property
+const hasIncludedPlans = (addon: BaseAddOn | IncludedAddOn): addon is IncludedAddOn => {
+  return 'included' in addon;
+};
+
+const addOnsInfo: Record<string, BaseAddOn | IncludedAddOn> = {
   advanced_optimizer: {
     name: "Advanced Optimizer",
     description: "Advanced optimization algorithms for maximum performance",
@@ -227,7 +242,10 @@ const AccountSubscription = () => {
                             {subscription.addOns.length > 0 ? (
                               <div className="flex flex-wrap gap-2 justify-end">
                                 {subscription.addOns.map(addon => {
-                                  const isIncluded = addOnsInfo[addon as keyof typeof addOnsInfo]?.included?.includes(subscription.plan.toLowerCase());
+                                  const addonInfo = addOnsInfo[addon];
+                                  const isIncluded = hasIncludedPlans(addonInfo) && 
+                                    addonInfo.included.includes(subscription.plan.toLowerCase());
+                                  
                                   return (
                                     <Badge 
                                       key={addon} 
@@ -237,7 +255,7 @@ const AccountSubscription = () => {
                                         : 'bg-cyber-purple/20 text-cyber-purple'
                                       }
                                     >
-                                      {addOnsInfo[addon as keyof typeof addOnsInfo]?.name} {isIncluded && '(Included)'}
+                                      {addonInfo.name} {isIncluded && '(Included)'}
                                     </Badge>
                                   );
                                 })}
