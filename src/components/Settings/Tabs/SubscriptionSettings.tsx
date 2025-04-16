@@ -27,7 +27,7 @@ interface SubscriptionSettingsProps {
   onChange: () => void;
 }
 
-// Interfaces para o sistema de assinatura
+// Subscription system interfaces
 interface UserTier {
   id: string;
   name: string;
@@ -52,7 +52,7 @@ interface AddOn {
   icon: React.ElementType;
 }
 
-// Formulário de configuração de assinatura
+// Subscription form interface
 interface SubscriptionForm {
   userTier: string;
   duration: string;
@@ -60,52 +60,52 @@ interface SubscriptionForm {
 }
 
 const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange }) => {
-  // Dados para as opções de assinatura
+  // Subscription option data
   const userTiers: UserTier[] = [
     {
       id: "player",
       name: "Player",
       userCount: 1,
       priceMultiplier: 1,
-      description: "Ideal para jogadores individuais"
+      description: "Ideal for individual gamers"
     },
     {
       id: "coop",
       name: "Co-op",
       userCount: 2,
       priceMultiplier: 1.8,
-      description: "Perfeito para você e um amigo"
+      description: "Perfect for you and a friend"
     },
     {
       id: "alliance",
       name: "Alliance",
       userCount: 5,
       priceMultiplier: 4,
-      description: "Para times e grupos de jogadores"
+      description: "For teams and player groups"
     }
   ];
 
   const durations: SubscriptionDuration[] = [
     {
       id: "monthly",
-      name: "Mensal",
+      name: "Monthly",
       months: 1,
       discount: 0,
-      label: "Cobrança mensal"
+      label: "Monthly billing"
     },
     {
       id: "quarterly",
-      name: "Trimestral",
+      name: "Quarterly",
       months: 3,
       discount: 0.17,
-      label: "17% de desconto"
+      label: "17% discount"
     },
     {
       id: "yearly",
-      name: "Anual",
+      name: "Annual",
       months: 12,
       discount: 0.37,
-      label: "37% de desconto"
+      label: "37% discount"
     }
   ];
 
@@ -113,27 +113,27 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
     {
       id: "advanced_optimizer",
       name: "Advanced Optimizer",
-      description: "Algoritmos avançados de otimização para máximo desempenho",
+      description: "Advanced optimization algorithms for maximum performance",
       monthlyPrice: 2.99,
       icon: Cpu
     },
     {
       id: "power_manager",
       name: "Power Manager",
-      description: "Controle avançado de energia e temperatura",
+      description: "Advanced power and temperature control",
       monthlyPrice: 1.99,
       icon: Power
     },
     {
       id: "vpn_integration",
       name: "VPN Integration",
-      description: "Proteção e roteamento avançado para conexões seguras",
+      description: "Advanced protection and routing for secure connections",
       monthlyPrice: 3.99,
       icon: Shield
     }
   ];
 
-  // Estado para o plano atual do usuário (simulado)
+  // User's current plan state (simulated)
   const [currentPlan, setCurrentPlan] = useState({
     userTier: "player",
     duration: "monthly",
@@ -142,7 +142,7 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
     nextBilling: new Date(2025, 4, 25)
   });
 
-  // Configuração do formulário
+  // Form configuration
   const form = useForm<SubscriptionForm>({
     defaultValues: {
       userTier: "player",
@@ -155,31 +155,31 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
   const [selectedDuration, setSelectedDuration] = useState("monthly");
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
   
-  // Simulação de preços regionais (na prática viria de uma API)
-  const basePrice = 9.99; // Preço base mensal para Player
+  // Regional pricing simulation (would come from an API in practice)
+  const basePrice = 9.99; // Base monthly price for Player
   
-  // Cálculo do preço baseado nas seleções
+  // Price calculation based on selections
   const calculatePrice = (tierId: string, durationId: string) => {
     const tier = userTiers.find(t => t.id === tierId);
     const duration = durations.find(d => d.id === durationId);
     
     if (!tier || !duration) return 0;
     
-    // Preço base multiplicado pelo tipo de usuário
+    // Base price multiplied by user tier type
     let price = basePrice * tier.priceMultiplier;
     
-    // Aplicar desconto por duração
+    // Apply duration discount
     price = price * (1 - duration.discount);
     
     return price;
   };
   
-  // Cálculo do preço total (plano base + add-ons)
+  // Calculate total price (base plan + add-ons)
   const calculateTotalPrice = (tierId: string, durationId: string, addOnIds: string[]) => {
     let basePrice = calculatePrice(tierId, durationId);
     const duration = durations.find(d => d.id === durationId);
     
-    // Adicionar preço dos add-ons
+    // Add price of selected add-ons
     const addOnsCost = addOnIds.reduce((total, id) => {
       const addOn = addOns.find(a => a.id === id);
       if (!addOn) return total;
@@ -216,66 +216,66 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
   };
   
   const handleUpgrade = () => {
-    // Aqui você implementaria o redirecionamento para o checkout do Stripe
-    toast.info(`Processando atualização da assinatura`, {
-      description: "Redirecionando para o checkout..."
+    // Here you would implement redirection to Stripe checkout
+    toast.info(`Processing subscription update`, {
+      description: "Redirecting to checkout..."
     });
     onChange();
   };
   
   const handleManageSubscription = () => {
-    toast.info("Abrindo gerenciamento de assinatura", {
-      description: "Isso redirecionaria para o Portal do Cliente Stripe em produção."
+    toast.info("Opening subscription management", {
+      description: "This would redirect to Stripe Customer Portal in production."
     });
     onChange();
   };
   
-  // Determinar se é uma atualização ou nova assinatura
+  // Determine if this is an upgrade or new subscription
   const isUpgrade = currentPlan.active;
   
-  // Calcular preços para exibição
+  // Calculate prices for display
   const prices = calculateTotalPrice(selectedUserTier, selectedDuration, selectedAddOns);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center">
         <CreditCard className="mr-2 h-5 w-5 text-cyber-blue" />
-        <h3 className="text-lg font-medium">Assinatura GamePath AI</h3>
+        <h3 className="text-lg font-medium">GamePath AI Subscription</h3>
       </div>
       
-      {/* Status da assinatura atual */}
+      {/* Current subscription status */}
       {currentPlan.active && (
         <Card className="border-cyber-blue">
           <CardHeader className="bg-cyber-blue/10 border-b border-cyber-blue/30">
             <CardTitle className="text-xl flex items-center">
               <Users className="h-5 w-5 mr-2" />
-              Seu Plano Atual
+              Your Current Plan
             </CardTitle>
             <CardDescription className="text-white">
-              Sua assinatura está ativa e funcionando com todos os recursos contratados.
+              Your subscription is active and working with all purchased features.
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="flex flex-col space-y-1">
-                <span className="text-sm text-gray-400">Plano</span>
+                <span className="text-sm text-gray-400">Plan</span>
                 <span className="text-lg font-medium text-white">
                   {userTiers.find(t => t.id === currentPlan.userTier)?.name || "Player"}
                 </span>
                 <span className="text-xs text-gray-400">
-                  {userTiers.find(t => t.id === currentPlan.userTier)?.userCount || 1} {userTiers.find(t => t.id === currentPlan.userTier)?.userCount === 1 ? 'usuário' : 'usuários'}
+                  {userTiers.find(t => t.id === currentPlan.userTier)?.userCount || 1} {userTiers.find(t => t.id === currentPlan.userTier)?.userCount === 1 ? 'user' : 'users'}
                 </span>
               </div>
               
               <div className="flex flex-col space-y-1">
-                <span className="text-sm text-gray-400">Duração</span>
+                <span className="text-sm text-gray-400">Duration</span>
                 <span className="text-lg font-medium text-white">
-                  {durations.find(d => d.id === currentPlan.duration)?.name || "Mensal"}
+                  {durations.find(d => d.id === currentPlan.duration)?.name || "Monthly"}
                 </span>
               </div>
               
               <div className="flex flex-col space-y-1">
-                <span className="text-sm text-gray-400">Próxima cobrança</span>
+                <span className="text-sm text-gray-400">Next billing</span>
                 <span className="text-lg font-medium text-white">
                   {currentPlan.nextBilling.toLocaleDateString()}
                 </span>
@@ -285,12 +285,12 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
             <div className="mt-4 border-t border-gray-800 pt-4">
               <div className="flex items-center mb-3">
                 <Globe className="h-4 w-4 mr-2 text-cyber-green" />
-                <h4 className="text-sm font-medium text-cyber-green">Acesso total a todas as regiões geográficas</h4>
+                <h4 className="text-sm font-medium text-cyber-green">Full access to all geographic regions</h4>
               </div>
             </div>
             
             <div className="mt-4">
-              <h4 className="text-sm font-medium text-gray-400 mb-2">Add-ons ativos</h4>
+              <h4 className="text-sm font-medium text-gray-400 mb-2">Active add-ons</h4>
               <div className="flex flex-wrap gap-2">
                 {currentPlan.addOns.length > 0 ? (
                   currentPlan.addOns.map(id => {
@@ -307,7 +307,7 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                     );
                   })
                 ) : (
-                  <span className="text-sm text-gray-400">Nenhum add-on ativo</span>
+                  <span className="text-sm text-gray-400">No active add-ons</span>
                 )}
               </div>
             </div>
@@ -319,33 +319,33 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
               onClick={handleManageSubscription}
             >
               <CreditCard className="mr-2 h-4 w-4" />
-              Gerenciar Meio de Pagamento
+              Manage Payment Method
             </Button>
             
             <Button 
               variant="cyberOutline" 
               onClick={handleManageSubscription}
             >
-              Gerenciar Assinatura
+              Manage Subscription
             </Button>
           </CardFooter>
         </Card>
       )}
       
-      {/* Seletor de novo plano */}
+      {/* New plan selector */}
       <div className="mt-8">
-        <h4 className="text-lg mb-6">Personalizar sua assinatura</h4>
+        <h4 className="text-lg mb-6">Customize your subscription</h4>
         
         <div className="space-y-8">
-          {/* Seleção de tipo de usuário */}
+          {/* User type selection */}
           <div>
             <h5 className="text-md font-medium mb-3 flex items-center">
               <Users className="h-4 w-4 mr-2 text-cyber-blue" />
-              Selecione seu tipo de usuário
+              Select your user type
             </h5>
             
             <div className="text-sm text-gray-400 mb-3">
-              Todos os planos incluem acesso completo a todas as regiões geográficas. A diferença está apenas no número de usuários que podem usar a conta simultaneamente.
+              All plans include full access to all geographic regions. The difference is only in the number of users who can use the account simultaneously.
             </div>
             
             <RadioGroup 
@@ -382,12 +382,12 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                       <div className="flex items-center">
                         <h3 className="font-medium text-white">{tier.name}</h3>
                         <Badge variant="cyber" className="ml-2 py-0">
-                          {tier.userCount} {tier.userCount === 1 ? 'usuário' : 'usuários'}
+                          {tier.userCount} {tier.userCount === 1 ? 'user' : 'users'}
                         </Badge>
                       </div>
                       <p className="text-sm text-gray-400 mt-1">{tier.description}</p>
                       <div className="mt-2 font-medium text-cyber-blue">
-                        ${(basePrice * tier.priceMultiplier).toFixed(2)}/mês
+                        ${(basePrice * tier.priceMultiplier).toFixed(2)}/month
                       </div>
                     </div>
                   </label>
@@ -396,11 +396,11 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
             </RadioGroup>
           </div>
           
-          {/* Seleção de duração */}
+          {/* Duration selection */}
           <div>
             <h5 className="text-md font-medium mb-3 flex items-center">
               <CalendarDays className="h-4 w-4 mr-2 text-cyber-blue" />
-              Selecione a duração da assinatura
+              Select subscription duration
             </h5>
             
             <RadioGroup 
@@ -441,16 +441,16 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                       <div>
                         <h3 className="font-medium text-white">{duration.name}</h3>
                         <p className="text-sm text-gray-400 mt-1">
-                          {duration.months} {duration.months === 1 ? 'mês' : 'meses'}
+                          {duration.months} {duration.months === 1 ? 'month' : 'months'}
                         </p>
                         <div className="mt-2">
                           {showDiscount && (
                             <span className="text-xs line-through text-gray-400 mr-2">
-                              ${originalPrice.toFixed(2)}/mês
+                              ${originalPrice.toFixed(2)}/month
                             </span>
                           )}
                           <span className="font-medium text-cyber-blue">
-                            ${price.toFixed(2)}/mês
+                            ${price.toFixed(2)}/month
                           </span>
                           {showDiscount && (
                             <Badge variant="cyberGreen" className="ml-2 py-0">
@@ -466,15 +466,15 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
             </RadioGroup>
           </div>
           
-          {/* Seleção de add-ons */}
+          {/* Add-ons selection */}
           <div>
             <h5 className="text-md font-medium mb-3 flex items-center">
               <Zap className="h-4 w-4 mr-2 text-cyber-blue" />
-              Adicione recursos premium (opcional)
+              Add premium features (optional)
             </h5>
             
             <div className="text-sm text-gray-400 mb-3">
-              Selecione quaisquer add-ons que você deseja adicionar ao seu plano. Você pode escolher qualquer combinação ou nenhum.
+              Select any add-ons you would like to add to your plan. You can choose any combination or none at all.
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -518,9 +518,9 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                     
                     <div className="mt-2 font-medium">
                       {isCurrentlyActive ? (
-                        <span className="text-cyber-green">Ativo</span>
+                        <span className="text-cyber-green">Active</span>
                       ) : (
-                        <span className="text-cyber-purple">+${addon.monthlyPrice.toFixed(2)}/mês</span>
+                        <span className="text-cyber-purple">+${addon.monthlyPrice.toFixed(2)}/month</span>
                       )}
                     </div>
                   </div>
@@ -529,30 +529,31 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
             </div>
           </div>
           
-          {/* Resumo e checkout */}
+          {/* Subscription summary and checkout */}
           <div>
             <Card className="border-cyber-blue/30 bg-cyber-blue/5">
               <CardHeader>
-                <CardTitle>Resumo da assinatura</CardTitle>
+                <CardTitle>Subscription Summary</CardTitle>
                 <CardDescription>
-                  Todos os planos incluem acesso a todas as regiões geográficas
+                  All plans include access to all geographic regions
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex justify-between items-center pb-2 border-b border-gray-800">
                   <div>
                     <p className="text-sm text-gray-300">
-                      Plano {userTiers.find(t => t.id === selectedUserTier)?.name} ({userTiers.find(t => t.id === selectedUserTier)?.userCount} {userTiers.find(t => t.id === selectedUserTier)?.userCount === 1 ? 'usuário' : 'usuários'})
+                      {userTiers.find(t => t.id === selectedUserTier)?.name} Plan ({userTiers.find(t => t.id === selectedUserTier)?.userCount} {userTiers.find(t => t.id === selectedUserTier)?.userCount === 1 ? 'user' : 'users'})
                     </p>
                     <p className="text-xs text-gray-400">{durations.find(d => d.id === selectedDuration)?.name}</p>
                   </div>
                   <span className="font-medium">
-                    {formatPrice(prices.baseMonthly)}/mês
+                    {formatPrice(prices.baseMonthly)}/month
                   </span>
                 </div>
                 
                 {selectedAddOns.length > 0 && (
                   <div className="space-y-2 pb-2 border-b border-gray-800">
+                    <div className="text-sm text-gray-300 pb-1">Add-ons:</div>
                     {selectedAddOns.map(id => {
                       const addon = addOns.find(a => a.id === id);
                       if (!addon) return null;
@@ -560,7 +561,7 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                       return (
                         <div key={id} className="flex justify-between items-center text-sm">
                           <span>{addon.name}</span>
-                          <span>+{formatPrice(addon.monthlyPrice)}/mês</span>
+                          <span>+{formatPrice(addon.monthlyPrice)}/month</span>
                         </div>
                       );
                     })}
@@ -572,8 +573,8 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                     <p className="font-medium">Total</p>
                     <p className="text-xs text-gray-400">
                       {durations.find(d => d.id === selectedDuration)?.months === 1
-                        ? "Cobrança mensal"
-                        : `Cobrança a cada ${durations.find(d => d.id === selectedDuration)?.months} meses`
+                        ? "Monthly billing"
+                        : `Billed every ${durations.find(d => d.id === selectedDuration)?.months} months`
                       }
                     </p>
                   </div>
@@ -583,7 +584,7 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                     </div>
                     {durations.find(d => d.id === selectedDuration)?.months !== 1 && (
                       <div className="text-xs text-gray-400">
-                        ({formatPrice(prices.totalMonthly)}/mês)
+                        ({formatPrice(prices.totalMonthly)}/month)
                       </div>
                     )}
                   </div>
@@ -596,7 +597,7 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                   onClick={handleUpgrade}
                 >
                   <Zap className="mr-2 h-4 w-4" />
-                  {isUpgrade ? "Atualizar Assinatura" : "Iniciar Assinatura"}
+                  {isUpgrade ? "Update Subscription" : "Start Subscription"}
                 </Button>
               </CardFooter>
             </Card>
@@ -605,7 +606,7 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
       </div>
       
       <div className="mt-8 pt-6 border-t border-gray-800">
-        <h4 className="text-lg mb-4">Informações de pagamento</h4>
+        <h4 className="text-lg mb-4">Payment Information</h4>
         
         <div className="space-y-4">
           <div className="bg-cyber-darkblue/50 border border-cyber-blue/20 rounded-lg p-4">
@@ -614,9 +615,9 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                 <Globe className="h-5 w-5 text-cyber-blue" />
               </div>
               <div>
-                <h5 className="font-medium text-sm">Acesso Global</h5>
+                <h5 className="font-medium text-sm">Global Access</h5>
                 <p className="text-sm text-gray-400 mt-1">
-                  Todos os planos pagos incluem acesso a todas as regiões geográficas sem restrições.
+                  All paid plans include access to all geographic regions without restrictions.
                 </p>
               </div>
             </div>
@@ -628,16 +629,16 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                 <CreditCard className="h-5 w-5 text-cyber-blue" />
               </div>
               <div>
-                <h5 className="font-medium text-sm">Pagamento Seguro</h5>
+                <h5 className="font-medium text-sm">Secure Payment</h5>
                 <p className="text-sm text-gray-400 mt-1">
-                  Utilizamos o Stripe para processar pagamentos com segurança. Seus dados de cartão nunca são armazenados em nossos servidores.
+                  We use Stripe to securely process payments. Your card details are never stored on our servers.
                 </p>
                 <Button 
                   variant="link" 
                   className="text-cyber-blue p-0 h-auto mt-2 flex items-center"
                   onClick={handleManageSubscription}
                 >
-                  Gerenciar Métodos de Pagamento <ExternalLink className="ml-1 h-3 w-3" />
+                  Manage Payment Methods <ExternalLink className="ml-1 h-3 w-3" />
                 </Button>
               </div>
             </div>
@@ -649,17 +650,17 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                 <AlertTriangle className="h-5 w-5" />
               </div>
               <div>
-                <h5 className="font-medium text-sm text-cyber-red">Cancelamento da Assinatura</h5>
+                <h5 className="font-medium text-sm text-cyber-red">Subscription Cancellation</h5>
                 <p className="text-sm text-gray-400 mt-1">
-                  Você pode cancelar sua assinatura a qualquer momento através do Portal do Cliente Stripe.
-                  Seu acesso continuará até o final do período de cobrança atual.
+                  You can cancel your subscription anytime through the Stripe Customer Portal.
+                  Your access will continue until the end of the current billing period.
                 </p>
                 <Button 
                   variant="link" 
                   className="text-cyber-red p-0 h-auto mt-2"
                   onClick={handleManageSubscription}
                 >
-                  Gerenciar Assinatura
+                  Manage Subscription
                 </Button>
               </div>
             </div>
