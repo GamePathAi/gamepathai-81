@@ -18,6 +18,11 @@ import Settings from "./pages/Settings";
 import SubscriptionManagement from "./pages/SubscriptionManagement";
 import AccountSubscription from "./pages/AccountSubscription";
 import { NotificationProvider } from "./hooks/use-notifications";
+import Account from "./pages/Account";
+import PaymentMethods from "./pages/PaymentMethods";
+import BillingHistory from "./pages/BillingHistory";
+import ChangePlan from "./pages/ChangePlan";
+import CancelSubscription from "./pages/CancelSubscription";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +46,14 @@ const App = () => (
               <Route path="/settings" element={<Settings />} />
               <Route path="/subscription" element={<SubscriptionManagement />} />
               <Route path="/account/subscription" element={<AccountSubscription />} />
+              
+              {/* New Account Related Routes */}
+              <Route path="/account" element={<Account />} />
+              <Route path="/account/payment-methods" element={<PaymentMethods />} />
+              <Route path="/account/billing-history" element={<BillingHistory />} />
+              <Route path="/account/change-plan" element={<ChangePlan />} />
+              <Route path="/account/cancel-subscription" element={<CancelSubscription />} />
+              
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
