@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
@@ -435,7 +434,7 @@ const AccountSubscription = () => {
                                     <p className="text-xs text-gray-400 mb-3">Advanced protection and routing for secure connections</p>
                                   </div>
                                   {subscription.plan === "Co-op" || subscription.plan === "Alliance" ? (
-                                    <Badge variant="cyberBlue" className="px-2 py-0.5">Included</Badge>
+                                    <Badge variant="cyber" className="px-2 py-0.5">Included</Badge>
                                   ) : null}
                                 </div>
                                 {subscription.plan === "Co-op" || subscription.plan === "Alliance" ? (

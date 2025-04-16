@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
@@ -306,26 +305,28 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
             
             <div className="mt-4">
               <h4 className="text-sm font-medium text-gray-400 mb-2">Active add-ons</h4>
-              <div className="flex flex-wrap gap-2">
-                {currentPlan.addOns.length > 0 ? (
-                  currentPlan.addOns.map(id => {
-                    const addon = addOns.find(a => a.id === id);
-                    if (!addon) return null;
-                    
-                    const AddonIcon = addon.icon;
-                    const isIncluded = addon.includedIn?.includes(currentPlan.userTier);
-                    
-                    return (
-                      <Badge key={id} variant="cyber" className={`py-1 ${isIncluded ? 'bg-cyber-blue/20 text-cyber-blue' : ''}`}>
-                        <AddonIcon className="h-3 w-3 mr-1" /> 
-                        {addon.name} {isIncluded && '(Included)'}
-                      </Badge>
-                    );
-                  })
-                ) : (
-                  <span className="text-sm text-gray-400">No active add-ons</span>
-                )}
-              </div>
+              {subscription.addOns.length > 0 ? (
+                subscription.addOns.map(id => {
+                  const addon = addOns.find(a => a.id === id);
+                  if (!addon) return null;
+                  
+                  const AddonIcon = addon.icon;
+                  const isIncluded = addon.includedIn?.includes(currentPlan.userTier);
+                  
+                  return (
+                    <Badge 
+                      key={id} 
+                      variant={isIncluded ? "cyber" : "default"} 
+                      className={`py-1 ${isIncluded ? 'bg-cyber-blue/20 text-cyber-blue' : ''}`}
+                    >
+                      <AddonIcon className="h-3 w-3 mr-1" /> 
+                      {addon.name} {isIncluded && '(Included)'}
+                    </Badge>
+                  );
+                })
+              ) : (
+                <span className="text-sm text-gray-400">No active add-ons</span>
+              )}
             </div>
           </CardContent>
           <CardFooter className="border-t border-gray-800 pt-4 flex justify-between">
@@ -509,7 +510,7 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                           </div>
                           <h3 className="font-medium">{addon.name}</h3>
                         </div>
-                        <Badge variant="cyberBlue" className="px-2 py-0.5">Included</Badge>
+                        <Badge variant="cyber" className="px-2 py-0.5">Included</Badge>
                       </div>
                       
                       <p className="text-sm text-gray-400">{addon.description}</p>
