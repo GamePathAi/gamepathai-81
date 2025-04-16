@@ -16,6 +16,7 @@ import VPNIntegration from "./pages/VPNIntegration";
 import PowerManager from "./pages/PowerManager";
 import Settings from "./pages/Settings";
 import SubscriptionManagement from "./pages/SubscriptionManagement";
+import AccountSubscription from "./pages/AccountSubscription";
 import { NotificationProvider } from "./hooks/use-notifications";
 
 const queryClient = new QueryClient();
@@ -39,6 +40,7 @@ const App = () => (
               <Route path="/power-manager" element={<PowerManager />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/subscription" element={<SubscriptionManagement />} />
+              <Route path="/account/subscription" element={<AccountSubscription />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

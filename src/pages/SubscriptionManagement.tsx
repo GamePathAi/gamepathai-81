@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Button } from "@/components/ui/button";
 import { CalendarDays, CreditCard, AlertTriangle, CheckCircle, ArrowLeft, Shield } from "lucide-react";
 import { toast } from "sonner";
+import { Helmet } from "react-helmet-async";
 import SubscriptionCancelDialog from "@/components/Subscription/SubscriptionCancelDialog";
 
 // Mock data for demonstration - would be replaced with actual API calls
@@ -16,7 +17,24 @@ const mockSubscriptionData = {
   interval: "month",
   nextBilling: new Date(2025, 4, 25),
   status: "active",
-  addOns: ["VPN Integration"]
+  addOns: ["vpn_integration"]
+};
+
+// Add-ons information including which plans they're included in
+const addOnsInfo = {
+  advanced_optimizer: {
+    name: "Advanced Optimizer",
+    price: 2.99
+  },
+  power_manager: {
+    name: "Power Manager",
+    price: 1.99
+  },
+  vpn_integration: {
+    name: "VPN Integration",
+    price: 3.99,
+    includedIn: ["co-op", "alliance"]
+  }
 };
 
 const SubscriptionManagement = () => {
@@ -64,8 +82,18 @@ const SubscriptionManagement = () => {
     });
   };
 
+  // Check if an add-on is included in the subscription's plan
+  const isAddOnIncluded = (addonId) => {
+    const addon = addOnsInfo[addonId];
+    return addon?.includedIn?.includes(subscription.plan.toLowerCase());
+  };
+
   return (
     <Layout>
+      <Helmet>
+        <title>Subscription Management | GamePath AI</title>
+      </Helmet>
+      
       <div className="w-full max-w-4xl mx-auto px-4 py-6">
         <div className="flex items-center mb-6">
           <Button 
@@ -139,11 +167,18 @@ const SubscriptionManagement = () => {
                         <div>
                           {subscription.addOns.length > 0 ? (
                             <div className="flex flex-wrap gap-2 justify-end">
-                              {subscription.addOns.map(addon => (
-                                <span key={addon} className="px-2 py-1 bg-cyber-purple/20 text-cyber-purple text-xs rounded-full">
-                                  {addon}
-                                </span>
-                              ))}
+                              {subscription.addOns.map(addon => {
+                                const isIncluded = isAddOnIncluded(addon);
+                                return (
+                                  <span key={addon} className={`px-2 py-1 text-xs rounded-full
+                                    ${isIncluded 
+                                      ? 'bg-cyber-blue/20 text-cyber-blue' 
+                                      : 'bg-cyber-purple/20 text-cyber-purple'}`
+                                    }>
+                                    {addOnsInfo[addon]?.name} {isIncluded && '(Included)'}
+                                  </span>
+                                );
+                              })}
                             </div>
                           ) : (
                             <span className="text-gray-500">None</span>
@@ -197,7 +232,7 @@ const SubscriptionManagement = () => {
                     <Button 
                       variant="cyberOutline" 
                       className="w-full md:w-auto"
-                      onClick={() => toast.info("Update payment method functionality would be implemented here")}
+                      onClick={() => navigate("/account/subscription")}
                     >
                       <CreditCard className="mr-2 h-4 w-4" />
                       Update Payment Method
@@ -207,7 +242,7 @@ const SubscriptionManagement = () => {
                     <Button
                       variant="outline"
                       className="border-cyber-purple text-cyber-purple hover:bg-cyber-purple/10"
-                      onClick={() => navigate("/settings")}
+                      onClick={() => navigate("/account/subscription")}
                     >
                       Manage Plan
                     </Button>

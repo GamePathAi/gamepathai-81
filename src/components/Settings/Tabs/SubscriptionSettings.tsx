@@ -51,6 +51,7 @@ interface AddOn {
   description: string;
   monthlyPrice: number;
   icon: React.ElementType;
+  includedIn?: string[]; // Plans that include this add-on
 }
 
 // Subscription form interface
@@ -130,7 +131,8 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
       name: "VPN Integration",
       description: "Advanced protection and routing for secure connections",
       monthlyPrice: 3.99,
-      icon: Shield
+      icon: Shield,
+      includedIn: ["coop", "alliance"] // VPN is included in Co-op and Alliance plans
     }
   ];
 
@@ -155,6 +157,8 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
   const [selectedUserTier, setSelectedUserTier] = useState("player");
   const [selectedDuration, setSelectedDuration] = useState("monthly");
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
+  
+  const navigate = useNavigate();
   
   // Regional pricing simulation (would come from an API in practice)
   const basePrice = 9.99; // Base monthly price for Player
@@ -184,6 +188,12 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
     const addOnsCost = addOnIds.reduce((total, id) => {
       const addOn = addOns.find(a => a.id === id);
       if (!addOn) return total;
+      
+      // Check if add-on is included in the selected plan
+      if (addOn.includedIn && addOn.includedIn.includes(tierId)) {
+        return total;
+      }
+      
       return total + addOn.monthlyPrice;
     }, 0);
     
@@ -225,10 +235,8 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
   };
   
   const handleManageSubscription = () => {
-    toast.info("Opening subscription management", {
-      description: "This would redirect to Stripe Customer Portal in production."
-    });
-    onChange();
+    // Navigate to the new account/subscription page instead of showing toast
+    navigate("/account/subscription");
   };
   
   // Determine if this is an upgrade or new subscription
@@ -236,6 +244,12 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
   
   // Calculate prices for display
   const prices = calculateTotalPrice(selectedUserTier, selectedDuration, selectedAddOns);
+
+  // Check if an add-on is included in the selected tier
+  const isAddOnIncluded = (addOnId: string): boolean => {
+    const addOn = addOns.find(a => a.id === addOnId);
+    return !!(addOn?.includedIn && addOn.includedIn.includes(selectedUserTier));
+  };
 
   return (
     <div className="space-y-6">
@@ -299,11 +313,12 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                     if (!addon) return null;
                     
                     const AddonIcon = addon.icon;
+                    const isIncluded = addon.includedIn?.includes(currentPlan.userTier);
                     
                     return (
-                      <Badge key={id} variant="cyber" className="py-1">
+                      <Badge key={id} variant="cyber" className={`py-1 ${isIncluded ? 'bg-cyber-blue/20 text-cyber-blue' : ''}`}>
                         <AddonIcon className="h-3 w-3 mr-1" /> 
-                        {addon.name}
+                        {addon.name} {isIncluded && '(Included)'}
                       </Badge>
                     );
                   })
@@ -480,9 +495,35 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {addOns.map(addon => {
+                const isIncluded = addon.includedIn?.includes(selectedUserTier);
+                // If included in the plan, we don't show it as a selectable add-on
+                if (isIncluded) {
+                  return (
+                    <div key={addon.id} 
+                      className="border-l-4 border-l-cyber-blue border border-cyber-blue/30 bg-cyber-blue/5 rounded-lg p-4"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 rounded-lg bg-cyber-blue/20 flex items-center justify-center mr-3">
+                            <addon.icon className="h-5 w-5 text-cyber-blue" />
+                          </div>
+                          <h3 className="font-medium">{addon.name}</h3>
+                        </div>
+                        <Badge variant="cyberBlue" className="px-2 py-0.5">Included</Badge>
+                      </div>
+                      
+                      <p className="text-sm text-gray-400">{addon.description}</p>
+                      
+                      <div className="mt-2 font-medium text-cyber-blue">
+                        Included in your {userTiers.find(t => t.id === selectedUserTier)?.name} plan
+                      </div>
+                    </div>
+                  );
+                }
+                
+                // For add-ons not included in the plan
                 const isSelected = selectedAddOns.includes(addon.id);
                 const isCurrentlyActive = currentPlan.addOns.includes(addon.id);
-                const AddonIcon = addon.icon;
                 
                 return (
                   <div key={addon.id} 
@@ -492,7 +533,6 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                         ? 'border-cyber-purple bg-cyber-purple/10' 
                         : 'border-gray-700 hover:border-gray-500'
                       }
-                      ${isCurrentlyActive ? 'border-l-4 border-l-cyber-green' : ''}
                     `}
                     onClick={() => toggleAddOn(addon.id)}
                   >
@@ -502,7 +542,7 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                           w-8 h-8 rounded-lg flex items-center justify-center mr-3
                           ${isSelected ? 'bg-cyber-purple/20' : 'bg-gray-800'}
                         `}>
-                          <AddonIcon className={`h-5 w-5 ${isSelected ? 'text-cyber-purple' : 'text-gray-400'}`} />
+                          <addon.icon className={`h-5 w-5 ${isSelected ? 'text-cyber-purple' : 'text-gray-400'}`} />
                         </div>
                         <h3 className="font-medium">{addon.name}</h3>
                       </div>
@@ -517,12 +557,8 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                     
                     <p className="text-sm text-gray-400">{addon.description}</p>
                     
-                    <div className="mt-2 font-medium">
-                      {isCurrentlyActive ? (
-                        <span className="text-cyber-green">Active</span>
-                      ) : (
-                        <span className="text-cyber-purple">+${addon.monthlyPrice.toFixed(2)}/month</span>
-                      )}
+                    <div className="mt-2 font-medium text-cyber-purple">
+                      +${addon.monthlyPrice.toFixed(2)}/month
                     </div>
                   </div>
                 );
@@ -557,7 +593,7 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                     <div className="text-sm text-gray-300 pb-1">Add-ons:</div>
                     {selectedAddOns.map(id => {
                       const addon = addOns.find(a => a.id === id);
-                      if (!addon) return null;
+                      if (!addon || isAddOnIncluded(id)) return null;
                       
                       return (
                         <div key={id} className="flex justify-between items-center text-sm">
@@ -653,7 +689,7 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
               <div>
                 <h5 className="font-medium text-sm text-cyber-red">Subscription Cancellation</h5>
                 <p className="text-sm text-gray-400 mt-1">
-                  You can cancel your subscription anytime through the Stripe Customer Portal.
+                  You can cancel your subscription anytime through your account settings.
                   Your access will continue until the end of the current billing period.
                 </p>
                 <Button 
