@@ -21,12 +21,13 @@ import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface SubscriptionSettingsProps {
   onChange: () => void;
 }
 
-// Novas interfaces para o sistema de assinatura
+// Interfaces para o sistema de assinatura
 interface UserTier {
   id: string;
   name: string;
@@ -49,7 +50,6 @@ interface AddOn {
   description: string;
   monthlyPrice: number;
   icon: React.ElementType;
-  enabled: boolean;
 }
 
 // Formulário de configuração de assinatura
@@ -115,24 +115,21 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
       name: "Advanced Optimizer",
       description: "Algoritmos avançados de otimização para máximo desempenho",
       monthlyPrice: 2.99,
-      icon: Cpu,
-      enabled: false
+      icon: Cpu
     },
     {
       id: "power_manager",
       name: "Power Manager",
       description: "Controle avançado de energia e temperatura",
       monthlyPrice: 1.99,
-      icon: Power,
-      enabled: false
+      icon: Power
     },
     {
       id: "vpn_integration",
       name: "VPN Integration",
       description: "Proteção e roteamento avançado para conexões seguras",
       monthlyPrice: 3.99,
-      icon: Shield,
-      enabled: false
+      icon: Shield
     }
   ];
 
@@ -162,7 +159,7 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
   const basePrice = 9.99; // Preço base mensal para Player
   
   // Cálculo do preço baseado nas seleções
-  const calculatePrice = (tierId: string, durationId: string, addOnIds: string[]) => {
+  const calculatePrice = (tierId: string, durationId: string) => {
     const tier = userTiers.find(t => t.id === tierId);
     const duration = durations.find(d => d.id === durationId);
     
@@ -177,27 +174,28 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
     return price;
   };
   
+  // Cálculo do preço total (plano base + add-ons)
   const calculateTotalPrice = (tierId: string, durationId: string, addOnIds: string[]) => {
-    let basePrice = calculatePrice(tierId, durationId, addOnIds);
+    let basePrice = calculatePrice(tierId, durationId);
     const duration = durations.find(d => d.id === durationId);
     
     // Adicionar preço dos add-ons
     const addOnsCost = addOnIds.reduce((total, id) => {
       const addOn = addOns.find(a => a.id === id);
       if (!addOn) return total;
-      return total + (addOn.monthlyPrice * (duration?.months || 1));
+      return total + addOn.monthlyPrice;
     }, 0);
     
-    return (basePrice * (duration?.months || 1)) + addOnsCost;
+    return {
+      baseMonthly: basePrice,
+      addOnsMonthly: addOnsCost,
+      totalMonthly: basePrice + addOnsCost,
+      totalBilling: (basePrice + addOnsCost) * (duration?.months || 1)
+    };
   };
   
-  const formatPrice = (price: number, durationId: string) => {
-    const duration = durations.find(d => d.id === durationId);
-    if (durationId === "monthly") {
-      return `$${price.toFixed(2)}/mês`;
-    } else {
-      return `$${price.toFixed(2)} a cada ${duration?.months} meses`;
-    }
+  const formatPrice = (price: number) => {
+    return `$${price.toFixed(2)}`;
   };
   
   const handleSubscriptionChange = (tier: string, duration: string) => {
@@ -234,6 +232,9 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
   
   // Determinar se é uma atualização ou nova assinatura
   const isUpgrade = currentPlan.active;
+  
+  // Calcular preços para exibição
+  const prices = calculateTotalPrice(selectedUserTier, selectedDuration, selectedAddOns);
 
   return (
     <div className="space-y-6">
@@ -261,6 +262,9 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                 <span className="text-lg font-medium text-white">
                   {userTiers.find(t => t.id === currentPlan.userTier)?.name || "Player"}
                 </span>
+                <span className="text-xs text-gray-400">
+                  {userTiers.find(t => t.id === currentPlan.userTier)?.userCount || 1} {userTiers.find(t => t.id === currentPlan.userTier)?.userCount === 1 ? 'usuário' : 'usuários'}
+                </span>
               </div>
               
               <div className="flex flex-col space-y-1">
@@ -275,6 +279,13 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                 <span className="text-lg font-medium text-white">
                   {currentPlan.nextBilling.toLocaleDateString()}
                 </span>
+              </div>
+            </div>
+            
+            <div className="mt-4 border-t border-gray-800 pt-4">
+              <div className="flex items-center mb-3">
+                <Globe className="h-4 w-4 mr-2 text-cyber-green" />
+                <h4 className="text-sm font-medium text-cyber-green">Acesso total a todas as regiões geográficas</h4>
               </div>
             </div>
             
@@ -332,6 +343,10 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
               <Users className="h-4 w-4 mr-2 text-cyber-blue" />
               Selecione seu tipo de usuário
             </h5>
+            
+            <div className="text-sm text-gray-400 mb-3">
+              Todos os planos incluem acesso completo a todas as regiões geográficas. A diferença está apenas no número de usuários que podem usar a conta simultaneamente.
+            </div>
             
             <RadioGroup 
               defaultValue={selectedUserTier} 
@@ -394,7 +409,7 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
               onValueChange={(value) => handleSubscriptionChange(selectedUserTier, value)}
             >
               {durations.map(duration => {
-                const price = calculatePrice(selectedUserTier, duration.id, selectedAddOns);
+                const price = calculatePrice(selectedUserTier, duration.id);
                 const originalPrice = price / (1 - duration.discount);
                 const showDiscount = duration.discount > 0;
                 
@@ -455,8 +470,12 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
           <div>
             <h5 className="text-md font-medium mb-3 flex items-center">
               <Zap className="h-4 w-4 mr-2 text-cyber-blue" />
-              Selecione add-ons (opcional)
+              Adicione recursos premium (opcional)
             </h5>
+            
+            <div className="text-sm text-gray-400 mb-3">
+              Selecione quaisquer add-ons que você deseja adicionar ao seu plano. Você pode escolher qualquer combinação ou nenhum.
+            </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {addOns.map(addon => {
@@ -522,11 +541,13 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
               <CardContent className="space-y-4">
                 <div className="flex justify-between items-center pb-2 border-b border-gray-800">
                   <div>
-                    <p className="text-sm text-gray-300">Plano {userTiers.find(t => t.id === selectedUserTier)?.name}</p>
+                    <p className="text-sm text-gray-300">
+                      Plano {userTiers.find(t => t.id === selectedUserTier)?.name} ({userTiers.find(t => t.id === selectedUserTier)?.userCount} {userTiers.find(t => t.id === selectedUserTier)?.userCount === 1 ? 'usuário' : 'usuários'})
+                    </p>
                     <p className="text-xs text-gray-400">{durations.find(d => d.id === selectedDuration)?.name}</p>
                   </div>
                   <span className="font-medium">
-                    ${calculatePrice(selectedUserTier, selectedDuration, selectedAddOns).toFixed(2)}/mês
+                    {formatPrice(prices.baseMonthly)}/mês
                   </span>
                 </div>
                 
@@ -539,7 +560,7 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                       return (
                         <div key={id} className="flex justify-between items-center text-sm">
                           <span>{addon.name}</span>
-                          <span>+${addon.monthlyPrice.toFixed(2)}/mês</span>
+                          <span>+{formatPrice(addon.monthlyPrice)}/mês</span>
                         </div>
                       );
                     })}
@@ -550,7 +571,7 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                   <div>
                     <p className="font-medium">Total</p>
                     <p className="text-xs text-gray-400">
-                      {durations.find(d => d.id === selectedDuration)?.name === "Mensal"
+                      {durations.find(d => d.id === selectedDuration)?.months === 1
                         ? "Cobrança mensal"
                         : `Cobrança a cada ${durations.find(d => d.id === selectedDuration)?.months} meses`
                       }
@@ -558,15 +579,13 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                   </div>
                   <div className="text-right">
                     <div className="font-medium text-lg text-cyber-blue">
-                      ${calculateTotalPrice(selectedUserTier, selectedDuration, selectedAddOns).toFixed(2)}
+                      {formatPrice(prices.totalBilling)}
                     </div>
-                    <div className="text-xs text-gray-400">
-                      {durations.find(d => d.id === selectedDuration)?.months === 1 
-                        ? "" 
-                        : `(${(calculateTotalPrice(selectedUserTier, selectedDuration, selectedAddOns) / 
-                            (durations.find(d => d.id === selectedDuration)?.months || 1)).toFixed(2)}/mês)`
-                      }
-                    </div>
+                    {durations.find(d => d.id === selectedDuration)?.months !== 1 && (
+                      <div className="text-xs text-gray-400">
+                        ({formatPrice(prices.totalMonthly)}/mês)
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardContent>
