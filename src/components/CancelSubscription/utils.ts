@@ -1,23 +1,25 @@
 
-import { OfferType, PriceBasedOffer, DiscountOffer, PauseOffer } from './types';
+// Utility functions for the cancellation flow
+import { OfferType, DiscountOffer, PriceBasedOffer, PauseOffer } from "./types";
 
-// Type guards for specific offer types
-export const isPriceBasedOffer = (offer: OfferType): offer is PriceBasedOffer => {
-  return 'price' in offer;
-};
-
-export const isDiscountOffer = (offer: OfferType): offer is DiscountOffer => {
-  return 'discount' in offer && 'duration' in offer;
-};
-
-export const isPauseOffer = (offer: OfferType): offer is PauseOffer => {
-  return 'duration' in offer && !('discount' in offer) && !('price' in offer);
-};
-
-export const formatDate = (date: Date): string => {
+// Format date for display
+export const formatDate = (date: Date) => {
   return date.toLocaleDateString("en-US", { 
     year: 'numeric', 
     month: 'long', 
     day: 'numeric' 
   });
+};
+
+// Type guards for offer types
+export const isDiscountOffer = (offer: OfferType): offer is DiscountOffer => {
+  return offer.type === 'discount';
+};
+
+export const isPriceBasedOffer = (offer: OfferType): offer is PriceBasedOffer => {
+  return offer.type === 'price';
+};
+
+export const isPauseOffer = (offer: OfferType): offer is PauseOffer => {
+  return offer.type === 'pause';
 };

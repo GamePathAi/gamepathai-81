@@ -1,276 +1,238 @@
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { subscriptionApi, Subscription, PaymentMethod, AddOn, Invoice } from "@/services/subscriptionApi";
-import { useToast } from "@/components/ui/use-toast";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { subscriptionApi, Subscription, AddOn, Invoice, PaymentMethod } from "@/services/subscriptionApi";
+import { toast } from "sonner";
 
 // Define the context type
-interface SubscriptionContextType {
+type SubscriptionContextType = {
   subscription: Subscription | null;
-  paymentMethods: PaymentMethod[];
   addOns: AddOn[];
   billingHistory: Invoice[];
+  paymentMethods: PaymentMethod[];
   isLoading: boolean;
-  error: Error | null;
   refetchSubscription: () => Promise<void>;
-  refetchPaymentMethods: () => Promise<void>;
+  refetchAddOns: () => Promise<void>;
   refetchBillingHistory: () => Promise<void>;
-  updateSubscriptionPlan: (planId: string, options?: { addOns?: string[] }) => Promise<Subscription>;
-  cancelSubscription: (reason: string) => Promise<{ success: boolean; message: string }>;
-  resumeSubscription: () => Promise<{ success: boolean; message: string }>;
-  addPaymentMethod: (paymentDetails: any) => Promise<PaymentMethod>;
-  setDefaultPaymentMethod: (paymentMethodId: string) => Promise<{ success: boolean }>;
-  deletePaymentMethod: (paymentMethodId: string) => Promise<{ success: boolean }>;
-}
+  refetchPaymentMethods: () => Promise<void>;
+  updateSubscriptionPlan: (planId: string, options?: { addOns?: string[] }) => Promise<boolean>;
+  addPaymentMethod: (paymentDetails: any) => Promise<boolean>;
+  setDefaultPaymentMethod: (paymentMethodId: string) => Promise<boolean>;
+  deletePaymentMethod: (paymentMethodId: string) => Promise<boolean>;
+  cancelSubscription: (reason: string) => Promise<boolean>;
+  resumeSubscription: () => Promise<boolean>;
+};
 
-// Create the context with a default value
-const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
+// Create the context with default values
+const SubscriptionContext = createContext<SubscriptionContextType>({
+  subscription: null,
+  addOns: [],
+  billingHistory: [],
+  paymentMethods: [],
+  isLoading: true,
+  refetchSubscription: async () => {},
+  refetchAddOns: async () => {},
+  refetchBillingHistory: async () => {},
+  refetchPaymentMethods: async () => {},
+  updateSubscriptionPlan: async () => false,
+  addPaymentMethod: async () => false,
+  setDefaultPaymentMethod: async () => false,
+  deletePaymentMethod: async () => false,
+  cancelSubscription: async () => false,
+  resumeSubscription: async () => false,
+});
 
 // Provider component
-export const SubscriptionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [addOns, setAddOns] = useState<AddOn[]>([]);
   const [billingHistory, setBillingHistory] = useState<Invoice[]>([]);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  
-  const { toast } = useToast();
 
-  // Fetch initial subscription data
+  // Fetch subscription data on mount
   useEffect(() => {
     const fetchInitialData = async () => {
-      setIsLoading(true);
-      setError(null);
-      
       try {
-        const subscription = await subscriptionApi.getCurrentSubscription();
-        setSubscription(subscription);
-        
-        const addOns = await subscriptionApi.getAvailableAddOns();
-        setAddOns(addOns);
-        
-        const paymentMethods = await subscriptionApi.getPaymentMethods();
-        setPaymentMethods(paymentMethods);
-        
-        const billingHistory = await subscriptionApi.getBillingHistory();
-        setBillingHistory(billingHistory);
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Unknown error occurred'));
-        toast({
-          title: "Error loading subscription data",
-          description: "Please try again later.",
-          variant: "destructive",
-        });
+        setIsLoading(true);
+        await Promise.all([
+          refetchSubscription(),
+          refetchAddOns(),
+          refetchBillingHistory(),
+          refetchPaymentMethods(),
+        ]);
+      } catch (error) {
+        console.error("Error fetching initial subscription data:", error);
+        toast.error("Failed to load subscription data");
       } finally {
         setIsLoading(false);
       }
     };
-    
-    fetchInitialData();
-  }, [toast]);
 
-  // Refetch subscription details
+    fetchInitialData();
+  }, []);
+
+  // Fetchers for each data type
   const refetchSubscription = async () => {
     try {
-      const subscription = await subscriptionApi.getCurrentSubscription();
-      setSubscription(subscription);
-      
-      const addOns = await subscriptionApi.getAvailableAddOns();
-      setAddOns(addOns);
-    } catch (err) {
-      toast({
-        title: "Error updating subscription data",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
-      throw err;
+      const data = await subscriptionApi.getCurrentSubscription();
+      setSubscription(data);
+    } catch (error) {
+      console.error("Failed to fetch subscription:", error);
+      toast.error("Failed to load subscription details");
     }
   };
 
-  // Refetch payment methods
-  const refetchPaymentMethods = async () => {
+  const refetchAddOns = async () => {
     try {
-      const paymentMethods = await subscriptionApi.getPaymentMethods();
-      setPaymentMethods(paymentMethods);
-    } catch (err) {
-      toast({
-        title: "Error updating payment methods",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
-      throw err;
+      const data = await subscriptionApi.getAvailableAddOns();
+      setAddOns(data);
+    } catch (error) {
+      console.error("Failed to fetch add-ons:", error);
+      toast.error("Failed to load available add-ons");
     }
   };
 
-  // Refetch billing history
   const refetchBillingHistory = async () => {
     try {
-      const billingHistory = await subscriptionApi.getBillingHistory();
-      setBillingHistory(billingHistory);
-    } catch (err) {
-      toast({
-        title: "Error updating billing history",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
-      throw err;
+      const data = await subscriptionApi.getBillingHistory();
+      setBillingHistory(data);
+    } catch (error) {
+      console.error("Failed to fetch billing history:", error);
+      toast.error("Failed to load billing history");
     }
   };
 
-  // Update subscription plan
-  const updateSubscriptionPlan = async (planId: string, options?: { addOns?: string[] }) => {
+  const refetchPaymentMethods = async () => {
     try {
-      const updatedSubscription = await subscriptionApi.updateSubscriptionPlan(planId, options);
-      setSubscription(updatedSubscription);
-      toast({
-        title: "Plan updated successfully",
-        description: `Your subscription has been changed to the ${updatedSubscription.plan.charAt(0).toUpperCase() + updatedSubscription.plan.slice(1)} plan.`,
-      });
-      return updatedSubscription;
-    } catch (err) {
-      toast({
-        title: "Error updating subscription plan",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
-      throw err;
+      const data = await subscriptionApi.getPaymentMethods();
+      setPaymentMethods(data);
+    } catch (error) {
+      console.error("Failed to fetch payment methods:", error);
+      toast.error("Failed to load payment methods");
     }
   };
 
-  // Cancel subscription
-  const cancelSubscription = async (reason: string) => {
+  // Subscription actions
+  const updateSubscriptionPlan = async (planId: string, options?: { addOns?: string[] }): Promise<boolean> => {
     try {
+      setIsLoading(true);
+      const updatedSub = await subscriptionApi.updateSubscriptionPlan(planId, options);
+      setSubscription(updatedSub);
+      toast.success("Subscription updated successfully");
+      return true;
+    } catch (error) {
+      console.error("Failed to update subscription:", error);
+      toast.error("Failed to update subscription");
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Payment method actions
+  const addPaymentMethod = async (paymentDetails: any): Promise<boolean> => {
+    try {
+      setIsLoading(true);
+      await subscriptionApi.addPaymentMethod(paymentDetails);
+      await refetchPaymentMethods();
+      toast.success("Payment method added successfully");
+      return true;
+    } catch (error) {
+      console.error("Failed to add payment method:", error);
+      toast.error("Failed to add payment method");
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const setDefaultPaymentMethod = async (paymentMethodId: string): Promise<boolean> => {
+    try {
+      setIsLoading(true);
+      await subscriptionApi.setDefaultPaymentMethod(paymentMethodId);
+      await refetchPaymentMethods();
+      toast.success("Default payment method updated");
+      return true;
+    } catch (error) {
+      console.error("Failed to set default payment method:", error);
+      toast.error("Failed to update default payment method");
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const deletePaymentMethod = async (paymentMethodId: string): Promise<boolean> => {
+    try {
+      setIsLoading(true);
+      await subscriptionApi.deletePaymentMethod(paymentMethodId);
+      await refetchPaymentMethods();
+      toast.success("Payment method removed");
+      return true;
+    } catch (error) {
+      console.error("Failed to delete payment method:", error);
+      toast.error("Failed to remove payment method");
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Subscription cancellation and resumption
+  const cancelSubscription = async (reason: string): Promise<boolean> => {
+    try {
+      setIsLoading(true);
       const result = await subscriptionApi.cancelSubscription(reason);
-      if (result.success && subscription) {
-        setSubscription({
-          ...subscription,
-          cancelAtPeriodEnd: true
-        });
-        toast({
-          title: "Subscription canceled",
-          description: result.message,
-        });
+      if (result.success) {
+        await refetchSubscription();
+        toast.success(result.message);
+        return true;
       }
-      return result;
-    } catch (err) {
-      toast({
-        title: "Error canceling subscription",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
-      throw err;
+      return false;
+    } catch (error) {
+      console.error("Failed to cancel subscription:", error);
+      toast.error("Failed to cancel subscription");
+      return false;
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Resume subscription
-  const resumeSubscription = async () => {
+  const resumeSubscription = async (): Promise<boolean> => {
     try {
+      setIsLoading(true);
       const result = await subscriptionApi.resumeSubscription();
-      if (result.success && subscription) {
-        setSubscription({
-          ...subscription,
-          cancelAtPeriodEnd: false
-        });
-        toast({
-          title: "Subscription resumed",
-          description: result.message,
-        });
-      }
-      return result;
-    } catch (err) {
-      toast({
-        title: "Error resuming subscription",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
-      throw err;
-    }
-  };
-
-  // Add payment method
-  const addPaymentMethod = async (paymentDetails: any) => {
-    try {
-      const newPaymentMethod = await subscriptionApi.addPaymentMethod(paymentDetails);
-      setPaymentMethods([...paymentMethods, newPaymentMethod]);
-      toast({
-        title: "Payment method added",
-        description: "Your new payment method has been added successfully.",
-      });
-      return newPaymentMethod;
-    } catch (err) {
-      toast({
-        title: "Error adding payment method",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
-      throw err;
-    }
-  };
-
-  // Set default payment method
-  const setDefaultPaymentMethod = async (paymentMethodId: string) => {
-    try {
-      const result = await subscriptionApi.setDefaultPaymentMethod(paymentMethodId);
       if (result.success) {
-        setPaymentMethods(paymentMethods.map(pm => ({
-          ...pm,
-          isDefault: pm.id === paymentMethodId
-        })));
-        toast({
-          title: "Default payment method updated",
-          description: "Your default payment method has been changed.",
-        });
+        await refetchSubscription();
+        toast.success(result.message);
+        return true;
       }
-      return result;
-    } catch (err) {
-      toast({
-        title: "Error updating payment method",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
-      throw err;
+      return false;
+    } catch (error) {
+      console.error("Failed to resume subscription:", error);
+      toast.error("Failed to resume subscription");
+      return false;
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Delete payment method
-  const deletePaymentMethod = async (paymentMethodId: string) => {
-    try {
-      const result = await subscriptionApi.deletePaymentMethod(paymentMethodId);
-      if (result.success) {
-        setPaymentMethods(paymentMethods.filter(pm => pm.id !== paymentMethodId));
-        toast({
-          title: "Payment method removed",
-          description: "Your payment method has been removed successfully.",
-        });
-      }
-      return result;
-    } catch (err) {
-      toast({
-        title: "Error removing payment method",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
-      throw err;
-    }
-  };
-
-  // Context value
   const value = {
     subscription,
-    paymentMethods,
     addOns,
     billingHistory,
+    paymentMethods,
     isLoading,
-    error,
     refetchSubscription,
-    refetchPaymentMethods,
+    refetchAddOns,
     refetchBillingHistory,
+    refetchPaymentMethods,
     updateSubscriptionPlan,
-    cancelSubscription,
-    resumeSubscription,
     addPaymentMethod,
     setDefaultPaymentMethod,
-    deletePaymentMethod
+    deletePaymentMethod,
+    cancelSubscription,
+    resumeSubscription,
   };
 
   return (
@@ -281,10 +243,4 @@ export const SubscriptionProvider: React.FC<{ children: ReactNode }> = ({ childr
 };
 
 // Custom hook to use the subscription context
-export const useSubscription = () => {
-  const context = useContext(SubscriptionContext);
-  if (context === undefined) {
-    throw new Error('useSubscription must be used within a SubscriptionProvider');
-  }
-  return context;
-};
+export const useSubscription = () => useContext(SubscriptionContext);

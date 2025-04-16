@@ -1,306 +1,213 @@
+
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import AccountLayout from "@/components/Layout/AccountLayout";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
-  ArrowLeft,
-  Users,
-  CheckCircle,
-  Check,
-  X,
-  Shield,
-  Zap,
-  Clock,
-  Calendar,
-  ChevronRight,
-  CreditCard,
-  AlertTriangle,
-  Cpu,
-  Power,
-  Globe,
-  Settings
-} from "lucide-react";
+import { ArrowLeft, Check, AlertTriangle, Zap, Users, CreditCard, Shield, Clock } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useSubscription } from "@/hooks/use-subscription";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
 
-// Current plan
-const currentPlan = {
-  id: "coop",
-  name: "Co-op",
-  users: 2,
-  price: 17.99,
-  interval: "month",
-  nextBilling: new Date(2025, 4, 25),
-  addOns: ["vpn_integration"],
-  cycleDate: 15 // Day of month for billing
-};
-
-// Available plans
-const availablePlans = [
-  {
-    id: "player",
-    name: "Player",
-    users: 1,
-    price: 9.99,
-    description: "Ideal for individual gamers"
-  },
-  {
-    id: "coop",
-    name: "Co-op",
-    users: 2,
-    price: 17.99,
-    description: "Perfect for you and a friend"
-  },
-  {
-    id: "alliance",
-    name: "Alliance",
-    users: 5,
-    price: 39.99,
-    description: "For teams and player groups"
-  }
-];
-
-// Available add-ons
-const addOns = [
-  {
-    id: "advanced_optimizer",
-    name: "Advanced Optimizer",
-    description: "Advanced optimization algorithms for maximum performance",
-    price: 2.99,
-    icon: Cpu,
-    includedIn: []
-  },
-  {
-    id: "power_manager",
-    name: "Power Manager",
-    description: "Advanced power and temperature control",
-    price: 1.99,
-    icon: Power,
-    includedIn: []
-  },
-  {
-    id: "vpn_integration",
-    name: "VPN Integration",
-    description: "Advanced protection and routing for secure connections",
-    price: 3.99,
-    icon: Shield,
-    includedIn: ["coop", "alliance"] // VPN is included in Co-op and Alliance plans
-  }
-];
-
-// Feature comparison
-const planFeatures = {
-  "player": [
-    "Access to all regions",
-    "Basic route optimization",
-    "Network metrics",
-    "1 user"
+// Mock pricing data
+const pricingData = {
+  plans: [
+    {
+      id: "player",
+      name: "Player",
+      users: 1,
+      monthlyPrice: 9.99,
+      yearlyPrice: 99.99,
+      quarterlyPrice: 26.99,
+      description: "Perfect for solo gamers",
+      features: [
+        "Advanced network optimization",
+        "Global server access",
+        "Real-time performance monitoring",
+        "Basic game profiles",
+        "24/7 email support"
+      ]
+    },
+    {
+      id: "co-op",
+      name: "Co-op",
+      users: 2,
+      monthlyPrice: 17.99,
+      yearlyPrice: 179.99,
+      quarterlyPrice: 48.99,
+      description: "Ideal for gaming with a friend",
+      features: [
+        "Everything in Player",
+        "2 simultaneous users",
+        "Priority optimization",
+        "Advanced game profiles",
+        "24/7 chat support"
+      ]
+    },
+    {
+      id: "alliance",
+      name: "Alliance",
+      users: 5,
+      monthlyPrice: 29.99,
+      yearlyPrice: 299.99,
+      quarterlyPrice: 79.99,
+      description: "For gaming teams and families",
+      features: [
+        "Everything in Co-op",
+        "5 simultaneous users",
+        "Ultra-priority optimization",
+        "Custom game profiles",
+        "24/7 phone support",
+        "Advanced performance analytics"
+      ]
+    }
   ],
-  "coop": [
-    "Access to all regions",
-    "Advanced route optimization",
-    "Network metrics",
-    "System optimization",
-    "VPN integration",
-    "2 users"
-  ],
-  "alliance": [
-    "Access to all regions",
-    "Advanced route optimization",
-    "Network metrics",
-    "System optimization", 
-    "VPN integration",
-    "Priority support",
-    "Team management",
-    "5 users"
+  addOns: [
+    {
+      id: "advanced_optimizer",
+      name: "Advanced Optimizer",
+      monthlyPrice: 2.99,
+      yearlyPrice: 29.99,
+      quarterlyPrice: 7.99,
+      description: "Enhanced optimization algorithms for maximum performance"
+    },
+    {
+      id: "power_manager",
+      name: "Power Manager",
+      monthlyPrice: 1.99,
+      yearlyPrice: 19.99,
+      quarterlyPrice: 5.49,
+      description: "Balance performance and battery life for laptop gaming"
+    }
   ]
 };
 
 const ChangePlan = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
-  const [selectedPlan, setSelectedPlan] = useState(currentPlan.id);
-  const [selectedAddOns, setSelectedAddOns] = useState<string[]>(currentPlan.addOns);
-  const [processing, setProcessing] = useState(false);
+  const { subscription, addOns, updateSubscriptionPlan } = useSubscription();
+  
+  const [selectedPlan, setSelectedPlan] = useState(subscription?.plan || "player");
+  const [selectedInterval, setSelectedInterval] = useState<"month" | "quarter" | "year">(subscription?.interval || "month");
+  const [selectedAddOns, setSelectedAddOns] = useState<string[]>(subscription?.addOns || []);
+  const [isConfirmationStep, setIsConfirmationStep] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   
   const handleGoBack = () => {
-    if (step > 1) {
-      setStep(step - 1);
+    if (isConfirmationStep) {
+      setIsConfirmationStep(false);
     } else {
       navigate("/account/subscription");
     }
   };
-
-  const handlePlanSelect = (planId: string) => {
-    setSelectedPlan(planId);
-    
-    // Update add-ons based on plan selection
-    // Remove add-ons that are included in the new plan
-    const includedAddOns = addOns
-      .filter(addon => addon.includedIn.includes(planId))
-      .map(addon => addon.id);
-    
-    setSelectedAddOns(prev => 
-      prev.filter(id => !includedAddOns.includes(id))
-    );
+  
+  const toggleAddon = (addonId: string) => {
+    if (selectedAddOns.includes(addonId)) {
+      setSelectedAddOns(selectedAddOns.filter(id => id !== addonId));
+    } else {
+      setSelectedAddOns([...selectedAddOns, addonId]);
+    }
   };
 
-  const toggleAddOn = (addOnId: string) => {
-    setSelectedAddOns(prev => {
-      if (prev.includes(addOnId)) {
-        return prev.filter(id => id !== addOnId);
+  const calculateNewPrice = () => {
+    const selectedPlanData = pricingData.plans.find(plan => plan.id === selectedPlan);
+    let basePrice = 0;
+    
+    if (selectedInterval === "month") {
+      basePrice = selectedPlanData?.monthlyPrice || 0;
+    } else if (selectedInterval === "quarter") {
+      basePrice = selectedPlanData?.quarterlyPrice || 0;
+    } else {
+      basePrice = selectedPlanData?.yearlyPrice || 0;
+    }
+    
+    // Add price of selected add-ons
+    const addOnPrice = selectedAddOns.reduce((total, addonId) => {
+      const addon = pricingData.addOns.find(a => a.id === addonId);
+      if (!addon) return total;
+      
+      if (selectedInterval === "month") {
+        return total + addon.monthlyPrice;
+      } else if (selectedInterval === "quarter") {
+        return total + addon.quarterlyPrice;
       } else {
-        return [...prev, addOnId];
+        return total + addon.yearlyPrice;
       }
-    });
+    }, 0);
+    
+    return (basePrice + addOnPrice).toFixed(2);
+  };
+
+  const calculateProratedAmount = () => {
+    // In a real implementation, this would calculate the actual prorated amount
+    // based on time remaining in current billing period
+    const currentPrice = subscription?.amount || 0;
+    const newPrice = parseFloat(calculateNewPrice());
+    
+    // For demo purposes, we'll just show a credit or charge based on price difference
+    return ((newPrice - currentPrice) / 2).toFixed(2);
   };
 
   const handleContinue = () => {
-    if (step === 1) {
-      if (selectedPlan === currentPlan.id && JSON.stringify(selectedAddOns.sort()) === JSON.stringify(currentPlan.addOns.sort())) {
-        toast.info("No changes detected", {
-          description: "You haven't changed your plan or add-ons."
-        });
-        return;
+    setIsConfirmationStep(true);
+  };
+
+  const handleConfirmChange = async () => {
+    setIsProcessing(true);
+    try {
+      const success = await updateSubscriptionPlan(selectedPlan, { 
+        addOns: selectedAddOns 
+      });
+      
+      if (success) {
+        toast.success("Plan updated successfully!");
+        navigate("/account/subscription");
       }
-      setStep(2); // Proceed to review
-    } else if (step === 2) {
-      setProcessing(true);
-      // Simulate API call
-      setTimeout(() => {
-        // In a real app, this would be an API call
-        // POST /api/subscription/change-plan
-        setProcessing(false);
-        setStep(3); // Success
-      }, 1500);
+    } catch (error) {
+      toast.error("Failed to update plan. Please try again.");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-US", { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
+  const isCurrentPlan = selectedPlan === subscription?.plan && 
+    selectedInterval === subscription?.interval &&
+    JSON.stringify(selectedAddOns.sort()) === JSON.stringify(subscription?.addOns.sort());
+
+  const calculateSavings = (monthly: number, alternative: number, period: number) => {
+    const annualCost = monthly * period;
+    const savings = (annualCost - alternative) / annualCost * 100;
+    return savings.toFixed(0);
   };
 
-  // Calculate next billing date based on selected plan
-  const calculateNextBillingDate = () => {
-    const today = new Date();
-    const nextBillingDate = new Date();
+  // Helper function to check if an add-on is included in a plan
+  const isAddOnIncludedInPlan = (addonId: string, planId: string) => {
+    const addon = addOns.find(a => a.id === addonId);
+    if (!addon || !addon.includedInPlans) return false;
     
-    // Set date to next cycle date
-    nextBillingDate.setDate(currentPlan.cycleDate);
-    
-    // If the cycle date has passed this month, move to next month
-    if (today.getDate() > currentPlan.cycleDate) {
-      nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
-    }
-    
-    return nextBillingDate;
+    return addon.includedInPlans.includes(planId);
   };
 
-  // Calculate prorated charges
-  const calculateProratedCharges = () => {
-    const today = new Date();
-    const nextBilling = currentPlan.nextBilling;
-    const daysLeft = Math.round((nextBilling.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    const daysInMonth = 30; // Approximation
-    
-    // Current plan remaining value
-    const currentPlanRemaining = (currentPlan.price / daysInMonth) * daysLeft;
-    
-    // New plan cost for remaining days
-    const selectedPlanInfo = availablePlans.find(p => p.id === selectedPlan);
-    const newPlanCost = selectedPlanInfo ? (selectedPlanInfo.price / daysInMonth) * daysLeft : 0;
-    
-    // Add-on costs
-    const currentAddOnsCost = currentPlan.addOns
-      .filter(addonId => {
-        const addon = addOns.find(a => a.id === addonId);
-        return addon && !addon.includedIn.includes(currentPlan.id);
-      })
-      .reduce((total, addonId) => {
-        const addon = addOns.find(a => a.id === addonId);
-        return total + (addon ? addon.price : 0);
-      }, 0);
-    
-    const newAddOnsCost = selectedAddOns
-      .filter(addonId => {
-        const addon = addOns.find(a => a.id === addonId);
-        return addon && !addon.includedIn.includes(selectedPlan);
-      })
-      .reduce((total, addonId) => {
-        const addon = addOns.find(a => a.id === addonId);
-        return total + (addon ? addon.price : 0);
-      }, 0);
-    
-    const currentRemainingTotal = (currentPlanRemaining + (currentAddOnsCost / daysInMonth) * daysLeft).toFixed(2);
-    const newCostForRemainingDays = (newPlanCost + (newAddOnsCost / daysInMonth) * daysLeft).toFixed(2);
-    
-    // If upgrading (new plan costs more)
-    if (parseFloat(newCostForRemainingDays) > parseFloat(currentRemainingTotal)) {
-      return {
-        type: "charge",
-        amount: (parseFloat(newCostForRemainingDays) - parseFloat(currentRemainingTotal)).toFixed(2)
-      };
-    } 
-    // If downgrading (new plan costs less)
-    else if (parseFloat(newCostForRemainingDays) < parseFloat(currentRemainingTotal)) {
-      return {
-        type: "credit",
-        amount: (parseFloat(currentRemainingTotal) - parseFloat(newCostForRemainingDays)).toFixed(2)
-      };
-    }
-    // If same cost
-    else {
-      return {
-        type: "none",
-        amount: "0.00"
-      };
+  // Get formatted interval name
+  const getIntervalName = (interval: string): string => {
+    switch(interval) {
+      case 'month': return 'Monthly';
+      case 'quarter': return 'Quarterly';
+      case 'year': return 'Annual';
+      default: return 'Monthly';
     }
   };
-
-  // Calculate the new recurring total
-  const calculateRecurringTotal = () => {
-    const planPrice = availablePlans.find(p => p.id === selectedPlan)?.price || 0;
-    
-    const addOnTotal = selectedAddOns
-      .filter(addonId => {
-        const addon = addOns.find(a => a.id === addonId);
-        return addon && !addon.includedIn.includes(selectedPlan);
-      })
-      .reduce((total, addonId) => {
-        const addon = addOns.find(a => a.id === addonId);
-        return total + (addon ? addon.price : 0);
-      }, 0);
-    
-    return (planPrice + addOnTotal).toFixed(2);
-  };
-
-  // Check if an add-on is included in the selected plan
-  const isAddOnIncluded = (addOnId: string) => {
-    const addon = addOns.find(a => a.id === addOnId);
-    return addon?.includedIn.includes(selectedPlan) || false;
-  };
-
-  const proratedCharges = calculateProratedCharges();
-  const recurringTotal = calculateRecurringTotal();
-  const nextBillingDate = calculateNextBillingDate();
 
   return (
     <AccountLayout>
       <Helmet>
-        <title>Change Subscription Plan | GamePath AI</title>
+        <title>{isConfirmationStep ? "Confirm Plan Change" : "Change Plan"} | GamePath AI</title>
       </Helmet>
-
+      
       <div className="max-w-4xl mx-auto space-y-6">
         <div>
           <Button 
@@ -310,530 +217,399 @@ const ChangePlan = () => {
             onClick={handleGoBack}
           >
             <ArrowLeft size={16} className="mr-1" />
-            {step > 1 ? "Back" : "Back to Subscription"}
+            {isConfirmationStep ? "Back to Plan Selection" : "Back to Subscription"}
           </Button>
-          
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-white">{
-                step === 3 ? "Plan Updated" : "Change Plan"
-              }</h1>
-              <p className="text-gray-400">{
-                step === 1 ? "Select a new subscription plan" : 
-                step === 2 ? "Review your selection" :
-                "Your subscription has been updated"
-              }</p>
-            </div>
-            
-            <div className="hidden md:block">
-              <div className="flex items-center space-x-1">
-                {[1, 2, 3].map((s) => (
-                  <div 
-                    key={s} 
-                    className={`
-                      h-2 rounded-full 
-                      ${s < step 
-                        ? 'w-8 bg-cyber-green' 
-                        : s === step 
-                          ? 'w-8 bg-cyber-blue' 
-                          : 'w-6 bg-gray-700'
-                      }
-                      mx-0.5
-                    `}
-                  />
-                ))}
-              </div>
-              <div className="text-xs text-gray-400 mt-1">
-                Step {step} of 3: {step === 1 ? "Choose Plan" : step === 2 ? "Review" : "Complete"}
-              </div>
-            </div>
-          </div>
+          <h1 className="text-2xl font-bold text-white mb-1">
+            {isConfirmationStep ? "Review and Confirm" : "Change Your Plan"}
+          </h1>
+          <p className="text-gray-400">
+            {isConfirmationStep 
+              ? "Please review your plan changes before confirming" 
+              : "Choose a plan that best fits your gaming needs"}
+          </p>
         </div>
-
-        <div className="md:hidden mb-6">
-          <Progress value={(step / 3) * 100} className="h-2 bg-gray-700" indicatorClassName="bg-cyber-blue" />
-          <div className="flex justify-between text-xs text-gray-400 mt-1">
-            <span>Choose Plan</span>
-            <span>Review</span>
-            <span>Complete</span>
-          </div>
-        </div>
-
-        {/* Step 1: Plan Selection */}
-        {step === 1 && (
+        
+        {!isConfirmationStep ? (
           <>
-            <Card className="border-cyber-blue/30 bg-cyber-darkblue/60">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Users className="h-5 w-5 mr-2 text-cyber-blue" />
-                  Select Your Plan
-                </CardTitle>
-                <CardDescription>
-                  All plans include full regional access and optimized gaming routes
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <RadioGroup value={selectedPlan} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                  {availablePlans.map(plan => {
-                    const isCurrentPlan = plan.id === currentPlan.id;
-                    const isSelected = plan.id === selectedPlan;
-                    
-                    return (
-                      <div 
-                        key={plan.id}
-                        className={`
-                          border rounded-lg p-4 cursor-pointer transition-colors
-                          ${isCurrentPlan ? 'border-cyber-green/60 bg-cyber-green/5' : ''}
-                          ${isSelected && !isCurrentPlan ? 'border-cyber-blue bg-cyber-blue/10' : ''}
-                          ${!isSelected && !isCurrentPlan ? 'border-gray-700 hover:border-gray-500' : ''}
-                        `}
-                        onClick={() => handlePlanSelect(plan.id)}
-                      >
-                        <RadioGroupItem 
-                          value={plan.id} 
-                          id={`plan-${plan.id}`} 
-                          className="sr-only" 
-                        />
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="font-medium text-white">{plan.name}</h3>
-                            <p className="text-xs text-gray-400 mt-1">{plan.description}</p>
-                          </div>
-                          {isCurrentPlan && (
-                            <Badge variant="cyber" className="bg-cyber-green/20 text-cyber-green border-cyber-green/30">
-                              Current
-                            </Badge>
-                          )}
-                        </div>
-                        
-                        <div className="mt-3">
-                          <Badge variant="cyber" className="py-0">
-                            {plan.users} {plan.users === 1 ? 'user' : 'users'}
-                          </Badge>
-                        </div>
-                        
-                        <div className="mt-4 text-xl font-bold">
-                          ${plan.price.toFixed(2)}<span className="text-sm font-normal text-gray-400">/month</span>
-                        </div>
-                        
-                        <ul className="mt-3 space-y-1">
-                          {planFeatures[plan.id as keyof typeof planFeatures].slice(0, 3).map((feature, i) => (
-                            <li key={i} className="flex items-center text-sm text-gray-300">
-                              <Check className="h-3 w-3 mr-2 text-cyber-green" />
-                              {feature}
-                            </li>
-                          ))}
-                          {planFeatures[plan.id as keyof typeof planFeatures].length > 3 && (
-                            <li className="text-sm text-gray-400">
-                              +{planFeatures[plan.id as keyof typeof planFeatures].length - 3} more features
-                            </li>
-                          )}
-                        </ul>
-                        
-                        <div className={`w-full h-1.5 bg-gray-800 rounded mt-4 overflow-hidden ${isSelected ? 'bg-cyber-blue/30' : ''}`}>
-                          <div 
-                            className={`h-full rounded ${isSelected ? 'bg-cyber-blue' : 'bg-cyber-blue/50'}`} 
-                            style={{width: `${(plan.price / availablePlans[2].price) * 100}%`}}
-                          ></div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </RadioGroup>
-                
-                <div className="mt-8">
-                  <h3 className="text-lg font-medium mb-4 flex items-center">
-                    <Zap className="h-4 w-4 mr-2 text-cyber-blue" />
-                    Premium Add-ons
-                  </h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {addOns.map(addon => {
-                      const isIncluded = addon.includedIn.includes(selectedPlan);
-                      const isSelected = selectedAddOns.includes(addon.id);
-                      const AddonIcon = addon.icon;
+            {/* Plan Selection Step */}
+            <div className="space-y-8">
+              <Card className="border-cyber-blue/30">
+                <CardHeader>
+                  <CardTitle className="text-xl">Select Billing Cycle</CardTitle>
+                  <CardDescription>
+                    Choose how often you want to be billed
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Tabs 
+                    value={selectedInterval} 
+                    onValueChange={(value) => setSelectedInterval(value as "month" | "quarter" | "year")}
+                    className="w-full"
+                  >
+                    <TabsList className="grid grid-cols-3 w-full">
+                      <TabsTrigger value="month" className="data-[state=active]:bg-cyber-blue/20 data-[state=active]:text-cyber-blue">
+                        Monthly
+                      </TabsTrigger>
+                      <TabsTrigger value="quarter" className="data-[state=active]:bg-cyber-blue/20 data-[state=active]:text-cyber-blue">
+                        Quarterly <span className="ml-1 text-xs bg-cyber-green/20 text-cyber-green px-1 rounded">-10%</span>
+                      </TabsTrigger>
+                      <TabsTrigger value="year" className="data-[state=active]:bg-cyber-blue/20 data-[state=active]:text-cyber-blue">
+                        Annually <span className="ml-1 text-xs bg-cyber-green/20 text-cyber-green px-1 rounded">-17%</span>
+                      </TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                </CardContent>
+              </Card>
+
+              <Card className="border-cyber-blue/30">
+                <CardHeader>
+                  <CardTitle className="text-xl">Choose Your Plan</CardTitle>
+                  <CardDescription>
+                    Select the plan that best fits your needs
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <RadioGroup value={selectedPlan} onValueChange={setSelectedPlan} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {pricingData.plans.map(plan => {
+                      const isSelected = selectedPlan === plan.id;
+                      const isCurrentUserPlan = subscription?.plan === plan.id;
+                      let priceToShow;
                       
-                      // If included in plan, show as included
-                      if (isIncluded) {
-                        return (
-                          <div 
-                            key={addon.id}
-                            className="border-l-4 border-l-cyber-blue border border-cyber-blue/30 bg-cyber-blue/5 rounded-lg p-4"
-                          >
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center">
-                                <div className="w-8 h-8 rounded-lg bg-cyber-blue/20 flex items-center justify-center mr-3">
-                                  <AddonIcon className="h-5 w-5 text-cyber-blue" />
-                                </div>
-                                <h3 className="font-medium">{addon.name}</h3>
-                              </div>
-                              <Badge variant="cyber" className="py-0.5 px-2">Included</Badge>
-                            </div>
-                            
-                            <p className="text-sm text-gray-400 mt-2">{addon.description}</p>
-                          </div>
-                        );
+                      if (selectedInterval === "month") {
+                        priceToShow = plan.monthlyPrice;
+                      } else if (selectedInterval === "quarter") {
+                        priceToShow = plan.quarterlyPrice;
+                      } else {
+                        priceToShow = plan.yearlyPrice;
                       }
                       
-                      // Otherwise show as toggleable add-on
                       return (
                         <div 
-                          key={addon.id}
+                          key={plan.id}
                           className={`
-                            border rounded-lg p-4 cursor-pointer transition-colors
+                            relative cursor-pointer border rounded-lg p-5
                             ${isSelected 
-                              ? 'border-cyber-purple bg-cyber-purple/10' 
-                              : 'border-gray-700 hover:border-gray-500'
+                              ? 'border-cyber-blue bg-cyber-blue/10' 
+                              : 'border-gray-800 hover:border-gray-700'
                             }
                           `}
-                          onClick={() => toggleAddOn(addon.id)}
+                          onClick={() => setSelectedPlan(plan.id)}
                         >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center">
-                              <div className={`
-                                w-8 h-8 rounded-lg flex items-center justify-center mr-3
-                                ${isSelected ? 'bg-cyber-purple/20' : 'bg-gray-800'}
-                              `}>
-                                <AddonIcon className={`h-5 w-5 ${isSelected ? 'text-cyber-purple' : 'text-gray-400'}`} />
-                              </div>
-                              <h3 className="font-medium">{addon.name}</h3>
+                          {isCurrentUserPlan && (
+                            <div className="absolute -top-2 -right-2 px-2 py-1 text-xs bg-cyber-green/20 text-cyber-green rounded-full">
+                              Current Plan
+                            </div>
+                          )}
+                          
+                          <RadioGroupItem value={plan.id} id={plan.id} className="sr-only" />
+                          <div className="space-y-4">
+                            <div>
+                              <h3 className="font-bold text-lg">{plan.name}</h3>
+                              <p className="text-sm text-gray-400">{plan.description}</p>
                             </div>
                             
-                            <div className={`
-                              w-5 h-5 rounded border flex items-center justify-center
-                              ${isSelected ? 'border-cyber-purple bg-cyber-purple/20' : 'border-gray-600'}
-                            `}>
-                              {isSelected && <Check className="h-3 w-3 text-cyber-purple" />}
+                            <div className="flex items-center">
+                              <span className="text-3xl font-bold">${priceToShow.toFixed(2)}</span>
+                              <span className="text-gray-400 ml-2">
+                                /{selectedInterval === "year" 
+                                  ? "year" 
+                                  : selectedInterval === "quarter" 
+                                    ? "quarter" 
+                                    : "month"}
+                              </span>
                             </div>
-                          </div>
-                          
-                          <p className="text-sm text-gray-400 mt-2">{addon.description}</p>
-                          
-                          <div className="mt-3 font-medium text-cyber-purple">
-                            +${addon.price.toFixed(2)}/month
+                            
+                            <div className="flex items-center text-sm text-white/80">
+                              <Users className="mr-2 h-4 w-4" />
+                              <span>{plan.users} {plan.users === 1 ? 'user' : 'users'}</span>
+                            </div>
+                            
+                            <div className="bg-cyber-darkblue rounded p-3">
+                              <h4 className="font-medium mb-2">Features:</h4>
+                              <ul className="space-y-2 text-sm">
+                                {plan.features.map((feature, index) => (
+                                  <li key={index} className="flex items-start">
+                                    <Check className="h-4 w-4 mr-2 mt-0.5 text-cyber-green" />
+                                    <span>{feature}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
                           </div>
                         </div>
                       );
                     })}
+                  </RadioGroup>
+                </CardContent>
+              </Card>
+
+              <Card className="border-cyber-blue/30">
+                <CardHeader>
+                  <CardTitle className="text-xl">Add-ons (Optional)</CardTitle>
+                  <CardDescription>
+                    Enhance your gaming experience with these additional features
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {pricingData.addOns.map(addon => {
+                      const isSelected = selectedAddOns.includes(addon.id);
+                      const isIncluded = isAddOnIncludedInPlan(addon.id, selectedPlan);
+                      let priceToShow;
+                      
+                      if (selectedInterval === "month") {
+                        priceToShow = addon.monthlyPrice;
+                      } else if (selectedInterval === "quarter") {
+                        priceToShow = addon.quarterlyPrice;
+                      } else {
+                        priceToShow = addon.yearlyPrice;
+                      }
+                      
+                      return (
+                        <div 
+                          key={addon.id} 
+                          className={`
+                            p-4 border rounded-lg flex justify-between items-center
+                            ${isIncluded 
+                              ? 'bg-cyber-blue/10 border-cyber-blue/30' 
+                              : isSelected 
+                                ? 'bg-cyber-purple/10 border-cyber-purple/30' 
+                                : 'border-gray-800 hover:border-gray-700'
+                            }
+                            ${isIncluded ? '' : 'cursor-pointer'}
+                          `}
+                          onClick={() => !isIncluded && toggleAddon(addon.id)}
+                        >
+                          <div className="flex items-start space-x-3">
+                            {!isIncluded && (
+                              <Checkbox 
+                                id={`addon-${addon.id}`} 
+                                checked={isSelected}
+                                onCheckedChange={() => toggleAddon(addon.id)}
+                                className="mt-1"
+                              />
+                            )}
+                            <div>
+                              <Label 
+                                htmlFor={`addon-${addon.id}`}
+                                className={`font-medium mb-1 block ${isIncluded ? 'cursor-default' : 'cursor-pointer'}`}
+                              >
+                                {addon.name} {isIncluded && 
+                                  <span className="text-cyber-blue text-xs">(Included in {selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)} plan)</span>
+                                }
+                              </Label>
+                              <p className="text-sm text-gray-400">{addon.description}</p>
+                            </div>
+                          </div>
+                          
+                          {!isIncluded && (
+                            <div className="text-right">
+                              <span className="font-medium">
+                                +${priceToShow.toFixed(2)}
+                              </span>
+                              <span className="text-xs text-gray-400 block">
+                                per {selectedInterval === "year" ? "year" : selectedInterval === "quarter" ? "quarter" : "month"}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+                <CardFooter className="flex justify-end">
+                  <Button 
+                    variant="cyberAction"
+                    onClick={handleContinue}
+                    disabled={isCurrentPlan}
+                  >
+                    {isCurrentPlan ? "This is your current plan" : "Continue to Review"}
+                  </Button>
+                </CardFooter>
+              </Card>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Confirmation Step */}
+            <Card className="border-cyber-blue/30">
+              <CardHeader className="bg-cyber-blue/10 border-b border-cyber-blue/30">
+                <CardTitle className="text-xl">Order Summary</CardTitle>
+                <CardDescription>
+                  Review your plan changes
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-6 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h3 className="text-lg font-medium text-white mb-4">Plan Changes</h3>
+                    
+                    <div className="space-y-5">
+                      <div className="flex justify-between items-center pb-3">
+                        <div>
+                          <span className="text-gray-400 block">From</span>
+                          <div className="flex items-center">
+                            <Shield className="h-4 w-4 mr-2 text-gray-400" />
+                            <span>{subscription?.plan.charAt(0).toUpperCase() + (subscription?.plan.slice(1) || "")} Plan</span>
+                          </div>
+                          <span className="text-xs text-gray-500 block mt-1">
+                            {getIntervalName(subscription?.interval || "month")} billing • {subscription?.users} {subscription?.users === 1 ? 'user' : 'users'}
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <span className="font-medium">${subscription?.amount.toFixed(2) || "0.00"}</span>
+                          <span className="text-xs text-gray-400 block">
+                            per {subscription?.interval}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-between items-center pb-3">
+                        <div>
+                          <span className="text-gray-400 block">To</span>
+                          <div className="flex items-center">
+                            <Shield className="h-4 w-4 mr-2 text-cyber-blue" />
+                            <span className="text-cyber-blue">
+                              {pricingData.plans.find(p => p.id === selectedPlan)?.name} Plan
+                            </span>
+                          </div>
+                          <span className="text-xs text-gray-500 block mt-1">
+                            {getIntervalName(selectedInterval)} billing • {pricingData.plans.find(p => p.id === selectedPlan)?.users} users
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <span className="font-medium text-cyber-blue">${calculateNewPrice()}</span>
+                          <span className="text-xs text-gray-400 block">
+                            per {selectedInterval}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="border-t border-gray-800 pt-3">
+                        <h4 className="font-medium mb-3">Selected Add-ons:</h4>
+                        {selectedAddOns.length > 0 ? (
+                          <div className="space-y-2">
+                            {selectedAddOns.map(addonId => {
+                              const addon = pricingData.addOns.find(a => a.id === addonId);
+                              const isIncluded = isAddOnIncludedInPlan(addonId, selectedPlan);
+                              
+                              if (!addon) return null;
+                              
+                              let addonPrice;
+                              if (selectedInterval === "month") {
+                                addonPrice = addon.monthlyPrice;
+                              } else if (selectedInterval === "quarter") {
+                                addonPrice = addon.quarterlyPrice;
+                              } else {
+                                addonPrice = addon.yearlyPrice;
+                              }
+                              
+                              return (
+                                <div key={addonId} className="flex justify-between items-center">
+                                  <span>
+                                    {addon.name} {isIncluded && 
+                                      <span className="text-cyber-blue text-xs">(Included)</span>
+                                    }
+                                  </span>
+                                  {!isIncluded && (
+                                    <span className="font-medium">
+                                      +${addonPrice.toFixed(2)}
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <p className="text-gray-500 text-sm">No add-ons selected</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="border-l border-gray-800 pl-6">
+                    <h3 className="text-lg font-medium text-white mb-4">Billing Summary</h3>
+                    
+                    <div className="space-y-4">
+                      <div className="flex justify-between pb-2 border-b border-gray-800">
+                        <span>New plan price</span>
+                        <span className="font-medium">${calculateNewPrice()}/{selectedInterval}</span>
+                      </div>
+                      
+                      <div className="flex justify-between pb-2 border-b border-gray-800">
+                        <span>Current plan</span>
+                        <span className="font-medium">-${subscription?.amount.toFixed(2) || "0.00"}/{subscription?.interval}</span>
+                      </div>
+                      
+                      <div className="flex justify-between pb-2 border-b border-gray-800">
+                        <span>Prorated adjustment</span>
+                        <span className={`font-medium ${
+                          parseFloat(calculateProratedAmount()) < 0 ? 'text-cyber-green' : 'text-cyber-orange'
+                        }`}>
+                          {parseFloat(calculateProratedAmount()) < 0 ? '-' : '+'}
+                          ${Math.abs(parseFloat(calculateProratedAmount())).toFixed(2)}
+                        </span>
+                      </div>
+                      
+                      <div className="flex justify-between font-bold">
+                        <span>Today's charge</span>
+                        <span>
+                          ${Math.max(0, parseFloat(calculateProratedAmount())).toFixed(2)}
+                        </span>
+                      </div>
+                      
+                      <div className="bg-cyber-darkblue/50 border border-gray-800 rounded-lg p-4 mt-4">
+                        <div className="flex items-start">
+                          <Clock className="h-5 w-5 mr-2 text-cyber-blue" />
+                          <div>
+                            <h4 className="font-medium text-sm">When will this take effect?</h4>
+                            <p className="text-sm text-gray-400 mt-1">
+                              Your plan changes will take effect immediately. You will be charged or credited the prorated amount for the remainder of your billing period.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </CardContent>
-              <CardFooter>
-                <Button 
-                  variant="cyberAction"
-                  onClick={handleContinue}
-                  className="ml-auto"
-                >
-                  Continue <ChevronRight className="h-4 w-4 ml-1" />
-                </Button>
+              <CardFooter className="flex justify-between border-t border-gray-800 pt-6">
+                <div>
+                  {parseFloat(calculateProratedAmount()) > 0 ? (
+                    <div className="flex items-center text-cyber-orange">
+                      <AlertTriangle className="h-4 w-4 mr-2" />
+                      <span className="text-sm">You'll be charged ${parseFloat(calculateProratedAmount()).toFixed(2)} today</span>
+                    </div>
+                  ) : parseFloat(calculateProratedAmount()) < 0 ? (
+                    <div className="flex items-center text-cyber-green">
+                      <Check className="h-4 w-4 mr-2" />
+                      <span className="text-sm">You'll receive a credit of ${Math.abs(parseFloat(calculateProratedAmount())).toFixed(2)}</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center">
+                      <CreditCard className="h-4 w-4 mr-2" />
+                      <span className="text-sm">No charges today</span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex gap-3">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsConfirmationStep(false)}
+                  >
+                    Go Back
+                  </Button>
+                  <Button 
+                    variant="cyberAction" 
+                    onClick={handleConfirmChange}
+                    disabled={isProcessing}
+                  >
+                    {isProcessing ? "Processing..." : "Confirm Change"}
+                  </Button>
+                </div>
               </CardFooter>
             </Card>
-            
-            <div className="bg-cyber-darkblue/50 border border-cyber-blue/20 rounded-lg p-5">
-              <h3 className="text-white font-medium mb-3 flex items-center">
-                <Globe className="mr-2 h-4 w-4 text-cyber-blue" />
-                Full Regional Access for All Plans
-              </h3>
-              <p className="text-gray-400 text-sm">
-                Every GamePath AI plan includes full access to all geographic regions, ensuring optimal gaming connections worldwide. 
-                The difference between plans is the number of simultaneous users and additional premium features.
-              </p>
-            </div>
           </>
-        )}
-
-        {/* Step 2: Review & Confirm */}
-        {step === 2 && (
-          <Card className="border-cyber-blue/30 bg-cyber-darkblue/60">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Settings className="h-5 w-5 mr-2 text-cyber-blue" />
-                Review Your Plan Change
-              </CardTitle>
-              <CardDescription>
-                Please review your selection before confirming
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {/* Plan Change Summary */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="p-4 border border-gray-800 rounded-lg">
-                    <h3 className="font-medium text-gray-400 mb-3">Current Plan</h3>
-                    
-                    <div className="mb-3">
-                      <h4 className="text-lg font-medium text-white">
-                        {currentPlan.name}
-                        <Badge variant="outline" className="ml-2">
-                          {currentPlan.users} users
-                        </Badge>
-                      </h4>
-                      <p className="text-cyber-blue font-mono">
-                        ${currentPlan.price.toFixed(2)}/month
-                      </p>
-                    </div>
-                    
-                    <div className="text-sm">
-                      <div className="flex items-center text-gray-400 mb-2">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        Next billing: {formatDate(currentPlan.nextBilling)}
-                      </div>
-                    </div>
-                    
-                    {/* Current Add-ons */}
-                    {currentPlan.addOns.length > 0 && (
-                      <div className="mt-4 pt-4 border-t border-gray-800">
-                        <h4 className="text-sm font-medium text-gray-400 mb-2">Current Add-ons</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {currentPlan.addOns.map(addonId => {
-                            const addon = addOns.find(a => a.id === addonId);
-                            if (!addon) return null;
-                            const AddonIcon = addon.icon;
-                            const isIncluded = addon.includedIn.includes(currentPlan.id);
-                            
-                            return (
-                              <Badge 
-                                key={addonId}
-                                variant="outline"
-                                className="flex items-center py-1"
-                              >
-                                <AddonIcon className="h-3 w-3 mr-1" />
-                                {addon.name}
-                                {isIncluded && <span className="ml-1 text-xs">(Included)</span>}
-                              </Badge>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="p-4 border border-cyber-blue bg-cyber-blue/10 rounded-lg">
-                    <h3 className="font-medium text-gray-400 mb-3">New Plan</h3>
-                    
-                    <div className="mb-3">
-                      <h4 className="text-lg font-medium text-white">
-                        {availablePlans.find(p => p.id === selectedPlan)?.name}
-                        <Badge variant="cyber" className="ml-2">
-                          {availablePlans.find(p => p.id === selectedPlan)?.users} users
-                        </Badge>
-                      </h4>
-                      <p className="text-cyber-blue font-mono">
-                        ${availablePlans.find(p => p.id === selectedPlan)?.price.toFixed(2)}/month
-                      </p>
-                    </div>
-                    
-                    <div className="text-sm">
-                      <div className="flex items-center text-gray-400 mb-2">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        First billing: {formatDate(nextBillingDate)}
-                      </div>
-                    </div>
-                    
-                    {/* New Add-ons */}
-                    {selectedAddOns.length > 0 && (
-                      <div className="mt-4 pt-4 border-t border-gray-800">
-                        <h4 className="text-sm font-medium text-gray-400 mb-2">Selected Add-ons</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {selectedAddOns.map(addonId => {
-                            const addon = addOns.find(a => a.id === addonId);
-                            if (!addon) return null;
-                            const AddonIcon = addon.icon;
-                            const isIncluded = addon.includedIn.includes(selectedPlan);
-                            
-                            return (
-                              <Badge 
-                                key={addonId}
-                                variant={isIncluded ? "cyber" : "outline"}
-                                className={`flex items-center py-1 ${isIncluded ? 'bg-cyber-blue/20' : ''}`}
-                              >
-                                <AddonIcon className="h-3 w-3 mr-1" />
-                                {addon.name}
-                                {isIncluded && <span className="ml-1 text-xs">(Included)</span>}
-                              </Badge>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-                <Separator className="bg-gray-800" />
-                
-                {/* Billing Calculations */}
-                <div className="space-y-4">
-                  <h3 className="font-medium text-white">Billing Summary</h3>
-                  
-                  <div className="p-4 border border-gray-800 rounded-lg">
-                    {/* Prorated charges or credits */}
-                    {proratedCharges.type !== "none" && (
-                      <div className="mb-4 pb-3 border-b border-gray-800">
-                        <div className="flex justify-between mb-2">
-                          <div className="text-gray-400">
-                            {proratedCharges.type === "charge" 
-                              ? "Additional charge today" 
-                              : "Credit applied to your account"
-                            }
-                          </div>
-                          <div className={
-                            proratedCharges.type === "charge" 
-                              ? "font-medium text-white" 
-                              : "font-medium text-cyber-green"
-                          }>
-                            {proratedCharges.type === "charge" ? "+" : "-"}${proratedCharges.amount}
-                          </div>
-                        </div>
-                        <p className="text-xs text-gray-500">
-                          Prorated amount for the remainder of your current billing period.
-                        </p>
-                      </div>
-                    )}
-                    
-                    {/* New recurring total */}
-                    <div className="flex justify-between items-center mb-2">
-                      <div className="font-medium">New recurring total</div>
-                      <div className="font-bold text-lg text-cyber-blue">
-                        ${recurringTotal}/month
-                      </div>
-                    </div>
-                    <p className="text-xs text-gray-500">
-                      Your next full billing will be on {formatDate(nextBillingDate)}.
-                    </p>
-                    
-                    <div className="mt-4 pt-4 border-t border-gray-800">
-                      <div className="flex items-center text-sm text-gray-400">
-                        <Clock className="h-4 w-4 mr-2 text-cyber-blue" />
-                        Changes will take effect immediately.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Payment Method */}
-                <div className="p-4 border border-gray-800 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <CreditCard className="h-5 w-5 mr-3 text-gray-400" />
-                      <div>
-                        <h4 className="font-medium">Payment Method</h4>
-                        <p className="text-sm text-gray-400">Visa •••• 4242</p>
-                      </div>
-                    </div>
-                    <Button 
-                      variant="outline"
-                      size="sm"
-                      onClick={() => navigate("/account/payment-methods")}
-                    >
-                      Change
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter className="flex flex-col md:flex-row gap-3">
-              <Button 
-                variant="outline"
-                onClick={handleGoBack}
-                className="w-full md:w-auto md:order-1"
-              >
-                Back
-              </Button>
-              <Button 
-                variant="cyberAction"
-                className="w-full md:w-auto md:order-2 md:ml-auto"
-                onClick={handleContinue}
-                disabled={processing}
-              >
-                {processing ? (
-                  <span className="flex items-center">
-                    Processing
-                    <span className="ml-3 h-5 w-5 rounded-full border-2 border-t-transparent border-white animate-spin"></span>
-                  </span>
-                ) : (
-                  <span>Confirm Plan Change</span>
-                )}
-              </Button>
-            </CardFooter>
-          </Card>
-        )}
-
-        {/* Step 3: Success */}
-        {step === 3 && (
-          <Card className="border-cyber-green/30 bg-cyber-darkblue/60">
-            <CardHeader className="bg-cyber-green/10 border-b border-cyber-green/30">
-              <div className="flex items-center">
-                <CheckCircle className="h-5 w-5 mr-2 text-cyber-green" />
-                <CardTitle>Plan Updated Successfully</CardTitle>
-              </div>
-              <CardDescription>
-                Your subscription has been updated to {availablePlans.find(p => p.id === selectedPlan)?.name}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="space-y-6">
-                <div className="p-4 border border-gray-800 rounded-lg">
-                  <h3 className="font-medium mb-4">Subscription Details</h3>
-                  
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Plan:</span>
-                      <span className="font-medium">
-                        {availablePlans.find(p => p.id === selectedPlan)?.name} ({availablePlans.find(p => p.id === selectedPlan)?.users} users)
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Monthly price:</span>
-                      <span className="font-medium">${recurringTotal}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Next billing date:</span>
-                      <span className="font-medium">{formatDate(nextBillingDate)}</span>
-                    </div>
-                    {proratedCharges.type !== "none" && (
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">
-                          {proratedCharges.type === "charge" ? "Additional charge:" : "Credit applied:"}
-                        </span>
-                        <span className={proratedCharges.type === "credit" ? "text-cyber-green font-medium" : "font-medium"}>
-                          ${proratedCharges.amount}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-center">
-                  <div className="h-24 w-24 rounded-full bg-cyber-green/20 flex items-center justify-center">
-                    <CheckCircle className="h-12 w-12 text-cyber-green" />
-                  </div>
-                </div>
-                
-                <div className="text-center">
-                  <h3 className="text-xl font-medium mb-2">Optimization Complete</h3>
-                  <p className="text-gray-400">
-                    Your new settings have been applied and are now active on your account.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter className="flex flex-col md:flex-row gap-3">
-              <Button 
-                variant="cyberOutline" 
-                className="w-full md:w-auto"
-                onClick={() => navigate("/account")}
-              >
-                Return to Account Dashboard
-              </Button>
-              <Button 
-                variant="cyberAction" 
-                className="w-full md:w-auto"
-                onClick={() => navigate("/account/subscription")}
-              >
-                View Subscription Details
-              </Button>
-            </CardFooter>
-          </Card>
         )}
       </div>
     </AccountLayout>
