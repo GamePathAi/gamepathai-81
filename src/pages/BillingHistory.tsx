@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import AccountLayout from "@/components/Layout/AccountLayout";
@@ -15,78 +15,27 @@ import {
   ChevronLeft,
   ChevronRight,
   CheckCircle,
-  AlertCircle,
-  ExternalLink,
+  AlertCircle
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-
-// Mock billing history data
-const mockInvoices = [
-  {
-    id: "inv_1234567",
-    date: new Date(2025, 3, 15),
-    amount: 17.99,
-    status: "paid",
-    items: [
-      { name: "Co-op Plan", amount: 17.99 }
-    ]
-  },
-  {
-    id: "inv_1234566",
-    date: new Date(2025, 2, 15),
-    amount: 17.99,
-    status: "paid",
-    items: [
-      { name: "Co-op Plan", amount: 17.99 }
-    ]
-  },
-  {
-    id: "inv_1234565",
-    date: new Date(2025, 1, 15),
-    amount: 17.99,
-    status: "paid",
-    items: [
-      { name: "Co-op Plan", amount: 17.99 }
-    ]
-  },
-  {
-    id: "inv_1234564",
-    date: new Date(2025, 0, 15),
-    amount: 9.99,
-    status: "paid",
-    items: [
-      { name: "Player Plan", amount: 9.99 }
-    ]
-  },
-  {
-    id: "inv_1234563",
-    date: new Date(2024, 11, 15),
-    amount: 9.99,
-    status: "refunded",
-    items: [
-      { name: "Player Plan", amount: 9.99 }
-    ]
-  },
-  {
-    id: "inv_1234562",
-    date: new Date(2024, 10, 15),
-    amount: 9.99,
-    status: "failed",
-    items: [
-      { name: "Player Plan", amount: 9.99 }
-    ]
-  }
-];
+import { useSubscription } from "@/hooks/use-subscription";
+import { Invoice } from "@/services/subscriptionApi";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 const BillingHistory = () => {
   const navigate = useNavigate();
+  const { billingHistory, isLoading, refetchBillingHistory } = useSubscription();
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
   
   const handleGoBack = () => {
     navigate("/account");
@@ -100,25 +49,29 @@ const BillingHistory = () => {
     });
   };
 
-  const filteredInvoices = mockInvoices.filter(invoice => {
+  const filteredInvoices = billingHistory.filter(invoice => {
     const matchesSearch = invoice.id.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || invoice.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredInvoices.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, filteredInvoices.length);
+  const currentInvoices = filteredInvoices.slice(startIndex, endIndex);
+
   const downloadInvoice = (invoiceId: string) => {
     // In a real implementation, this would call your API to download the invoice
-    // GET /api/invoices/{invoiceId}/download
     toast.success(`Downloading invoice ${invoiceId}...`);
   };
 
-  const viewInvoiceDetails = (invoice: any) => {
+  const viewInvoiceDetails = (invoice: Invoice) => {
     setSelectedInvoice(invoice);
   };
 
   const resolveFailedPayment = (invoiceId: string) => {
     // In a real implementation, this would redirect to your payment retry flow
-    // POST /api/invoices/{invoiceId}/retry-payment
     toast.info("Redirecting to payment page...");
   };
 
@@ -130,13 +83,28 @@ const BillingHistory = () => {
         return "bg-cyber-orange/20 text-cyber-orange";
       case "failed":
         return "bg-cyber-red/20 text-cyber-red";
+      case "pending":
+        return "bg-cyber-blue/20 text-cyber-blue";
       default:
         return "bg-gray-500/20 text-gray-400";
     }
   };
 
+  const getStatusIcon = (status: string) => {
+    switch(status) {
+      case "paid":
+        return <CheckCircle className="h-3 w-3 mr-1" />;
+      case "refunded":
+      case "failed":
+      case "pending":
+        return <AlertCircle className="h-3 w-3 mr-1" />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <AccountLayout>
+    <AccountLayout requireSubscription>
       <Helmet>
         <title>Billing History | GamePath AI</title>
       </Helmet>
@@ -179,17 +147,53 @@ const BillingHistory = () => {
                   <SelectContent className="bg-cyber-darkblue border-gray-700">
                     <SelectItem value="all">All invoices</SelectItem>
                     <SelectItem value="paid">Paid</SelectItem>
-                    <SelectItem value="refunded">Refunded</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="failed">Failed</SelectItem>
+                    <SelectItem value="refunded">Refunded</SelectItem>
                   </SelectContent>
                 </Select>
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={() => refetchBillingHistory()}
+                  title="Refresh"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                    <path d="M21 3v5h-5" />
+                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                    <path d="M3 21v-5h5" />
+                  </svg>
+                </Button>
               </div>
             </div>
           </CardHeader>
+          
           <CardContent>
             <div className="space-y-4">
-              {filteredInvoices.length > 0 ? (
-                filteredInvoices.map((invoice) => (
+              {isLoading ? (
+                // Loading skeletons
+                Array.from({ length: 3 }).map((_, index) => (
+                  <div key={index} className="flex flex-col md:flex-row md:items-center justify-between p-4 border border-gray-800 rounded-lg">
+                    <div className="flex items-center mb-3 md:mb-0">
+                      <Skeleton className="h-10 w-10 mr-3 rounded" />
+                      <div>
+                        <Skeleton className="h-5 w-24 mb-1" />
+                        <Skeleton className="h-4 w-32" />
+                      </div>
+                    </div>
+                    <div className="flex flex-col md:flex-row md:items-center gap-3">
+                      <Skeleton className="h-6 w-16" />
+                      <Skeleton className="h-6 w-16 md:ml-6" />
+                      <div className="flex gap-2 mt-3 md:mt-0 md:ml-4">
+                        <Skeleton className="h-8 w-16" />
+                        <Skeleton className="h-8 w-8" />
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : filteredInvoices.length > 0 ? (
+                currentInvoices.map((invoice) => (
                   <div 
                     key={invoice.id} 
                     className="flex flex-col md:flex-row md:items-center justify-between p-4 border border-gray-800 rounded-lg hover:border-gray-700 transition-colors"
@@ -208,7 +212,8 @@ const BillingHistory = () => {
                     </div>
                     
                     <div className="flex flex-col md:flex-row md:items-center gap-3 md:ml-4">
-                      <Badge className={`${getStatusColor(invoice.status)} self-start md:self-auto`}>
+                      <Badge className={`${getStatusColor(invoice.status)} self-start md:self-auto flex items-center`}>
+                        {getStatusIcon(invoice.status)}
                         {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
                       </Badge>
                       <div className="text-right md:ml-6">
@@ -256,17 +261,36 @@ const BillingHistory = () => {
               )}
               
               {filteredInvoices.length > 0 && (
-                <div className="flex items-center justify-center space-x-2 pt-4">
-                  <Button variant="outline" size="sm">
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <p className="text-sm text-gray-400">
-                    Page 1 of 1
-                  </p>
-                  <Button variant="outline" size="sm">
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                        className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                      />
+                    </PaginationItem>
+                    
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          isActive={page === currentPage}
+                          onClick={() => setCurrentPage(page)}
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                    
+                    <PaginationItem>
+                      <PaginationNext 
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages}
+                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
               )}
             </div>
           </CardContent>
@@ -289,7 +313,8 @@ const BillingHistory = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-400">Status</p>
-                  <Badge className={`${getStatusColor(selectedInvoice.status)} mt-1`}>
+                  <Badge className={`${getStatusColor(selectedInvoice.status)} mt-1 flex items-center`}>
+                    {getStatusIcon(selectedInvoice.status)}
                     {selectedInvoice.status.charAt(0).toUpperCase() + selectedInvoice.status.slice(1)}
                   </Badge>
                 </div>
@@ -302,7 +327,7 @@ const BillingHistory = () => {
               <div className="border-t border-gray-800 pt-4">
                 <h4 className="text-sm font-medium mb-2">Items</h4>
                 <div className="space-y-2">
-                  {selectedInvoice.items.map((item: any, index: number) => (
+                  {selectedInvoice.items.map((item, index) => (
                     <div key={index} className="flex justify-between">
                       <p>{item.name}</p>
                       <p className="font-mono">${item.amount.toFixed(2)}</p>
@@ -316,7 +341,7 @@ const BillingHistory = () => {
           <DialogFooter>
             <Button
               variant="outline"
-              onClick={() => downloadInvoice(selectedInvoice?.id)}
+              onClick={() => downloadInvoice(selectedInvoice?.id || "")}
             >
               <Download className="h-4 w-4 mr-2" />
               Download PDF

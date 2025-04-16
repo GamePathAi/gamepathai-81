@@ -18,6 +18,7 @@ import Settings from "./pages/Settings";
 import SubscriptionManagement from "./pages/SubscriptionManagement";
 import AccountSubscription from "./pages/AccountSubscription";
 import { NotificationProvider } from "./hooks/use-notifications";
+import { SubscriptionProvider } from "./hooks/use-subscription";
 import Account from "./pages/Account";
 import PaymentMethods from "./pages/PaymentMethods";
 import BillingHistory from "./pages/BillingHistory";
@@ -28,6 +29,7 @@ import CancelSubscription from "./pages/CancelSubscription";
 import HomePage from "./pages/landing/HomePage";
 import FeaturesPage from "./pages/landing/FeaturesPage";
 import PricingPage from "./pages/landing/PricingPage";
+import TechnologyPage from "./pages/landing/TechnologyPage";
 
 const queryClient = new QueryClient();
 
@@ -36,38 +38,41 @@ const App = () => (
     <HelmetProvider>
       <TooltipProvider>
         <NotificationProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              {/* Dashboard Routes */}
-              <Route path="/dashboard" element={<Index />} />
-              <Route path="/network-metrics" element={<NetworkMetrics />} />
-              <Route path="/system-optimization" element={<SystemOptimization />} />
-              <Route path="/route-optimizer" element={<RouteOptimizerPage />} />
-              <Route path="/performance" element={<Performance />} />
-              <Route path="/advanced-optimizer" element={<AdvancedOptimizer />} />
-              <Route path="/vpn-integration" element={<VPNIntegration />} />
-              <Route path="/power-manager" element={<PowerManager />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/subscription" element={<SubscriptionManagement />} />
-              <Route path="/account/subscription" element={<AccountSubscription />} />
-              
-              {/* Account Related Routes */}
-              <Route path="/account" element={<Account />} />
-              <Route path="/account/payment-methods" element={<PaymentMethods />} />
-              <Route path="/account/billing-history" element={<BillingHistory />} />
-              <Route path="/account/change-plan" element={<ChangePlan />} />
-              <Route path="/account/cancel-subscription" element={<CancelSubscription />} />
-              
-              {/* Landing Pages */}
-              <Route path="/" element={<HomePage />} />
-              <Route path="/features" element={<FeaturesPage />} />
-              <Route path="/pricing" element={<PricingPage />} />
-              
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
+          <SubscriptionProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                {/* Dashboard Routes */}
+                <Route path="/dashboard" element={<Index />} />
+                <Route path="/network-metrics" element={<NetworkMetrics />} />
+                <Route path="/system-optimization" element={<SystemOptimization />} />
+                <Route path="/route-optimizer" element={<RouteOptimizerPage />} />
+                <Route path="/performance" element={<Performance />} />
+                <Route path="/advanced-optimizer" element={<AdvancedOptimizer />} />
+                <Route path="/vpn-integration" element={<VPNIntegration />} />
+                <Route path="/power-manager" element={<PowerManager />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/subscription" element={<SubscriptionManagement />} />
+                <Route path="/account/subscription" element={<AccountSubscription />} />
+                
+                {/* Account Related Routes */}
+                <Route path="/account" element={<Account />} />
+                <Route path="/account/payment-methods" element={<PaymentMethods />} />
+                <Route path="/account/billing-history" element={<BillingHistory />} />
+                <Route path="/account/change-plan" element={<ChangePlan />} />
+                <Route path="/account/cancel-subscription" element={<CancelSubscription />} />
+                
+                {/* Landing Pages */}
+                <Route path="/" element={<HomePage />} />
+                <Route path="/features" element={<FeaturesPage />} />
+                <Route path="/pricing" element={<PricingPage />} />
+                <Route path="/technology" element={<TechnologyPage />} />
+                
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </SubscriptionProvider>
         </NotificationProvider>
       </TooltipProvider>
     </HelmetProvider>

@@ -3,12 +3,11 @@ import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import AccountLayout from "@/components/Layout/AccountLayout";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
   CreditCard, 
   Plus, 
-  CheckCircle,
   Shield,
   AlertTriangle,
   Trash2,
@@ -21,33 +20,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-
-// Mock payment methods data
-const mockPaymentMethods = [
-  {
-    id: "pm_1",
-    type: "card",
-    brand: "visa",
-    last4: "4242",
-    expMonth: 4,
-    expYear: 2026,
-    isDefault: true
-  },
-  {
-    id: "pm_2",
-    type: "card",
-    brand: "mastercard",
-    last4: "8348",
-    expMonth: 10,
-    expYear: 2025,
-    isDefault: false
-  }
-];
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { useSubscription } from "@/hooks/use-subscription";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const PaymentMethods = () => {
   const navigate = useNavigate();
-  const [paymentMethods, setPaymentMethods] = useState(mockPaymentMethods);
+  const { 
+    paymentMethods, 
+    isLoading, 
+    addPaymentMethod, 
+    setDefaultPaymentMethod, 
+    deletePaymentMethod 
+  } = useSubscription();
+  
   const [isAddingCard, setIsAddingCard] = useState(false);
   const [cardToDelete, setCardToDelete] = useState<string | null>(null);
   
@@ -56,58 +42,60 @@ const PaymentMethods = () => {
     cardholderName: "",
     expiryMonth: "",
     expiryYear: "",
-    cvc: ""
+    cvc: "",
+    brand: "visa" // Default brand for demonstration
   });
 
-  // Card brand logos - in a real implementation these would be actual images
-  const getBrandLogo = (brand: string) => {
-    switch(brand.toLowerCase()) {
-      case "visa":
-        return "visa-logo";
-      case "mastercard":
-        return "mastercard-logo";
-      case "amex":
-        return "amex-logo";
-      default:
-        return "generic-card";
-    }
-  };
-  
   const handleGoBack = () => {
     navigate("/account");
   };
 
-  const handleAddCard = () => {
-    // In a real implementation, this would call your API to add the card
-    // POST /api/payment-methods
-    toast.success("New payment method added successfully");
-    setIsAddingCard(false);
-    // Reset form
-    setNewCard({
-      cardNumber: "",
-      cardholderName: "",
-      expiryMonth: "",
-      expiryYear: "",
-      cvc: ""
-    });
+  const handleAddCard = async () => {
+    try {
+      // Basic form validation
+      if (!newCard.cardholderName || !newCard.cardNumber || !newCard.expiryMonth || 
+          !newCard.expiryYear || !newCard.cvc) {
+        toast.error("Please fill out all fields");
+        return;
+      }
+      
+      // In a real implementation, this would call your API to add the card
+      await addPaymentMethod({
+        ...newCard,
+        last4: newCard.cardNumber.slice(-4)
+      });
+      
+      setIsAddingCard(false);
+      
+      // Reset form
+      setNewCard({
+        cardNumber: "",
+        cardholderName: "",
+        expiryMonth: "",
+        expiryYear: "",
+        cvc: "",
+        brand: "visa"
+      });
+    } catch (error) {
+      console.error("Failed to add payment method:", error);
+    }
   };
 
-  const handleDeleteCard = (id: string) => {
-    // In a real implementation, this would call your API to delete the card
-    // DELETE /api/payment-methods/{id}
-    setPaymentMethods(paymentMethods.filter(pm => pm.id !== id));
-    setCardToDelete(null);
-    toast.success("Payment method removed successfully");
+  const handleDeleteCard = async (id: string) => {
+    try {
+      await deletePaymentMethod(id);
+      setCardToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete payment method:", error);
+    }
   };
 
-  const handleSetDefault = (id: string) => {
-    // In a real implementation, this would call your API to set default
-    // POST /api/payment-methods/{id}/set-default
-    setPaymentMethods(paymentMethods.map(pm => ({
-      ...pm,
-      isDefault: pm.id === id
-    })));
-    toast.success("Default payment method updated");
+  const handleSetDefault = async (id: string) => {
+    try {
+      await setDefaultPaymentMethod(id);
+    } catch (error) {
+      console.error("Failed to set default payment method:", error);
+    }
   };
 
   const formatExpiryDate = (month: number, year: number) => {
@@ -123,7 +111,7 @@ const PaymentMethods = () => {
   };
 
   return (
-    <AccountLayout>
+    <AccountLayout requireSubscription>
       <Helmet>
         <title>Payment Methods | GamePath AI</title>
       </Helmet>
@@ -182,6 +170,7 @@ const PaymentMethods = () => {
                   <div className="space-y-2">
                     <Label htmlFor="expiryMonth">Expiry Month</Label>
                     <Select
+                      value={newCard.expiryMonth}
                       onValueChange={(value) => setNewCard({...newCard, expiryMonth: value})}
                     >
                       <SelectTrigger className="bg-cyber-darkblue border-gray-700">
@@ -199,6 +188,7 @@ const PaymentMethods = () => {
                   <div className="space-y-2">
                     <Label htmlFor="expiryYear">Expiry Year</Label>
                     <Select
+                      value={newCard.expiryYear}
                       onValueChange={(value) => setNewCard({...newCard, expiryYear: value})}
                     >
                       <SelectTrigger className="bg-cyber-darkblue border-gray-700">
@@ -224,6 +214,23 @@ const PaymentMethods = () => {
                     />
                   </div>
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="cardBrand">Card Type</Label>
+                  <Select
+                    value={newCard.brand}
+                    onValueChange={(value) => setNewCard({...newCard, brand: value})}
+                  >
+                    <SelectTrigger className="bg-cyber-darkblue border-gray-700">
+                      <SelectValue placeholder="Select card type" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-cyber-darkblue border-gray-700">
+                      <SelectItem value="visa">Visa</SelectItem>
+                      <SelectItem value="mastercard">Mastercard</SelectItem>
+                      <SelectItem value="amex">American Express</SelectItem>
+                      <SelectItem value="discover">Discover</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               <DialogFooter>
                 <div className="flex items-center text-xs text-gray-400 mb-3 w-full">
@@ -244,9 +251,32 @@ const PaymentMethods = () => {
         </div>
 
         <Card className="border-cyber-blue/30 bg-cyber-darkblue/60">
+          <CardHeader className="border-b border-gray-800">
+            <h2 className="text-xl font-semibold">Your Payment Methods</h2>
+          </CardHeader>
+          
           <CardContent className="pt-6">
             <div className="space-y-6">
-              {paymentMethods.length > 0 ? (
+              {isLoading ? (
+                // Loading state
+                Array.from({ length: 2 }).map((_, index) => (
+                  <div key={index} className="p-4 border rounded-lg border-gray-700 bg-cyber-darkblue/50">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <Skeleton className="w-12 h-8 rounded-md" />
+                        <div>
+                          <Skeleton className="h-5 w-32 mb-2" />
+                          <Skeleton className="h-4 w-24" />
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Skeleton className="h-8 w-24" />
+                        <Skeleton className="h-8 w-8" />
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : paymentMethods.length > 0 ? (
                 paymentMethods.map((method) => (
                   <div 
                     key={method.id} 
@@ -262,15 +292,15 @@ const PaymentMethods = () => {
                         <CreditCard className="h-5 w-5 text-gray-400" />
                       </div>
                       <div>
-                        <div className="font-medium capitalize">
+                        <div className="font-medium capitalize flex items-center">
                           {method.brand} •••• {method.last4}
                           {method.isDefault && (
                             <Badge variant="cyber" className="ml-2 py-0">Default</Badge>
                           )}
                         </div>
                         <div className="text-sm text-gray-400 flex items-center space-x-2">
-                          <span>Expires {formatExpiryDate(method.expMonth, method.expYear)}</span>
-                          {isExpiryInvalid(method.expMonth, method.expYear) && (
+                          <span>Expires {formatExpiryDate(method.expMonth || 0, method.expYear || 0)}</span>
+                          {isExpiryInvalid(method.expMonth || 0, method.expYear || 0) && (
                             <span className="text-cyber-red flex items-center">
                               <AlertTriangle className="h-3 w-3 mr-1" />
                               Expired
@@ -293,16 +323,14 @@ const PaymentMethods = () => {
                       <AlertDialog open={cardToDelete === method.id} onOpenChange={(open) => {
                         if (!open) setCardToDelete(null);
                       }}>
-                        <AlertDialogTrigger asChild>
-                          <Button 
-                            variant="destructive" 
-                            size="sm"
-                            onClick={() => setCardToDelete(method.id)}
-                            disabled={paymentMethods.length === 1}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </AlertDialogTrigger>
+                        <Button 
+                          variant="destructive" 
+                          size="sm"
+                          onClick={() => setCardToDelete(method.id)}
+                          disabled={paymentMethods.length === 1}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                         <AlertDialogContent className="bg-cyber-darkblue border-cyber-blue/30">
                           <AlertDialogHeader>
                             <AlertDialogTitle>Remove Payment Method</AlertDialogTitle>

@@ -20,8 +20,8 @@ const LandingHeader: React.FC = () => {
 
   const navLinks = [
     { name: "Features", path: "/features" },
-    { name: "Pricing", path: "/pricing" },
-    { name: "Technology", path: "/technology" }
+    { name: "Technology", path: "/technology" },
+    { name: "Pricing", path: "/pricing" }
   ];
 
   return (

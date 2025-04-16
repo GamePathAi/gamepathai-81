@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import AccountLayout from "@/components/Layout/AccountLayout";
@@ -11,107 +12,25 @@ import {
   CheckCircle, 
   Shield, 
   Users,
-  ChevronUp,
-  ChevronDown,
   Zap,
   Settings,
   BarChart
 } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-
-// Mock data for demonstration - would be replaced with actual API calls
-const mockSubscriptionData = {
-  plan: "Co-op",
-  users: 2,
-  price: 17.99,
-  interval: "month",
-  nextBilling: new Date(2025, 4, 25),
-  status: "active",
-  addOns: ["vpn_integration"],
-  paymentMethod: {
-    last4: "4242",
-    brand: "Visa",
-    expMonth: 12,
-    expYear: 2025
-  },
-  billingHistory: [
-    { id: "inv_1JKL23", date: new Date(2025, 3, 25), amount: 17.99, status: "paid" },
-    { id: "inv_1HIJ45", date: new Date(2025, 2, 25), amount: 17.99, status: "paid" },
-    { id: "inv_1GHI67", date: new Date(2025, 1, 25), amount: 17.99, status: "paid" }
-  ]
-};
-
-// Define more precise types for add-ons
-interface BaseAddOn {
-  name: string;
-  description: string;
-  monthlyPrice: number;
-}
-
-interface IncludedAddOn extends BaseAddOn {
-  included: string[];
-}
-
-// Type guard to check if an add-on has the 'included' property
-const hasIncludedPlans = (addon: BaseAddOn | IncludedAddOn): addon is IncludedAddOn => {
-  return 'included' in addon;
-};
-
-const addOnsInfo: Record<string, BaseAddOn | IncludedAddOn> = {
-  advanced_optimizer: {
-    name: "Advanced Optimizer",
-    description: "Advanced optimization algorithms for maximum performance",
-    monthlyPrice: 2.99
-  },
-  power_manager: {
-    name: "Power Manager",
-    description: "Advanced power and temperature control",
-    monthlyPrice: 1.99
-  },
-  vpn_integration: {
-    name: "VPN Integration",
-    description: "Advanced protection and routing for secure connections",
-    monthlyPrice: 3.99,
-    included: ["co-op", "alliance"] // Plans that include this add-on
-  }
-};
+import { useSubscription } from "@/hooks/use-subscription";
 
 const AccountSubscription = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
-  const [subscription, setSubscription] = useState(mockSubscriptionData);
-  const [openSection, setOpenSection] = useState<string | null>("usage");
   
-  // In a real implementation, this would fetch data from your backend API
-  useEffect(() => {
-    // Simulate API call
-    const fetchSubscriptionDetails = async () => {
-      setIsLoading(true);
-      try {
-        // Replace with actual API call to get subscription details
-        // const response = await fetch('/api/subscription');
-        // setSubscription(await response.json());
-        
-        // Using mock data for now
-        setTimeout(() => {
-          setSubscription(mockSubscriptionData);
-          setIsLoading(false);
-        }, 800);
-      } catch (error) {
-        console.error("Failed to fetch subscription details:", error);
-        toast.error("Failed to load subscription details", {
-          description: "Please try again later or contact support."
-        });
-        setIsLoading(false);
-      }
-    };
-    
-    fetchSubscriptionDetails();
-  }, []);
+  const { 
+    subscription, 
+    addOns, 
+    isLoading,
+    refetchSubscription
+  } = useSubscription();
   
   const formatDate = (date: Date) => {
     return date.toLocaleDateString("en-US", { 
@@ -137,12 +56,16 @@ const AccountSubscription = () => {
     navigate("/account/billing-history");
   };
 
-  const toggleSection = (section: string) => {
-    setOpenSection(openSection === section ? null : section);
+  // Helper function to check if an add-on is included in the current plan
+  const isAddOnIncludedInPlan = (addonId: string) => {
+    const addon = addOns.find(a => a.id === addonId);
+    if (!addon || !addon.includedInPlans || !subscription) return false;
+    
+    return addon.includedInPlans.includes(subscription.plan);
   };
 
   return (
-    <AccountLayout>
+    <AccountLayout requireSubscription>
       <Helmet>
         <title>My Subscription | GamePath AI</title>
       </Helmet>
@@ -182,7 +105,7 @@ const AccountSubscription = () => {
                   </div>
                 </CardContent>
               </Card>
-            ) : (
+            ) : subscription ? (
               <Card className="border-cyber-blue/30">
                 <CardHeader className="bg-cyber-blue/10 border-b border-cyber-blue/30">
                   <div className="flex justify-between items-start">
@@ -206,34 +129,23 @@ const AccountSubscription = () => {
                       <div className="space-y-4">
                         <div className="flex justify-between items-center border-b border-gray-800 pb-3">
                           <span className="text-gray-400">Plan</span>
-                          <span className="font-medium text-white">{subscription.plan} ({subscription.users} users)</span>
+                          <span className="font-medium text-white">
+                            {subscription.plan.charAt(0).toUpperCase() + subscription.plan.slice(1)} ({subscription.users} {subscription.users === 1 ? 'user' : 'users'})
+                          </span>
                         </div>
                         
                         <div className="flex justify-between items-center border-b border-gray-800 pb-3">
                           <span className="text-gray-400">Price</span>
-                          <span className="font-medium text-white">${subscription.price} per {subscription.interval}</span>
+                          <span className="font-medium text-white">
+                            ${subscription.amount} per {subscription.interval}
+                          </span>
                         </div>
                         
                         <div className="flex justify-between items-center border-b border-gray-800 pb-3">
                           <span className="text-gray-400">Next billing date</span>
-                          <span className="font-medium text-white">{formatDate(subscription.nextBilling)}</span>
-                        </div>
-                        
-                        <div className="flex justify-between items-center border-b border-gray-800 pb-3">
-                          <span className="text-gray-400">Payment method</span>
-                          <div className="flex items-center">
-                            <span className="font-medium text-white">
-                              {subscription.paymentMethod.brand} •••• {subscription.paymentMethod.last4}
-                            </span>
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              onClick={handleChangePayment}
-                              className="ml-2 h-7 text-cyber-blue"
-                            >
-                              Change
-                            </Button>
-                          </div>
+                          <span className="font-medium text-white">
+                            {formatDate(subscription.currentPeriodEnd)}
+                          </span>
                         </div>
                         
                         <div className="flex justify-between items-center">
@@ -241,21 +153,22 @@ const AccountSubscription = () => {
                           <div>
                             {subscription.addOns.length > 0 ? (
                               <div className="flex flex-wrap gap-2 justify-end">
-                                {subscription.addOns.map(addon => {
-                                  const addonInfo = addOnsInfo[addon];
-                                  const isIncluded = hasIncludedPlans(addonInfo) && 
-                                    addonInfo.included.includes(subscription.plan.toLowerCase());
+                                {subscription.addOns.map(addonId => {
+                                  const addon = addOns.find(a => a.id === addonId);
+                                  if (!addon) return null;
+                                  
+                                  const isIncluded = isAddOnIncludedInPlan(addonId);
                                   
                                   return (
                                     <Badge 
-                                      key={addon} 
+                                      key={addonId} 
                                       variant="outline"
                                       className={isIncluded 
                                         ? 'bg-cyber-blue/20 text-cyber-blue' 
                                         : 'bg-cyber-purple/20 text-cyber-purple'
                                       }
                                     >
-                                      {addonInfo.name} {isIncluded && '(Included)'}
+                                      {addon.name} {isIncluded && '(Included)'}
                                     </Badge>
                                   );
                                 })}
@@ -288,7 +201,7 @@ const AccountSubscription = () => {
                           </div>
                           <div>
                             <h4 className="font-medium text-white">Multiple users</h4>
-                            <p className="text-sm text-gray-400">Your {subscription.plan} plan allows {subscription.users} simultaneous users</p>
+                            <p className="text-sm text-gray-400">Your {subscription.plan} plan allows {subscription.users} simultaneous {subscription.users === 1 ? 'user' : 'users'}</p>
                           </div>
                         </div>
                         
@@ -298,7 +211,7 @@ const AccountSubscription = () => {
                           </div>
                           <div>
                             <h4 className="font-medium text-white">Automatic renewal</h4>
-                            <p className="text-sm text-gray-400">Your subscription renews automatically on {formatDate(subscription.nextBilling)}</p>
+                            <p className="text-sm text-gray-400">Your subscription renews automatically on {formatDate(subscription.currentPeriodEnd)}</p>
                           </div>
                         </div>
                         
@@ -344,10 +257,24 @@ const AccountSubscription = () => {
                   </div>
                 </CardFooter>
               </Card>
+            ) : (
+              <Card className="border-cyber-blue/30">
+                <CardContent className="p-8 text-center">
+                  <AlertTriangle className="h-12 w-12 mx-auto text-cyber-orange mb-4" />
+                  <h3 className="text-xl font-bold mb-2">Subscription Data Unavailable</h3>
+                  <p className="text-gray-400 mb-6">
+                    We couldn't load your subscription details. Please try refreshing the page.
+                  </p>
+                  <Button onClick={() => refetchSubscription()}>
+                    Retry Loading Data
+                  </Button>
+                </CardContent>
+              </Card>
             )}
           </TabsContent>
           
           <TabsContent value="usage" className="mt-0">
+            {/* Usage & Benefits content */}
             <Card className="border-cyber-blue/30">
               <CardHeader>
                 <CardTitle className="text-xl">Subscription Usage</CardTitle>
@@ -409,7 +336,9 @@ const AccountSubscription = () => {
                         <CheckCircle className="h-4 w-4 mr-2 text-cyber-green mt-1" />
                         <div>
                           <h4 className="font-medium">Multi-User Support</h4>
-                          <p className="text-sm text-gray-400">{subscription.users} simultaneous users included</p>
+                          <p className="text-sm text-gray-400">
+                            {subscription ? `${subscription.users} simultaneous users included` : 'Multiple users based on plan'}
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-start">
@@ -433,11 +362,11 @@ const AccountSubscription = () => {
                 <Separator className="bg-gray-800" />
                 
                 {/* Upgrade Benefits */}
-                <div>
-                  <h3 className="text-lg font-medium mb-4">Available Upgrades</h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {subscription.plan !== "Alliance" && (
+                {subscription && subscription.plan !== "alliance" && (
+                  <div>
+                    <h3 className="text-lg font-medium mb-4">Available Upgrades</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="border border-cyber-purple/40 rounded-lg p-4 bg-cyber-purple/5">
                         <h4 className="text-lg font-medium text-cyber-purple flex items-center">
                           <Zap className="h-4 w-4 mr-2" />
@@ -456,30 +385,31 @@ const AccountSubscription = () => {
                           </Button>
                         </div>
                       </div>
-                    )}
-                    
-                    {!subscription.addOns.includes("advanced_optimizer") && (
-                      <div className="border border-cyber-purple/40 rounded-lg p-4 bg-cyber-purple/5">
-                        <h4 className="text-lg font-medium text-cyber-purple flex items-center">
-                          <Zap className="h-4 w-4 mr-2" />
-                          Add Advanced Optimizer
-                        </h4>
-                        <p className="text-sm text-gray-400 mt-1">
-                          Premium optimization algorithms for maximum performance
-                        </p>
-                        <div className="mt-4">
-                          <Button 
-                            variant="cyberOutline" 
-                            className="border-cyber-purple text-cyber-purple hover:bg-cyber-purple/10"
-                            onClick={handleChangePlan}
-                          >
-                            Add to Subscription
-                          </Button>
+                      
+                      {addOns.some(addon => !subscription.addOns.includes(addon.id) && 
+                        !(addon.includedInPlans && addon.includedInPlans.includes(subscription.plan))) && (
+                        <div className="border border-cyber-purple/40 rounded-lg p-4 bg-cyber-purple/5">
+                          <h4 className="text-lg font-medium text-cyber-purple flex items-center">
+                            <Zap className="h-4 w-4 mr-2" />
+                            Add Premium Features
+                          </h4>
+                          <p className="text-sm text-gray-400 mt-1">
+                            Enhance your experience with advanced add-ons
+                          </p>
+                          <div className="mt-4">
+                            <Button 
+                              variant="cyberOutline" 
+                              className="border-cyber-purple text-cyber-purple hover:bg-cyber-purple/10"
+                              onClick={handleChangePlan}
+                            >
+                              View Available Add-ons
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -570,17 +500,19 @@ const AccountSubscription = () => {
                   </div>
                 </div>
                 
-                <div className="bg-cyber-darkblue/50 border border-gray-800 rounded-lg p-5">
-                  <h3 className="text-white font-medium mb-3">Important Information</h3>
-                  <p className="text-gray-400 text-sm mb-3">
-                    If you cancel your subscription, you'll continue to have access to all premium features 
-                    until the end of your current billing period on {formatDate(subscription.nextBilling)}.
-                  </p>
-                  <p className="text-gray-400 text-sm">
-                    After that date, your account will be converted to a free account with limited features.
-                    You can reactivate your subscription at any time before or after it expires.
-                  </p>
-                </div>
+                {subscription && (
+                  <div className="bg-cyber-darkblue/50 border border-gray-800 rounded-lg p-5">
+                    <h3 className="text-white font-medium mb-3">Important Information</h3>
+                    <p className="text-gray-400 text-sm mb-3">
+                      If you cancel your subscription, you'll continue to have access to all premium features 
+                      until the end of your current billing period on {formatDate(subscription.currentPeriodEnd)}.
+                    </p>
+                    <p className="text-gray-400 text-sm">
+                      After that date, your account will be converted to a free account with limited features.
+                      You can reactivate your subscription at any time before or after it expires.
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
