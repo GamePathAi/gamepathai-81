@@ -305,8 +305,8 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
             
             <div className="mt-4">
               <h4 className="text-sm font-medium text-gray-400 mb-2">Active add-ons</h4>
-              {subscription.addOns.length > 0 ? (
-                subscription.addOns.map(id => {
+              {currentPlan.addOns.length > 0 ? (
+                currentPlan.addOns.map(id => {
                   const addon = addOns.find(a => a.id === id);
                   if (!addon) return null;
                   
