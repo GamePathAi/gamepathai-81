@@ -1,8 +1,8 @@
 
-import { OfferType } from './types';
+import { OfferType, CancellationReason } from './types';
 
 // Cancel reasons
-export const cancelReasons = [
+export const cancelReasons: CancellationReason[] = [
   { id: "too_expensive", label: "It's too expensive" },
   { id: "not_using", label: "I'm not using it enough" },
   { id: "missing_features", label: "Missing features I need" },

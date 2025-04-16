@@ -1,11 +1,10 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import AccountLayout from "@/components/Layout/AccountLayout";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { toast } from "sonner";
 
 // Import refactored components
 import CancellationStepOne from "@/components/CancelSubscription/CancellationStepOne";
@@ -14,80 +13,41 @@ import FeedbackCollection from "@/components/CancelSubscription/FeedbackCollecti
 import CancellationConfirmation from "@/components/CancelSubscription/CancellationConfirmation";
 import ProgressSteps from "@/components/CancelSubscription/ProgressSteps";
 
-// Import utilities and constants
-import { formatDate, isPriceBasedOffer, isDiscountOffer, isPauseOffer } from "@/components/CancelSubscription/utils";
+// Import utilities, constants, and hooks
+import { formatDate } from "@/components/CancelSubscription/utils";
 import { cancelReasons, mockSubscription, retentionOffers } from "@/components/CancelSubscription/constants";
-import { OfferType } from "@/components/CancelSubscription/types";
+import { useCancellationFlow } from "@/components/CancelSubscription/hooks/useCancellationFlow";
 
 const CancelSubscription = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
-  const [cancelReason, setCancelReason] = useState("");
-  const [feedback, setFeedback] = useState("");
-  const [offerAccepted, setOfferAccepted] = useState<boolean | null>(null);
-  const [secondaryOfferShown, setSecondaryOfferShown] = useState(false);
-  const [confirmed, setConfirmed] = useState(false);
   
+  const {
+    step,
+    cancelReason,
+    feedback,
+    secondaryOfferShown,
+    confirmed,
+    goBack,
+    handleReasonSelect,
+    handleContinue,
+    handleOfferResponse,
+    handleSubmitFeedback,
+    handleConfirmCancel,
+    getCurrentOffer,
+    setFeedback
+  } = useCancellationFlow(
+    mockSubscription,
+    retentionOffers,
+    cancelReasons,
+    () => navigate("/account/subscription")
+  );
+
   const handleGoBack = () => {
     if (step > 1) {
-      setStep(step - 1);
-      
-      // Reset secondaryOfferShown if going back to step 2
-      if (step === 3) {
-        setSecondaryOfferShown(false);
-      }
+      goBack();
     } else {
       navigate("/account/subscription");
     }
-  };
-
-  const handleReasonSelect = (reasonId: string) => {
-    setCancelReason(reasonId);
-  };
-
-  const handleContinue = () => {
-    if (step === 1) {
-      if (!cancelReason) {
-        toast.error("Please select a reason for cancellation");
-        return;
-      }
-      setStep(2); // Proceed to retention offer
-    }
-  };
-
-  const handleOfferResponse = (accepted: boolean) => {
-    setOfferAccepted(accepted);
-    if (accepted) {
-      // API call to apply the offer
-      // POST /api/subscriptions/apply-offer
-      toast.success("Offer applied to your account!");
-      navigate("/account/subscription");
-    } else if (!secondaryOfferShown) {
-      setSecondaryOfferShown(true);
-    } else {
-      setStep(3); // Move to feedback step
-    }
-  };
-
-  const handleSubmitFeedback = () => {
-    // API call to submit feedback
-    // POST /api/subscriptions/feedback
-    toast.success("Thank you for your feedback");
-    setStep(4); // Final confirmation step
-  };
-
-  const handleConfirmCancel = () => {
-    // API call to cancel subscription
-    // POST /api/subscriptions/cancel
-    setConfirmed(true);
-    toast.success("Your subscription has been canceled");
-  };
-
-  const getCurrentOffer = () => {
-    if (!cancelReason) return retentionOffers.default;
-    
-    const offers = retentionOffers[cancelReason as keyof typeof retentionOffers];
-    return offers || retentionOffers.default;
   };
 
   return (
@@ -147,7 +107,7 @@ const CancelSubscription = () => {
             feedback={feedback}
             setFeedback={setFeedback}
             handleSubmitFeedback={handleSubmitFeedback}
-            goBack={() => setStep(2)}
+            goBack={goBack}
           />
         )}
 
