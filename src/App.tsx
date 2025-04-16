@@ -24,6 +24,11 @@ import BillingHistory from "./pages/BillingHistory";
 import ChangePlan from "./pages/ChangePlan";
 import CancelSubscription from "./pages/CancelSubscription";
 
+// Landing Pages
+import HomePage from "./pages/landing/HomePage";
+import FeaturesPage from "./pages/landing/FeaturesPage";
+import PricingPage from "./pages/landing/PricingPage";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -35,7 +40,8 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Index />} />
+              {/* Dashboard Routes */}
+              <Route path="/dashboard" element={<Index />} />
               <Route path="/network-metrics" element={<NetworkMetrics />} />
               <Route path="/system-optimization" element={<SystemOptimization />} />
               <Route path="/route-optimizer" element={<RouteOptimizerPage />} />
@@ -47,12 +53,17 @@ const App = () => (
               <Route path="/subscription" element={<SubscriptionManagement />} />
               <Route path="/account/subscription" element={<AccountSubscription />} />
               
-              {/* New Account Related Routes */}
+              {/* Account Related Routes */}
               <Route path="/account" element={<Account />} />
               <Route path="/account/payment-methods" element={<PaymentMethods />} />
               <Route path="/account/billing-history" element={<BillingHistory />} />
               <Route path="/account/change-plan" element={<ChangePlan />} />
               <Route path="/account/cancel-subscription" element={<CancelSubscription />} />
+              
+              {/* Landing Pages */}
+              <Route path="/" element={<HomePage />} />
+              <Route path="/features" element={<FeaturesPage />} />
+              <Route path="/pricing" element={<PricingPage />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>
