@@ -1,0 +1,11 @@
+
+{
+  "header": {
+    "appName": "GamePath AI",
+    "features": "功能",
+    "technology": "技术", 
+    "pricing": "价格",
+    "login": "登录",
+    "getStarted": "开始使用"
+  }
+}

@@ -1,0 +1,11 @@
+
+{
+  "header": {
+    "appName": "GamePath ИИ",
+    "features": "Возможности",
+    "technology": "Технология", 
+    "pricing": "Цены",
+    "login": "Вход",
+    "getStarted": "Начать"
+  }
+}

@@ -1,0 +1,11 @@
+
+{
+  "header": {
+    "appName": "GamePath KI",
+    "features": "Funktionen",
+    "technology": "Technologie", 
+    "pricing": "Preise",
+    "login": "Anmelden",
+    "getStarted": "Loslegen"
+  }
+}

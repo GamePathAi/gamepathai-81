@@ -1,0 +1,11 @@
+
+{
+  "header": {
+    "appName": "GamePath IA",
+    "features": "Fonctionnalités",
+    "technology": "Technologie", 
+    "pricing": "Tarification",
+    "login": "Connexion",
+    "getStarted": "Commencer"
+  }
+}

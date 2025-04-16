@@ -1,0 +1,11 @@
+
+{
+  "header": {
+    "appName": "GamePath AI",
+    "features": "기능",
+    "technology": "기술", 
+    "pricing": "가격",
+    "login": "로그인",
+    "getStarted": "시작하기"
+  }
+}

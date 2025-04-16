@@ -25,26 +25,26 @@ const languageFlags = {
 export const LanguageSelector = () => {
   const { i18n } = useTranslation();
   const [currentLanguage, setCurrentLanguage] = useState(
-    localStorage.getItem('language') || 'en-US'
+    localStorage.getItem('i18nextLng') || 'en-US'
   );
 
   useEffect(() => {
     i18n.changeLanguage(currentLanguage);
-    localStorage.setItem('language', currentLanguage);
+    localStorage.setItem('i18nextLng', currentLanguage);
   }, [currentLanguage, i18n]);
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon">
-          {languageFlags[currentLanguage]} <Languages className="ml-2 h-4 w-4" />
+          {languageFlags[currentLanguage as keyof typeof languageFlags] || '🌐'} <Languages className="ml-2 h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         {Object.entries(languageFlags).map(([langCode, flag]) => (
           <DropdownMenuItem 
             key={langCode} 
-            onSelect={() => setCurrentLanguage(langCode)}
+            onClick={() => setCurrentLanguage(langCode)}
           >
             {flag} {langCode}
           </DropdownMenuItem>
@@ -53,3 +53,5 @@ export const LanguageSelector = () => {
     </DropdownMenu>
   );
 };
+
+export default LanguageSelector;
