@@ -7,5 +7,21 @@
     "pricing": "Pricing",
     "login": "Login",
     "getStarted": "Get Started"
+  },
+  "technology": {
+    "title": "GamePath AI Technology",
+    "subtitle": "The advanced technology powering your gaming optimization experience",
+    "adaptiveRouting": {
+      "title": "Adaptive Routing",
+      "description": "Our proprietary algorithms analyze network conditions in real-time to find the optimal path for your gaming data."
+    },
+    "performanceAI": {
+      "title": "Performance AI",
+      "description": "Machine learning systems that adapt to your hardware configuration and usage patterns for optimal performance."
+    },
+    "globalNetwork": {
+      "title": "Global Network",
+      "description": "Access to optimized routes across our worldwide server infrastructure for low-latency gaming anywhere."
+    }
   }
 }

@@ -7,5 +7,21 @@
     "pricing": "Preços",
     "login": "Entrar",
     "getStarted": "Começar"
+  },
+  "technology": {
+    "title": "Tecnologia GamePath IA",
+    "subtitle": "A tecnologia avançada que impulsiona sua experiência de otimização de jogos",
+    "adaptiveRouting": {
+      "title": "Roteamento Adaptativo",
+      "description": "Nossos algoritmos proprietários analisam as condições da rede em tempo real para encontrar o caminho ideal para seus dados de jogo."
+    },
+    "performanceAI": {
+      "title": "IA de Desempenho",
+      "description": "Sistemas de aprendizado de máquina que se adaptam à configuração do seu hardware e padrões de uso para um desempenho ideal."
+    },
+    "globalNetwork": {
+      "title": "Rede Global",
+      "description": "Acesso a rotas otimizadas em nossa infraestrutura de servidores mundial para jogos com baixa latência em qualquer lugar."
+    }
   }
 }
