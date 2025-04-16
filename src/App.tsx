@@ -15,6 +15,7 @@ import AdvancedOptimizer from "./pages/AdvancedOptimizer";
 import VPNIntegration from "./pages/VPNIntegration";
 import PowerManager from "./pages/PowerManager";
 import Settings from "./pages/Settings";
+import SubscriptionManagement from "./pages/SubscriptionManagement";
 import { NotificationProvider } from "./hooks/use-notifications";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const App = () => (
               <Route path="/vpn-integration" element={<VPNIntegration />} />
               <Route path="/power-manager" element={<PowerManager />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/subscription" element={<SubscriptionManagement />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
