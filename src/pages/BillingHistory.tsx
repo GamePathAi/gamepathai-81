@@ -103,6 +103,10 @@ const BillingHistory = () => {
     }
   };
 
+  // Check if we're on the first or last page
+  const isFirstPage = currentPage === 1;
+  const isLastPage = currentPage === totalPages;
+
   return (
     <AccountLayout requireSubscription>
       <Helmet>
@@ -264,11 +268,22 @@ const BillingHistory = () => {
                 <Pagination>
                   <PaginationContent>
                     <PaginationItem>
-                      <PaginationPrevious 
-                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                        disabled={currentPage === 1}
-                        className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
-                      />
+                      {isFirstPage ? (
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="gap-1 pl-2.5 opacity-50 pointer-events-none"
+                          disabled
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                          <span>Previous</span>
+                        </Button>
+                      ) : (
+                        <PaginationPrevious 
+                          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                          className="cursor-pointer"
+                        />
+                      )}
                     </PaginationItem>
                     
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
@@ -283,11 +298,22 @@ const BillingHistory = () => {
                     ))}
                     
                     <PaginationItem>
-                      <PaginationNext 
-                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                        disabled={currentPage === totalPages}
-                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
-                      />
+                      {isLastPage ? (
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="gap-1 pr-2.5 opacity-50 pointer-events-none"
+                          disabled
+                        >
+                          <span>Next</span>
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      ) : (
+                        <PaginationNext 
+                          onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                          className="cursor-pointer"
+                        />
+                      )}
                     </PaginationItem>
                   </PaginationContent>
                 </Pagination>
