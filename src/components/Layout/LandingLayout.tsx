@@ -1,7 +1,7 @@
 
 import React from "react";
-import { LandingHeader } from "../landing/LandingHeader";
-import { LandingFooter } from "../landing/LandingFooter";
+import LandingHeader from "../landing/LandingHeader";
+import LandingFooter from "../landing/LandingFooter";
 
 interface LandingLayoutProps {
   children: React.ReactNode;

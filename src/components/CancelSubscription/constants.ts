@@ -22,18 +22,21 @@ export const mockSubscription: SubscriptionData = {
 };
 
 // Define retention offers based on cancellation reason
-export const retentionOffers = {
+export const retentionOffers: {
+  byReason: Record<string, { primary: OfferType; secondary: OfferType }>;
+  default: { primary: OfferType; secondary: OfferType };
+} = {
   byReason: {
     too_expensive: {
       primary: {
-        type: "discount",
+        type: "discount" as const,
         title: "Special Discount",
         description: "We value your business. How about a 30% discount for the next 3 months?",
         discount: 30,
         duration: "3 months"
       },
       secondary: {
-        type: "price",
+        type: "price" as const,
         title: "Downgrade to Player Plan",
         description: "Keep the benefits with a lower price on our Player plan",
         price: 9.99
@@ -41,13 +44,13 @@ export const retentionOffers = {
     },
     not_using: {
       primary: {
-        type: "pause",
+        type: "pause" as const,
         title: "Pause Your Subscription",
         description: "Take a break and pause your account for up to 2 months",
         duration: "2 months"
       },
       secondary: {
-        type: "discount",
+        type: "discount" as const,
         title: "Infrequent User Discount",
         description: "We understand your gaming time is limited. How about 25% off?",
         discount: 25,
@@ -57,14 +60,14 @@ export const retentionOffers = {
   },
   default: {
     primary: {
-      type: "discount",
+      type: "discount" as const,
       title: "Loyalty Discount",
       description: "As a valued customer, we'd like to offer you 20% off for the next 3 months",
       discount: 20,
       duration: "3 months"
     },
     secondary: {
-      type: "price",
+      type: "price" as const,
       title: "Switch to Basic Plan",
       description: "Keep the essential features at a lower price point",
       price: 9.99
