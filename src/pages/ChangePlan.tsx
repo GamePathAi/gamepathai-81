@@ -270,7 +270,7 @@ const ChangePlan = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <RadioGroup value={selectedPlan} onValueChange={setSelectedPlan} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <RadioGroup value={selectedPlan} onValueChange={(value: SubscriptionPlan) => setSelectedPlan(value)} className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {pricingData.plans.map(plan => {
                       const isSelected = selectedPlan === plan.id;
                       const isCurrentUserPlan = subscription?.plan === plan.id;
@@ -294,7 +294,7 @@ const ChangePlan = () => {
                               : 'border-gray-800 hover:border-gray-700'
                             }
                           `}
-                          onClick={() => setSelectedPlan(plan.id)}
+                          onClick={() => setSelectedPlan(plan.id as SubscriptionPlan)}
                         >
                           {isCurrentUserPlan && (
                             <div className="absolute -top-2 -right-2 px-2 py-1 text-xs bg-cyber-green/20 text-cyber-green rounded-full">
@@ -302,7 +302,7 @@ const ChangePlan = () => {
                             </div>
                           )}
                           
-                          <RadioGroupItem value={plan.id} id={plan.id} className="sr-only" />
+                          <RadioGroupItem value={plan.id as SubscriptionPlan} id={plan.id} className="sr-only" />
                           <div className="space-y-4">
                             <div>
                               <h3 className="font-bold text-lg">{plan.name}</h3>

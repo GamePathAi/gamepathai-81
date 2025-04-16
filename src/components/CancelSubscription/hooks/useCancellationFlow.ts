@@ -5,7 +5,10 @@ import { OfferType, CancellationReason, SubscriptionData } from "../types";
 
 export function useCancellationFlow(
   subscription: SubscriptionData,
-  retentionOffers: Record<string, { primary: OfferType; secondary: OfferType }>,
+  retentionOffers: {
+    byReason: Record<string, { primary: OfferType; secondary: OfferType }>;
+    default: { primary: OfferType; secondary: OfferType };
+  },
   reasons: CancellationReason[],
   onComplete?: () => void
 ) {
@@ -82,8 +85,8 @@ export function useCancellationFlow(
   const getCurrentOffer = () => {
     if (!cancelReason) return retentionOffers.default;
     
-    const offers = retentionOffers[cancelReason as keyof typeof retentionOffers];
-    return offers || retentionOffers.default;
+    const reasonOffers = retentionOffers.byReason[cancelReason];
+    return reasonOffers || retentionOffers.default;
   };
 
   return {

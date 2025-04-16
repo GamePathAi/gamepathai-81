@@ -22,10 +22,7 @@ export const mockSubscription: SubscriptionData = {
 };
 
 // Define retention offers based on cancellation reason
-export const retentionOffers: {
-  byReason: Record<string, { primary: OfferType; secondary: OfferType }>;
-  default: { primary: OfferType; secondary: OfferType };
-} = {
+export const retentionOffers = {
   byReason: {
     too_expensive: {
       primary: {

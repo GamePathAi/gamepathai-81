@@ -1,14 +1,13 @@
 
-// Utility functions for the cancellation flow
-import { OfferType, DiscountOffer, PriceBasedOffer, PauseOffer } from "./types";
+import { DiscountOffer, PriceBasedOffer, PauseOffer, OfferType } from "./types";
 
-// Format date for display
-export const formatDate = (date: Date) => {
-  return date.toLocaleDateString("en-US", { 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  });
+// Format date to display in UI
+export const formatDate = (date: Date): string => {
+  return new Intl.DateTimeFormat('en-US', { 
+    month: 'long',
+    day: 'numeric', 
+    year: 'numeric'
+  }).format(date);
 };
 
 // Type guards for offer types
