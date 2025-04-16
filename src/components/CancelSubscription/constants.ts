@@ -1,86 +1,76 @@
 
-import { CancellationReason, SubscriptionData, OfferType } from "./types";
+import { CancellationReason, OfferType, SubscriptionData } from "./types";
 
-// Mock subscription data
-export const mockSubscription: SubscriptionData = {
-  plan: "Co-op",
-  users: 2,
-  price: 17.99,
-  nextBilling: new Date(2025, 4, 25),
-};
-
-// List of possible cancellation reasons
+// Define common cancellation reasons
 export const cancelReasons: CancellationReason[] = [
-  { id: "too_expensive", label: "GamePath AI is too expensive" },
+  { id: "too_expensive", label: "It's too expensive" },
   { id: "not_using", label: "I'm not using it enough" },
-  { id: "tech_issues", label: "Technical issues or bugs" },
-  { id: "missing_features", label: "Missing features I need" },
-  { id: "switching", label: "Switching to a different solution" },
-  { id: "temporary", label: "Temporary pause (planning to return)" },
+  { id: "features", label: "Missing features I need" },
+  { id: "performance", label: "Performance issues" },
+  { id: "technical", label: "Technical problems" },
+  { id: "competitors", label: "Switched to a competitor" },
   { id: "other", label: "Other reason" }
 ];
 
-// Retention offers based on cancellation reasons
-export const retentionOffers: Record<string, { primary: OfferType; secondary: OfferType }> = {
-  too_expensive: {
-    primary: {
-      type: 'discount',
-      title: 'Special Discount',
-      description: 'Get 50% off for the next 3 months',
-      discount: 50,
-      duration: '3 months'
+// Mock subscription data for testing
+export const mockSubscription: SubscriptionData = {
+  plan: "co-op",
+  users: 2,
+  price: 17.99,
+  nextBilling: new Date(2025, 4, 15),
+  interval: "month"
+};
+
+// Define retention offers based on cancellation reason
+export const retentionOffers: {
+  byReason: Record<string, { primary: OfferType; secondary: OfferType }>;
+  default: { primary: OfferType; secondary: OfferType };
+} = {
+  byReason: {
+    too_expensive: {
+      primary: {
+        type: "discount",
+        title: "Special Discount",
+        description: "We value your business. How about a 30% discount for the next 3 months?",
+        discount: 30,
+        duration: "3 months"
+      },
+      secondary: {
+        type: "price",
+        title: "Downgrade to Player Plan",
+        description: "Keep the benefits with a lower price on our Player plan",
+        price: 9.99
+      }
     },
-    secondary: {
-      type: 'price',
-      title: 'Reduced Monthly Price',
-      description: 'Pay just $8.99/month for the next 6 months',
-      price: 8.99
+    not_using: {
+      primary: {
+        type: "pause",
+        title: "Pause Your Subscription",
+        description: "Take a break and pause your account for up to 2 months",
+        duration: "2 months"
+      },
+      secondary: {
+        type: "discount",
+        title: "Infrequent User Discount",
+        description: "We understand your gaming time is limited. How about 25% off?",
+        discount: 25,
+        duration: "3 months"
+      }
     }
   },
-  not_using: {
-    primary: {
-      type: 'pause',
-      title: 'Pause Your Subscription',
-      description: 'Keep your settings and data for when you return',
-      duration: '3 months'
-    },
-    secondary: {
-      type: 'discount',
-      title: 'Quarterly Billing',
-      description: 'Switch to quarterly billing and save 15%',
-      discount: 15,
-      duration: 'quarterly billing'
-    }
-  },
-  tech_issues: {
-    primary: {
-      type: 'discount',
-      title: 'Technical Support Package',
-      description: 'Free premium support and 25% discount',
-      discount: 25,
-      duration: '2 months'
-    },
-    secondary: {
-      type: 'pause',
-      title: 'Maintenance Break',
-      description: 'Pause while we fix your issues',
-      duration: '1 month'
-    }
-  },
-  // Default offer for other reasons
   default: {
     primary: {
-      type: 'discount',
-      title: 'We Value Your Membership',
-      description: '30% discount if you stay with us',
-      discount: 30,
-      duration: '3 months'
+      type: "discount",
+      title: "Loyalty Discount",
+      description: "As a valued customer, we'd like to offer you 20% off for the next 3 months",
+      discount: 20,
+      duration: "3 months"
     },
     secondary: {
-      type: 'price',
-      title: 'Special Member Rate',
-      description: 'Reduced rate for loyal members',
-      price: 11.99
+      type: "price",
+      title: "Switch to Basic Plan",
+      description: "Keep the essential features at a lower price point",
+      price: 9.99
     }
   }
 };

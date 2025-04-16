@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSubscription } from "@/hooks/use-subscription";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
+import { SubscriptionPlan } from "@/services/subscriptionApi";
 
 // Mock pricing data
 const pricingData = {
@@ -91,7 +92,7 @@ const ChangePlan = () => {
   const navigate = useNavigate();
   const { subscription, addOns, updateSubscriptionPlan } = useSubscription();
   
-  const [selectedPlan, setSelectedPlan] = useState(subscription?.plan || "player");
+  const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan>(subscription?.plan || "player");
   const [selectedInterval, setSelectedInterval] = useState<"month" | "quarter" | "year">(subscription?.interval || "month");
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>(subscription?.addOns || []);
   const [isConfirmationStep, setIsConfirmationStep] = useState(false);
@@ -189,7 +190,7 @@ const ChangePlan = () => {
     const addon = addOns.find(a => a.id === addonId);
     if (!addon || !addon.includedInPlans) return false;
     
-    return addon.includedInPlans.includes(planId);
+    return addon.includedInPlans.includes(planId as SubscriptionPlan);
   };
 
   // Get formatted interval name

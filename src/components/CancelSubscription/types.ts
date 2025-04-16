@@ -11,6 +11,7 @@ export type SubscriptionData = {
   users: number;
   price: number;
   nextBilling: Date;
+  interval: string; // Added missing interval property
 };
 
 // Types for the different possible retention offers
