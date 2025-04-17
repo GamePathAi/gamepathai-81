@@ -32,6 +32,31 @@ const Dashboard: React.FC = () => {
     });
   };
 
+  // Convert number metrics to string for components that expect strings
+  const formattedMetrics = {
+    ...metrics,
+    ping: {
+      ...metrics.ping,
+      current: String(metrics.ping.current)
+    },
+    fps: {
+      ...metrics.fps,
+      current: String(metrics.fps.current)
+    },
+    cpu: {
+      ...metrics.cpu,
+      current: String(metrics.cpu.current)
+    },
+    gpu: {
+      ...metrics.gpu,
+      current: String(metrics.gpu.current)
+    },
+    jitter: {
+      ...metrics.jitter,
+      current: String(metrics.jitter.current)
+    }
+  };
+
   return (
     <div className="container mx-auto">
       {/* Dashboard Header */}
@@ -51,12 +76,12 @@ const Dashboard: React.FC = () => {
       </div>
       
       {/* Main Metrics Section */}
-      <DashboardMetrics metrics={metrics} />
+      <DashboardMetrics metrics={formattedMetrics} />
       
       {/* Games and System Metrics Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
         <GamesList games={games} />
-        <SystemMetrics metrics={metrics} />
+        <SystemMetrics metrics={formattedMetrics} />
       </div>
       
       {/* Optimization Tools Section */}
