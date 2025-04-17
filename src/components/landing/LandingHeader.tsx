@@ -7,7 +7,7 @@ import {
   NavigationMenuList,
   NavigationMenuItem,
 } from "@/components/ui/navigation-menu";
-import { LayoutDashboard, Zap, ArrowUp } from "lucide-react";
+import { LayoutDashboard, Zap, ArrowUp, Menu, X } from "lucide-react";
 
 const LandingHeader: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
