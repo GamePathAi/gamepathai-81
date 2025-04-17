@@ -35,9 +35,12 @@ export const BarChartComponent: React.FC<BarChartComponentProps> = ({
 }) => {
   const layout = vertical ? "vertical" : "horizontal";
   
+  // Enforce maximum height to prevent excessive growth
+  const effectiveHeight = Math.min(height, 300);
+  
   return (
-    <div className="h-full w-full">
-      <ResponsiveContainer width={width} height={height}>
+    <div className="h-full w-full" style={{ maxHeight: `${effectiveHeight}px` }}>
+      <ResponsiveContainer width={width} height={effectiveHeight}>
         <BarChart
           data={data}
           margin={{
@@ -50,13 +53,13 @@ export const BarChartComponent: React.FC<BarChartComponentProps> = ({
         >
           {vertical ? (
             <>
-              <XAxis type="number" domain={yAxisDomain} stroke="#6b7280" />
-              <YAxis type="category" dataKey={xAxisDataKey} stroke="#6b7280" />
+              <XAxis type="number" domain={yAxisDomain} stroke="#6b7280" tick={{ fill: "#6b7280", fontSize: 10 }} />
+              <YAxis type="category" dataKey={xAxisDataKey} stroke="#6b7280" tick={{ fill: "#6b7280", fontSize: 10 }} />
             </>
           ) : (
             <>
-              <XAxis dataKey={xAxisDataKey} stroke="#6b7280" />
-              <YAxis domain={yAxisDomain} stroke="#6b7280" />
+              <XAxis dataKey={xAxisDataKey} stroke="#6b7280" tick={{ fill: "#6b7280", fontSize: 10 }} />
+              <YAxis domain={yAxisDomain} stroke="#6b7280" tick={{ fill: "#6b7280", fontSize: 10 }} />
             </>
           )}
           <Tooltip 
@@ -76,6 +79,7 @@ export const BarChartComponent: React.FC<BarChartComponentProps> = ({
               key={key}
               dataKey={key} 
               fill={colors[keyIndex % colors.length]}
+              maxBarSize={40}
             >
               {colorsByStatus && statusKey && data.map((entry, index) => (
                 <Cell 

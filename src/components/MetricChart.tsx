@@ -23,6 +23,9 @@ const MetricChart: React.FC<MetricChartProps> = ({
   metricType,
   showGlow = true
 }) => {
+  // Enforce maximum height to prevent excessive growth
+  const effectiveHeight = Math.min(height, 240);
+  
   const getColor = () => {
     if (color) return color;
     
@@ -47,7 +50,11 @@ const MetricChart: React.FC<MetricChartProps> = ({
   const metricLabel = getMetricLabel(metricType);
 
   return (
-    <div className="w-full h-full relative flex-grow chart-container">
+    <div className="w-full h-full relative flex-grow chart-container" style={{
+      maxHeight: `${effectiveHeight}px`,
+      minHeight: "120px",
+      overflow: "hidden"
+    }}>
       {showGlow && (
         <svg width="0" height="0" style={{ position: 'absolute' }}>
           <defs>

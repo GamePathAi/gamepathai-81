@@ -65,7 +65,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
       aria-label={onClick ? `${title} metric, click to view details` : undefined}
       onKeyDown={onClick ? (e) => e.key === 'Enter' && onClick() : undefined}
     >
-      <div className="p-3 flex justify-between items-center metric-header">
+      <div className="p-2 flex justify-between items-center metric-header">
         <div className="flex items-center text-sm font-tech text-gray-400">
           {icon && <span className="mr-2">{icon}</span>}
           {title}
@@ -84,7 +84,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
         <span className="ml-1 text-sm font-tech text-cyber-blue/80">{unit}</span>
       </div>
       
-      <div className="flex-1 w-full p-2" style={{ minHeight: "140px" }}>
+      <div className="flex-1 w-full p-1 chart-wrapper" style={{ minHeight: "120px", maxHeight: "160px" }}>
         {chartComponent}
       </div>
     </div>

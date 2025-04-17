@@ -36,15 +36,15 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
         unit="ms"
         trend={metrics.ping.trend}
         trendValue={metrics.ping.trendValue}
-        icon={<Activity size={24} className="text-cyber-blue" />}
+        icon={<Activity size={20} className="text-cyber-blue" />}
         chartComponent={
           <MetricChart 
             data={metrics.ping.history} 
             color="#33C3F0" 
             metricType="ping" 
-            height={180} 
+            height={160} 
             showAxis={true} 
-            strokeWidth={3}
+            strokeWidth={2}
           />
         }
         className="h-[200px] flex flex-col"
@@ -56,15 +56,15 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
         unit="%"
         trend={metrics.packetLoss.trend}
         trendValue={metrics.packetLoss.trendValue}
-        icon={<Signal size={24} className="text-red-400" />}
+        icon={<Signal size={20} className="text-red-400" />}
         chartComponent={
           <MetricChart 
             data={metrics.packetLoss.history} 
             color="#F43F5E" 
             metricType="packet-loss" 
-            height={180} 
+            height={160} 
             showAxis={true}
-            strokeWidth={3}
+            strokeWidth={2}
           />
         }
         className="h-[200px] flex flex-col"
@@ -75,15 +75,15 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
         value={metrics.fps.current}
         trend={metrics.fps.trend}
         trendValue={metrics.fps.trendValue}
-        icon={<Gauge size={24} className="text-green-400" />}
+        icon={<Gauge size={20} className="text-green-400" />}
         chartComponent={
           <MetricChart 
             data={metrics.fps.history} 
             color="#10B981" 
             metricType="fps" 
-            height={180} 
+            height={160} 
             showAxis={true}
-            strokeWidth={3}
+            strokeWidth={2}
           />
         }
         className="h-[200px] flex flex-col"

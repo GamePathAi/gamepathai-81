@@ -35,25 +35,25 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
         <h2 className="text-lg font-cyber font-semibold text-white">System Metrics</h2>
       </div>
       
-      <div className="space-y-6">
+      <div className="space-y-5">
         <MetricCard
           title="CPU USAGE"
           value={metrics.cpu.current}
           unit=" %"
           trend={metrics.cpu.trend}
           trendValue={metrics.cpu.trendValue}
-          icon={<Cpu size={18} className="text-cyber-purple" />}
+          icon={<Cpu size={16} className="text-cyber-purple" />}
           chartComponent={
             <MetricChart 
               data={metrics.cpu.history} 
               color="#8B5CF6" 
               metricType="cpu" 
-              height={180}
+              height={160}
               showAxis={true}
               strokeWidth={2}
             />
           }
-          className="p-4 h-[200px]"
+          className="p-3 h-[200px]"
         />
         
         <MetricCard
@@ -62,18 +62,18 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
           unit=" %"
           trend={metrics.gpu.trend}
           trendValue={metrics.gpu.trendValue}
-          icon={<Zap size={18} className="text-cyber-pink" />}
+          icon={<Zap size={16} className="text-cyber-pink" />}
           chartComponent={
             <MetricChart 
               data={metrics.gpu.history} 
               color="#D946EF" 
               metricType="gpu" 
-              height={180}
+              height={160}
               showAxis={true}
               strokeWidth={2}
             />
           }
-          className="p-4 h-[200px]"
+          className="p-3 h-[200px]"
         />
         
         <MetricCard
@@ -82,18 +82,18 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
           unit=" ms"
           trend={metrics.jitter.trend}
           trendValue={metrics.jitter.trendValue}
-          icon={<Activity size={18} className="text-cyber-orange" />}
+          icon={<Activity size={16} className="text-cyber-orange" />}
           chartComponent={
             <MetricChart 
               data={metrics.jitter.history} 
               color="#F97316" 
               metricType="jitter" 
-              height={180}
+              height={160}
               showAxis={true}
               strokeWidth={2}
             />
           }
-          className="p-4 h-[200px]"
+          className="p-3 h-[200px]"
         />
       </div>
     </div>

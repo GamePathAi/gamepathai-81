@@ -35,9 +35,12 @@ export const LineChartComponent: React.FC<LineChartComponentProps> = ({
   dot,
   showGlow = true
 }) => {
+  // Enforce maximum height to prevent excessive growth
+  const effectiveHeight = Math.min(height, 300);
+
   return (
-    <div className="h-full w-full">
-      <ResponsiveContainer width={width} height={height}>
+    <div className="h-full w-full" style={{ maxHeight: `${effectiveHeight}px` }}>
+      <ResponsiveContainer width={width} height={effectiveHeight}>
         <LineChart
           data={data}
           margin={{
@@ -47,8 +50,8 @@ export const LineChartComponent: React.FC<LineChartComponentProps> = ({
             bottom: 5,
           }}
         >
-          <XAxis dataKey={xAxisDataKey} stroke="#6b7280" />
-          <YAxis domain={yAxisDomain} stroke="#6b7280" />
+          <XAxis dataKey={xAxisDataKey} stroke="#6b7280" tick={{ fill: "#6b7280", fontSize: 10 }} />
+          <YAxis domain={yAxisDomain} stroke="#6b7280" tick={{ fill: "#6b7280", fontSize: 10 }} />
           <Tooltip 
             contentStyle={{ 
               backgroundColor: "#111827", 
@@ -89,8 +92,8 @@ export const LineChartComponent: React.FC<LineChartComponentProps> = ({
                   name={lineConfig.name || lineConfig.dataKey}
                   stroke={lineConfig.color} 
                   strokeWidth={lineConfig.strokeWidth || 2}
-                  dot={lineConfig.dot || dot}
-                  activeDot={{ r: 8 }}
+                  dot={lineConfig.dot || dot || { r: 2 }}
+                  activeDot={{ r: 6 }}
                   filter={showGlow ? `url(#${filterId})` : undefined}
                 />
               </React.Fragment>

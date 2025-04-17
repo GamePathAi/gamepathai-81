@@ -31,9 +31,12 @@ export const AreaChartComponent: React.FC<AreaChartComponentProps> = ({
   xAxisHide = false,
   yAxisHide = false,
 }) => {
+  // Enforce maximum height to prevent excessive growth
+  const effectiveHeight = Math.min(height, 180);
+
   return (
-    <div className="h-full w-full">
-      <ResponsiveContainer width={width} height={height}>
+    <div className="h-full w-full" style={{ maxHeight: `${effectiveHeight}px` }}>
+      <ResponsiveContainer width={width} height={effectiveHeight}>
         <AreaChart
           data={data}
           margin={{
@@ -47,7 +50,7 @@ export const AreaChartComponent: React.FC<AreaChartComponentProps> = ({
             dataKey={xAxisDataKey} 
             stroke="#6b7280" 
             hide={xAxisHide}
-            tick={{ fill: "#6b7280", fontSize: 12 }}
+            tick={{ fill: "#6b7280", fontSize: 10 }}
             axisLine={{ stroke: "#374151" }}
             tickLine={{ stroke: "#374151" }}
           />
