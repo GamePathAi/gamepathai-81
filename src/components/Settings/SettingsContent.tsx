@@ -2,7 +2,18 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import SettingsTabs from "./SettingsTabs";
+import { 
+  Settings, 
+  Cpu, 
+  Network, 
+  Monitor, 
+  Video, 
+  LayoutDashboard, 
+  ShieldCheck, 
+  CreditCard, 
+  Code 
+} from "lucide-react";
+import SettingsTabs, { SettingsTab } from "./SettingsTabs";
 import SettingsHeader from "./SettingsHeader";
 import SettingsActions from "./SettingsActions";
 import ResetDialog from "./ResetDialog";
@@ -24,6 +35,19 @@ interface SettingsChangeProps {
 }
 
 const SettingsContent: React.FC = () => {
+  // Define tabs configuration
+  const settingsTabs: SettingsTab[] = [
+    { id: "general", label: "General", icon: Settings },
+    { id: "performance", label: "Performance", icon: Cpu },
+    { id: "connection", label: "Connection", icon: Network },
+    { id: "overlay", label: "In-Game Overlay", icon: Monitor },
+    { id: "recording", label: "Screen Recording", icon: Video },
+    { id: "interface", label: "Interface", icon: LayoutDashboard },
+    { id: "security", label: "Security", icon: ShieldCheck },
+    { id: "subscription", label: "Subscription", icon: CreditCard },
+    { id: "advanced", label: "Advanced", icon: Code }
+  ];
+
   const [activeTab, setActiveTab] = useState("general");
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
@@ -128,7 +152,11 @@ const SettingsContent: React.FC = () => {
       </div>
 
       <div className="bg-cyber-darkblue border border-cyber-blue/30 rounded-lg shadow-lg">
-        <SettingsTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+        <SettingsTabs 
+          tabs={settingsTabs}
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab} 
+        />
         
         <div className="p-3">
           {renderActiveTabContent()}

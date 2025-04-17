@@ -1,27 +1,28 @@
 
 import React from "react";
-import { Monitor, Settings, Cpu, Network, LayoutDashboard, ShieldCheck, Code, Video, CreditCard } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 
-interface SettingsTabsProps {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
+export interface SettingsTab {
+  id: string;
+  label: string;
+  icon: LucideIcon;
 }
 
-const SettingsTabs: React.FC<SettingsTabsProps> = ({ activeTab, setActiveTab }) => {
-  const tabs = [
-    { id: "general", label: "General", icon: Settings },
-    { id: "performance", label: "Performance", icon: Cpu },
-    { id: "connection", label: "Connection", icon: Network },
-    { id: "overlay", label: "In-Game Overlay", icon: Monitor },
-    { id: "recording", label: "Screen Recording", icon: Video },
-    { id: "interface", label: "Interface", icon: LayoutDashboard },
-    { id: "security", label: "Security", icon: ShieldCheck },
-    { id: "subscription", label: "Subscription", icon: CreditCard },
-    { id: "advanced", label: "Advanced", icon: Code }
-  ];
-  
+export interface SettingsTabsProps {
+  tabs: SettingsTab[];
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+  className?: string;
+}
+
+const SettingsTabs: React.FC<SettingsTabsProps> = ({ 
+  tabs, 
+  activeTab, 
+  setActiveTab,
+  className = ""
+}) => {
   return (
-    <div className="border-b border-cyber-blue/30">
+    <div className={`border-b border-cyber-blue/30 ${className}`}>
       <div className="flex flex-nowrap overflow-x-auto p-1 bg-cyber-black/50">
         {tabs.map((tab) => {
           const Icon = tab.icon;
