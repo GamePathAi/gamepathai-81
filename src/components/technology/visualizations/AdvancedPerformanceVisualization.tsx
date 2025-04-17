@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Cpu } from "lucide-react";
+import { Cpu, BarChart3, Network } from "lucide-react";
 
 interface AdvancedPerformanceVisualizationProps {
   animate?: boolean;
@@ -708,6 +708,11 @@ const AdvancedPerformanceVisualization: React.FC<AdvancedPerformanceVisualizatio
       ctx.stroke();
       ctx.shadowBlur = 0;
       
+      const labelAngle = baseAngle + (i * Math.PI / 2);
+      const labelDistance = animatedRadius * 0.7;
+      const labelX = centerX + Math.cos(labelAngle) * labelDistance;
+      const labelY = centerY + Math.sin(labelAngle) * labelDistance;
+      
       ctx.font = "bold 10px sans-serif";
       ctx.fillStyle = "#ffffff";
       ctx.textAlign = "center";
@@ -769,7 +774,7 @@ const AdvancedPerformanceVisualization: React.FC<AdvancedPerformanceVisualizatio
       const y = startY + row * (profileHeight + spacing);
       
       const hoverEffect = Math.sin(time * 0.002 + i * 0.5) * 0.5 + 0.5;
-      const borderGlow = 3 + hoverEffect * 3;
+      const borderGlow = 3 + hoverEffect * 2;
       
       ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
       ctx.beginPath();
@@ -797,6 +802,8 @@ const AdvancedPerformanceVisualization: React.FC<AdvancedPerformanceVisualizatio
         const badgeHeight = 20;
         const badgeX = x + (profileWidth - badgeWidth) / 2;
         const badgeY = y + profileHeight - 30;
+        
+        const badgeGlow = 3 + hoverEffect * 2;
         
         ctx.fillStyle = "rgba(16, 185, 129, 0.2)";
         ctx.shadowColor = "#10B981";
