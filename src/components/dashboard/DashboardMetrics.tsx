@@ -37,7 +37,15 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
         trend={metrics.ping.trend}
         trendValue={metrics.ping.trendValue}
         icon={<Activity size={24} />}
-        chartComponent={<MetricChart data={metrics.ping.history} color="#33C3F0" metricType="ping" height={120} showAxis={true} />}
+        chartComponent={
+          <MetricChart 
+            data={metrics.ping.history} 
+            color="#33C3F0" 
+            metricType="ping" 
+            height={120} 
+            showAxis={true} 
+          />
+        }
         className="h-64 flex flex-col"
       />
       
@@ -48,7 +56,15 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
         trend={metrics.packetLoss.trend}
         trendValue={metrics.packetLoss.trendValue}
         icon={<Signal size={24} />}
-        chartComponent={<MetricChart data={metrics.packetLoss.history} color="#F43F5E" metricType="packet-loss" height={120} showAxis={true} />}
+        chartComponent={
+          <MetricChart 
+            data={metrics.packetLoss.history} 
+            color="#F43F5E" 
+            metricType="packet-loss" 
+            height={120} 
+            showAxis={true} 
+          />
+        }
         className="h-64 flex flex-col"
       />
       
@@ -58,7 +74,15 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
         trend={metrics.fps.trend}
         trendValue={metrics.fps.trendValue}
         icon={<Gauge size={24} />}
-        chartComponent={<MetricChart data={metrics.fps.history} color="#10B981" metricType="fps" height={120} showAxis={true} />}
+        chartComponent={
+          <MetricChart 
+            data={metrics.fps.history} 
+            color="#10B981" 
+            metricType="fps" 
+            height={120} 
+            showAxis={true} 
+          />
+        }
         className="h-64 flex flex-col"
       />
     </div>

@@ -43,7 +43,15 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
           trend={metrics.cpu.trend}
           trendValue={metrics.cpu.trendValue}
           icon={<Cpu size={18} />}
-          chartComponent={<MetricChart data={metrics.cpu.history} color="#8B5CF6" metricType="cpu" />}
+          chartComponent={
+            <MetricChart 
+              data={metrics.cpu.history} 
+              color="#8B5CF6" 
+              metricType="cpu" 
+              height={80} 
+              showAxis={true} 
+            />
+          }
           className="mb-3"
         />
         
@@ -54,7 +62,15 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
           trend={metrics.gpu.trend}
           trendValue={metrics.gpu.trendValue}
           icon={<Zap size={18} />}
-          chartComponent={<MetricChart data={metrics.gpu.history} color="#D946EF" metricType="gpu" />}
+          chartComponent={
+            <MetricChart 
+              data={metrics.gpu.history} 
+              color="#D946EF" 
+              metricType="gpu" 
+              height={80} 
+              showAxis={true} 
+            />
+          }
           className="mb-3"
         />
         
@@ -65,7 +81,15 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
           trend={metrics.jitter.trend}
           trendValue={metrics.jitter.trendValue}
           icon={<Activity size={18} />}
-          chartComponent={<MetricChart data={metrics.jitter.history} color="#F97316" metricType="jitter" />}
+          chartComponent={
+            <MetricChart 
+              data={metrics.jitter.history} 
+              color="#F97316" 
+              metricType="jitter" 
+              height={80} 
+              showAxis={true} 
+            />
+          }
         />
       </div>
     </div>

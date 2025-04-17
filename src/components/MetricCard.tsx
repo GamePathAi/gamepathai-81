@@ -85,7 +85,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
       )}
       
       {chartComponent && (
-        <div className="mt-2 h-16 relative overflow-hidden">
+        <div className="mt-2 flex-grow relative overflow-hidden">
           {/* Add shine animation overlay */}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shine-slow pointer-events-none z-10"></div>
           {chartComponent}
