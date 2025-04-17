@@ -1,3 +1,4 @@
+
 // Re-export all mock data generators from this file
 export * from './gameData';
 export * from './metricData';
@@ -12,7 +13,7 @@ export const generateGames = () => {
       image: "https://placehold.co/100x100/2D3250/FFFFFF?text=Neon+Uprising",
       isOptimized: true,
       genre: "FPS",
-      optimizationType: "both",
+      optimizationType: "both" as const,
     },
     {
       id: "game-2",
@@ -20,7 +21,7 @@ export const generateGames = () => {
       image: "https://placehold.co/100x100/352839/FFFFFF?text=Cyber+Protocol",
       isOptimized: true,
       genre: "RPG",
-      optimizationType: "network",
+      optimizationType: "network" as const,
     },
     {
       id: "game-3",
@@ -28,7 +29,7 @@ export const generateGames = () => {
       image: "https://placehold.co/100x100/253545/FFFFFF?text=Night+City+Racers",
       isOptimized: false,
       genre: "Racing",
-      optimizationType: "none",
+      optimizationType: "none" as const,
     },
     {
       id: "game-4",
@@ -36,7 +37,7 @@ export const generateGames = () => {
       image: "https://placehold.co/100x100/40304A/FFFFFF?text=Quantum+Break",
       isOptimized: true,
       genre: "MOBA",
-      optimizationType: "system",
+      optimizationType: "system" as const,
     }
   ];
 };

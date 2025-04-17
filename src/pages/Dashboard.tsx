@@ -15,9 +15,19 @@ import PremiumFeatures from "@/components/dashboard/PremiumFeatures";
 // Define valid trend types to match component requirements
 type TrendType = "up" | "down" | "stable";
 
+// Define the Game type to match the one in GamesList
+interface Game {
+  id: string;
+  name: string;
+  image: string;
+  isOptimized: boolean;
+  genre: string;
+  optimizationType: "both" | "network" | "system" | "none";
+}
+
 const Dashboard: React.FC = () => {
   const [metrics, setMetrics] = useState(generateMetrics());
-  const [games] = useState(generateGames());
+  const [games] = useState<Game[]>(generateGames());
   
   // Update metrics periodically for a real-time effect
   useEffect(() => {
