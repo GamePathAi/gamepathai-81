@@ -1,3 +1,4 @@
+
 import React from "react";
 import { HexagonBorder } from "./logo/HexagonBorder";
 import { CircuitPattern } from "./logo/CircuitPattern";
@@ -9,14 +10,18 @@ interface GamePathLogoProps {
   size?: number;
 }
 
-export const GamePathLogo: React.FC<GamePathLogoProps> = ({ className = "", size = 40 }) => {
+// We're using a named export for the component
+export const GamePathLogo: React.FC<GamePathLogoProps> = ({ 
+  className = "w-12 h-12", 
+  size = 100 
+}) => {
   return (
-    <div className={`inline-flex items-center justify-center ${className}`}>
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 100 100"
-        fill="none"
+    <div className={className}>
+      <svg 
+        width={size} 
+        height={size} 
+        viewBox="0 0 100 100" 
+        fill="none" 
         xmlns="http://www.w3.org/2000/svg"
         className="filter drop-shadow-[0_0_8px_rgba(51,195,240,0.8)]"
       >
@@ -36,4 +41,5 @@ export const GamePathLogo: React.FC<GamePathLogoProps> = ({ className = "", size
   );
 };
 
+// Also export as default for backward compatibility
 export default GamePathLogo;

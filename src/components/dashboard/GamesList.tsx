@@ -1,6 +1,7 @@
 
 import React, { useState } from "react";
-import { Check, Shield, Zap, Settings } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Check, Shield, Zap, Settings, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import GameSettingsModal from "./GameSettingsModal";
@@ -21,6 +22,8 @@ interface GamesListProps {
 const GamesList: React.FC<GamesListProps> = ({ games }) => {
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [optimizingGameId, setOptimizingGameId] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const getOptimizationStatus = (game: Game) => {
     if (!game.isOptimized) return { text: "NOT OPTIMIZED", color: "text-gray-400" };
@@ -50,14 +53,31 @@ const GamesList: React.FC<GamesListProps> = ({ games }) => {
   };
 
   const handleOptimize = (game: Game) => {
+    if (optimizingGameId) return;
+    
+    setOptimizingGameId(game.id);
     toast.success(`Optimizing ${game.name}...`, {
       description: "Applying intelligent routing and system optimizations"
     });
+    
+    // Simulate optimization process
+    setTimeout(() => {
+      setOptimizingGameId(null);
+      toast.success(`${game.name} optimization completed`, {
+        description: "Game has been fully optimized for best performance"
+      });
+    }, 2000);
   };
 
   const handleOpenSettings = (game: Game) => {
     setSelectedGame(game);
     setSettingsOpen(true);
+  };
+
+  const handleGameConfig = (game: Game) => {
+    navigate(`/game-config/${game.id}`, { 
+      state: { game } 
+    });
   };
 
   return (
@@ -70,6 +90,7 @@ const GamesList: React.FC<GamesListProps> = ({ games }) => {
       <div className="space-y-4">
         {games.map((game) => {
           const optimizationStatus = getOptimizationStatus(game);
+          const isOptimizing = optimizingGameId === game.id;
           
           return (
             <div 
@@ -105,10 +126,15 @@ const GamesList: React.FC<GamesListProps> = ({ games }) => {
                       onClick={() => handleOptimize(game)} 
                       variant="cyber"
                       size="sm"
-                      className="bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/50 hover:bg-cyber-blue/30 text-xs px-3 py-1 transition-colors"
+                      disabled={isOptimizing}
+                      className={`bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/50 hover:bg-cyber-blue/30 text-xs px-3 py-1 transition-colors ${isOptimizing ? 'animate-pulse' : ''}`}
                     >
-                      <Zap size={14} className="mr-1" />
-                      Optimize
+                      {isOptimizing ? (
+                        <Loader2 size={14} className="mr-1 animate-spin" />
+                      ) : (
+                        <Zap size={14} className="mr-1" />
+                      )}
+                      {isOptimizing ? "Optimizing..." : "Optimize"}
                     </Button>
                   )}
                   <Button

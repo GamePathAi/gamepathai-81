@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Cog, Save, RotateCcw, AlertCircle } from "lucide-react";
+import { Cog, Save, RotateCcw, AlertCircle, ImportIcon, ExportIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SettingsTabs from "./SettingsTabs";
 import GeneralSettings from "./Tabs/GeneralSettings";
@@ -23,6 +23,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useNavigate } from "react-router-dom";
 
 interface SettingsChangeProps {
   onChange: () => void;
@@ -32,12 +33,20 @@ const SettingsContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState("general");
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const navigate = useNavigate();
 
   const handleSaveChanges = () => {
-    toast.success("Settings saved successfully", {
-      description: "Your preferences have been updated."
-    });
-    setHasChanges(false);
+    setIsSaving(true);
+    
+    // Simulate saving process
+    setTimeout(() => {
+      toast.success("Settings saved successfully", {
+        description: "Your preferences have been updated."
+      });
+      setHasChanges(false);
+      setIsSaving(false);
+    }, 1000);
   };
 
   const handleResetToDefault = () => {
@@ -54,6 +63,76 @@ const SettingsContent: React.FC = () => {
 
   const handleSettingChange = () => {
     setHasChanges(true);
+  };
+  
+  const handleImportSettings = () => {
+    // Create a hidden file input element
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      if (!target.files?.length) return;
+      
+      const file = target.files[0];
+      const reader = new FileReader();
+      
+      reader.onload = (event) => {
+        if (!event.target?.result) return;
+        
+        try {
+          // Here you would parse and validate the settings
+          toast.success("Settings imported successfully", {
+            description: `Imported settings from ${file.name}`
+          });
+          setHasChanges(true);
+        } catch (error) {
+          toast.error("Failed to import settings", {
+            description: "The file format is invalid or corrupted."
+          });
+        }
+      };
+      
+      reader.readAsText(file);
+    };
+    
+    // Trigger the file input click
+    input.click();
+  };
+  
+  const handleExportSettings = () => {
+    // Create sample settings data
+    const settingsData = {
+      version: "1.0.0",
+      general: { theme: "dark", language: "en" },
+      performance: { gpuAcceleration: true, cpuPriority: "high" },
+      connection: { routeOptimization: true }
+    };
+    
+    // Convert to JSON string
+    const jsonData = JSON.stringify(settingsData, null, 2);
+    
+    // Create a blob and download link
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'gamepath-settings.json';
+    
+    // Trigger the download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    toast.success("Settings exported successfully", {
+      description: "Your settings have been saved to gamepath-settings.json"
+    });
+  };
+
+  const handleNavigateToAdvanced = () => {
+    navigate("/advanced-settings");
   };
 
   const renderActiveTabContent = () => {
@@ -100,6 +179,26 @@ const SettingsContent: React.FC = () => {
           <Button 
             variant="cyberOutline" 
             size="sm"
+            onClick={handleImportSettings}
+            className="transition-all"
+          >
+            <ImportIcon size={16} className="mr-1" />
+            Import
+          </Button>
+          
+          <Button 
+            variant="cyberOutline" 
+            size="sm"
+            onClick={handleExportSettings}
+            className="transition-all"
+          >
+            <ExportIcon size={16} className="mr-1" />
+            Export
+          </Button>
+          
+          <Button 
+            variant="cyberOutline" 
+            size="sm"
             onClick={handleResetToDefault}
             className="transition-all"
           >
@@ -111,11 +210,20 @@ const SettingsContent: React.FC = () => {
             variant="cyberAction" 
             size="sm"
             onClick={handleSaveChanges}
-            disabled={!hasChanges}
+            disabled={!hasChanges || isSaving}
             className={`transition-all ${hasChanges ? 'animate-pulse-slow' : ''}`}
           >
-            <Save size={16} className="mr-1" />
-            Save Changes
+            {isSaving ? (
+              <>
+                <span className="animate-spin mr-1">⚡</span>
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save size={16} className="mr-1" />
+                Save Changes
+              </>
+            )}
           </Button>
         </div>
       </div>

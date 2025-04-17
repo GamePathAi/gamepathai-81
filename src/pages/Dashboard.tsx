@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ interface Game {
 const Dashboard: React.FC = () => {
   const [metrics, setMetrics] = useState(generateMetrics());
   const [games] = useState<Game[]>(generateGames());
+  const [isOptimizing, setIsOptimizing] = useState(false);
   
   // Update metrics periodically for a real-time effect
   useEffect(() => {
@@ -39,9 +41,20 @@ const Dashboard: React.FC = () => {
   }, []);
   
   const handleOptimizeAll = () => {
+    if (isOptimizing) return;
+    
+    setIsOptimizing(true);
     toast.success("Global optimization started", {
       description: "Optimizing all detected games and network routes"
     });
+    
+    // Simulate optimization process
+    setTimeout(() => {
+      setIsOptimizing(false);
+      toast.success("Optimization complete", {
+        description: "All games and routes have been optimized"
+      });
+    }, 3000);
   };
 
   // Convert number metrics to string for components that expect strings
@@ -92,9 +105,20 @@ const Dashboard: React.FC = () => {
         <Button
           className="cyber-btn"
           onClick={handleOptimizeAll}
+          disabled={isOptimizing}
+          variant="cyberAction"
         >
-          <Zap className="mr-1" size={16} />
-          OPTIMIZE ALL
+          {isOptimizing ? (
+            <>
+              <span className="animate-pulse mr-1">⚡</span>
+              OPTIMIZING...
+            </>
+          ) : (
+            <>
+              <Zap className="mr-1" size={16} />
+              OPTIMIZE ALL
+            </>
+          )}
         </Button>
       </div>
       
