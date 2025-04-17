@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Brain, ChevronRight, Activity, Cpu, ArrowLeft, DownloadCloud, RotateCcw, CheckCircle2, X, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, BarChart, Bar, LineChart, Line, Legend } from "recharts";
+import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, BarChart, Bar, Cell, LineChart, Line, Legend } from "recharts";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
@@ -266,7 +266,6 @@ export const DeepLearningInsights: React.FC = () => {
         </div>
       </CardContent>
 
-      {/* AI Optimization Details Dialog */}
       <Dialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen}>
         <DialogContent className="bg-cyber-darkblue border border-cyber-purple/40 text-white max-w-4xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
@@ -304,7 +303,7 @@ export const DeepLearningInsights: React.FC = () => {
                 {beforeAfterData.map((item) => (
                   <div key={item.name} className="text-center p-1 border border-cyber-purple/20 rounded">
                     <div className="text-xs text-gray-400">{item.name}</div>
-                    <div className="text-md font-tech text-cyber-green">{item.gain}</div>
+                    <div className="text-lg font-tech text-cyber-green">{item.gain}</div>
                   </div>
                 ))}
               </div>
@@ -440,7 +439,6 @@ export const DeepLearningInsights: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Performance Analysis Dialog */}
       <Dialog open={analysisDialogOpen} onOpenChange={setAnalysisDialogOpen}>
         <DialogContent className="bg-cyber-darkblue border border-cyber-blue/40 text-white max-w-4xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
@@ -528,7 +526,7 @@ export const DeepLearningInsights: React.FC = () => {
                       />
                       <Bar dataKey="current" fill="#33C3F0">
                         {bottlenecks.map((entry, index) => (
-                          <Bar.Cell 
+                          <Cell 
                             key={`cell-${index}`} 
                             fill={entry.status === "optimal" ? "#10b981" : entry.status === "warning" ? "#f59e0b" : "#33C3F0"} 
                           />
@@ -685,7 +683,6 @@ export const DeepLearningInsights: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Settings Dialog */}
       <Dialog open={settingsDialogOpen} onOpenChange={setSettingsDialogOpen}>
         <DialogContent className="bg-cyber-darkblue border border-cyber-green/40 text-white max-w-4xl">
           <DialogHeader>
@@ -761,7 +758,6 @@ export const DeepLearningInsights: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Settings Confirmation Dialog */}
       <Dialog open={confirmationDialogOpen} onOpenChange={setConfirmationDialogOpen}>
         <DialogContent className="bg-cyber-darkblue border border-cyber-green/40 text-white max-w-lg">
           <DialogHeader>
