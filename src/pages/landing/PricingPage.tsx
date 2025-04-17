@@ -1,5 +1,5 @@
-
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import LandingLayout from "@/components/landing/LandingLayout";
 import { Check, Users, User, Shield, Wifi, Globe, Zap } from "lucide-react";
+import { useCheckout } from "@/contexts/CheckoutContext";
 
 interface PlanFeature {
   name: string;
@@ -37,8 +38,9 @@ interface PricingPlan {
 
 const PricingPage: React.FC = () => {
   const [billingInterval, setBillingInterval] = useState<"monthly" | "quarterly" | "annual">("monthly");
+  const navigate = useNavigate();
+  const { setSelectedPlan, setBillingInterval: setCheckoutBillingInterval } = useCheckout();
 
-  // Calculate the percentage of savings compared to monthly plan
   const calculateSavings = (monthlyPrice: number, periodPrice: number, months: number): string => {
     const totalMonthlyPrice = monthlyPrice * months;
     const savings = totalMonthlyPrice - periodPrice;
@@ -46,7 +48,6 @@ const PricingPage: React.FC = () => {
     return `${savingsPercentage}%`;
   };
 
-  // Pricing plans data
   const plans: PricingPlan[] = [
     {
       id: "player",
@@ -132,7 +133,6 @@ const PricingPage: React.FC = () => {
     }
   ];
 
-  // Add-on features data
   const addOns = [
     {
       name: "VPN Integration",
@@ -154,13 +154,18 @@ const PricingPage: React.FC = () => {
     }
   ];
 
-  // Format price with currency
   const formatPrice = (price: number): string => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 2
     }).format(price);
+  };
+
+  const handleSelectPlan = (plan: PricingPlan) => {
+    setSelectedPlan(plan);
+    setCheckoutBillingInterval(billingInterval);
+    navigate('/checkout/plan');
   };
 
   return (
@@ -170,9 +175,7 @@ const PricingPage: React.FC = () => {
         <meta name="description" content="Choose the right GamePath AI subscription plan to optimize your gaming experience. Compare features and pricing for Player, Co-op, and Alliance plans." />
       </Helmet>
 
-      {/* Pricing Hero Section */}
       <section className="py-20 relative overflow-hidden">
-        {/* Background Effects */}
         <div className="absolute inset-0 bg-cyber-grid opacity-10 z-0"></div>
         
         <div className="container mx-auto px-4 relative z-10">
@@ -185,7 +188,6 @@ const PricingPage: React.FC = () => {
               Select the plan that fits your gaming needs. All plans include our core optimization technologies with different levels of features and user counts.
             </p>
 
-            {/* Billing Toggle */}
             <div className="flex flex-col items-center mb-12">
               <div className="inline-flex border-cyber-blue/30 bg-cyber-darkblue p-1 rounded-lg">
                 <ToggleGroup 
@@ -213,7 +215,6 @@ const PricingPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Pricing Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {plans.map((plan) => (
               <div key={plan.id} className="flex">
@@ -257,9 +258,9 @@ const PricingPage: React.FC = () => {
                     <Button 
                       variant={plan.popular ? "cyberAction" : "cyberOutline"}
                       className="w-full mb-6"
-                      asChild
+                      onClick={() => handleSelectPlan(plan)}
                     >
-                      <Link to="/dashboard">Get Started</Link>
+                      Get Started
                     </Button>
                     
                     <div className="space-y-3">
@@ -285,7 +286,6 @@ const PricingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Included with All Plans */}
       <section className="py-16 bg-cyber-darkblue">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -315,7 +315,6 @@ const PricingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* FAQ Section */}
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -358,7 +357,6 @@ const PricingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Enterprise Section */}
       <section className="py-16 bg-cyber-darkblue">
         <div className="container mx-auto px-4">
           <div className="bg-gradient-to-r from-cyber-black to-cyber-darkblue border border-cyber-purple/30 rounded-lg p-8 md:p-12">
@@ -380,7 +378,6 @@ const PricingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto">
@@ -390,8 +387,8 @@ const PricingPage: React.FC = () => {
             <p className="text-gray-300 mb-8">
               Join thousands of gamers who have boosted their gaming performance with GamePath AI. Start your 7-day free trial today, no credit card required.
             </p>
-            <Button variant="cyberAction" size="lg" asChild>
-              <Link to="/dashboard">Start Free Trial</Link>
+            <Button variant="cyberAction" size="lg" onClick={() => handleSelectPlan(plans[1])}>
+              Start Free Trial
             </Button>
           </div>
         </div>

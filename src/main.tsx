@@ -12,9 +12,12 @@ import '@fontsource/inter/700.css';  // Fonte bold
 
 // Import i18n configuration before rendering the app
 import './lib/i18n.ts';
+import { CheckoutProvider } from './contexts/CheckoutContext';
 
 createRoot(document.getElementById("root")!).render(
   <I18nextProvider i18n={i18n}>
-    <App />
+    <CheckoutProvider>
+      <App />
+    </CheckoutProvider>
   </I18nextProvider>
 );

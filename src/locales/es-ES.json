@@ -66,7 +66,13 @@
     "cta": {
       "description": "Experimenta una reducción significativa de la latencia y mejoras de rendimiento con nuestra tecnología de juego adaptativa.",
       "startFreeTrial": "Comenzar Prueba Gratuita",
-      "viewPricing": "Ver Precios"
+      "viewPricing": "Ver Precios",
+      "checkout": {
+        "plan": "Confirmar Plan",
+        "payment": "Detalles de Pago",
+        "processing": "Procesando",
+        "success": "¡Éxito!"
+      }
     }
   },
   "games": {
@@ -116,6 +122,66 @@
     },
     "card": {
       "viewDetails": "Ver Detalles"
+    }
+  },
+  "checkout": {
+    "plan": {
+      "title": "Confirmar Tu Plan",
+      "subtitle": "Revisa tu selección y ciclo de facturación antes de continuar",
+      "selectedPlan": "Plan Seleccionado",
+      "billingCycle": "Ciclo de Facturación",
+      "monthly": "Mensual",
+      "quarterly": "Trimestral",
+      "annual": "Anual",
+      "savePercent": "Ahorra ~{percent}%",
+      "continueToPayment": "Continuar al Pago"
+    },
+    "payment": {
+      "title": "Detalles de Pago",
+      "subtitle": "Ingresa tu información para completar tu compra",
+      "customerInfo": "Información del Cliente",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Correo electrónico",
+      "paymentInfo": "Información de Pago",
+      "cardDetails": "Detalles de la tarjeta",
+      "securePayment": "Pago Seguro",
+      "encrypted": "Tu información de pago está cifrada y segura",
+      "terms": "Al completar tu compra, aceptas nuestros Términos de Servicio y Política de Privacidad",
+      "completePurchase": "Completar Compra"
+    },
+    "processing": {
+      "title": "Procesando Tu Suscripción",
+      "subtitle": "Espera mientras configuramos tu cuenta",
+      "settingUp": "Configurando tu cuenta de GamePath IA",
+      "takeMoment": "Esto solo tomará un momento",
+      "step1": "Verificando información de pago",
+      "step2": "Creando tu cuenta",
+      "step3": "Configurando tu suscripción",
+      "secure": "Todas las transacciones son seguras y cifradas"
+    },
+    "success": {
+      "title": "¡Suscripción Confirmada!",
+      "subtitle": "Tu viaje de optimización de GamePath IA comienza ahora",
+      "welcome": "Bienvenido a GamePath IA",
+      "activated": "Tu suscripción ha sido activada exitosamente",
+      "details": "Detalles de la Suscripción",
+      "plan": "Plan",
+      "billing": "Facturación",
+      "nextPayment": "Próximo pago el {date}",
+      "includes": "Tu suscripción incluye:",
+      "routeOpt": "Optimización de Ruta",
+      "reduceLatency": "Reduce la latencia hasta un 45%",
+      "perfEnhance": "Mejora de Rendimiento",
+      "boostFps": "Aumenta los FPS hasta un 20%",
+      "nextSteps": "Próximos Pasos",
+      "downloadClient": "Descargar Cliente de GamePath IA",
+      "installSoftware": "Instala nuestro software de optimización para comenzar",
+      "download": "Descargar Cliente",
+      "dashboardSetup": "Configuración del Panel",
+      "configureProfile": "Configura tu perfil de juego y preferencias",
+      "goToDashboard": "Ir al Panel",
+      "accessDashboard": "Acceder a Tu Panel"
     }
   }
 }

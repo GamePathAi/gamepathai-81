@@ -32,6 +32,12 @@ import PricingPage from "./pages/landing/PricingPage";
 import TechnologyPage from "./pages/landing/TechnologyPage";
 import GamePage from "./pages/landing/GamePage";
 
+// Checkout Pages
+import CheckoutPlanPage from "./pages/checkout/CheckoutPlanPage";
+import CheckoutPaymentPage from "./pages/checkout/CheckoutPaymentPage";
+import CheckoutProcessingPage from "./pages/checkout/CheckoutProcessingPage";
+import CheckoutSuccessPage from "./pages/checkout/CheckoutSuccessPage";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -63,6 +69,12 @@ const App = () => (
                 <Route path="/account/billing-history" element={<BillingHistory />} />
                 <Route path="/account/change-plan" element={<ChangePlan />} />
                 <Route path="/account/cancel-subscription" element={<CancelSubscription />} />
+                
+                {/* Checkout Routes */}
+                <Route path="/checkout/plan" element={<CheckoutPlanPage />} />
+                <Route path="/checkout/payment" element={<CheckoutPaymentPage />} />
+                <Route path="/checkout/processing" element={<CheckoutProcessingPage />} />
+                <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
                 
                 {/* Landing Pages */}
                 <Route path="/" element={<HomePage />} />
