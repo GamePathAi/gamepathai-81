@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Cog, Save, RotateCcw, AlertCircle, ImportIcon, ExportIcon } from "lucide-react";
+import { Cog, Save, RotateCcw, AlertCircle, Import, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SettingsTabs from "./SettingsTabs";
 import GeneralSettings from "./Tabs/GeneralSettings";
@@ -182,7 +182,7 @@ const SettingsContent: React.FC = () => {
             onClick={handleImportSettings}
             className="transition-all"
           >
-            <ImportIcon size={16} className="mr-1" />
+            <Import size={16} className="mr-1" />
             Import
           </Button>
           
@@ -192,7 +192,7 @@ const SettingsContent: React.FC = () => {
             onClick={handleExportSettings}
             className="transition-all"
           >
-            <ExportIcon size={16} className="mr-1" />
+            <Download size={16} className="mr-1" />
             Export
           </Button>
           
