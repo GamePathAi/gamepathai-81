@@ -1,10 +1,13 @@
-
 import React, { useEffect, useRef, useState } from "react";
 import { Network, Zap, Activity } from "lucide-react";
 
-const RouteOptimizerVisualization: React.FC = () => {
+interface RouteOptimizerVisualizationProps {
+  animate?: boolean;
+}
+
+const RouteOptimizerVisualization: React.FC<RouteOptimizerVisualizationProps> = ({ animate = true }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [isAnimating, setIsAnimating] = useState(true);
+  const [isAnimating, setIsAnimating] = useState(animate);
   
   // Animation frame identifier
   const requestRef = useRef<number>();

@@ -1,13 +1,21 @@
-
 import React, { useEffect, useRef, useState } from "react";
 import { Cpu, BarChart3, Zap } from "lucide-react";
 
-const PerformanceEnhancementVisualization: React.FC = () => {
+interface PerformanceEnhancementVisualizationProps {
+  animate?: boolean;
+}
+
+const PerformanceEnhancementVisualization: React.FC<PerformanceEnhancementVisualizationProps> = ({ animate = true }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [isAnimating, setIsAnimating] = useState(true);
+  const [isAnimating, setIsAnimating] = useState(animate);
   
   // Animation frame identifier
   const requestRef = useRef<number>();
+  
+  // Effect to update isAnimating when animate prop changes
+  useEffect(() => {
+    setIsAnimating(animate);
+  }, [animate]);
   
   // CPU/GPU usage data
   const performanceData = {
