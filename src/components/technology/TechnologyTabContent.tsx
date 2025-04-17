@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from "react";
 import RouteOptimizerVisualization from "./visualizations/RouteOptimizerVisualization";
 import PerformanceEnhancementVisualization from "./visualizations/PerformanceEnhancementVisualization";
 import PowerManagementVisualization from "./visualizations/PowerManagementVisualization";
-import AdvancedPerformanceVisualization from "./visualizations/AdvancedPerformanceVisualization";
+import AdvancedPerformanceVisualization from "./visualizations/advanced/AdvancedPerformanceVisualization";
 
 interface FeatureItem {
   title: string;
@@ -41,7 +40,6 @@ const TechnologyTabContent: React.FC<TechnologyTabContentProps> = ({
   
   useEffect(() => {
     if (animate) {
-      // Start animation after component mounts
       const timer = setTimeout(() => {
         setIsAnimating(true);
       }, 500);
@@ -49,7 +47,6 @@ const TechnologyTabContent: React.FC<TechnologyTabContentProps> = ({
     }
   }, [animate]);
 
-  // Render the appropriate visualization based on the type
   const renderVisualization = () => {
     switch(visualType) {
       case "route":
@@ -61,7 +58,6 @@ const TechnologyTabContent: React.FC<TechnologyTabContentProps> = ({
       case "advanced":
         return <AdvancedPerformanceVisualization animate={isAnimating} />;
       default:
-        // Fallback to the original icon-based visualization
         return (
           <div className={`aspect-square rounded-lg bg-gradient-to-br from-${color}/20 to-${color}/5 border border-${color}/30 flex items-center justify-center shadow-[0_0_15px_rgba(0,0,0,0.2)]`}>
             {icon}
@@ -70,7 +66,6 @@ const TechnologyTabContent: React.FC<TechnologyTabContentProps> = ({
     }
   };
 
-  // Additional class for feature page styling
   const featurePageClass = inFeaturePage 
     ? "shadow-[0_0_35px_rgba(0,0,0,0.35)] hover:shadow-[0_0_40px_rgba(51,195,240,0.25)] transition-all duration-500" 
     : "";
