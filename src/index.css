@@ -83,7 +83,7 @@
     @apply text-cyber-blue;
   }
   
-  /* Charts and visualizations */
+  /* Charts and visualizations simple reset */
   .chart-container, .graph-container, svg {
     @apply bg-transparent;
   }
@@ -216,18 +216,14 @@
   .system-metrics-container {
     display: flex;
     flex-direction: column;
-    gap: 16px;
     height: auto;
   }
 
   .metric-box {
     width: 100%;
-    height: 180px !important; /* Force taller height */
-    min-height: 180px !important; 
-    padding: 12px 15px; /* Increased horizontal padding */
+    padding: 12px;
     display: flex;
     flex-direction: column;
-    margin-bottom: 15px; /* Add more space between metric boxes */
   }
 
   .metric-header {
