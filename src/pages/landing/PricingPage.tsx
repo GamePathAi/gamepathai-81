@@ -162,8 +162,15 @@ const PricingPage: React.FC = () => {
     }).format(price);
   };
 
-  const handleSelectPlan = (plan: PricingPlan) => {
-    setSelectedPlan(plan);
+  const handleSelectPlan = (plan: any) => {
+    const adaptedPlan = {
+      ...plan,
+      features: plan.features.map((feature: any) => 
+        typeof feature === 'string' ? feature : feature.name
+      )
+    };
+    
+    setSelectedPlan(adaptedPlan);
     setCheckoutBillingInterval(billingInterval);
     navigate('/checkout/plan');
   };

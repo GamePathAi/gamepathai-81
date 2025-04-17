@@ -3,6 +3,12 @@ import React, { createContext, useContext, useState } from 'react';
 
 export type BillingInterval = 'monthly' | 'quarterly' | 'annual';
 
+export interface PlanFeature {
+  name: string;
+  included: boolean;
+  info?: string;
+}
+
 export interface PricingPlan {
   id: string;
   name: string;
@@ -13,7 +19,7 @@ export interface PricingPlan {
     quarterly: number;
     annual: number;
   };
-  features?: string[];
+  features?: PlanFeature[] | string[];
   popular?: boolean;
   color?: string;
 }

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { GamePathLogo } from '../GamePathLogo';
+import GamePathLogo from '../GamePathLogo';
 import { Separator } from '../ui/separator';
 
 interface CheckoutStep {

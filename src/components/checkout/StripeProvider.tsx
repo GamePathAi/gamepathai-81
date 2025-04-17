@@ -12,11 +12,11 @@ interface StripeProviderProps {
 
 export const StripeProvider: React.FC<StripeProviderProps> = ({ children }) => {
   const options = {
-    mode: 'payment',
+    mode: 'payment' as const,
     amount: 1000,
     currency: 'usd',
     appearance: {
-      theme: 'night',
+      theme: 'night' as const,
       variables: {
         colorPrimary: '#33C3F0',
         colorBackground: '#121223',
