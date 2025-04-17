@@ -3,7 +3,7 @@ import React from "react";
 import { Activity, CheckCircle2, DownloadCloud, X, AlertTriangle } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ResponsiveContainer, BarChart, Bar, Cell, XAxis, YAxis, Tooltip } from "recharts";
+import { BarChartComponent } from "@/components/charts/BarChartComponent";
 import { performanceStages, bottlenecks } from "../data";
 
 interface AnalysisDialogProps {
@@ -104,28 +104,20 @@ export const AnalysisDialog: React.FC<AnalysisDialogProps> = ({
                 </span>
               </div>
               <div className="h-60">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={bottlenecks}
-                    margin={{ top: 10, right: 30, left: 0, bottom: 5 }}
-                    layout="vertical"
-                  >
-                    <XAxis type="number" domain={[0, 100]} stroke="#6b7280" />
-                    <YAxis type="category" dataKey="name" stroke="#6b7280" />
-                    <Tooltip 
-                      contentStyle={{ backgroundColor: "#111827", borderColor: "#33C3F0", color: "#e5e7eb" }}
-                    />
-                    <Bar dataKey="current" fill="#33C3F0">
-                      {bottlenecks.map((entry, index) => (
-                        <Cell 
-                          key={`cell-${index}`} 
-                          fill={entry.status === "optimal" ? "#10b981" : entry.status === "warning" ? "#f59e0b" : "#33C3F0"} 
-                        />
-                      ))}
-                    </Bar>
-                    <Bar dataKey="threshold" fill="#6c7293" opacity={0.3} />
-                  </BarChart>
-                </ResponsiveContainer>
+                <BarChartComponent
+                  data={bottlenecks}
+                  barKeys={["current", "threshold"]}
+                  xAxisDataKey="name"
+                  colors={["#33C3F0", "#6c7293"]}
+                  vertical={true}
+                  colorsByStatus={true}
+                  statusKey="status"
+                  statusColors={{
+                    optimal: "#10b981",
+                    warning: "#f59e0b",
+                    default: "#33C3F0"
+                  }}
+                />
               </div>
             </div>
 

@@ -1,0 +1,89 @@
+
+import React from "react";
+import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
+
+interface AreaChartComponentProps {
+  data: any[];
+  dataKey: string;
+  height?: number;
+  width?: string;
+  xAxisDataKey?: string;
+  yAxisDomain?: [number, number];
+  color?: string;
+  gradientId?: string;
+  tooltipFormatter?: (value: any, name?: string) => [string, string];
+  tooltipLabelFormatter?: (label: string) => string;
+  xAxisHide?: boolean;
+  yAxisHide?: boolean;
+}
+
+export const AreaChartComponent: React.FC<AreaChartComponentProps> = ({
+  data,
+  dataKey,
+  height = 64,
+  width = "100%",
+  xAxisDataKey = "name",
+  yAxisDomain = [0, 100],
+  color = "#8b5cf6",
+  gradientId = "colorGradient",
+  tooltipFormatter = (value) => [`${value}%`, 'Value'],
+  tooltipLabelFormatter,
+  xAxisHide = false,
+  yAxisHide = false,
+}) => {
+  return (
+    <div className="h-full w-full">
+      <ResponsiveContainer width={width} height={height}>
+        <AreaChart
+          data={data}
+          margin={{
+            top: 5,
+            right: 10,
+            left: 0,
+            bottom: 5,
+          }}
+        >
+          <XAxis 
+            dataKey={xAxisDataKey} 
+            stroke="#6b7280" 
+            hide={xAxisHide}
+            tick={{ fill: "#6b7280", fontSize: 12 }}
+            axisLine={{ stroke: "#374151" }}
+            tickLine={{ stroke: "#374151" }}
+          />
+          <YAxis 
+            hide={yAxisHide}
+            domain={yAxisDomain}
+            stroke="#6b7280"
+            tick={{ fill: "#6b7280", fontSize: 10 }}
+          />
+          <Tooltip 
+            contentStyle={{ 
+              backgroundColor: "#111827", 
+              borderColor: color, 
+              borderRadius: "0.375rem",
+              color: "#e5e7eb"
+            }}
+            itemStyle={{ color: "#e5e7eb" }}
+            formatter={tooltipFormatter}
+            labelFormatter={tooltipLabelFormatter}
+            labelStyle={{ color: "#9ca3af" }}
+          />
+          <defs>
+            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor={color} stopOpacity={0.8}/>
+              <stop offset="95%" stopColor={color} stopOpacity={0.2}/>
+            </linearGradient>
+          </defs>
+          <Area 
+            type="monotone" 
+            dataKey={dataKey} 
+            stroke={color} 
+            strokeWidth={2}
+            fill={`url(#${gradientId})`} 
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  );
+};

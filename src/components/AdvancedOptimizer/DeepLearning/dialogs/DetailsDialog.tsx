@@ -3,7 +3,8 @@ import React from "react";
 import { Brain, DownloadCloud, Activity, X } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, LineChart, Line } from "recharts";
+import { BarChartComponent } from "@/components/charts/BarChartComponent";
+import { LineChartComponent } from "@/components/charts/LineChartComponent";
 import { beforeAfterData, analyzedGames, learningData } from "../data";
 import { CheckCircle2 } from "lucide-react";
 
@@ -30,22 +31,14 @@ export const DetailsDialog: React.FC<DetailsDialogProps> = ({ open, onOpenChange
           <div className="bg-cyber-darkblue/70 border border-cyber-purple/20 rounded-lg p-4">
             <h4 className="text-md font-tech text-cyber-purple mb-3">Performance Improvement</h4>
             <div className="h-60">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={beforeAfterData}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                >
-                  <XAxis dataKey="name" stroke="#6b7280" />
-                  <YAxis stroke="#6b7280" />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: "#111827", borderColor: "#8b5cf6", color: "#e5e7eb" }}
-                    formatter={(value, name) => [value, name === "before" ? "Before" : "After"]}
-                  />
-                  <Legend formatter={(value) => value === "before" ? "Before Optimization" : "After Optimization"} />
-                  <Bar dataKey="before" fill="#6c7293" name="before" />
-                  <Bar dataKey="after" fill="#8b5cf6" name="after" />
-                </BarChart>
-              </ResponsiveContainer>
+              <BarChartComponent
+                data={beforeAfterData}
+                barKeys={["before", "after"]}
+                xAxisDataKey="name"
+                colors={["#6c7293", "#8b5cf6"]}
+                showLegend
+                legendFormatter={(value) => value === "before" ? "Before Optimization" : "After Optimization"}
+              />
             </div>
             <div className="mt-4 grid grid-cols-3 sm:grid-cols-5 gap-2">
               {beforeAfterData.map((item) => (
@@ -99,26 +92,15 @@ export const DetailsDialog: React.FC<DetailsDialogProps> = ({ open, onOpenChange
               <div>
                 <h5 className="text-sm font-tech text-gray-300 mb-2">AI Learning Curve</h5>
                 <div className="h-40">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart
-                      data={learningData}
-                      margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
-                    >
-                      <XAxis dataKey="name" stroke="#6b7280" />
-                      <YAxis stroke="#6b7280" />
-                      <Tooltip 
-                        contentStyle={{ backgroundColor: "#111827", borderColor: "#10b981", color: "#e5e7eb" }}
-                        formatter={(value) => [`${value}%`, "Learning"]}
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey="value" 
-                        stroke="#10b981" 
-                        strokeWidth={2}
-                        activeDot={{ r: 8 }} 
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
+                  <LineChartComponent
+                    data={learningData}
+                    lineKeys={[{ 
+                      dataKey: "value", 
+                      color: "#10b981", 
+                      strokeWidth: 2 
+                    }]}
+                    tooltipFormatter={(value) => [`${value}%`, "Learning"]}
+                  />
                 </div>
               </div>
               <div>

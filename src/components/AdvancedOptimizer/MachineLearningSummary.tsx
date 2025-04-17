@@ -1,12 +1,13 @@
+
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DeepLearningInsights } from "./DeepLearningInsights";
-import { ChartContainer } from "@/components/ui/chart";
-import { Area, AreaChart, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 import { Button } from "@/components/ui/button";
 import { Brain, Activity, Cpu, Network, Zap } from "lucide-react";
 import MetricCard from "@/components/MetricCard";
 import MetricChart from "@/components/MetricChart";
+import { AreaChartComponent } from "@/components/charts/AreaChartComponent";
+import { LineChartComponent } from "@/components/charts/LineChartComponent";
 
 const learningData = [
   { name: "Week 1", value: 35 },
@@ -89,50 +90,14 @@ export const MachineLearningSummary: React.FC = () => {
           <div className="bg-cyber-darkblue/50 border border-cyber-purple/20 rounded-lg p-4 mb-6">
             <h4 className="text-sm font-tech text-cyber-purple mb-3">AI Learning Progress</h4>
             <div className="h-48">
-              <ChartContainer
-                config={{
-                  learning: { color: "#8B5CF6" },
-                  target: { color: "#6D28D9" },
-                }}
-              >
-                <AreaChart
-                  data={learningData}
-                  margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
-                >
-                  <XAxis 
-                    dataKey="name" 
-                    stroke="#6b7280" 
-                    tick={{ fill: "#6b7280", fontSize: 12 }}
-                  />
-                  <YAxis 
-                    domain={[0, 100]}
-                    stroke="#6b7280"
-                    tick={{ fill: "#6b7280", fontSize: 10 }}
-                  />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: "#111827", 
-                      borderColor: "#8b5cf6", 
-                      borderRadius: "0.375rem",
-                      color: "#e5e7eb"
-                    }}
-                    formatter={(value) => [`${value}%`, 'Learning Progress']}
-                  />
-                  <defs>
-                    <linearGradient id="learningGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8}/>
-                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.2}/>
-                    </linearGradient>
-                  </defs>
-                  <Area 
-                    type="monotone" 
-                    dataKey="value" 
-                    stroke="#8b5cf6" 
-                    strokeWidth={2}
-                    fill="url(#learningGradient)" 
-                  />
-                </AreaChart>
-              </ChartContainer>
+              <AreaChartComponent
+                data={learningData}
+                dataKey="value"
+                color="#8B5CF6"
+                gradientId="learningGradient"
+                tooltipFormatter={(value) => [`${value}%`, 'Learning Progress']}
+                height={180}
+              />
             </div>
           </div>
           
@@ -140,39 +105,16 @@ export const MachineLearningSummary: React.FC = () => {
             <div className="bg-cyber-darkblue/50 border border-cyber-blue/20 rounded-lg p-4">
               <h4 className="text-sm font-tech text-cyber-blue mb-3">Resource Optimization</h4>
               <div className="h-48">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
-                    data={optimizationData}
-                    margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
-                  >
-                    <XAxis dataKey="name" stroke="#6b7280" />
-                    <YAxis stroke="#6b7280" />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: "#111827", 
-                        borderColor: "#33C3F0", 
-                        borderRadius: "0.375rem",
-                        color: "#e5e7eb"
-                      }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="before" 
-                      name="Before" 
-                      stroke="#6c7293" 
-                      strokeWidth={2}
-                      dot={{ r: 4 }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="after" 
-                      name="After" 
-                      stroke="#33C3F0" 
-                      strokeWidth={2}
-                      dot={{ r: 4 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
+                <LineChartComponent
+                  data={optimizationData}
+                  lineKeys={[
+                    { dataKey: "before", color: "#6c7293", name: "Before" },
+                    { dataKey: "after", color: "#33C3F0", name: "After" }
+                  ]}
+                  height={180}
+                  showLegend={true}
+                  dot={{ r: 4 }}
+                />
               </div>
             </div>
             
