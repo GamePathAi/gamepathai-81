@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Brain, ChevronRight, Activity, Cpu, ArrowLeft, DownloadCloud, RotateCcw, CheckCircle2, X, AlertTriangle } from "lucide-react";
@@ -83,8 +82,7 @@ export const DeepLearningInsights: React.FC = () => {
     setCurrentStage(0);
     setStageProgress(0);
     
-    // Simulate analysis process
-    const totalDuration = 5000; // 5 seconds total
+    const totalDuration = 5000;
     const stages = performanceStages.length;
     const stageTime = totalDuration / stages;
     
@@ -127,7 +125,6 @@ export const DeepLearningInsights: React.FC = () => {
     setApplyingSettings(true);
     setSettingsAppliedSuccess(false);
     
-    // Simulate applying settings
     setTimeout(() => {
       setApplyingSettings(false);
       setSettingsAppliedSuccess(true);
@@ -531,7 +528,7 @@ export const DeepLearningInsights: React.FC = () => {
                       />
                       <Bar dataKey="current" fill="#33C3F0">
                         {bottlenecks.map((entry, index) => (
-                          <cell 
+                          <Bar.Cell 
                             key={`cell-${index}`} 
                             fill={entry.status === "optimal" ? "#10b981" : entry.status === "warning" ? "#f59e0b" : "#33C3F0"} 
                           />
