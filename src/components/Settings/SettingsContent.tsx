@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Cog, Save, RotateCcw, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -87,7 +86,7 @@ const SettingsContent: React.FC = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-4">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-3 gap-2">
         <div className="flex items-center">
           <Cog size={28} className="text-cyber-blue mr-2" />
           <div>
@@ -123,7 +122,7 @@ const SettingsContent: React.FC = () => {
       <div className="bg-cyber-darkblue border border-cyber-blue/30 rounded-lg shadow-lg">
         <SettingsTabs activeTab={activeTab} setActiveTab={setActiveTab} />
         
-        <div className="p-4">
+        <div className="p-3">
           {renderActiveTabContent()}
         </div>
       </div>

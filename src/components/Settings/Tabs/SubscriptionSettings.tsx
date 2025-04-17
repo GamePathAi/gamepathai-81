@@ -11,7 +11,8 @@ import {
   Cpu, 
   Power, 
   Shield, 
-  Zap
+  Zap,
+  Wallet
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -50,7 +51,7 @@ interface AddOn {
   description: string;
   monthlyPrice: number;
   icon: React.ElementType;
-  includedIn?: string[]; // Plans that include this add-on
+  includedIn?: string[];
 }
 
 // Subscription form interface
@@ -131,7 +132,7 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
       description: "Advanced protection and routing for secure connections",
       monthlyPrice: 3.99,
       icon: Shield,
-      includedIn: ["coop", "alliance"] // VPN is included in Co-op and Alliance plans
+      includedIn: ["coop", "alliance"]
     }
   ];
 
@@ -160,7 +161,7 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
   const navigate = useNavigate();
   
   // Regional pricing simulation (would come from an API in practice)
-  const basePrice = 9.99; // Base monthly price for Player
+  const basePrice = 9.99;
   
   // Price calculation based on selections
   const calculatePrice = (tierId: string, durationId: string) => {
@@ -169,10 +170,8 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
     
     if (!tier || !duration) return 0;
     
-    // Base price multiplied by user tier type
     let price = basePrice * tier.priceMultiplier;
     
-    // Apply duration discount
     price = price * (1 - duration.discount);
     
     return price;
@@ -183,12 +182,10 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
     let basePrice = calculatePrice(tierId, durationId);
     const duration = durations.find(d => d.id === durationId);
     
-    // Add price of selected add-ons
     const addOnsCost = addOnIds.reduce((total, id) => {
       const addOn = addOns.find(a => a.id === id);
       if (!addOn) return total;
       
-      // Check if add-on is included in the selected plan
       if (addOn.includedIn && addOn.includedIn.includes(tierId)) {
         return total;
       }
@@ -226,7 +223,6 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
   };
   
   const handleUpgrade = () => {
-    // Here you would implement redirection to Stripe checkout
     toast.info(`Processing subscription update`, {
       description: "Redirecting to checkout..."
     });
@@ -234,30 +230,25 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
   };
   
   const handleManageSubscription = () => {
-    // Navigate to the new account/subscription page instead of showing toast
     navigate("/account/subscription");
   };
   
-  // Determine if this is an upgrade or new subscription
   const isUpgrade = currentPlan.active;
   
-  // Calculate prices for display
   const prices = calculateTotalPrice(selectedUserTier, selectedDuration, selectedAddOns);
 
-  // Check if an add-on is included in the selected tier
   const isAddOnIncluded = (addOnId: string): boolean => {
     const addOn = addOns.find(a => a.id === addOnId);
     return !!(addOn?.includedIn && addOn.includedIn.includes(selectedUserTier));
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex items-center">
-        <CreditCard className="mr-2 h-5 w-5 text-cyber-blue" />
+        <Wallet className="mr-2 h-5 w-5 text-cyber-blue" />
         <h3 className="text-lg font-medium">GamePath AI Subscription</h3>
       </div>
       
-      {/* Current subscription status */}
       {currentPlan.active && (
         <Card className="border-cyber-blue">
           <CardHeader className="bg-cyber-blue/10 border-b border-cyber-blue/30">
@@ -349,12 +340,10 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
         </Card>
       )}
       
-      {/* New plan selector */}
       <div className="mt-8">
         <h4 className="text-lg mb-6">Customize your subscription</h4>
         
         <div className="space-y-8">
-          {/* User type selection */}
           <div>
             <h5 className="text-md font-medium mb-3 flex items-center">
               <Users className="h-4 w-4 mr-2 text-cyber-blue" />
@@ -413,7 +402,6 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
             </RadioGroup>
           </div>
           
-          {/* Duration selection */}
           <div>
             <h5 className="text-md font-medium mb-3 flex items-center">
               <CalendarDays className="h-4 w-4 mr-2 text-cyber-blue" />
@@ -483,7 +471,6 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
             </RadioGroup>
           </div>
           
-          {/* Add-ons selection */}
           <div>
             <h5 className="text-md font-medium mb-3 flex items-center">
               <Zap className="h-4 w-4 mr-2 text-cyber-blue" />
@@ -497,7 +484,6 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {addOns.map(addon => {
                 const isIncluded = addon.includedIn?.includes(selectedUserTier);
-                // If included in the plan, we don't show it as a selectable add-on
                 if (isIncluded) {
                   return (
                     <div key={addon.id} 
@@ -522,7 +508,6 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
                   );
                 }
                 
-                // For add-ons not included in the plan
                 const isSelected = selectedAddOns.includes(addon.id);
                 const isCurrentlyActive = currentPlan.addOns.includes(addon.id);
                 
@@ -567,7 +552,6 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
             </div>
           </div>
           
-          {/* Subscription summary and checkout */}
           <div>
             <Card className="border-cyber-blue/30 bg-cyber-blue/5">
               <CardHeader>
