@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -26,11 +27,14 @@ const LandingHeader: React.FC = () => {
     <header className="sticky top-0 z-50 w-full border-b border-cyber-blue/20 bg-cyber-black/80 backdrop-blur-lg">
       <div className="container mx-auto px-4 flex h-16 items-center justify-between">
         {/* Logo */}
-        <Link to="/landing" className="flex items-center space-x-2">
-          <GamePathLogo className="h-8 w-8" />
-          <span className="font-tech text-xl font-bold text-white">
-            Game<span className="text-cyber-blue">Path</span>
-          </span>
+        <Link to="/landing" className="flex items-center">
+          <div className="flex items-center">
+            <GamePathLogo className="h-10 w-10" />
+            <span className="font-tech text-xl font-bold text-white ml-2">
+              Game<span className="text-cyber-blue">Path</span>
+              <span className="text-cyber-purple ml-1">AI</span>
+            </span>
+          </div>
         </Link>
 
         {/* Desktop Navigation */}
