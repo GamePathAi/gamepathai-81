@@ -86,17 +86,17 @@ const SettingsContent: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+    <div className="w-full max-w-7xl mx-auto px-4 py-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3">
         <div className="flex items-center">
-          <Cog size={32} className="text-cyber-blue mr-3" />
+          <Cog size={28} className="text-cyber-blue mr-2" />
           <div>
             <h1 className="text-2xl font-bold text-white">Settings</h1>
             <p className="text-gray-400 text-sm">Customize your GamePath AI experience</p>
           </div>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <Button 
             variant="cyberOutline" 
             size="sm"
@@ -123,7 +123,7 @@ const SettingsContent: React.FC = () => {
       <div className="bg-cyber-darkblue border border-cyber-blue/30 rounded-lg shadow-lg">
         <SettingsTabs activeTab={activeTab} setActiveTab={setActiveTab} />
         
-        <div className="p-4 md:p-6">
+        <div className="p-4">
           {renderActiveTabContent()}
         </div>
       </div>

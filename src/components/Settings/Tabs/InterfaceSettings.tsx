@@ -43,14 +43,14 @@ const InterfaceSettings: React.FC<InterfaceSettingsProps> = ({ onChange }) => {
   };
 
   return (
-    <div className="space-y-8">
-      <section className="space-y-4">
+    <div className="space-y-4">
+      <section className="space-y-3">
         <h2 className="text-lg font-bold text-cyber-blue">Theme</h2>
-        <div className="space-y-4">
+        <div className="space-y-3">
           <RadioGroup
             value={settings.theme}
             onValueChange={(value) => handleRadioChange("theme", value)}
-            className="space-y-4"
+            className="space-y-2"
           >
             <div className="flex items-center space-x-3">
               <RadioGroupItem value="dark" id="dark-theme" className="border-cyber-blue/50 text-cyber-blue" />
@@ -71,7 +71,7 @@ const InterfaceSettings: React.FC<InterfaceSettingsProps> = ({ onChange }) => {
         </div>
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-3">
         <h2 className="text-lg font-bold text-cyber-blue">Accent Color</h2>
         <div className="flex space-x-4">
           <div 
@@ -93,13 +93,13 @@ const InterfaceSettings: React.FC<InterfaceSettingsProps> = ({ onChange }) => {
         </div>
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-3">
         <h2 className="text-lg font-bold text-cyber-blue">Dashboard Layout</h2>
-        <div className="space-y-4">
+        <div className="space-y-2">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="show-ping">Show ping on dashboard</Label>
-              <p className="text-sm text-gray-400">Display network ping in the main dashboard</p>
+              <p className="text-sm text-gray-400 mb-0">Display network ping in the main dashboard</p>
             </div>
             <Switch
               id="show-ping"
@@ -111,7 +111,7 @@ const InterfaceSettings: React.FC<InterfaceSettingsProps> = ({ onChange }) => {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="show-fps">Show FPS counter</Label>
-              <p className="text-sm text-gray-400">Display frames per second when games are running</p>
+              <p className="text-sm text-gray-400 mb-0">Display frames per second when games are running</p>
             </div>
             <Switch
               id="show-fps"
@@ -123,7 +123,7 @@ const InterfaceSettings: React.FC<InterfaceSettingsProps> = ({ onChange }) => {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="show-metrics">Show system metrics</Label>
-              <p className="text-sm text-gray-400">Display CPU, RAM and GPU usage in the dashboard</p>
+              <p className="text-sm text-gray-400 mb-0">Display CPU, RAM and GPU usage in the dashboard</p>
             </div>
             <Switch
               id="show-metrics"
@@ -134,15 +134,15 @@ const InterfaceSettings: React.FC<InterfaceSettingsProps> = ({ onChange }) => {
         </div>
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-3">
         <div className="flex justify-between items-center">
           <h2 className="text-lg font-bold text-cyber-blue">Animation Effects</h2>
           <Badge variant="outline" className="bg-cyber-blue/10 text-cyber-blue border-cyber-blue/30">
             {getAnimationLabel()}
           </Badge>
         </div>
-        <p className="text-sm text-gray-400">Controls UI animation intensity</p>
-        <div className="py-4">
+        <p className="text-sm text-gray-400 mb-1">Controls UI animation intensity</p>
+        <div className="py-2">
           <Slider
             value={[settings.animationLevel]}
             onValueChange={handleSliderChange}
@@ -151,14 +151,14 @@ const InterfaceSettings: React.FC<InterfaceSettingsProps> = ({ onChange }) => {
             step={1}
             className="w-full"
           />
-          <div className="flex justify-between mt-2 text-xs text-gray-400">
+          <div className="flex justify-between mt-1 text-xs text-gray-400">
             <span>None</span>
             <span>Subtle</span>
             <span>Full</span>
           </div>
         </div>
-        <div className={`mt-4 transition-all ${settings.animationLevel > 50 ? 'animate-pulse-slow' : ''}`}>
-          <div className={`flex items-center space-x-2 bg-cyber-cardblue p-3 rounded-md border ${settings.animationLevel > 0 ? 'border-cyber-blue/30' : 'border-gray-700'} transition-all`}>
+        <div className={`mt-3 transition-all ${settings.animationLevel > 50 ? 'animate-pulse-slow' : ''}`}>
+          <div className={`flex items-center space-x-2 bg-cyber-cardblue p-2 rounded-md border ${settings.animationLevel > 0 ? 'border-cyber-blue/30' : 'border-gray-700'} transition-all`}>
             <div className={`w-3 h-3 rounded-full ${settings.animationLevel > 0 ? 'bg-cyber-blue' : 'bg-gray-500'} ${settings.animationLevel > 80 ? 'animate-pulse' : ''}`}></div>
             <span className="text-sm">Animation preview</span>
           </div>

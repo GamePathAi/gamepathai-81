@@ -43,18 +43,18 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({ onChange }) => {
   };
 
   return (
-    <div className="space-y-8">
-      <section className="space-y-4">
+    <div className="space-y-4">
+      <section className="space-y-3">
         <div className="flex items-center space-x-2">
-          <Shield size={20} className="text-cyber-purple" />
+          <Shield size={18} className="text-cyber-purple" />
           <h2 className="text-lg font-bold text-cyber-blue">VPN Settings</h2>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-2">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="kill-switch">Enable kill switch</Label>
               <div className="flex items-center">
-                <p className="text-sm text-gray-400">Blocks internet if VPN disconnects</p>
+                <p className="text-sm text-gray-400 mb-0">Blocks internet if VPN disconnects</p>
                 <Badge variant="default" className="ml-2 text-[10px] py-0 h-5 bg-cyber-purple/20 text-cyber-purple border-cyber-purple/30">PRO</Badge>
               </div>
             </div>
@@ -74,20 +74,20 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({ onChange }) => {
         </div>
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-3">
         <h2 className="text-lg font-bold text-cyber-blue">Protocol</h2>
-        <div className="space-y-4">
+        <div className="space-y-2">
           <RadioGroup
             value={settings.protocol}
             onValueChange={(value) => handleRadioChange("protocol", value)}
-            className="space-y-4"
+            className="space-y-2"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <RadioGroupItem value="auto" id="auto-protocol" className="border-cyber-blue/50 text-cyber-blue" />
                 <div>
                   <Label htmlFor="auto-protocol" className="font-medium">Auto (Recommended)</Label>
-                  <p className="text-xs text-gray-400">Let GamePath AI choose the best protocol</p>
+                  <p className="text-xs text-gray-400 mb-0">Let GamePath AI choose the best protocol</p>
                 </div>
               </div>
               <Badge variant="outline" className="bg-cyber-blue/10 text-cyber-blue border-cyber-blue/30">
@@ -98,33 +98,33 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({ onChange }) => {
               <RadioGroupItem value="openvpn" id="openvpn-protocol" className="border-cyber-blue/50 text-cyber-blue" />
               <div>
                 <Label htmlFor="openvpn-protocol" className="font-medium">OpenVPN</Label>
-                <p className="text-xs text-gray-400">More compatible but potentially slower</p>
+                <p className="text-xs text-gray-400 mb-0">More compatible but potentially slower</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
               <RadioGroupItem value="wireguard" id="wireguard-protocol" className="border-cyber-blue/50 text-cyber-blue" />
               <div>
                 <Label htmlFor="wireguard-protocol" className="font-medium">WireGuard</Label>
-                <p className="text-xs text-gray-400">Faster but may be blocked by some networks</p>
+                <p className="text-xs text-gray-400 mb-0">Faster but may be blocked by some networks</p>
               </div>
             </div>
           </RadioGroup>
         </div>
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-3">
         <h2 className="text-lg font-bold text-cyber-blue">Encryption Level</h2>
-        <div className="space-y-4">
+        <div className="space-y-2">
           <RadioGroup
             value={settings.encryptionLevel}
             onValueChange={(value) => handleRadioChange("encryptionLevel", value)}
-            className="space-y-4"
+            className="space-y-2"
           >
             <div className="flex items-center space-x-3">
               <RadioGroupItem value="standard" id="standard-encryption" className="border-cyber-blue/50 text-cyber-blue" />
               <div>
                 <Label htmlFor="standard-encryption" className="font-medium">Standard (AES-128)</Label>
-                <p className="text-xs text-gray-400">Good balance between security and performance</p>
+                <p className="text-xs text-gray-400 mb-0">Good balance between security and performance</p>
               </div>
             </div>
             <div className="flex items-center justify-between">
@@ -132,7 +132,7 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({ onChange }) => {
                 <RadioGroupItem value="high" id="high-encryption" className="border-cyber-blue/50 text-cyber-blue" />
                 <div>
                   <Label htmlFor="high-encryption" className="font-medium">High (AES-256)</Label>
-                  <p className="text-xs text-gray-400">Stronger security with minimal performance impact</p>
+                  <p className="text-xs text-gray-400 mb-0">Stronger security with minimal performance impact</p>
                 </div>
               </div>
               <Badge variant="outline" className="bg-cyber-blue/10 text-cyber-blue border-cyber-blue/30">
@@ -143,23 +143,23 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({ onChange }) => {
               <RadioGroupItem value="maximum" id="maximum-encryption" className="border-cyber-blue/50 text-cyber-blue" />
               <div>
                 <Label htmlFor="maximum-encryption" className="font-medium">Maximum (ChaCha20)</Label>
-                <p className="text-xs text-gray-400">Highest security level, may affect performance</p>
+                <p className="text-xs text-gray-400 mb-0">Highest security level, may affect performance</p>
               </div>
             </div>
           </RadioGroup>
         </div>
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-3">
         <div className="flex items-center space-x-2">
-          <Lock size={20} className="text-cyber-blue" />
+          <Lock size={18} className="text-cyber-blue" />
           <h2 className="text-lg font-bold text-cyber-blue">App Protection</h2>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-2">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="require-password">Require password on startup</Label>
-              <p className="text-sm text-gray-400">Protect access to GamePath AI</p>
+              <p className="text-sm text-gray-400 mb-0">Protect access to GamePath AI</p>
             </div>
             <Switch
               id="require-password"
@@ -168,7 +168,7 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({ onChange }) => {
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1">
             <Label htmlFor="lock-after">Lock after inactivity</Label>
             <Select
               value={settings.lockAfterInactivity}

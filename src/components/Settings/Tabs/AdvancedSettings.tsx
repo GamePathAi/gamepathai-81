@@ -75,13 +75,13 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ onChange }) => {
   };
 
   return (
-    <div className="space-y-8">
-      <section className="space-y-4">
-        <div className="p-4 border border-cyber-red/30 bg-cyber-red/10 rounded-md flex items-start space-x-3">
-          <AlertCircle className="text-cyber-red shrink-0 mt-0.5" size={20} />
+    <div className="space-y-4">
+      <section className="space-y-3">
+        <div className="p-3 border border-cyber-red/30 bg-cyber-red/10 rounded-md flex items-start space-x-3">
+          <AlertCircle className="text-cyber-red shrink-0 mt-0.5" size={18} />
           <div>
             <h3 className="text-cyber-red font-bold text-sm">Danger Zone</h3>
-            <p className="text-sm text-gray-300">
+            <p className="text-sm text-gray-300 mb-0">
               These advanced settings can affect system performance and stability.
               Only make changes if you understand their impact.
             </p>
@@ -89,13 +89,13 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ onChange }) => {
         </div>
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-3">
         <h2 className="text-lg font-bold text-cyber-blue">Log Settings</h2>
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="detailed-logging">Enable detailed logging</Label>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-gray-400 mb-0">
                 Record more detailed information for troubleshooting
               </p>
             </div>
@@ -128,7 +128,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ onChange }) => {
             </Select>
           </div>
 
-          <div className="flex flex-wrap gap-3 mt-2">
+          <div className="flex flex-wrap gap-2 mt-2">
             <Button variant="cyberOutline" size="sm">
               <FileText size={16} className="mr-1.5" />
               View Logs
@@ -141,7 +141,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ onChange }) => {
         </div>
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-cyber-blue">Custom Scripts</h2>
           <Badge className="bg-cyber-purple text-white">PRO</Badge>
@@ -149,14 +149,14 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ onChange }) => {
         
         {isPro ? (
           <>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-400 mb-2">
               Write custom scripts to fine-tune your system performance
             </p>
-            <div className="space-y-4">
+            <div className="space-y-3">
               <Textarea
                 value={settings.customScript}
                 onChange={(e) => handleTextareaChange("customScript", e.target.value)}
-                className="font-mono text-sm min-h-[150px] bg-cyber-black border-cyber-blue/30"
+                className="font-mono text-sm min-h-[120px] bg-cyber-black border-cyber-blue/30"
               />
               <Button variant="cyber" size="sm" disabled={!settings.customScript.trim()}>
                 <Play size={16} className="mr-1.5" />
@@ -165,12 +165,12 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ onChange }) => {
             </div>
           </>
         ) : (
-          <div className="p-4 border border-cyber-purple/30 bg-cyber-purple/5 rounded-md">
-            <div className="flex items-center space-x-2 mb-2">
-              <Lock size={18} className="text-cyber-purple" />
-              <p className="text-sm font-medium text-cyber-purple">Premium Feature</p>
+          <div className="p-3 border border-cyber-purple/30 bg-cyber-purple/5 rounded-md">
+            <div className="flex items-center space-x-2 mb-1">
+              <Lock size={16} className="text-cyber-purple" />
+              <p className="text-sm font-medium text-cyber-purple mb-0">Premium Feature</p>
             </div>
-            <p className="text-sm text-gray-300 mb-3">
+            <p className="text-sm text-gray-300 mb-2">
               Create and run custom optimization scripts for your specific gaming setup.
               Unlock this feature by upgrading to Pro.
             </p>
@@ -186,9 +186,9 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ onChange }) => {
         )}
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-3">
         <h2 className="text-lg font-bold text-cyber-blue">Export/Import</h2>
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-2">
           <Button variant="cyber" size="sm">
             <FileDown size={16} className="mr-1.5" />
             Export Settings
@@ -200,9 +200,9 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ onChange }) => {
         </div>
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-3">
         <h2 className="text-lg font-bold text-red-500">Factory Reset</h2>
-        <p className="text-sm text-gray-400">
+        <p className="text-sm text-gray-400 mb-2">
           Reset GamePath AI to default settings. This will erase all your customizations and data.
         </p>
         <Button variant="outline" size="sm" className="border-red-500/50 text-red-500 hover:bg-red-500/10" onClick={() => setResetDialogOpen(true)}>

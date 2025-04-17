@@ -84,7 +84,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
         <span className="ml-1 text-sm font-tech text-cyber-blue/80">{unit}</span>
       </div>
       
-      <div className="flex-1 w-full p-1 chart-wrapper" style={{ minHeight: "120px", maxHeight: "160px" }}>
+      <div className="flex-1 w-full p-1 chart-wrapper" style={{ minHeight: "100px", height: "calc(100% - 60px)", maxHeight: "160px" }}>
         {chartComponent}
       </div>
     </div>

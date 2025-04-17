@@ -6,7 +6,9 @@ import SettingsContent from "@/components/Settings/SettingsContent";
 const Settings = () => {
   return (
     <Layout>
-      <SettingsContent />
+      <div className="py-0">
+        <SettingsContent />
+      </div>
     </Layout>
   );
 };

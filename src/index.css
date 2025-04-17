@@ -13,15 +13,15 @@
   }
 
   section {
-    @apply py-16 md:py-24;
+    @apply py-12 md:py-16;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply mb-6;
+    @apply mb-4;
   }
 
   p {
-    @apply mb-4 leading-relaxed;
+    @apply mb-3 leading-relaxed;
   }
 }
 
@@ -39,7 +39,7 @@
   }
 
   .cyber-panel {
-    @apply bg-cyber-darkblue border border-cyber-blue/30 rounded-md p-6 shadow-lg shadow-cyber-blue/5 relative my-4;
+    @apply bg-cyber-darkblue border border-cyber-blue/30 rounded-md p-4 shadow-lg shadow-cyber-blue/5 relative my-3;
   }
   
   /* Status tag styles */
@@ -62,7 +62,7 @@
   /* Card and container styles */
   .card, .panel, .metric-card, .game-card, .route-card, .optimization-card, 
   [class*="card"], [class*="panel"], [class*="container"], .settings-section {
-    @apply bg-cyber-darkblue border border-cyber-blue/40 rounded-md shadow-[0_0_20px_rgba(0,0,0,0.25)] hover:shadow-[0_0_25px_rgba(51,195,240,0.15)] transition-all duration-300 my-4 p-6;
+    @apply bg-cyber-darkblue border border-cyber-blue/40 rounded-md shadow-[0_0_20px_rgba(0,0,0,0.25)] hover:shadow-[0_0_25px_rgba(51,195,240,0.15)] transition-all duration-300 my-3 p-4;
   }
   
   .game-card, .game-container, .detected-game {
@@ -89,23 +89,27 @@
   /* Section spacing fixes */
   .dashboard-section, .metrics-container, .games-section, 
   .optimization-section, .route-section, .connection-section {
-    @apply bg-cyber-black py-8 my-8;
+    @apply bg-cyber-black py-4 my-4;
   }
 
   /* Settings page spacing */
+  .settings-section {
+    @apply my-4 py-3;
+  }
+
   .settings-section > div {
-    margin-bottom: 1rem !important;
+    margin-bottom: 0.75rem !important;
   }
 
   .settings-section > h2 {
     margin-bottom: 0.5rem !important;
-    margin-top: 1rem !important;
+    margin-top: 0.75rem !important;
   }
 
   /* Fix spacing in tabs */
   .tabs-content > div {
-    margin-top: 0.75rem !important;
-    margin-bottom: 0.75rem !important;
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
   }
 
   /* Fix icon sizing */
@@ -185,30 +189,30 @@
 
   /* Feature card styles */
   .feature-card {
-    @apply p-5 rounded-lg bg-cyber-darkblue border border-cyber-blue/30 shadow-lg hover:shadow-[0_0_20px_rgba(51,195,240,0.2)] transition-all duration-300 my-6;
+    @apply p-4 rounded-lg bg-cyber-darkblue border border-cyber-blue/30 shadow-lg hover:shadow-[0_0_20px_rgba(51,195,240,0.2)] transition-all duration-300 my-4;
   }
 
   .feature-icon {
-    @apply w-12 h-12 rounded-full flex items-center justify-center mb-4;
+    @apply w-12 h-12 rounded-full flex items-center justify-center mb-3;
   }
 
   /* Testimonial card styles */
   .testimonial-card {
-    @apply rounded-lg border border-cyber-blue/30 bg-cyber-darkblue/50 p-5 shadow-lg hover:shadow-[0_0_20px_rgba(51,195,240,0.15)] transition-all duration-300 my-2;
+    @apply rounded-lg border border-cyber-blue/30 bg-cyber-darkblue/50 p-4 shadow-lg hover:shadow-[0_0_20px_rgba(51,195,240,0.15)] transition-all duration-300 my-2;
   }
 
   /* Layout spacing */
   .feature-grid {
-    @apply grid gap-8 md:gap-10 my-12;
+    @apply grid gap-6 md:gap-8 my-8;
   }
 
   .cta-section {
-    @apply py-16 md:py-24 my-12;
+    @apply py-12 md:py-16 my-8;
   }
 
   /* Tab container styles */
   .tabs-container {
-    @apply bg-cyber-darkblue/80 border border-cyber-blue/30 rounded-lg shadow-[0_0_35px_rgba(0,0,0,0.35)] p-6;
+    @apply bg-cyber-darkblue/80 border border-cyber-blue/30 rounded-lg shadow-[0_0_35px_rgba(0,0,0,0.35)] p-4;
   }
   
   /* Visualization container styles */
@@ -232,7 +236,7 @@
   
   /* Core tech item styles */
   .core-tech-item {
-    @apply my-8 p-6 rounded-lg border border-cyber-blue/30 shadow-[0_0_25px_rgba(0,0,0,0.3)] hover:shadow-[0_0_30px_rgba(51,195,240,0.25)] transition-all duration-500;
+    @apply my-6 p-4 rounded-lg border border-cyber-blue/30 shadow-[0_0_25px_rgba(0,0,0,0.3)] hover:shadow-[0_0_30px_rgba(51,195,240,0.25)] transition-all duration-500;
   }
   
   /* Pulse glow animation */
@@ -294,13 +298,13 @@
   .advanced-optimizer-page .chart-container,
   .machine-learning-summary .chart-container,
   .performance-page .chart-container {
-    max-height: 200px !important;
+    max-height: 180px !important;
   }
 
   /* Nested spacing reduction */
   .space-y-6 > .space-y-4,
   .space-y-5 > .space-y-4 {
-    margin-top: 0.5rem !important;
-    margin-bottom: 0.5rem !important;
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
   }
 }
