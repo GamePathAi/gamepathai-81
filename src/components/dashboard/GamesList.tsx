@@ -67,26 +67,29 @@ const GamesList: React.FC<GamesListProps> = ({ games }) => {
         <h2 className="text-lg font-cyber font-semibold text-white">Detected Games</h2>
       </div>
       
-      <div className="space-y-3">
+      <div className="space-y-4">
         {games.map((game) => {
           const optimizationStatus = getOptimizationStatus(game);
           
           return (
             <div 
               key={game.id} 
-              className="bg-cyber-darkblue border border-cyber-blue/30 rounded-md overflow-hidden flex justify-between items-center shadow-lg"
+              className="bg-cyber-darkblue border border-cyber-blue/30 rounded-md overflow-hidden flex justify-between items-center shadow-lg hover:border-cyber-blue/50 transition-all duration-300"
             >
               <div className="flex items-center">
-                <div className="w-16 h-16 shrink-0">
+                <div className="w-16 h-16 shrink-0 overflow-hidden">
                   <img 
                     src={game.image} 
                     alt={game.name} 
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover shadow-inner"
+                    onError={(e) => {
+                      e.currentTarget.src = "https://images.unsplash.com/photo-1634152962476-4b8a00e1915c?auto=format&fit=crop&w=64&h=64&q=80";
+                    }}
                   />
                 </div>
                 <div className="p-3">
                   <h3 className="text-white font-cyber text-lg">{game.name}</h3>
-                  <div className="text-gray-400 text-xs">{game.genre}</div>
+                  <div className="text-gray-400 text-xs font-tech">{game.genre}</div>
                 </div>
               </div>
               
@@ -102,7 +105,7 @@ const GamesList: React.FC<GamesListProps> = ({ games }) => {
                       onClick={() => handleOptimize(game)} 
                       variant="cyber"
                       size="sm"
-                      className="bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/50 hover:bg-cyber-blue/30 text-xs px-3 py-1"
+                      className="bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/50 hover:bg-cyber-blue/30 text-xs px-3 py-1 transition-colors"
                     >
                       <Zap size={14} className="mr-1" />
                       Optimize
@@ -112,7 +115,8 @@ const GamesList: React.FC<GamesListProps> = ({ games }) => {
                     onClick={() => handleOpenSettings(game)}
                     variant="outline"
                     size="sm"
-                    className="bg-cyber-darkblue/80 text-gray-400 border border-gray-500/30 hover:bg-cyber-darkblue hover:text-white p-1"
+                    className="bg-cyber-darkblue/80 text-gray-400 border border-gray-500/30 hover:bg-cyber-darkblue hover:text-white hover:border-cyber-blue/50 p-1 transition-all"
+                    title="Game Settings"
                   >
                     <Settings size={14} />
                   </Button>

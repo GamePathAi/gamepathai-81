@@ -1,7 +1,8 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { LineChart, ChevronRight, RefreshCw, Zap } from "lucide-react";
+import { Network, ChevronRight, RefreshCw, Zap, Wifi, Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const ConnectionOptimizer = () => {
   const [isOptimizing, setIsOptimizing] = useState(false);
@@ -23,7 +24,7 @@ const ConnectionOptimizer = () => {
         }
         return prevProgress + 5;
       });
-    }, 150);
+    }, 120);
   };
   
   const handleReset = () => {
@@ -31,11 +32,40 @@ const ConnectionOptimizer = () => {
     setProgress(0);
   };
   
+  const renderStatusIndicator = () => {
+    if (isOptimized) {
+      return (
+        <div className="mb-3 flex items-center justify-between bg-cyber-blue/10 rounded-md px-3 py-2 border border-cyber-blue/30">
+          <div className="flex items-center">
+            <Wifi size={14} className="text-cyber-blue mr-2" />
+            <span className="text-cyber-blue text-sm">Connection optimized</span>
+          </div>
+          <span className="text-cyber-blue text-xs font-tech">-16% packet loss</span>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
-    <div className="bg-cyber-darkblue border border-cyber-blue/30 rounded-lg p-4">
+    <div className="bg-cyber-darkblue border border-cyber-blue/30 rounded-lg p-5">
       <div className="flex items-center mb-4">
-        <LineChart className="text-cyber-blue mr-2" size={20} />
+        <Wifi className="text-cyber-blue mr-2" size={20} />
         <h2 className="text-lg font-cyber text-white">Connection Optimizer</h2>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" className="w-6 h-6 ml-1 text-gray-400 hover:text-white">
+                <Info size={14} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs max-w-60">
+                Optimize your internet connection for better stability and reduced lag
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
       
       <div className="mb-4 space-y-1">
@@ -44,7 +74,7 @@ const ConnectionOptimizer = () => {
         <div className="flex items-center space-x-2 text-sm">
           <span className="text-gray-400">Current status:</span>
           {isOptimized ? (
-            <span className="text-cyber-green flex items-center">
+            <span className="text-cyber-blue flex items-center">
               <Zap size={14} className="mr-1" />
               Optimized
             </span>
@@ -54,15 +84,17 @@ const ConnectionOptimizer = () => {
         </div>
       </div>
       
+      {renderStatusIndicator()}
+      
       {isOptimizing && (
         <div className="mb-4">
           <div className="flex justify-between text-xs mb-1">
-            <span className="text-gray-400">Optimizing...</span>
+            <span className="text-gray-400">Optimizing connection...</span>
             <span className="text-cyber-blue">{progress}%</span>
           </div>
           <div className="w-full bg-gray-800 rounded-full h-2.5">
             <div 
-              className="bg-gradient-to-r from-cyber-blue to-cyber-purple h-2.5 rounded-full transition-all duration-200"
+              className="bg-gradient-to-r from-cyber-green to-cyber-blue h-2.5 rounded-full transition-all duration-200"
               style={{ width: `${progress}%` }}
             ></div>
           </div>
@@ -94,9 +126,12 @@ const ConnectionOptimizer = () => {
           </Button>
         )}
         
-        <Button variant="ghost" className="text-gray-400 hover:text-white">
-          Advanced Settings
-          <ChevronRight size={16} className="ml-2" />
+        <Button 
+          variant="ghost" 
+          className="text-gray-400 hover:text-white flex justify-between w-full"
+        >
+          <span>Advanced Settings</span>
+          <ChevronRight size={16} />
         </Button>
       </div>
     </div>

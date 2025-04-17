@@ -1,96 +1,82 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
+import { ArrowUp, ArrowDown, Minus } from "lucide-react";
 
 interface MetricCardProps {
   title: string;
-  value: string | number;
+  value: string;
   unit?: string;
+  trend: "up" | "down" | "stable";
+  trendValue: string;
   icon?: React.ReactNode;
-  trend?: "up" | "down" | "stable";
-  trendValue?: string;
-  className?: string;
   chartComponent?: React.ReactNode;
-  onClick?: () => void;
+  className?: string;
 }
 
 const MetricCard: React.FC<MetricCardProps> = ({
   title,
   value,
-  unit,
-  icon,
+  unit = "",
   trend,
   trendValue,
-  className,
+  icon,
   chartComponent,
-  onClick
+  className
 }) => {
-  const getTrendColor = () => {
-    if (trend === "down" && title.toLowerCase().includes("ping") || 
-        trend === "down" && title.toLowerCase().includes("loss")) {
-      return "text-green-400";
-    } else if (trend === "up" && title.toLowerCase().includes("ping") || 
-               trend === "up" && title.toLowerCase().includes("loss")) {
-      return "text-red-400";
-    } else if (trend === "up") {
-      return "text-green-400";
-    } else if (trend === "down") {
-      return "text-red-400";
-    }
-    return "text-blue-400";
-  };
-
   const getTrendIcon = () => {
-    if (trend === "up") {
-      return "↑";
-    } else if (trend === "down") {
-      return "↓";
+    switch(trend) {
+      case "up":
+        return <ArrowUp size={14} className="text-red-400" />;
+      case "down":
+        return <ArrowDown size={14} className="text-green-400" />;
+      case "stable":
+        return <Minus size={14} className="text-gray-400" />;
+      default:
+        return null;
     }
-    return "→";
   };
-
-  // Get metric-specific styling
-  const getMetricColor = () => {
-    const titleLower = title.toLowerCase();
-    if (titleLower.includes("ping")) return "text-cyber-blue";
-    if (titleLower.includes("packet") || titleLower.includes("loss")) return "text-cyber-red";
-    if (titleLower.includes("fps")) return "text-cyber-green";
-    if (titleLower.includes("cpu")) return "text-cyber-purple";
-    if (titleLower.includes("gpu")) return "text-cyber-pink";
-    if (titleLower.includes("jitter")) return "text-cyber-orange";
-    return "text-cyber-blue";
+  
+  const getTrendColor = () => {
+    switch(trend) {
+      case "up":
+        return "text-red-400";
+      case "down":
+        return "text-green-400";
+      case "stable":
+        return "text-gray-400";
+      default:
+        return "";
+    }
   };
-
+  
   return (
-    <div 
-      className={cn("bg-cyber-darkblue border border-cyber-blue/40 rounded-md p-3 shadow-[0_0_20px_rgba(0,0,0,0.25)] hover:shadow-[0_0_25px_rgba(51,195,240,0.15)] transition-all duration-300", className)}
-      onClick={onClick}
-      style={onClick ? { cursor: 'pointer' } : {}}
-    >
-      <div className="flex justify-between items-start mb-1">
-        <div className="text-xs font-tech text-gray-400 uppercase tracking-wider">{title}</div>
-        {icon && <div className={`${getMetricColor()}`}>{icon}</div>}
+    <div className={cn(
+      "bg-cyber-darkblue border border-cyber-blue/30 rounded-lg shadow-lg overflow-hidden flex flex-col",
+      className
+    )}>
+      <div className="p-4 flex justify-between items-center">
+        <div className="flex items-center text-sm font-tech text-gray-400">
+          {icon && <span className="mr-2">{icon}</span>}
+          {title}
+        </div>
+        
+        <div className="flex items-center">
+          <span className={`flex items-center text-xs font-tech ${getTrendColor()}`}>
+            {getTrendIcon()}
+            <span className="ml-1">{trendValue}</span>
+          </span>
+        </div>
       </div>
       
-      <div className="flex items-baseline mb-1">
-        <div className={`text-2xl font-tech ${getMetricColor()} font-bold tracking-wide`}>{value}</div>
-        {unit && <div className="ml-1 text-xs font-tech text-gray-400">{unit}</div>}
+      <div className="px-4 flex items-baseline">
+        <span className="text-xl font-tech text-cyber-blue">{value}</span>
+        <span className="ml-1 text-sm font-tech text-cyber-blue/80">{unit}</span>
       </div>
       
-      {trend && (
-        <div className={`text-xs font-tech ${getTrendColor()} flex items-center mb-1`}>
-          <span className="mr-1">{getTrendIcon()}</span> 
-          <span>{trendValue}</span>
-        </div>
-      )}
-      
-      {chartComponent && (
-        <div className="mt-1 flex-grow relative overflow-hidden" style={{ minHeight: "85%" }}>
-          {/* Add shine animation overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shine-slow pointer-events-none z-10"></div>
-          {chartComponent}
-        </div>
-      )}
+      <div className="flex-1 w-full mt-2">
+        {chartComponent}
+      </div>
     </div>
   );
 };

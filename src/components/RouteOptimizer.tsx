@@ -1,7 +1,8 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Network, ChevronRight, RefreshCw, Zap } from "lucide-react";
+import { Network, ChevronRight, RefreshCw, Zap, Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const RouteOptimizer = () => {
   const [isOptimizing, setIsOptimizing] = useState(false);
@@ -30,12 +31,41 @@ const RouteOptimizer = () => {
     setIsOptimized(false);
     setProgress(0);
   };
+
+  const renderStatusIndicator = () => {
+    if (isOptimized) {
+      return (
+        <div className="mb-3 flex items-center justify-between bg-cyber-green/10 rounded-md px-3 py-2 border border-cyber-green/30">
+          <div className="flex items-center">
+            <Zap size={14} className="text-cyber-green mr-2" />
+            <span className="text-cyber-green text-sm">Routes optimized</span>
+          </div>
+          <span className="text-cyber-green text-xs font-tech">-28% latency</span>
+        </div>
+      );
+    }
+    return null;
+  };
   
   return (
-    <div className="bg-cyber-darkblue border border-cyber-blue/30 rounded-lg p-4">
+    <div className="bg-cyber-darkblue border border-cyber-blue/30 rounded-lg p-5">
       <div className="flex items-center mb-4">
         <Network className="text-cyber-purple mr-2" size={20} />
         <h2 className="text-lg font-cyber text-white">Route Optimizer</h2>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" className="w-6 h-6 ml-1 text-gray-400 hover:text-white">
+                <Info size={14} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs max-w-60">
+                Optimize network routes to game servers for better ping and stability
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
       
       <div className="mb-4 space-y-1">
@@ -53,6 +83,8 @@ const RouteOptimizer = () => {
           )}
         </div>
       </div>
+      
+      {renderStatusIndicator()}
       
       {isOptimizing && (
         <div className="mb-4">
@@ -94,9 +126,12 @@ const RouteOptimizer = () => {
           </Button>
         )}
         
-        <Button variant="ghost" className="text-gray-400 hover:text-white">
-          Game Servers
-          <ChevronRight size={16} className="ml-2" />
+        <Button 
+          variant="ghost" 
+          className="text-gray-400 hover:text-white flex justify-between w-full"
+        >
+          <span>Game Servers</span>
+          <ChevronRight size={16} />
         </Button>
       </div>
     </div>
