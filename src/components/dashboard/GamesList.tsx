@@ -1,6 +1,9 @@
 
-import React from "react";
-import { Check, Shield, Zap } from "lucide-react";
+import React, { useState } from "react";
+import { Check, Shield, Zap, Settings } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import GameSettingsModal from "./GameSettingsModal";
 
 interface Game {
   id: string;
@@ -16,6 +19,9 @@ interface GamesListProps {
 }
 
 const GamesList: React.FC<GamesListProps> = ({ games }) => {
+  const [selectedGame, setSelectedGame] = useState<Game | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
   const getOptimizationStatus = (game: Game) => {
     if (!game.isOptimized) return { text: "NOT OPTIMIZED", color: "text-gray-400" };
     
@@ -41,6 +47,17 @@ const GamesList: React.FC<GamesListProps> = ({ games }) => {
       default: 
         return { text: "NOT OPTIMIZED", color: "text-gray-400" };
     }
+  };
+
+  const handleOptimize = (game: Game) => {
+    toast.success(`Optimizing ${game.name}...`, {
+      description: "Applying intelligent routing and system optimizations"
+    });
+  };
+
+  const handleOpenSettings = (game: Game) => {
+    setSelectedGame(game);
+    setSettingsOpen(true);
   };
 
   return (
@@ -73,22 +90,44 @@ const GamesList: React.FC<GamesListProps> = ({ games }) => {
                 </div>
               </div>
               
-              <div className="pr-4">
-                <div className={`flex items-center text-xs font-tech ${optimizationStatus.color}`}>
+              <div className="pr-4 flex flex-col items-end">
+                <div className={`flex items-center text-xs font-tech ${optimizationStatus.color} mb-2`}>
                   {optimizationStatus.icon}
                   {optimizationStatus.text}
                 </div>
                 
-                {!game.isOptimized && (
-                  <button className="mt-1 bg-cyber-green/20 text-cyber-green text-xs px-3 py-1 rounded hover:bg-cyber-green/30 transition-colors">
-                    Optimize
-                  </button>
-                )}
+                <div className="flex space-x-2">
+                  {(!game.isOptimized || game.optimizationType !== "both") && (
+                    <Button 
+                      onClick={() => handleOptimize(game)} 
+                      variant="cyber"
+                      size="sm"
+                      className="bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/50 hover:bg-cyber-blue/30 text-xs px-3 py-1"
+                    >
+                      <Zap size={14} className="mr-1" />
+                      Optimize
+                    </Button>
+                  )}
+                  <Button
+                    onClick={() => handleOpenSettings(game)}
+                    variant="outline"
+                    size="sm"
+                    className="bg-cyber-darkblue/80 text-gray-400 border border-gray-500/30 hover:bg-cyber-darkblue hover:text-white p-1"
+                  >
+                    <Settings size={14} />
+                  </Button>
+                </div>
               </div>
             </div>
           );
         })}
       </div>
+      
+      <GameSettingsModal 
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        game={selectedGame}
+      />
     </div>
   );
 };
