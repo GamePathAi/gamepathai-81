@@ -5,9 +5,10 @@ export * from './metricData';
 export * from './networkData';
 export * from './systemData';
 
+// Import the function with an alias to avoid naming conflicts
+import { generateGames as getGamesFromModule } from './gameData';
+
 // This function is kept for backward compatibility
 export const generateGames = () => {
-  // Import and use the function from gameData.ts
-  const { generateGames: getGames } = require('./gameData');
-  return getGames();
+  return getGamesFromModule();
 };
