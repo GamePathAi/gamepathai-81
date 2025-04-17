@@ -12,6 +12,7 @@ interface MetricCardProps {
   icon?: React.ReactNode;
   chartComponent?: React.ReactNode;
   className?: string;
+  onClick?: () => void;
 }
 
 const MetricCard: React.FC<MetricCardProps> = ({
@@ -22,7 +23,8 @@ const MetricCard: React.FC<MetricCardProps> = ({
   trendValue,
   icon,
   chartComponent,
-  className
+  className,
+  onClick
 }) => {
   const getTrendIcon = () => {
     switch(trend) {
@@ -51,10 +53,16 @@ const MetricCard: React.FC<MetricCardProps> = ({
   };
   
   return (
-    <div className={cn(
-      "bg-cyber-darkblue border border-cyber-blue/30 rounded-lg shadow-lg overflow-hidden flex flex-col",
-      className
-    )}>
+    <div 
+      className={cn(
+        "bg-cyber-darkblue border border-cyber-blue/30 rounded-lg shadow-lg overflow-hidden flex flex-col",
+        className
+      )}
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      style={onClick ? { cursor: 'pointer' } : undefined}
+    >
       <div className="p-4 flex justify-between items-center">
         <div className="flex items-center text-sm font-tech text-gray-400">
           {icon && <span className="mr-2">{icon}</span>}

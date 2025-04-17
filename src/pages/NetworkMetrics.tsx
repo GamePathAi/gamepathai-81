@@ -81,7 +81,7 @@ const NetworkMetrics: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <MetricCard
             title="PING"
-            value={metricsData.ping.current}
+            value={String(metricsData.ping.current)}
             unit="ms"
             trend={ensureTrendType(metricsData.ping.trend)}
             trendValue={`${Math.abs(metricsData.ping.change)}ms`}
@@ -92,7 +92,7 @@ const NetworkMetrics: React.FC = () => {
           
           <MetricCard
             title="JITTER"
-            value={metricsData.jitter.current}
+            value={String(metricsData.jitter.current)}
             unit="ms"
             trend={ensureTrendType(metricsData.jitter.trend)}
             trendValue={`${Math.abs(metricsData.jitter.change)}ms`}
@@ -103,7 +103,7 @@ const NetworkMetrics: React.FC = () => {
           
           <MetricCard
             title="PACKET LOSS"
-            value={metricsData.packetLoss.current}
+            value={String(metricsData.packetLoss.current)}
             unit="%"
             trend={ensureTrendType(metricsData.packetLoss.trend)}
             trendValue={`${Math.abs(metricsData.packetLoss.change)}%`}
@@ -114,7 +114,7 @@ const NetworkMetrics: React.FC = () => {
           
           <MetricCard
             title="DOWNLOAD"
-            value={metricsData.download.current}
+            value={String(metricsData.download.current)}
             unit="Mbps"
             trend={ensureTrendType(metricsData.download.trend)}
             trendValue={`${Math.abs(metricsData.download.change)}Mbps`}
