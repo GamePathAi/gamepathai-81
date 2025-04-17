@@ -61,21 +61,21 @@ const gamesMockData: Record<string, GameData> = {
         name: 'Michael "Shroud" Grzesiek',
         avatar: '/testimonials/shroud.jpg',
         role: 'Professional Player',
-        quote: 'GamePath AI completely eliminated my latency issues in Valorant. I can now compete at the highest level without worrying about connection problems.',
+        quote: "GamePath AI completely eliminated my latency issues in Valorant. I can now compete at the highest level without worrying about connection problems.",
         rating: 5
       },
       {
         id: 'test2',
         name: 'Jessica W.',
         role: 'Tournament Organizer',
-        quote: 'We've made GamePath AI mandatory for all our Valorant tournaments. It ensures a fair playing field with consistent performance for all participants.',
+        quote: "We've made GamePath AI mandatory for all our Valorant tournaments. It ensures a fair playing field with consistent performance for all participants.",
         rating: 5
       },
       {
         id: 'test3',
         name: 'Ray Chen',
         role: 'Casual Player',
-        quote: 'My shots register perfectly now! The difference in gameplay is night and day after using GamePath AI.',
+        quote: "My shots register perfectly now! The difference in gameplay is night and day after using GamePath AI.",
         rating: 4
       }
     ],
@@ -126,21 +126,21 @@ const gamesMockData: Record<string, GameData> = {
         name: 'Tim "TimTheTatman" Betar',
         avatar: '/testimonials/tim.jpg',
         role: 'Content Creator',
-        quote: 'GamePath AI is a must-have for Warzone streamers. My viewers immediately noticed the improved gameplay quality after I started using it.',
+        quote: "GamePath AI is a must-have for Warzone streamers. My viewers immediately noticed the improved gameplay quality after I started using it.",
         rating: 5
       },
       {
         id: 'cod2',
         name: 'Alex M.',
         role: 'Competitive Player',
-        quote: 'The difference in close-quarter battles is incredible. My shots register consistently and I'm winning gunfights I used to lose due to lag.',
+        quote: "The difference in close-quarter battles is incredible. My shots register consistently and I'm winning gunfights I used to lose due to lag.",
         rating: 5
       },
       {
         id: 'cod3',
         name: 'Sarah K.',
         role: 'Weekend Warrior',
-        quote: 'I can finally enjoy playing Warzone without constant lag spikes and freezes during critical moments!',
+        quote: "I can finally enjoy playing Warzone without constant lag spikes and freezes during critical moments!",
         rating: 4
       }
     ],
@@ -157,7 +157,7 @@ const gamesMockData: Record<string, GameData> = {
         before: '5.2%',
         after: '0.2%',
         improvement: '96% reduction',
-        description: 'Our packet stabilization technology virtually eliminates data loss, preventing those frustrating moments when your shots don't register.'
+        description: "Our packet stabilization technology virtually eliminates data loss, preventing those frustrating moments when your shots don't register."
       },
       {
         title: 'CPU Optimization',
