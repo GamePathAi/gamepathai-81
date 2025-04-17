@@ -140,10 +140,19 @@ export default {
           css: {
             fontSmoothing: 'antialiased',
             WebkitFontSmoothing: 'antialiased',
-            MozOsxFontSmoothing: 'grayscale'
+            MozOsxFontSmoothing: 'grayscale',
+            '& *': {
+              fontDisplay: 'swap',
+              fontVariantLigatures: 'contextual',
+              fontFeatureSettings: '"kern"',
+            }
           }
         }
-      }
+      },
+      fontFamily: {
+        // Adicionar uma configuração de fonte padrão com melhor suporte para renderização
+        'sans': ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', "Segoe UI", 'Roboto', "Helvetica Neue", 'Arial', "Noto Sans", 'sans-serif'],
+      },
     }
   },
   plugins: [
