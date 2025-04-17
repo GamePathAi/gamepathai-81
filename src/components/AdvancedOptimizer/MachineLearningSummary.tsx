@@ -1,137 +1,228 @@
-
 import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DeepLearningInsights } from "./DeepLearningInsights";
-import { Card, CardContent } from "@/components/ui/card";
-import { Brain, TrendingUp, Layers, Zap } from "lucide-react";
+import { ChartContainer } from "@/components/ui/chart";
+import { Area, AreaChart, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
+import { Button } from "@/components/ui/button";
+import { Brain, Activity, Cpu, Network, Zap } from "lucide-react";
+import MetricCard from "@/components/MetricCard";
+import MetricChart from "@/components/MetricChart";
+
+const learningData = [
+  { name: "Week 1", value: 35 },
+  { name: "Week 2", value: 52 },
+  { name: "Week 3", value: 61 },
+  { name: "Week 4", value: 78 },
+  { name: "Now", value: 92 }
+];
+
+const performanceData = [
+  { time: "1d", value: 45 },
+  { time: "2d", value: 52 },
+  { time: "3d", value: 49 },
+  { time: "4d", value: 62 },
+  { time: "5d", value: 56 },
+  { time: "6d", value: 64 },
+  { time: "7d", value: 72 },
+];
+
+const optimizationData = [
+  { name: "CPU", before: 72, after: 58 },
+  { name: "GPU", before: 84, after: 65 },
+  { name: "Memory", before: 68, after: 42 },
+  { name: "Disk", before: 56, after: 31 },
+];
 
 export const MachineLearningSummary: React.FC = () => {
   return (
     <div className="space-y-6">
+      <Card className="bg-cyber-darkblue border-cyber-purple/30">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-xl font-tech text-cyber-purple">Machine Learning Insights</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-gray-300 mb-4">
+            GamePath AI's machine learning engine analyzes your system behavior and game performance patterns to create personalized optimizations.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <MetricCard
+              title="AI Learning Progress"
+              value="92"
+              unit="%"
+              icon={<Brain size={18} />}
+              trend="up"
+              trendValue="+5% this week"
+              chartComponent={
+                <MetricChart 
+                  data={learningData.map(item => ({ time: item.name, value: item.value }))} 
+                  color="#8B5CF6"
+                />
+              }
+            />
+            
+            <MetricCard
+              title="Performance Improvement"
+              value="28"
+              unit="%"
+              icon={<Activity size={18} />}
+              trend="up"
+              trendValue="+3% this week"
+              chartComponent={
+                <MetricChart 
+                  data={performanceData} 
+                  color="#10B981"
+                  metricType="fps"
+                />
+              }
+            />
+            
+            <MetricCard
+              title="Optimization Confidence"
+              value="High"
+              icon={<Zap size={18} />}
+              trend="stable"
+              trendValue="Consistent"
+            />
+          </div>
+          
+          <div className="bg-cyber-darkblue/50 border border-cyber-purple/20 rounded-lg p-4 mb-6">
+            <h4 className="text-sm font-tech text-cyber-purple mb-3">AI Learning Progress</h4>
+            <div className="h-48">
+              <ChartContainer
+                config={{
+                  learning: { color: "#8B5CF6" },
+                  target: { color: "#6D28D9" },
+                }}
+              >
+                <AreaChart
+                  data={learningData}
+                  margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
+                >
+                  <XAxis 
+                    dataKey="name" 
+                    stroke="#6b7280" 
+                    tick={{ fill: "#6b7280", fontSize: 12 }}
+                  />
+                  <YAxis 
+                    domain={[0, 100]}
+                    stroke="#6b7280"
+                    tick={{ fill: "#6b7280", fontSize: 10 }}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: "#111827", 
+                      borderColor: "#8b5cf6", 
+                      borderRadius: "0.375rem",
+                      color: "#e5e7eb"
+                    }}
+                    formatter={(value) => [`${value}%`, 'Learning Progress']}
+                  />
+                  <defs>
+                    <linearGradient id="learningGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.2}/>
+                    </linearGradient>
+                  </defs>
+                  <Area 
+                    type="monotone" 
+                    dataKey="value" 
+                    stroke="#8b5cf6" 
+                    strokeWidth={2}
+                    fill="url(#learningGradient)" 
+                  />
+                </AreaChart>
+              </ChartContainer>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="bg-cyber-darkblue/50 border border-cyber-blue/20 rounded-lg p-4">
+              <h4 className="text-sm font-tech text-cyber-blue mb-3">Resource Optimization</h4>
+              <div className="h-48">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    data={optimizationData}
+                    margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
+                  >
+                    <XAxis dataKey="name" stroke="#6b7280" />
+                    <YAxis stroke="#6b7280" />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: "#111827", 
+                        borderColor: "#33C3F0", 
+                        borderRadius: "0.375rem",
+                        color: "#e5e7eb"
+                      }}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="before" 
+                      name="Before" 
+                      stroke="#6c7293" 
+                      strokeWidth={2}
+                      dot={{ r: 4 }}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="after" 
+                      name="After" 
+                      stroke="#33C3F0" 
+                      strokeWidth={2}
+                      dot={{ r: 4 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+            
+            <div className="bg-cyber-darkblue/50 border border-cyber-green/20 rounded-lg p-4">
+              <h4 className="text-sm font-tech text-cyber-green mb-3">AI Recommendations</h4>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <div className="h-5 w-5 rounded-full bg-cyber-green/20 flex items-center justify-center mt-0.5">
+                    <Cpu size={12} className="text-cyber-green" />
+                  </div>
+                  <div>
+                    <span className="text-gray-300 text-sm">CPU Core Optimization</span>
+                    <p className="text-xs text-gray-400">Optimize core allocation for your specific CPU architecture</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="h-5 w-5 rounded-full bg-cyber-blue/20 flex items-center justify-center mt-0.5">
+                    <Activity size={12} className="text-cyber-blue" />
+                  </div>
+                  <div>
+                    <span className="text-gray-300 text-sm">Background Process Management</span>
+                    <p className="text-xs text-gray-400">Intelligent management of background processes during gameplay</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="h-5 w-5 rounded-full bg-cyber-purple/20 flex items-center justify-center mt-0.5">
+                    <Network size={12} className="text-cyber-purple" />
+                  </div>
+                  <div>
+                    <span className="text-gray-300 text-sm">Network Traffic Prioritization</span>
+                    <p className="text-xs text-gray-400">Prioritize game traffic for reduced latency and packet loss</p>
+                  </div>
+                </li>
+              </ul>
+              
+              <div className="mt-4">
+                <Button 
+                  variant="cyberAction" 
+                  size="sm" 
+                  className="w-full"
+                >
+                  Apply AI Recommendations
+                </Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <DeepLearningInsights />
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="cyber-card border-cyber-blue/30 bg-cyber-darkblue/90">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp size={20} className="text-cyber-blue" />
-              <h3 className="text-lg font-tech text-cyber-blue">ML Performance Gains</h3>
-            </div>
-            
-            <p className="text-sm text-gray-400 mb-5">
-              Machine learning optimizations have improved performance across various metrics
-            </p>
-            
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm">FPS Improvement</span>
-                  <span className="text-sm font-tech text-cyber-green">+14.7%</span>
-                </div>
-                <div className="w-full h-2 bg-cyber-darkblue rounded-full overflow-hidden">
-                  <div className="h-full bg-cyber-green" style={{ width: '72%' }}></div>
-                </div>
-              </div>
-              
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm">Loading Times</span>
-                  <span className="text-sm font-tech text-cyber-green">-23.2%</span>
-                </div>
-                <div className="w-full h-2 bg-cyber-darkblue rounded-full overflow-hidden">
-                  <div className="h-full bg-cyber-blue" style={{ width: '85%' }}></div>
-                </div>
-              </div>
-              
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm">Stutter Reduction</span>
-                  <span className="text-sm font-tech text-cyber-green">-67.5%</span>
-                </div>
-                <div className="w-full h-2 bg-cyber-darkblue rounded-full overflow-hidden">
-                  <div className="h-full bg-cyber-purple" style={{ width: '92%' }}></div>
-                </div>
-              </div>
-              
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm">Temperature Reduction</span>
-                  <span className="text-sm font-tech text-cyber-green">-8.4°C</span>
-                </div>
-                <div className="w-full h-2 bg-cyber-darkblue rounded-full overflow-hidden">
-                  <div className="h-full bg-cyber-orange" style={{ width: '58%' }}></div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="cyber-card border-cyber-green/30 bg-cyber-darkblue/90">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Brain size={20} className="text-cyber-green" />
-              <h3 className="text-lg font-tech text-cyber-green">Learning Categories</h3>
-            </div>
-            
-            <p className="text-sm text-gray-400 mb-5">
-              AI optimization has learned from these key areas of your system usage
-            </p>
-            
-            <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 bg-cyber-darkblue/80 border border-cyber-green/20 rounded-md">
-                <div className="flex items-start gap-2">
-                  <div className="p-1 bg-cyber-green/20 rounded mt-0.5">
-                    <Layers size={14} className="text-cyber-green" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-tech mb-1">Gaming Patterns</div>
-                    <div className="text-xs text-gray-400">12 games analyzed</div>
-                    <div className="text-xs text-cyber-green">98% confident</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="p-3 bg-cyber-darkblue/80 border border-cyber-blue/20 rounded-md">
-                <div className="flex items-start gap-2">
-                  <div className="p-1 bg-cyber-blue/20 rounded mt-0.5">
-                    <Zap size={14} className="text-cyber-blue" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-tech mb-1">System Load</div>
-                    <div className="text-xs text-gray-400">720 hours analyzed</div>
-                    <div className="text-xs text-cyber-blue">87% confident</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="p-3 bg-cyber-darkblue/80 border border-cyber-purple/20 rounded-md">
-                <div className="flex items-start gap-2">
-                  <div className="p-1 bg-cyber-purple/20 rounded mt-0.5">
-                    <TrendingUp size={14} className="text-cyber-purple" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-tech mb-1">App Performance</div>
-                    <div className="text-xs text-gray-400">35 apps analyzed</div>
-                    <div className="text-xs text-cyber-purple">91% confident</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="p-3 bg-cyber-darkblue/80 border border-cyber-orange/20 rounded-md">
-                <div className="flex items-start gap-2">
-                  <div className="p-1 bg-cyber-orange/20 rounded mt-0.5">
-                    <Layers size={14} className="text-cyber-orange" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-tech mb-1">Hardware Profile</div>
-                    <div className="text-xs text-gray-400">All components</div>
-                    <div className="text-xs text-cyber-orange">94% confident</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 };
