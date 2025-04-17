@@ -177,7 +177,39 @@
   
   /* Visualization containers with enhanced glow effects */
   .visualization-container {
-    @apply relative bg-cyber-darkblue/80 border border-cyber-blue/30 rounded-lg overflow-hidden shadow-[0_0_25px_rgba(51,195,240,0.2)];
+    @apply relative bg-cyber-darkblue/80 border border-cyber-blue/30 rounded-lg overflow-hidden shadow-[0_0_25px_rgba(51,195,240,0.2)] min-h-[260px] flex items-center justify-center;
+  }
+
+  /* Feature page specific enhancements */
+  .feature-page-visualization {
+    @apply min-h-[300px] border-2 border-cyber-blue/50 shadow-[0_0_30px_rgba(51,195,240,0.3)];
+  }
+  
+  /* Animated content for features page */
+  .animated-feature {
+    @apply transition-all duration-700 transform;
+  }
+  
+  .animated-feature:hover {
+    @apply scale-105;
+  }
+  
+  /* Core technology section enhancements */
+  .core-tech-item {
+    @apply my-10 p-8 rounded-lg border border-cyber-blue/30 shadow-[0_0_25px_rgba(0,0,0,0.3)] hover:shadow-[0_0_30px_rgba(51,195,240,0.25)] transition-all duration-500;
+  }
+  
+  /* Animation for feature highlights */
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 15px rgba(51, 195, 240, 0.2);
+    }
+    50% {
+      box-shadow: 0 0 30px rgba(51, 195, 240, 0.5);
+    }
+  }
+  
+  .pulse-glow {
+    animation: pulse-glow 3s infinite ease-in-out;
   }
 }
-

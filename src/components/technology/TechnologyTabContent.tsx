@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import RouteOptimizerVisualization from "./visualizations/RouteOptimizerVisualization";
 import PerformanceEnhancementVisualization from "./visualizations/PerformanceEnhancementVisualization";
 import PowerManagementVisualization from "./visualizations/PowerManagementVisualization";
@@ -20,6 +20,8 @@ interface TechnologyTabContentProps {
   features: FeatureItem[];
   reversed?: boolean;
   visualType?: "route" | "performance" | "power" | "advanced";
+  animate?: boolean;
+  inFeaturePage?: boolean;
 }
 
 const TechnologyTabContent: React.FC<TechnologyTabContentProps> = ({
@@ -31,19 +33,33 @@ const TechnologyTabContent: React.FC<TechnologyTabContentProps> = ({
   statValue,
   features,
   reversed = false,
-  visualType
+  visualType,
+  animate = false,
+  inFeaturePage = false
 }) => {
+  const [isAnimating, setIsAnimating] = useState(false);
+  
+  useEffect(() => {
+    if (animate) {
+      // Start animation after component mounts
+      const timer = setTimeout(() => {
+        setIsAnimating(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [animate]);
+
   // Render the appropriate visualization based on the type
   const renderVisualization = () => {
     switch(visualType) {
       case "route":
-        return <RouteOptimizerVisualization />;
+        return <RouteOptimizerVisualization animate={isAnimating} />;
       case "performance":
-        return <PerformanceEnhancementVisualization />;
+        return <PerformanceEnhancementVisualization animate={isAnimating} />;
       case "power":
-        return <PowerManagementVisualization />;
+        return <PowerManagementVisualization animate={isAnimating} />;
       case "advanced":
-        return <AdvancedPerformanceVisualization />;
+        return <AdvancedPerformanceVisualization animate={isAnimating} />;
       default:
         // Fallback to the original icon-based visualization
         return (
@@ -54,10 +70,15 @@ const TechnologyTabContent: React.FC<TechnologyTabContentProps> = ({
     }
   };
 
+  // Additional class for feature page styling
+  const featurePageClass = inFeaturePage 
+    ? "shadow-[0_0_35px_rgba(0,0,0,0.35)] hover:shadow-[0_0_40px_rgba(51,195,240,0.25)] transition-all duration-500" 
+    : "";
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center my-8">
-      <div className={reversed ? "order-2 md:order-1 relative" : "relative"}>
-        <div className="shadow-[0_0_25px_rgba(51,195,240,0.15)] rounded-lg overflow-hidden">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center my-10">
+      <div className={`${reversed ? "order-2 md:order-1 relative" : "relative"}`}>
+        <div className={`visualization-container ${featurePageClass} overflow-hidden rounded-lg`}>
           {renderVisualization()}
         </div>
         <div className={`absolute -bottom-5 ${reversed ? "-left-5" : "-right-5"} bg-cyber-darkblue border border-${color}/40 rounded-lg p-5 shadow-lg shadow-${color}/10`}>
@@ -74,7 +95,13 @@ const TechnologyTabContent: React.FC<TechnologyTabContentProps> = ({
         </p>
         <div className="space-y-5">
           {features.map((feature, index) => (
-            <div key={index} className="flex items-start p-3 rounded-md hover:bg-cyber-black/30 transition-colors">
+            <div 
+              key={index} 
+              className={`flex items-start p-3 rounded-md hover:bg-cyber-black/30 transition-colors ${
+                animate && inFeaturePage ? "animate-fade-in" : ""
+              }`} 
+              style={{ animationDelay: `${index * 150}ms` }}
+            >
               <div className={`mt-1 h-5 w-5 rounded-full bg-${color}/20 flex items-center justify-center mr-4 shadow-sm shadow-${color}/20`}>
                 <div className={`h-2 w-2 rounded-full bg-${color}`}></div>
               </div>

@@ -1,19 +1,29 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useLocation } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Network, Shield, BarChart4, SatelliteDish, Cpu } from "lucide-react";
 import TechnologyTabContent from "./TechnologyTabContent";
 
 const TechnologyTabs = () => {
   const { t } = useTranslation();
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState("routing");
+  
+  // Check if we're on the features page
+  const isFeaturePage = location.pathname.includes("/features");
   
   return (
     <section className="py-24 bg-cyber-darkblue/30 px-4">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-3xl font-bold text-white mb-16 text-center">{t('technology.title')}</h2>
         
-        <Tabs defaultValue="routing" className="w-full">
+        <Tabs 
+          defaultValue="routing" 
+          className="w-full"
+          onValueChange={(value) => setActiveTab(value)}
+        >
           <div className="flex justify-center mb-12">
             <TabsList className="bg-cyber-darkblue border border-gray-800 shadow-lg">
               <TabsTrigger value="routing" className="data-[state=active]:bg-cyber-blue/20 data-[state=active]:text-cyber-blue">
@@ -63,6 +73,8 @@ const TechnologyTabs = () => {
                   }
                 ]}
                 visualType="route"
+                animate={activeTab === "routing"}
+                inFeaturePage={isFeaturePage}
               />
             </TabsContent>
             
@@ -90,6 +102,8 @@ const TechnologyTabs = () => {
                 ]}
                 reversed={true}
                 visualType="performance"
+                animate={activeTab === "performance"}
+                inFeaturePage={isFeaturePage}
               />
             </TabsContent>
             
@@ -116,6 +130,8 @@ const TechnologyTabs = () => {
                   }
                 ]}
                 visualType="advanced"
+                animate={activeTab === "advanced"}
+                inFeaturePage={isFeaturePage}
               />
             </TabsContent>
             
@@ -142,6 +158,8 @@ const TechnologyTabs = () => {
                   }
                 ]}
                 visualType="power"
+                animate={activeTab === "security"}
+                inFeaturePage={isFeaturePage}
               />
             </TabsContent>
             
@@ -168,6 +186,8 @@ const TechnologyTabs = () => {
                   }
                 ]}
                 reversed={true}
+                animate={activeTab === "vpn"}
+                inFeaturePage={isFeaturePage}
               />
             </TabsContent>
           </div>
