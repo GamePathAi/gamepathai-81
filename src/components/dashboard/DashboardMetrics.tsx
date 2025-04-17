@@ -47,7 +47,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
             strokeWidth={4}
           />
         }
-        className="h-80 flex flex-col" // Increased height
+        className="h-80 flex flex-col metric-box" // Added metric-box class
       />
       
       <MetricCard
@@ -67,7 +67,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
             strokeWidth={4}
           />
         }
-        className="h-80 flex flex-col" // Increased height
+        className="h-80 flex flex-col metric-box" // Added metric-box class
       />
       
       <MetricCard
@@ -86,7 +86,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
             strokeWidth={4}
           />
         }
-        className="h-80 flex flex-col" // Increased height
+        className="h-80 flex flex-col metric-box" // Added metric-box class
       />
     </div>
   );

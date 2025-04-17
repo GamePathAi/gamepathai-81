@@ -29,7 +29,7 @@ interface SystemMetricsProps {
 
 const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
   return (
-    <div className="h-full">
+    <div className="h-full system-metrics-container">
       <div className="mb-3 flex items-center">
         <BarChart4 size={18} className="text-cyber-purple mr-2" />
         <h2 className="text-lg font-cyber font-semibold text-white">System Metrics</h2>
@@ -48,12 +48,12 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
               data={metrics.cpu.history} 
               color="#8B5CF6" 
               metricType="cpu" 
-              height={140}
+              height={180}
               showAxis={true}
               strokeWidth={4}
             />
           }
-          className="p-4 mb-0 h-auto min-h-[140px]"
+          className="p-4 mb-0 h-auto min-h-[180px] metric-box"
         />
         
         <MetricCard
@@ -68,12 +68,12 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
               data={metrics.gpu.history} 
               color="#D946EF" 
               metricType="gpu" 
-              height={140}
+              height={180}
               showAxis={true}
               strokeWidth={4}
             />
           }
-          className="p-4 mb-0 h-auto min-h-[140px]"
+          className="p-4 mb-0 h-auto min-h-[180px] metric-box"
         />
         
         <MetricCard
@@ -88,12 +88,12 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
               data={metrics.jitter.history} 
               color="#F97316" 
               metricType="jitter" 
-              height={140}
+              height={180}
               showAxis={true}
               strokeWidth={4}
             />
           }
-          className="p-4 mb-0 h-auto min-h-[140px]"
+          className="p-4 mb-0 h-auto min-h-[180px] metric-box"
         />
       </div>
     </div>

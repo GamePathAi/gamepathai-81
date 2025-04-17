@@ -69,7 +69,7 @@ const MetricChart: React.FC<MetricChartProps> = ({
         </svg>
       )}
 
-      <ResponsiveContainer width="95%" height="90%" className={metricType ? `${metricType}-graph` : ''}>
+      <ResponsiveContainer width="95%" height="95%" className={metricType ? `${metricType}-graph` : ''}>
         <LineChart 
           data={enhancedData} 
           margin={{ top: 5, right: 5, left: 5, bottom: 5 }} // Reduced margins to maximize chart area
@@ -114,13 +114,14 @@ const MetricChart: React.FC<MetricChartProps> = ({
             type="monotone"
             dataKey={dataKey}
             stroke={chartColor}
-            strokeWidth={strokeWidth}
-            dot={showAxis ? { fill: chartColor, r: 4 } : false} // Larger dots
+            strokeWidth={2.5} // Match the CSS specification
+            dot={showAxis ? { fill: chartColor, r: 4, className: "chart-point" } : false} // Larger dots with class
             activeDot={{ r: 8, fill: chartColor, stroke: '#FFFFFF' }} // Larger active dot
             isAnimationActive={true}
             animationDuration={1500}
             filter={showGlow ? `url(#${filterId})` : undefined}
             style={{ filter: showGlow ? `drop-shadow(0 0 8px ${chartColor})` : 'none' }} // Enhanced shadow
+            className="chart-line"
           />
         </LineChart>
       </ResponsiveContainer>
