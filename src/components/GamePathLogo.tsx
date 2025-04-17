@@ -8,7 +8,7 @@ interface GamePathLogoProps {
 
 const GamePathLogo: React.FC<GamePathLogoProps> = ({ className = "", size = 40 }) => {
   return (
-    <div className={`relative inline-flex items-center ${className}`}>
+    <div className={`inline-flex items-center justify-center ${className}`}>
       <svg
         width={size}
         height={size}
