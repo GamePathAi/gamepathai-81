@@ -15,6 +15,7 @@ const TechnologyPage = () => {
     <LandingLayout>
       <Helmet>
         <title>{t('technology.title')} | GamePath AI</title>
+        <meta name="description" content={t('technology.subtitle')} />
       </Helmet>
       
       <TechnologyHero />

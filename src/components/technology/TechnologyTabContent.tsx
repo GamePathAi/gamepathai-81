@@ -52,7 +52,7 @@ const TechnologyTabContent: React.FC<TechnologyTabContentProps> = ({
                 <div className={`h-2 w-2 rounded-full bg-${color}`}></div>
               </div>
               <div>
-                <h4 className="font-medium">{feature.title}</h4>
+                <h4 className="font-medium text-white">{feature.title}</h4>
                 <p className="text-sm text-gray-400">{feature.description}</p>
               </div>
             </div>

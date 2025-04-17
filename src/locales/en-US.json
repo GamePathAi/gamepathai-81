@@ -13,7 +13,23 @@
     "subtitle": "The advanced technology powering your gaming optimization experience",
     "adaptiveRouting": {
       "title": "Adaptive Routing",
-      "description": "Our proprietary algorithms analyze network conditions in real-time to find the optimal path for your gaming data."
+      "description": "Our proprietary algorithms analyze network conditions in real-time to find the optimal path for your gaming data.",
+      "dynamicPathSelection": {
+        "title": "Dynamic Path Selection",
+        "description": "Automatically selects the best network path based on real-time conditions"
+      },
+      "serverSpecificOptimization": {
+        "title": "Server Optimization",
+        "description": "Custom routing profiles for specific game servers"
+      },
+      "multiPointRouting": {
+        "title": "Multi-Point Routing",
+        "description": "Uses multiple connection points to ensure the most stable experience"
+      },
+      "averageLatencyReduction": {
+        "title": "Average Latency Reduction",
+        "value": "45%"
+      }
     },
     "performanceAI": {
       "title": "Performance AI",
@@ -22,6 +38,11 @@
     "globalNetwork": {
       "title": "Global Network",
       "description": "Access to optimized routes across our worldwide server infrastructure for low-latency gaming anywhere."
+    },
+    "cta": {
+      "description": "Experience significant latency reduction and performance improvements with our adaptive gaming technology.",
+      "startFreeTrial": "Start Free Trial",
+      "viewPricing": "View Pricing"
     }
   }
 }

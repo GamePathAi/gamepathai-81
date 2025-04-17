@@ -15,10 +15,18 @@ const TechnologyCTA = () => {
           {t('technology.cta.description')}
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button size="lg" className="bg-cyber-blue hover:bg-cyber-blue/90 text-white">
+          <Button 
+            size="lg" 
+            variant="cyberAction"
+            className="w-full sm:w-auto px-8"
+          >
             {t('technology.cta.startFreeTrial')}
           </Button>
-          <Button size="lg" variant="outline" className="border-cyber-blue text-cyber-blue hover:bg-cyber-blue/10">
+          <Button 
+            size="lg" 
+            variant="cyberOutline" 
+            className="w-full sm:w-auto px-8 flex items-center"
+          >
             {t('technology.cta.viewPricing')}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>

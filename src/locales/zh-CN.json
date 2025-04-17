@@ -13,7 +13,23 @@
     "subtitle": "为您的游戏优化体验提供支持的先进技术",
     "adaptiveRouting": {
       "title": "自适应路由",
-      "description": "我们专有的算法实时分析网络条件，为您的游戏数据找到最佳路径。"
+      "description": "我们专有的算法实时分析网络条件，为您的游戏数据找到最佳路径。",
+      "dynamicPathSelection": {
+        "title": "动态路径选择",
+        "description": "根据实时条件自动选择最佳网络路径"
+      },
+      "serverSpecificOptimization": {
+        "title": "服务器优化",
+        "description": "特定游戏服务器的自定义路由配置"
+      },
+      "multiPointRouting": {
+        "title": "多点路由",
+        "description": "使用多个连接点确保最稳定的体验"
+      },
+      "averageLatencyReduction": {
+        "title": "平均延迟降低",
+        "value": "45%"
+      }
     },
     "performanceAI": {
       "title": "性能 AI",
@@ -22,6 +38,11 @@
     "globalNetwork": {
       "title": "全球网络",
       "description": "通过我们的全球服务器基础设施获得优化路线，在任何地方都能低延迟游戏。"
+    },
+    "cta": {
+      "description": "通过我们的自适应游戏技术体验显著的延迟降低和性能提升。",
+      "startFreeTrial": "开始免费试用",
+      "viewPricing": "查看价格"
     }
   }
 }
