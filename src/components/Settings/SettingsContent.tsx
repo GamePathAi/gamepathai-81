@@ -1,8 +1,14 @@
 
 import React, { useState } from "react";
-import { Cog, Save, RotateCcw, AlertCircle, Import, Download } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import SettingsTabs from "./SettingsTabs";
+import SettingsHeader from "./SettingsHeader";
+import SettingsActions from "./SettingsActions";
+import ResetDialog from "./ResetDialog";
+import { importSettingsFile, exportSettingsFile } from "./utils/settingsHelpers";
+
+// Import all tab content components
 import GeneralSettings from "./Tabs/GeneralSettings";
 import PerformanceSettings from "./Tabs/PerformanceSettings";
 import ConnectionSettings from "./Tabs/ConnectionSettings";
@@ -12,18 +18,6 @@ import AdvancedSettings from "./Tabs/AdvancedSettings";
 import InGameOverlaySettings from "./Tabs/InGameOverlaySettings";
 import ScreenRecordingSettings from "./Tabs/ScreenRecordingSettings";
 import SubscriptionSettings from "./Tabs/SubscriptionSettings";
-import { toast } from "sonner";
-import { 
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { useNavigate } from "react-router-dom";
 
 interface SettingsChangeProps {
   onChange: () => void;
@@ -66,68 +60,19 @@ const SettingsContent: React.FC = () => {
   };
   
   const handleImportSettings = () => {
-    // Create a hidden file input element
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json';
-    
-    input.onchange = (e: Event) => {
-      const target = e.target as HTMLInputElement;
-      if (!target.files?.length) return;
-      
-      const file = target.files[0];
-      const reader = new FileReader();
-      
-      reader.onload = (event) => {
-        if (!event.target?.result) return;
-        
-        try {
-          // Here you would parse and validate the settings
-          toast.success("Settings imported successfully", {
-            description: `Imported settings from ${file.name}`
-          });
-          setHasChanges(true);
-        } catch (error) {
-          toast.error("Failed to import settings", {
-            description: "The file format is invalid or corrupted."
-          });
-        }
-      };
-      
-      reader.readAsText(file);
-    };
-    
-    // Trigger the file input click
-    input.click();
+    importSettingsFile(() => {
+      toast.success("Settings imported successfully", {
+        description: "Imported settings have been applied"
+      });
+      setHasChanges(true);
+    });
   };
   
   const handleExportSettings = () => {
-    // Create sample settings data
-    const settingsData = {
-      version: "1.0.0",
-      general: { theme: "dark", language: "en" },
-      performance: { gpuAcceleration: true, cpuPriority: "high" },
-      connection: { routeOptimization: true }
-    };
-    
-    // Convert to JSON string
-    const jsonData = JSON.stringify(settingsData, null, 2);
-    
-    // Create a blob and download link
-    const blob = new Blob([jsonData], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'gamepath-settings.json';
-    
-    // Trigger the download
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    
-    toast.success("Settings exported successfully", {
-      description: "Your settings have been saved to gamepath-settings.json"
+    exportSettingsFile(() => {
+      toast.success("Settings exported successfully", {
+        description: "Your settings have been saved to gamepath-settings.json"
+      });
     });
   };
 
@@ -167,65 +112,19 @@ const SettingsContent: React.FC = () => {
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-3">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-2 gap-2">
-        <div className="flex items-center">
-          <Cog size={28} className="text-cyber-blue mr-2" />
-          <div>
-            <h1 className="text-2xl font-bold text-white">Settings</h1>
-            <p className="text-gray-400 text-sm">Customize your GamePath AI experience</p>
-          </div>
-        </div>
+        <SettingsHeader 
+          title="Settings"
+          description="Customize your GamePath AI experience"
+        />
         
-        <div className="flex items-center gap-2">
-          <Button 
-            variant="cyberOutline" 
-            size="sm"
-            onClick={handleImportSettings}
-            className="transition-all"
-          >
-            <Import size={16} className="mr-1" />
-            Import
-          </Button>
-          
-          <Button 
-            variant="cyberOutline" 
-            size="sm"
-            onClick={handleExportSettings}
-            className="transition-all"
-          >
-            <Download size={16} className="mr-1" />
-            Export
-          </Button>
-          
-          <Button 
-            variant="cyberOutline" 
-            size="sm"
-            onClick={handleResetToDefault}
-            className="transition-all"
-          >
-            <RotateCcw size={16} className="mr-1" />
-            Reset to Default
-          </Button>
-          
-          <Button 
-            variant="cyberAction" 
-            size="sm"
-            onClick={handleSaveChanges}
-            disabled={!hasChanges || isSaving}
-            className={`transition-all ${hasChanges ? 'animate-pulse-slow' : ''}`}
-          >
-            {isSaving ? (
-              <>
-                <span className="animate-spin mr-1">⚡</span>
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save size={16} className="mr-1" />
-                Save Changes
-              </>
-            )}
-          </Button>
-        </div>
+        <SettingsActions
+          onImport={handleImportSettings}
+          onExport={handleExportSettings}
+          onReset={handleResetToDefault}
+          onSave={handleSaveChanges}
+          hasChanges={hasChanges}
+          isSaving={isSaving}
+        />
       </div>
 
       <div className="bg-cyber-darkblue border border-cyber-blue/30 rounded-lg shadow-lg">
@@ -236,26 +135,11 @@ const SettingsContent: React.FC = () => {
         </div>
       </div>
       
-      <AlertDialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
-        <AlertDialogContent className="bg-cyber-darkblue border-cyber-red/50">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-cyber-red flex items-center gap-2">
-              <AlertCircle size={18} />
-              Reset All Settings
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-300">
-              This will reset all settings to their default values. This action cannot be undone.
-              Are you sure you want to continue?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="bg-transparent text-gray-300 border-gray-700 hover:bg-gray-800">Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmReset} className="bg-cyber-red border-cyber-red/50 hover:bg-cyber-red/80">
-              Reset Settings
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ResetDialog
+        open={resetDialogOpen}
+        onOpenChange={setResetDialogOpen}
+        onConfirm={confirmReset}
+      />
     </div>
   );
 };
