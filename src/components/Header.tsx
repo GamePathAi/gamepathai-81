@@ -12,11 +12,13 @@ const Header: React.FC = () => {
   return (
     <header className="bg-cyber-darkblue border-b border-cyber-purple/30 backdrop-blur-sm sticky top-0 z-10">
       <div className="container mx-auto flex justify-between items-center h-16 px-4">
-        <div className="flex items-center">
-          <GamePathLogo size={32} className="mr-2" />
-          <h1 className="text-2xl font-tech font-bold bg-gradient-to-r from-cyber-blue via-cyber-purple to-cyber-pink text-transparent bg-clip-text">
-            GamePath AI
-          </h1>
+        <div className="flex items-center h-full">
+          <div className="flex items-center">
+            <GamePathLogo size={32} className="mr-2" />
+            <h1 className="text-2xl font-tech font-bold bg-gradient-to-r from-cyber-blue via-cyber-purple to-cyber-pink text-transparent bg-clip-text">
+              GamePath AI
+            </h1>
+          </div>
         </div>
         
         <div className="flex items-center space-x-4">

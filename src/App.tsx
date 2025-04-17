@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import NetworkMetrics from "./pages/NetworkMetrics";
@@ -51,6 +51,7 @@ const App = () => (
             <BrowserRouter>
               <Routes>
                 {/* Dashboard Routes */}
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
                 <Route path="/dashboard" element={<Index />} />
                 <Route path="/network-metrics" element={<NetworkMetrics />} />
                 <Route path="/system-optimization" element={<SystemOptimization />} />
@@ -77,7 +78,7 @@ const App = () => (
                 <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
                 
                 {/* Landing Pages */}
-                <Route path="/" element={<HomePage />} />
+                <Route path="/landing" element={<HomePage />} />
                 <Route path="/features" element={<FeaturesPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
                 <Route path="/technology" element={<TechnologyPage />} />

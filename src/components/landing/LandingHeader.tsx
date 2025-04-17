@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -33,7 +34,7 @@ const LandingHeader: React.FC = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/landing" className="flex items-center space-x-2">
             <GamePathLogo size={32} className="text-cyber-blue" />
             <span className="text-xl font-tech font-bold bg-gradient-to-r from-cyber-blue via-cyber-purple to-cyber-pink text-transparent bg-clip-text">
               {t('header.appName')}

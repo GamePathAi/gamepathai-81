@@ -18,6 +18,7 @@ interface LineChartComponentProps {
   legendFormatter?: (value: string) => string;
   tooltipFormatter?: (value: any, name?: string) => [string, string];
   yAxisDomain?: [number, number];
+  dot?: boolean | object;
 }
 
 export const LineChartComponent: React.FC<LineChartComponentProps> = ({
@@ -30,6 +31,7 @@ export const LineChartComponent: React.FC<LineChartComponentProps> = ({
   legendFormatter,
   tooltipFormatter,
   yAxisDomain,
+  dot,
 }) => {
   return (
     <div className="h-full w-full">
@@ -66,7 +68,7 @@ export const LineChartComponent: React.FC<LineChartComponentProps> = ({
               name={lineConfig.name || lineConfig.dataKey}
               stroke={lineConfig.color} 
               strokeWidth={lineConfig.strokeWidth || 2}
-              dot={lineConfig.dot}
+              dot={lineConfig.dot || dot}
               activeDot={{ r: 8 }}
             />
           ))}

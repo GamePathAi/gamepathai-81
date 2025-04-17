@@ -51,7 +51,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
 
   return (
     <div 
-      className={cn("cyber-panel", className)}
+      className={cn("bg-cyber-darkblue border border-cyber-blue/40 rounded-md p-4 shadow-[0_0_20px_rgba(0,0,0,0.25)] hover:shadow-[0_0_25px_rgba(51,195,240,0.15)] transition-all duration-300", className)}
       onClick={onClick}
       style={onClick ? { cursor: 'pointer' } : {}}
     >

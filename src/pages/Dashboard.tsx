@@ -33,7 +33,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="container mx-auto">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div>
           <h1 className="text-2xl font-cyber font-bold text-white mb-1">Dashboard</h1>
           <p className="text-gray-400 text-sm">Monitor and optimize your gaming connection</p>
@@ -48,7 +48,7 @@ const Dashboard: React.FC = () => {
         </Button>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
         <MetricCard
           title="CURRENT PING"
           value={metrics.ping.current}
@@ -56,7 +56,7 @@ const Dashboard: React.FC = () => {
           trend={metrics.ping.trend as "up" | "down" | "stable"}
           trendValue={metrics.ping.trendValue}
           icon={<Activity size={18} />}
-          chartComponent={<MetricChart data={metrics.ping.history} color="#33C3F0" />}
+          chartComponent={<MetricChart data={metrics.ping.history} color="#33C3F0" metricType="ping" />}
         />
         
         <MetricCard
@@ -66,7 +66,7 @@ const Dashboard: React.FC = () => {
           trend={metrics.packetLoss.trend as "up" | "down" | "stable"}
           trendValue={metrics.packetLoss.trendValue}
           icon={<Signal size={18} />}
-          chartComponent={<MetricChart data={metrics.packetLoss.history} color="#F43F5E" />}
+          chartComponent={<MetricChart data={metrics.packetLoss.history} color="#F43F5E" metricType="packet-loss" />}
         />
         
         <MetricCard
@@ -75,13 +75,13 @@ const Dashboard: React.FC = () => {
           trend={metrics.fps.trend as "up" | "down" | "stable"}
           trendValue={metrics.fps.trendValue}
           icon={<Gauge size={18} />}
-          chartComponent={<MetricChart data={metrics.fps.history} color="#10B981" />}
+          chartComponent={<MetricChart data={metrics.fps.history} color="#10B981" metricType="fps" />}
         />
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div className="md:col-span-2">
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-3 flex items-center justify-between">
             <h2 className="text-lg font-cyber font-semibold text-white flex items-center">
               <Play size={18} className="text-cyber-blue mr-2" />
               Detected Games
@@ -105,8 +105,8 @@ const Dashboard: React.FC = () => {
         </div>
         
         <div>
-          <div className="grid grid-cols-1 gap-4">
-            <div className="mb-4 flex items-center">
+          <div className="grid grid-cols-1 gap-3">
+            <div className="mb-3 flex items-center">
               <BarChart4 size={18} className="text-cyber-purple mr-2" />
               <h2 className="text-lg font-cyber font-semibold text-white">System Metrics</h2>
             </div>
@@ -118,8 +118,8 @@ const Dashboard: React.FC = () => {
               trend={metrics.cpu.trend as "up" | "down" | "stable"}
               trendValue={metrics.cpu.trendValue}
               icon={<Cpu size={18} />}
-              chartComponent={<MetricChart data={metrics.cpu.history} color="#8B5CF6" />}
-              className="mb-4"
+              chartComponent={<MetricChart data={metrics.cpu.history} color="#8B5CF6" metricType="cpu" />}
+              className="mb-3"
             />
             
             <MetricCard
@@ -129,8 +129,8 @@ const Dashboard: React.FC = () => {
               trend={metrics.gpu.trend as "up" | "down" | "stable"}
               trendValue={metrics.gpu.trendValue}
               icon={<Zap size={18} />}
-              chartComponent={<MetricChart data={metrics.gpu.history} color="#D946EF" />}
-              className="mb-4"
+              chartComponent={<MetricChart data={metrics.gpu.history} color="#D946EF" metricType="gpu" />}
+              className="mb-3"
             />
             
             <MetricCard
@@ -140,18 +140,18 @@ const Dashboard: React.FC = () => {
               trend={metrics.jitter.trend as "up" | "down" | "stable"}
               trendValue={metrics.jitter.trendValue}
               icon={<Activity size={18} />}
-              chartComponent={<MetricChart data={metrics.jitter.history} color="#F97316" />}
+              chartComponent={<MetricChart data={metrics.jitter.history} color="#F97316" metricType="jitter" />}
             />
           </div>
         </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <ConnectionOptimizer />
         <RouteOptimizer />
       </div>
       
-      <div className="mt-6 p-4 border border-cyber-orange/30 bg-cyber-orange/10 rounded-md relative overflow-hidden">
+      <div className="mt-4 p-4 border border-cyber-orange/30 bg-cyber-orange/10 rounded-md relative overflow-hidden">
         <div className="flex items-start">
           <div className="mr-4 w-10 h-10 flex items-center justify-center rounded-full bg-cyber-orange/20 border border-cyber-orange/30">
             <Zap className="text-cyber-orange" size={20} />
