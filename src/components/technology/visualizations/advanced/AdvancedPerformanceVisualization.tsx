@@ -2,7 +2,7 @@
 import React, { useEffect, useRef } from 'react';
 import { drawGrid, drawFPSGauge, drawMetricGauge, drawMetricHistory, drawRAMBar, drawNetworkMetrics } from './drawingUtils';
 import { performanceData, activeOptimizations, gameProfiles } from './constants';
-import { renderPerformanceStats, renderOptimizationSection, renderGameProfiles } from './sectionRenderers';
+import { drawPerformanceMetrics, drawOptimizationsSection, drawGameProfiles, drawHUD } from './sectionRenderers';
 
 interface AdvancedPerformanceVisualizationProps {
   animate?: boolean;
