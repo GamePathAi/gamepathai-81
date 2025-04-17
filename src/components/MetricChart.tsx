@@ -1,4 +1,3 @@
-
 import React from "react";
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 
@@ -17,8 +16,8 @@ const MetricChart: React.FC<MetricChartProps> = ({
   data,
   dataKey = "value",
   color,
-  height = 70,
-  strokeWidth = 2,
+  height = 120,
+  strokeWidth = 3,
   showAxis = false,
   metricType,
   showGlow = true
@@ -45,13 +44,13 @@ const MetricChart: React.FC<MetricChartProps> = ({
   const filterId = `glow-${metricType || 'default'}`;
 
   return (
-    <div className="w-full h-full relative">
+    <div className="w-full h-full relative flex-grow">
       {/* SVG filter for glow effect */}
       {showGlow && (
         <svg width="0" height="0" style={{ position: 'absolute' }}>
           <defs>
             <filter id={filterId} x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feGaussianBlur stdDeviation="4" result="blur" />
               <feFlood floodColor={chartColor} floodOpacity="0.5" result="color" />
               <feComposite in="color" in2="blur" operator="in" result="glow" />
               <feMerge>
@@ -66,11 +65,11 @@ const MetricChart: React.FC<MetricChartProps> = ({
       <ResponsiveContainer width="100%" height={height} className={metricType ? `${metricType}-graph` : ''}>
         <LineChart 
           data={data} 
-          margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+          margin={{ top: showAxis ? 20 : 0, right: showAxis ? 30 : 0, left: showAxis ? 0 : 0, bottom: showAxis ? 20 : 0 }}
           data-metric={metricType}
         >
-          {showAxis && <XAxis dataKey="time" hide={!showAxis} stroke="rgba(255,255,255,0.5)" />}
-          {showAxis && <YAxis hide={!showAxis} stroke="rgba(255,255,255,0.5)" />}
+          {showAxis && <XAxis dataKey="time" stroke="rgba(255,255,255,0.5)" />}
+          {showAxis && <YAxis stroke="rgba(255,255,255,0.5)" />}
           <Tooltip 
             contentStyle={{ 
               backgroundColor: '#121223', 
@@ -95,7 +94,7 @@ const MetricChart: React.FC<MetricChartProps> = ({
 
       {/* Add animated pulse effect */}
       <div 
-        className="absolute top-0 left-0 w-full h-full opacity-0 animate-pulse-slow pointer-events-none" 
+        className="absolute top-0 left-0 w-full h-full opacity-20 animate-pulse-slow pointer-events-none" 
         style={{
           background: `radial-gradient(circle, ${chartColor}20 0%, transparent 70%)`,
           mixBlendMode: 'screen'

@@ -48,15 +48,17 @@ const Dashboard: React.FC = () => {
         </Button>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-3">
+      {/* Expanded Metrics Section with Larger Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <MetricCard
           title="CURRENT PING"
           value={metrics.ping.current}
           unit="ms"
           trend={metrics.ping.trend as "up" | "down" | "stable"}
           trendValue={metrics.ping.trendValue}
-          icon={<Activity size={18} />}
-          chartComponent={<MetricChart data={metrics.ping.history} color="#33C3F0" metricType="ping" />}
+          icon={<Activity size={24} />}
+          chartComponent={<MetricChart data={metrics.ping.history} color="#33C3F0" metricType="ping" height={120} showAxis={true} />}
+          className="h-64 flex flex-col"
         />
         
         <MetricCard
@@ -65,8 +67,9 @@ const Dashboard: React.FC = () => {
           unit="%"
           trend={metrics.packetLoss.trend as "up" | "down" | "stable"}
           trendValue={metrics.packetLoss.trendValue}
-          icon={<Signal size={18} />}
-          chartComponent={<MetricChart data={metrics.packetLoss.history} color="#F43F5E" metricType="packet-loss" />}
+          icon={<Signal size={24} />}
+          chartComponent={<MetricChart data={metrics.packetLoss.history} color="#F43F5E" metricType="packet-loss" height={120} showAxis={true} />}
+          className="h-64 flex flex-col"
         />
         
         <MetricCard
@@ -74,8 +77,9 @@ const Dashboard: React.FC = () => {
           value={metrics.fps.current}
           trend={metrics.fps.trend as "up" | "down" | "stable"}
           trendValue={metrics.fps.trendValue}
-          icon={<Gauge size={18} />}
-          chartComponent={<MetricChart data={metrics.fps.history} color="#10B981" metricType="fps" />}
+          icon={<Gauge size={24} />}
+          chartComponent={<MetricChart data={metrics.fps.history} color="#10B981" metricType="fps" height={120} showAxis={true} />}
+          className="h-64 flex flex-col"
         />
       </div>
       
