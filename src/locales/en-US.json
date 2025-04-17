@@ -44,5 +44,54 @@
       "startFreeTrial": "Start Free Trial",
       "viewPricing": "View Pricing"
     }
+  },
+  "games": {
+    "meta": {
+      "description": "Optimize your {game} experience with GamePath AI. Reduce latency, eliminate packet loss, and boost FPS."
+    },
+    "notFound": {
+      "title": "Game Not Found",
+      "message": "Sorry, we couldn't find information about this game. Please check the URL or explore our supported games below."
+    },
+    "hero": {
+      "title": "Optimize Your {game} Experience",
+      "subtitle": "Reduce lag, increase FPS, and gain a competitive edge with GamePath AI's game-specific optimization.",
+      "optimizeNow": "Optimize Now",
+      "learnMore": "Learn More"
+    },
+    "metrics": {
+      "latency": "Latency Improvement",
+      "fps": "FPS Improvement",
+      "packetLoss": "Packet Loss Reduction",
+      "jitter": "Jitter Reduction",
+      "improvement": "Improvement",
+      "reduction": "Reduction"
+    },
+    "performanceMetrics": {
+      "title": "{game} Performance Metrics",
+      "subtitle": "Our users see significant improvements in all key performance areas when playing with GamePath AI."
+    },
+    "technicalImprovements": {
+      "title": "Technical Improvements for {game}",
+      "subtitle": "See the tangible differences our technology makes to your gaming experience.",
+      "before": "BEFORE",
+      "after": "AFTER"
+    },
+    "testimonials": {
+      "title": "{game} Player Testimonials",
+      "subtitle": "Hear what players are saying about their experience with GamePath AI."
+    },
+    "cta": {
+      "title": "Ready to Dominate in {game}?",
+      "description": "Join thousands of {game} players who have improved their gaming experience with GamePath AI. Achieve up to {latency}% lower latency and {fps}% higher FPS.",
+      "latencyReduction": "Latency Reduction",
+      "fpsImprovement": "FPS Improvement",
+      "packetLossReduction": "Packet Loss Reduction",
+      "tryForFree": "Try For Free",
+      "exploreFeatures": "Explore Features"
+    },
+    "card": {
+      "viewDetails": "View Details"
+    }
   }
 }

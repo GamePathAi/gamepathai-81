@@ -30,6 +30,7 @@ import HomePage from "./pages/landing/HomePage";
 import FeaturesPage from "./pages/landing/FeaturesPage";
 import PricingPage from "./pages/landing/PricingPage";
 import TechnologyPage from "./pages/landing/TechnologyPage";
+import GamePage from "./pages/landing/GamePage";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +69,9 @@ const App = () => (
                 <Route path="/features" element={<FeaturesPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
                 <Route path="/technology" element={<TechnologyPage />} />
+                
+                {/* Game-specific Landing Pages */}
+                <Route path="/games/:gameName" element={<GamePage />} />
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>

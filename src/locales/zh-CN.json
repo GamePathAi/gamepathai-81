@@ -44,5 +44,54 @@
       "startFreeTrial": "开始免费试用",
       "viewPricing": "查看价格"
     }
+  },
+  "games": {
+    "meta": {
+      "description": "使用 GamePath AI 优化您的 {game} 体验。减少延迟，消除数据包丢失，提高 FPS。"
+    },
+    "notFound": {
+      "title": "找不到游戏",
+      "message": "抱歉，我们找不到关于这款游戏的信息。请检查 URL 或探索我们支持的游戏。"
+    },
+    "hero": {
+      "title": "优化您的 {game} 体验",
+      "subtitle": "通过 GamePath AI 的游戏特定优化，减少延迟，提高 FPS，获得竞争优势。",
+      "optimizeNow": "立即优化",
+      "learnMore": "了解更多"
+    },
+    "metrics": {
+      "latency": "延迟改善",
+      "fps": "FPS 提升",
+      "packetLoss": "数据包丢失减少",
+      "jitter": "抖动减少",
+      "improvement": "提升",
+      "reduction": "减少"
+    },
+    "performanceMetrics": {
+      "title": "{game} 性能指标",
+      "subtitle": "使用 GamePath AI 时，我们的用户在所有关键性能领域都看到显著改善。"
+    },
+    "technicalImprovements": {
+      "title": "{game} 的技术改进",
+      "subtitle": "了解我们的技术为您的游戏体验带来的切实差异。",
+      "before": "优化前",
+      "after": "优化后"
+    },
+    "testimonials": {
+      "title": "{game} 玩家评价",
+      "subtitle": "听听玩家们对 GamePath AI 体验的评价。"
+    },
+    "cta": {
+      "title": "准备好在 {game} 中主宰战场了吗？",
+      "description": "加入数千名通过 GamePath AI 改善游戏体验的 {game} 玩家。实现高达 {latency}% 的延迟降低和 {fps}% 的 FPS 提升。",
+      "latencyReduction": "延迟降低",
+      "fpsImprovement": "FPS 提升",
+      "packetLossReduction": "数据包丢失减少",
+      "tryForFree": "免费试用",
+      "exploreFeatures": "探索功能"
+    },
+    "card": {
+      "viewDetails": "查看详情"
+    }
   }
 }
