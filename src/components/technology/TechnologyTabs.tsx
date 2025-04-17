@@ -57,6 +57,7 @@ const TechnologyTabs = () => {
                   description: t('technology.adaptiveRouting.multiPointRouting.description')
                 }
               ]}
+              visualType="route"
             />
           </TabsContent>
           
@@ -83,6 +84,7 @@ const TechnologyTabs = () => {
                 }
               ]}
               reversed={true}
+              visualType="performance"
             />
           </TabsContent>
           
@@ -108,6 +110,7 @@ const TechnologyTabs = () => {
                   description: t('technology.security.antiCheatCompatibility.description')
                 }
               ]}
+              visualType="power"
             />
           </TabsContent>
           

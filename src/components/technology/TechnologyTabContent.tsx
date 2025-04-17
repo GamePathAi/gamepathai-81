@@ -1,5 +1,8 @@
 
 import React from "react";
+import RouteOptimizerVisualization from "./visualizations/RouteOptimizerVisualization";
+import PerformanceEnhancementVisualization from "./visualizations/PerformanceEnhancementVisualization";
+import PowerManagementVisualization from "./visualizations/PowerManagementVisualization";
 
 interface FeatureItem {
   title: string;
@@ -15,6 +18,7 @@ interface TechnologyTabContentProps {
   statValue: string;
   features: FeatureItem[];
   reversed?: boolean;
+  visualType?: "route" | "performance" | "power";
 }
 
 const TechnologyTabContent: React.FC<TechnologyTabContentProps> = ({
@@ -25,14 +29,32 @@ const TechnologyTabContent: React.FC<TechnologyTabContentProps> = ({
   statTitle,
   statValue,
   features,
-  reversed = false
+  reversed = false,
+  visualType
 }) => {
+  // Render the appropriate visualization based on the type
+  const renderVisualization = () => {
+    switch(visualType) {
+      case "route":
+        return <RouteOptimizerVisualization />;
+      case "performance":
+        return <PerformanceEnhancementVisualization />;
+      case "power":
+        return <PowerManagementVisualization />;
+      default:
+        // Fallback to the original icon-based visualization
+        return (
+          <div className={`aspect-square rounded-lg bg-gradient-to-br from-${color}/20 to-${color}/5 border border-${color}/30 flex items-center justify-center`}>
+            {icon}
+          </div>
+        );
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
       <div className={reversed ? "order-2 md:order-1 relative" : "relative"}>
-        <div className={`aspect-square rounded-lg bg-gradient-to-br from-${color}/20 to-${color}/5 border border-${color}/30 flex items-center justify-center`}>
-          {icon}
-        </div>
+        {renderVisualization()}
         <div className={`absolute -bottom-4 ${reversed ? "-left-4" : "-right-4"} bg-cyber-darkblue border border-${color}/30 rounded-lg p-4`}>
           <div className="text-center">
             <p className="text-sm text-gray-400">{statTitle}</p>
