@@ -6,7 +6,7 @@ interface GamePathLogoProps {
   size?: number;
 }
 
-const GamePathLogo: React.FC<GamePathLogoProps> = ({ className = "", size = 40 }) => {
+export const GamePathLogo: React.FC<GamePathLogoProps> = ({ className = "", size = 40 }) => {
   return (
     <div className={`inline-flex items-center justify-center ${className}`}>
       <svg
