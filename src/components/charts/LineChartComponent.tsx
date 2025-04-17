@@ -19,6 +19,7 @@ interface LineChartComponentProps {
   tooltipFormatter?: (value: any, name?: string) => [string, string];
   yAxisDomain?: [number, number];
   dot?: boolean | object;
+  showGlow?: boolean;
 }
 
 export const LineChartComponent: React.FC<LineChartComponentProps> = ({
@@ -32,6 +33,7 @@ export const LineChartComponent: React.FC<LineChartComponentProps> = ({
   tooltipFormatter,
   yAxisDomain,
   dot,
+  showGlow = true
 }) => {
   return (
     <div className="h-full w-full">
@@ -60,18 +62,40 @@ export const LineChartComponent: React.FC<LineChartComponentProps> = ({
             <Legend formatter={legendFormatter} />
           )}
           
-          {lineKeys.map((lineConfig) => (
-            <Line 
-              key={lineConfig.dataKey}
-              type="monotone" 
-              dataKey={lineConfig.dataKey} 
-              name={lineConfig.name || lineConfig.dataKey}
-              stroke={lineConfig.color} 
-              strokeWidth={lineConfig.strokeWidth || 2}
-              dot={lineConfig.dot || dot}
-              activeDot={{ r: 8 }}
-            />
-          ))}
+          {lineKeys.map((lineConfig, index) => {
+            // Create unique filter ID for each line
+            const filterId = `glow-line-${index}-${lineConfig.dataKey}`;
+            
+            return (
+              <React.Fragment key={lineConfig.dataKey}>
+                {/* Define the filter for this line if glow is enabled */}
+                {showGlow && (
+                  <defs>
+                    <filter id={filterId} x="-50%" y="-50%" width="200%" height="200%">
+                      <feGaussianBlur stdDeviation="2" result="blur" />
+                      <feFlood floodColor={lineConfig.color} floodOpacity="0.5" result="color" />
+                      <feComposite in="color" in2="blur" operator="in" result="glow" />
+                      <feMerge>
+                        <feMergeNode in="glow" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                  </defs>
+                )}
+                
+                <Line 
+                  type="monotone" 
+                  dataKey={lineConfig.dataKey} 
+                  name={lineConfig.name || lineConfig.dataKey}
+                  stroke={lineConfig.color} 
+                  strokeWidth={lineConfig.strokeWidth || 2}
+                  dot={lineConfig.dot || dot}
+                  activeDot={{ r: 8 }}
+                  filter={showGlow ? `url(#${filterId})` : undefined}
+                />
+              </React.Fragment>
+            );
+          })}
         </LineChart>
       </ResponsiveContainer>
     </div>
