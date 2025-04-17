@@ -23,6 +23,46 @@
       "title": "Réseau Mondial",
       "description": "Accès à des routes optimisées à travers notre infrastructure mondiale de serveurs pour des jeux à faible latence partout."
     },
+    "security": {
+      "title": "Sécurité des Jeux",
+      "description": "Fonctionnalités de protection avancées qui gardent votre expérience de jeu sécurisée et vos données privées.",
+      "ddosProtection": {
+        "title": "Protection DDoS",
+        "description": "Protection en temps réel contre les attaques par déni de service"
+      },
+      "ipMasking": {
+        "title": "Masquage d'IP",
+        "description": "Masquez votre adresse IP réelle pour éviter le ciblage"
+      },
+      "antiCheatCompatibility": {
+        "title": "Compatibilité Anti-Triche",
+        "description": "Compatibilité complète avec tous les principaux systèmes anti-triche"
+      },
+      "protectionRate": {
+        "title": "Taux de Prévention d'Attaques",
+        "value": "99,7%"
+      }
+    },
+    "vpn": {
+      "title": "VPN pour les Jeux",
+      "description": "Notre VPN spécialisé optimisé spécifiquement pour la performance et la sécurité des jeux.",
+      "geoRestrictionBypass": {
+        "title": "Contournement des Restrictions Géographiques",
+        "description": "Accédez aux jeux et serveurs de n'importe quelle région, quelle que soit votre localisation"
+      },
+      "splitTunneling": {
+        "title": "Tunneling Divisé",
+        "description": "Acheminez uniquement le trafic de jeu via notre réseau optimisé"
+      },
+      "ispThrottlingPrevention": {
+        "title": "Prévention de Limitation FAI",
+        "description": "Contournez les limites de vitesse et la mise en forme du trafic des FAI pour un débit maximal"
+      },
+      "globalServers": {
+        "title": "Réseau de Serveurs Mondial",
+        "value": "Plus de 250 Emplacements"
+      }
+    },
     "cta": {
       "description": "Expérimentez une réduction significative de la latence et des améliorations de performance avec notre technologie de jeu adaptative.",
       "startFreeTrial": "Commencer l'Essai Gratuit",

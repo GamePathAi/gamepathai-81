@@ -23,6 +23,46 @@
       "title": "Red Global",
       "description": "Acceso a rutas optimizadas a través de nuestra infraestructura de servidores mundial para juegos con baja latencia en cualquier lugar."
     },
+    "security": {
+      "title": "Seguridad de Juegos",
+      "description": "Funciones avanzadas de protección que mantienen tu experiencia de juego segura y tus datos privados.",
+      "ddosProtection": {
+        "title": "Protección DDoS",
+        "description": "Protección en tiempo real contra ataques de denegación de servicio"
+      },
+      "ipMasking": {
+        "title": "Enmascaramiento de IP",
+        "description": "Oculta tu dirección IP real para evitar ser objetivo de ataques"
+      },
+      "antiCheatCompatibility": {
+        "title": "Compatibilidad con Anti-Trampas",
+        "description": "Compatibilidad completa con todos los principales sistemas anti-trampas"
+      },
+      "protectionRate": {
+        "title": "Tasa de Prevención de Ataques",
+        "value": "99,7%"
+      }
+    },
+    "vpn": {
+      "title": "VPN para Juegos",
+      "description": "Nuestra VPN especializada optimizada específicamente para rendimiento y seguridad en juegos.",
+      "geoRestrictionBypass": {
+        "title": "Bypass de Restricciones Geográficas",
+        "description": "Accede a juegos y servidores desde cualquier región independientemente de tu ubicación"
+      },
+      "splitTunneling": {
+        "title": "Túnel Dividido",
+        "description": "Enruta solo el tráfico de juegos a través de nuestra red optimizada"
+      },
+      "ispThrottlingPrevention": {
+        "title": "Prevención de Limitaciones ISP",
+        "description": "Evita los límites de velocidad y la modelación de tráfico del ISP para un máximo rendimiento"
+      },
+      "globalServers": {
+        "title": "Red de Servidores Globales",
+        "value": "Más de 250 ubicaciones"
+      }
+    },
     "cta": {
       "description": "Experimenta una reducción significativa de la latencia y mejoras de rendimiento con nuestra tecnología de juego adaptativa.",
       "startFreeTrial": "Comenzar Prueba Gratuita",

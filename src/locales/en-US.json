@@ -33,11 +33,67 @@
     },
     "performanceAI": {
       "title": "Performance AI",
-      "description": "Machine learning systems that adapt to your hardware configuration and usage patterns for optimal performance."
+      "description": "Machine learning systems that adapt to your hardware configuration and usage patterns for optimal performance.",
+      "adaptiveResourceAllocation": {
+        "title": "Adaptive Resource Allocation",
+        "description": "Dynamically allocates system resources based on game requirements"
+      },
+      "gameSpecificProfiles": {
+        "title": "Game-Specific Profiles",
+        "description": "Custom optimization profiles for thousands of popular games"
+      },
+      "backgroundProcessManagement": {
+        "title": "Background Process Management",
+        "description": "Intelligently manages system processes to prioritize gaming performance"
+      },
+      "fpsImprovement": {
+        "title": "Average FPS Improvement",
+        "value": "27%"
+      }
     },
     "globalNetwork": {
       "title": "Global Network",
       "description": "Access to optimized routes across our worldwide server infrastructure for low-latency gaming anywhere."
+    },
+    "security": {
+      "title": "Gaming Security",
+      "description": "Advanced protection features that keep your gaming experience safe and your data private.",
+      "ddosProtection": {
+        "title": "DDoS Protection",
+        "description": "Real-time protection against denial-of-service attacks"
+      },
+      "ipMasking": {
+        "title": "IP Masking",
+        "description": "Hide your real IP address to prevent targeting and swatting"
+      },
+      "antiCheatCompatibility": {
+        "title": "Anti-Cheat Compatibility",
+        "description": "Full compatibility with all major anti-cheat systems"
+      },
+      "protectionRate": {
+        "title": "Attack Prevention Rate",
+        "value": "99.7%"
+      }
+    },
+    "vpn": {
+      "title": "Gaming VPN",
+      "description": "Our specialized VPN optimized specifically for gaming performance and security.",
+      "geoRestrictionBypass": {
+        "title": "Geo-Restriction Bypass",
+        "description": "Access games and servers from any region regardless of your location"
+      },
+      "splitTunneling": {
+        "title": "Split Tunneling",
+        "description": "Route only game traffic through our optimized network"
+      },
+      "ispThrottlingPrevention": {
+        "title": "ISP Throttling Prevention",
+        "description": "Bypass ISP speed limits and traffic shaping for maximum throughput"
+      },
+      "globalServers": {
+        "title": "Global Server Network",
+        "value": "250+ Locations"
+      }
     },
     "cta": {
       "description": "Experience significant latency reduction and performance improvements with our adaptive gaming technology.",

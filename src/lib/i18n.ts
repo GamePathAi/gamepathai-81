@@ -36,6 +36,9 @@ i18n
       order: ['localStorage', 'navigator'],
       caches: ['localStorage'],
     },
+    react: {
+      useSuspense: false, // This helps prevent issues during SSR or when translations are loading
+    },
     debug: process.env.NODE_ENV === 'development', // Add debug mode in development to help track issues
     keySeparator: '.',
     nsSeparator: ':',

@@ -11,7 +11,7 @@ const TechnologyTabs = () => {
   return (
     <section className="py-16 bg-cyber-darkblue/30 px-4">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold text-white mb-12 text-center">Our Core Technologies</h2>
+        <h2 className="text-3xl font-bold text-white mb-12 text-center">{t('technology.title')}</h2>
         
         <Tabs defaultValue="routing" className="w-full">
           <div className="flex justify-center mb-8">
