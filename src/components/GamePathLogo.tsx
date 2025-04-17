@@ -12,18 +12,18 @@ interface GamePathLogoProps {
 
 // We're using a named export for the component
 export const GamePathLogo: React.FC<GamePathLogoProps> = ({ 
-  className = "w-8 h-8", 
-  size = 64  // Reduced from 100 to 64 for a more compact look
+  className = "w-6 h-6", 
+  size = 32  // Further reduced for a more compact look
 }) => {
   return (
     <div className={className}>
       <svg 
         width={size} 
         height={size} 
-        viewBox="0 0 64 64"  // Adjusted viewBox to match the new size
+        viewBox="0 0 32 32"  // Adjusted viewBox to match the new size
         fill="none" 
         xmlns="http://www.w3.org/2000/svg"
-        className="filter drop-shadow-[0_0_6px_rgba(51,195,240,0.6)]"  // Slightly reduced glow effect
+        className="filter drop-shadow-[0_0_4px_rgba(51,195,240,0.4)]"  // Slightly reduced glow effect
       >
         {/* Outer hexagon border with glow effect */}
         <HexagonBorder />
