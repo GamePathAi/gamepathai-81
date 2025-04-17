@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
@@ -141,7 +142,8 @@ const FeaturesPage: React.FC = () => {
           <div className="text-center max-w-3xl mx-auto mb-20">
             <Badge variant="cyber" className="mb-6">Features</Badge>
             <h1 className="text-4xl md:text-5xl font-bold mb-8 font-tech">
-              Cutting-Edge <span className="bg-gradient-to-r from-cyber-blue via-cyber-purple to-cyber-pink text-transparent bg-clip-text">Gaming Technology</span>
+              <span className="text-white">Cutting-Edge </span>
+              <span className="bg-gradient-to-r from-cyber-blue to-cyber-purple text-transparent bg-clip-text">Gaming Technology</span>
             </h1>
             <p className="text-lg text-gray-300 leading-relaxed">
               GamePath AI combines multiple advanced technologies to deliver a comprehensive gaming enhancement solution that optimizes every aspect of your gaming experience.
@@ -149,13 +151,14 @@ const FeaturesPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="bg-cyber-darkblue border-cyber-blue/30 hover:border-cyber-blue/70 transition-all shadow-[0_0_20px_rgba(0,0,0,0.25)] hover:shadow-[0_0_25px_rgba(51,195,240,0.15)]">
-              <CardContent className="p-8 flex flex-col items-center text-center">
+            {/* Feature Card 1: Reduced Lag */}
+            <Card className="bg-cyber-darkblue border-cyber-blue/30 hover:border-cyber-blue/70 transition-all shadow-[0_0_20px_rgba(0,0,0,0.25)] hover:shadow-[0_0_25px_rgba(51,195,240,0.15)] flex flex-col">
+              <CardContent className="p-8 flex flex-col items-center text-center h-full">
                 <div className="w-16 h-16 rounded-full bg-cyber-blue/10 flex items-center justify-center mb-6">
                   <Clock size={32} className="text-cyber-blue" />
                 </div>
                 <h3 className="text-xl font-bold mb-4 font-tech">Reduced Lag</h3>
-                <p className="text-gray-400 mb-6">
+                <p className="text-gray-400 mb-6 flex-grow">
                   AI-powered routing reduces ping by up to 60% by finding the optimal path to game servers.
                 </p>
                 <div className="mt-4 bg-cyber-black/30 p-4 rounded-md w-full shadow-inner">
@@ -170,35 +173,56 @@ const FeaturesPage: React.FC = () => {
               </CardContent>
             </Card>
             
-            <Card className="bg-cyber-darkblue border-cyber-purple/30 hover:border-cyber-purple/70 transition-all">
-              <CardContent className="p-8 flex flex-col items-center text-center">
+            {/* Feature Card 2: Enhanced FPS */}
+            <Card className="bg-cyber-darkblue border-cyber-purple/30 hover:border-cyber-purple/70 transition-all flex flex-col">
+              <CardContent className="p-8 flex flex-col items-center text-center h-full">
                 <div className="w-16 h-16 rounded-full bg-cyber-purple/10 flex items-center justify-center mb-6">
                   <Zap size={32} className="text-cyber-purple" />
                 </div>
                 <h3 className="text-xl font-bold mb-4 font-tech">Enhanced FPS</h3>
-                <p className="text-gray-400 mb-6">
+                <p className="text-gray-400 mb-6 flex-grow">
                   Boost your frame rates with intelligent system resource optimization.
                 </p>
+                <div className="mt-4 bg-cyber-black/30 p-4 rounded-md w-full shadow-inner">
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-gray-400">Average FPS Improvement</span>
+                    <span className="text-cyber-purple">32%</span>
+                  </div>
+                  <div className="h-2 w-full bg-cyber-darkblue rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-cyber-purple to-cyber-pink w-[45%]"></div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-cyber-darkblue border-cyber-green/30 hover:border-cyber-green/70 transition-all">
-              <CardContent className="p-8 flex flex-col items-center text-center">
+            {/* Feature Card 3: System Protection */}
+            <Card className="bg-cyber-darkblue border-cyber-green/30 hover:border-cyber-green/70 transition-all flex flex-col">
+              <CardContent className="p-8 flex flex-col items-center text-center h-full">
                 <div className="w-16 h-16 rounded-full bg-cyber-green/10 flex items-center justify-center mb-6">
                   <Shield size={32} className="text-cyber-green" />
                 </div>
                 <h3 className="text-xl font-bold mb-4 font-tech">System Protection</h3>
-                <p className="text-gray-400 mb-6">
+                <p className="text-gray-400 mb-6 flex-grow">
                   Smart thermal management prevents overheating during extended gaming sessions.
                 </p>
+                <div className="mt-4 bg-cyber-black/30 p-4 rounded-md w-full shadow-inner">
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-gray-400">Thermal Efficiency</span>
+                    <span className="text-cyber-green">89%</span>
+                  </div>
+                  <div className="h-2 w-full bg-cyber-darkblue rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-cyber-green to-green-400 w-[89%]"></div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
           
           <div className="text-center mt-12">
-            <Button variant="cyberOutline" asChild>
+            <Button variant="cyberAction" asChild className="px-6 py-6 text-base font-tech gap-2 group">
               <a href="#core-technologies">
-                Explore All Features <ArrowDownCircle className="ml-2 h-4 w-4" />
+                Explore All Features 
+                <ArrowDownCircle className="group-hover:translate-y-1 transition-transform duration-300" />
               </a>
             </Button>
           </div>

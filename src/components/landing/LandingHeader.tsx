@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { GamePathLogo } from "@/components/GamePathLogo";
 import {
@@ -38,6 +38,11 @@ const features = [
 const LandingHeader: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
 
   const handleUpgrade = () => {
     navigate("/subscription");
@@ -67,39 +72,28 @@ const LandingHeader: React.FC = () => {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="bg-transparent text-white/90 hover:bg-cyber-darkblue/50 hover:text-white">Features</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 bg-cyber-darkblue border border-cyber-blue/30">
-                    {features.map((feature) => (
-                      <li key={feature.title} className="row-span-1">
-                        <NavigationMenuLink asChild>
-                          <Link
-                            to={feature.href}
-                            className="block select-none space-y-1 rounded-md p-3 hover:bg-cyber-blue/10 transition-colors"
-                          >
-                            <div className="flex items-center">
-                              <span className="mr-2">{feature.icon}</span>
-                              <div className="text-sm font-medium text-white">{feature.title}</div>
-                            </div>
-                            <p className="line-clamp-2 text-xs text-gray-400">
-                              {feature.description}
-                            </p>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
+                <Link 
+                  to="/features" 
+                  className={`group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-cyber-blue/10 hover:text-white ${isActive('/features') ? 'bg-cyber-blue/10 text-white' : 'text-white/90'}`}
+                >
+                  Features
+                </Link>
               </NavigationMenuItem>
               
               <NavigationMenuItem>
-                <Link to="/pricing" className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium text-white/90 transition-colors hover:bg-cyber-darkblue/50 hover:text-white">
+                <Link 
+                  to="/pricing" 
+                  className={`group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-cyber-darkblue/50 hover:text-white ${isActive('/pricing') ? 'bg-cyber-blue/10 text-white' : 'text-white/90'}`}
+                >
                   Pricing
                 </Link>
               </NavigationMenuItem>
               
               <NavigationMenuItem>
-                <Link to="/technology" className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium text-white/90 transition-colors hover:bg-cyber-darkblue/50 hover:text-white">
+                <Link 
+                  to="/technology" 
+                  className={`group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-cyber-darkblue/50 hover:text-white ${isActive('/technology') ? 'bg-cyber-blue/10 text-white' : 'text-white/90'}`}
+                >
                   Technology
                 </Link>
               </NavigationMenuItem>
@@ -136,27 +130,27 @@ const LandingHeader: React.FC = () => {
 
         {/* Mobile menu, show/hide based on menu state */}
         {mobileMenuOpen && (
-          <div className="md:hidden absolute top-16 inset-x-0 p-2 transition transform origin-top-right">
+          <div className="md:hidden absolute top-16 inset-x-0 p-2 transition transform origin-top-right z-50">
             <div className="rounded-lg shadow-lg bg-cyber-darkblue border border-cyber-blue/30">
               <div className="pt-3 pb-2">
                 <div className="px-2 space-y-1">
                   <Link
                     to="/features"
-                    className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-cyber-blue/10"
+                    className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/features') ? 'bg-cyber-blue/10 text-white' : 'text-white hover:bg-cyber-blue/10'}`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Features
                   </Link>
                   <Link
                     to="/pricing"
-                    className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-cyber-blue/10"
+                    className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/pricing') ? 'bg-cyber-blue/10 text-white' : 'text-white hover:bg-cyber-blue/10'}`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Pricing
                   </Link>
                   <Link
                     to="/technology"
-                    className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-cyber-blue/10"
+                    className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/technology') ? 'bg-cyber-blue/10 text-white' : 'text-white hover:bg-cyber-blue/10'}`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Technology

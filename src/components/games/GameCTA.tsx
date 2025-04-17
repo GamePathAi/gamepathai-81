@@ -32,7 +32,7 @@ const GameCTA: React.FC<GameCTAProps> = ({ game }) => {
         </p>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          <div className="bg-cyber-darkblue/60 backdrop-blur-sm p-5 rounded-lg border border-cyber-blue/20">
+          <div className="bg-cyber-darkblue/60 backdrop-blur-sm p-5 rounded-lg border border-cyber-blue/20 hover:border-cyber-blue/40 transition-colors">
             <div className="text-cyber-blue text-4xl font-tech mb-2">
               {game.performanceMetrics.latencyImprovement}%
             </div>
@@ -41,7 +41,7 @@ const GameCTA: React.FC<GameCTAProps> = ({ game }) => {
             </div>
           </div>
           
-          <div className="bg-cyber-darkblue/60 backdrop-blur-sm p-5 rounded-lg border border-cyber-purple/20">
+          <div className="bg-cyber-darkblue/60 backdrop-blur-sm p-5 rounded-lg border border-cyber-purple/20 hover:border-cyber-purple/40 transition-colors">
             <div className="text-cyber-purple text-4xl font-tech mb-2">
               {game.performanceMetrics.fpsImprovement}%
             </div>
@@ -50,7 +50,7 @@ const GameCTA: React.FC<GameCTAProps> = ({ game }) => {
             </div>
           </div>
           
-          <div className="bg-cyber-darkblue/60 backdrop-blur-sm p-5 rounded-lg border border-cyber-green/20">
+          <div className="bg-cyber-darkblue/60 backdrop-blur-sm p-5 rounded-lg border border-cyber-green/20 hover:border-cyber-green/40 transition-colors">
             <div className="text-cyber-green text-4xl font-tech mb-2">
               {game.performanceMetrics.packetLossReduction}%
             </div>
@@ -64,19 +64,19 @@ const GameCTA: React.FC<GameCTAProps> = ({ game }) => {
           <Button 
             size="lg" 
             variant="cyberAction"
-            className="w-full sm:w-auto px-8 py-6 text-lg"
+            className="w-full sm:w-auto px-8 py-6 text-lg group"
           >
-            <Zap size={18} className="mr-2" />
+            <Zap size={18} className="mr-2 group-hover:rotate-12 transition-transform duration-300" />
             {t('games.cta.tryForFree')}
           </Button>
           
           <Button 
             size="lg" 
             variant="cyberOutline" 
-            className="w-full sm:w-auto px-8 py-6 text-lg flex items-center justify-center"
+            className="w-full sm:w-auto px-8 py-6 text-lg flex items-center justify-center group"
           >
             {t('games.cta.exploreFeatures')}
-            <ArrowRight className="ml-2 h-4 w-4" />
+            <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
           </Button>
         </div>
       </div>
