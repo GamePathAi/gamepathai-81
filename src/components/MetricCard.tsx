@@ -63,29 +63,29 @@ const MetricCard: React.FC<MetricCardProps> = ({
 
   return (
     <div 
-      className={cn("bg-cyber-darkblue border border-cyber-blue/40 rounded-md p-4 shadow-[0_0_20px_rgba(0,0,0,0.25)] hover:shadow-[0_0_25px_rgba(51,195,240,0.15)] transition-all duration-300", className)}
+      className={cn("bg-cyber-darkblue border border-cyber-blue/40 rounded-md p-3 shadow-[0_0_20px_rgba(0,0,0,0.25)] hover:shadow-[0_0_25px_rgba(51,195,240,0.15)] transition-all duration-300", className)}
       onClick={onClick}
       style={onClick ? { cursor: 'pointer' } : {}}
     >
-      <div className="flex justify-between items-start mb-2">
+      <div className="flex justify-between items-start mb-1">
         <div className="text-xs font-tech text-gray-400 uppercase tracking-wider">{title}</div>
         {icon && <div className={`${getMetricColor()}`}>{icon}</div>}
       </div>
       
-      <div className="flex items-baseline">
+      <div className="flex items-baseline mb-1">
         <div className={`text-2xl font-tech ${getMetricColor()} font-bold tracking-wide`}>{value}</div>
         {unit && <div className="ml-1 text-xs font-tech text-gray-400">{unit}</div>}
       </div>
       
       {trend && (
-        <div className={`mt-1 text-xs font-tech ${getTrendColor()} flex items-center`}>
+        <div className={`text-xs font-tech ${getTrendColor()} flex items-center mb-1`}>
           <span className="mr-1">{getTrendIcon()}</span> 
           <span>{trendValue}</span>
         </div>
       )}
       
       {chartComponent && (
-        <div className="mt-2 flex-grow relative overflow-hidden">
+        <div className="mt-1 flex-grow relative overflow-hidden" style={{ minHeight: "85%" }}>
           {/* Add shine animation overlay */}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shine-slow pointer-events-none z-10"></div>
           {chartComponent}

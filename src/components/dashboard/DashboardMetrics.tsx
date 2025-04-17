@@ -42,11 +42,12 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
             data={metrics.ping.history} 
             color="#33C3F0" 
             metricType="ping" 
-            height={120} 
+            height={180} 
             showAxis={true} 
+            strokeWidth={4}
           />
         }
-        className="h-64 flex flex-col"
+        className="h-80 flex flex-col" // Increased height
       />
       
       <MetricCard
@@ -61,11 +62,12 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
             data={metrics.packetLoss.history} 
             color="#F43F5E" 
             metricType="packet-loss" 
-            height={120} 
-            showAxis={true} 
+            height={180} 
+            showAxis={true}
+            strokeWidth={4}
           />
         }
-        className="h-64 flex flex-col"
+        className="h-80 flex flex-col" // Increased height
       />
       
       <MetricCard
@@ -79,11 +81,12 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
             data={metrics.fps.history} 
             color="#10B981" 
             metricType="fps" 
-            height={120} 
-            showAxis={true} 
+            height={180} 
+            showAxis={true}
+            strokeWidth={4}
           />
         }
-        className="h-64 flex flex-col"
+        className="h-80 flex flex-col" // Increased height
       />
     </div>
   );

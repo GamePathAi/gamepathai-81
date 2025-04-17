@@ -17,9 +17,9 @@ const MetricChart: React.FC<MetricChartProps> = ({
   data,
   dataKey = "value",
   color,
-  height = 120,
-  strokeWidth = 3,
-  showAxis = false,
+  height = 180, // Increased default height by 50%
+  strokeWidth = 4, // Increased from 3 to 4
+  showAxis = true, // Always show axis by default now
   metricType,
   showGlow = true
 }) => {
@@ -46,6 +46,9 @@ const MetricChart: React.FC<MetricChartProps> = ({
 
   // Ensure data has at least 2 points for animation to work
   const enhancedData = data?.length >= 2 ? data : generatePlaceholderData(metricType);
+  
+  // Get metric label for tooltips
+  const metricLabel = getMetricLabel(metricType);
 
   return (
     <div className="w-full h-full relative flex-grow">
@@ -54,8 +57,8 @@ const MetricChart: React.FC<MetricChartProps> = ({
         <svg width="0" height="0" style={{ position: 'absolute' }}>
           <defs>
             <filter id={filterId} x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="4" result="blur" />
-              <feFlood floodColor={chartColor} floodOpacity="0.5" result="color" />
+              <feGaussianBlur stdDeviation="6" result="blur" /> {/* Increased glow intensity */}
+              <feFlood floodColor={chartColor} floodOpacity="0.7" result="color" /> {/* Increased opacity */}
               <feComposite in="color" in2="blur" operator="in" result="glow" />
               <feMerge>
                 <feMergeNode in="glow" />
@@ -69,29 +72,29 @@ const MetricChart: React.FC<MetricChartProps> = ({
       <ResponsiveContainer width="100%" height={height} className={metricType ? `${metricType}-graph` : ''}>
         <LineChart 
           data={enhancedData} 
-          margin={{ top: showAxis ? 10 : 5, right: showAxis ? 10 : 5, left: showAxis ? 10 : 5, bottom: showAxis ? 10 : 5 }}
+          margin={{ top: 10, right: 20, left: 20, bottom: 10 }} // Adjusted margins for better visibility
           data-metric={metricType}
         >
           {showAxis && (
             <CartesianGrid 
               strokeDasharray="3 3" 
-              vertical={false}
+              vertical={true} // Added vertical grid lines
               stroke="rgba(255,255,255,0.1)" 
             />
           )}
           {showAxis && <XAxis 
             dataKey="time" 
-            stroke="rgba(255,255,255,0.3)" 
-            tick={{fill: "rgba(255,255,255,0.5)", fontSize: 10}}
-            tickLine={{stroke: "rgba(255,255,255,0.2)"}}
-            axisLine={{stroke: "rgba(255,255,255,0.2)"}}
+            stroke="rgba(255,255,255,0.5)" // Increased contrast
+            tick={{fill: "rgba(255,255,255,0.7)", fontSize: 11}} // More visible text
+            tickLine={{stroke: "rgba(255,255,255,0.3)"}}
+            axisLine={{stroke: "rgba(255,255,255,0.3)"}}
           />}
           {showAxis && <YAxis 
-            stroke="rgba(255,255,255,0.3)" 
-            tick={{fill: "rgba(255,255,255,0.5)", fontSize: 10}}
-            tickLine={{stroke: "rgba(255,255,255,0.2)"}}
-            axisLine={{stroke: "rgba(255,255,255,0.2)"}}
-            width={25}
+            stroke="rgba(255,255,255,0.5)" // Increased contrast
+            tick={{fill: "rgba(255,255,255,0.7)", fontSize: 11}} // More visible text
+            tickLine={{stroke: "rgba(255,255,255,0.3)"}}
+            axisLine={{stroke: "rgba(255,255,255,0.3)"}}
+            width={35} // Increased width to ensure numbers fit
           />}
           <Tooltip 
             contentStyle={{ 
@@ -99,31 +102,33 @@ const MetricChart: React.FC<MetricChartProps> = ({
               borderColor: chartColor,
               fontFamily: 'Share Tech Mono, monospace',
               fontSize: '12px',
-              boxShadow: `0 0 10px ${chartColor}60`
+              boxShadow: `0 0 15px ${chartColor}60`, // Increased glow effect
+              padding: '8px'
             }}
-            formatter={(value) => [`${value}`, getMetricLabel(metricType)]}
+            formatter={(value) => [`${value}`, metricLabel]}
             labelFormatter={(label) => `Time: ${label}`}
+            animationDuration={300}
           />
           <Line
             type="monotone"
             dataKey={dataKey}
             stroke={chartColor}
             strokeWidth={strokeWidth}
-            dot={showAxis ? { fill: chartColor, r: 2 } : false}
-            activeDot={{ r: 5, fill: chartColor, stroke: '#FFFFFF' }}
+            dot={showAxis ? { fill: chartColor, r: 3 } : false} // Slightly larger dots
+            activeDot={{ r: 6, fill: chartColor, stroke: '#FFFFFF' }} // Larger active dot
             isAnimationActive={true}
             animationDuration={1500}
             filter={showGlow ? `url(#${filterId})` : undefined}
-            style={{ filter: showGlow ? `drop-shadow(0 0 3px ${chartColor})` : 'none' }}
+            style={{ filter: showGlow ? `drop-shadow(0 0 5px ${chartColor})` : 'none' }} // Enhanced shadow
           />
         </LineChart>
       </ResponsiveContainer>
 
       {/* Add animated pulse effect */}
       <div 
-        className="absolute top-0 left-0 w-full h-full opacity-20 animate-pulse-slow pointer-events-none" 
+        className="absolute top-0 left-0 w-full h-full opacity-30 animate-pulse-slow pointer-events-none" 
         style={{
-          background: `radial-gradient(circle, ${chartColor}20 0%, transparent 70%)`,
+          background: `radial-gradient(circle, ${chartColor}30 0%, transparent 70%)`,
           mixBlendMode: 'screen'
         }}
       />
@@ -163,8 +168,10 @@ const generatePlaceholderData = (metricType?: string) => {
       break;
   }
   
-  return Array.from({length: 20}, (_, i) => ({
-    time: `${i}s`,
+  const timeLabels = ["30m ago", "25m ago", "20m ago", "15m ago", "10m ago", "5m ago", "Now"];
+  
+  return Array.from({length: timeLabels.length}, (_, i) => ({
+    time: timeLabels[i],
     value: Math.max(1, Math.floor(baseValue + (Math.random() * variance * 2) - variance))
   }));
 };

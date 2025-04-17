@@ -48,11 +48,12 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
               data={metrics.cpu.history} 
               color="#8B5CF6" 
               metricType="cpu" 
-              height={80} 
-              showAxis={true} 
+              height={120} 
+              showAxis={true}
+              strokeWidth={4}
             />
           }
-          className="mb-3"
+          className="mb-3 h-48" // Increased height
         />
         
         <MetricCard
@@ -67,11 +68,12 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
               data={metrics.gpu.history} 
               color="#D946EF" 
               metricType="gpu" 
-              height={80} 
-              showAxis={true} 
+              height={120} 
+              showAxis={true}
+              strokeWidth={4}
             />
           }
-          className="mb-3"
+          className="mb-3 h-48" // Increased height
         />
         
         <MetricCard
@@ -86,10 +88,12 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
               data={metrics.jitter.history} 
               color="#F97316" 
               metricType="jitter" 
-              height={80} 
-              showAxis={true} 
+              height={120} 
+              showAxis={true}
+              strokeWidth={4}
             />
           }
+          className="h-48" // Increased height
         />
       </div>
     </div>

@@ -1,116 +1,102 @@
 
 import React, { useState } from "react";
-import { Network, ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { generateRoutes } from "@/utils/mockData";
+import { Network, ChevronRight, RefreshCw, Zap } from "lucide-react";
 
-interface RouteProps {
-  id: string;
-  name: string;
-  latency: number;
-  status: "active" | "recommended" | "available";
-  hops: number;
-}
-
-const RouteOptimizer: React.FC = () => {
-  const [routes, setRoutes] = useState<RouteProps[]>(generateRoutes() as RouteProps[]);
-  const [selectedRoute, setSelectedRoute] = useState<string>(routes.find(r => r.status === "active")?.id || "1");
-
-  const handleSelectRoute = (routeId: string) => {
-    setSelectedRoute(routeId);
-  };
-
-  const handleApplyRoute = () => {
-    toast.success("Route updated successfully", {
-      description: "Your game traffic will now use the selected route"
-    });
+const RouteOptimizer = () => {
+  const [isOptimizing, setIsOptimizing] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [isOptimized, setIsOptimized] = useState(false);
+  
+  const handleOptimize = () => {
+    setIsOptimizing(true);
+    setProgress(0);
+    setIsOptimized(false);
     
-    setRoutes(routes.map(route => ({
-      ...route,
-      status: route.id === selectedRoute ? "active" : 
-              (route.status === "active" ? "available" : route.status)
-    })));
+    const interval = setInterval(() => {
+      setProgress(prevProgress => {
+        if (prevProgress >= 100) {
+          clearInterval(interval);
+          setIsOptimizing(false);
+          setIsOptimized(true);
+          return 100;
+        }
+        return prevProgress + 4;
+      });
+    }, 120);
   };
-
-  const getStatusIcon = (status: string) => {
-    if (status === "active") {
-      return <Check size={16} className="text-green-400" />;
-    } else if (status === "recommended") {
-      return <ArrowRight size={16} className="text-cyber-blue" />;
-    }
-    return null;
+  
+  const handleReset = () => {
+    setIsOptimized(false);
+    setProgress(0);
   };
-
-  const getStatusClass = (status: string) => {
-    switch (status) {
-      case "active": return "border-green-500/30 bg-green-500/10";
-      case "recommended": return "border-cyber-blue/30 bg-cyber-blue/10";
-      default: return "border-gray-600/30";
-    }
-  };
-
+  
   return (
-    <div className="cyber-panel h-full flex flex-col">
+    <div className="bg-cyber-darkblue border border-cyber-blue/30 rounded-lg p-4">
       <div className="flex items-center mb-4">
         <Network className="text-cyber-purple mr-2" size={20} />
-        <h2 className="text-lg font-tech text-white">Route Optimizer</h2>
+        <h2 className="text-lg font-cyber text-white">Route Optimizer</h2>
       </div>
       
-      <div className="space-y-3 flex-1">
-        {routes.map((route) => (
-          <div 
-            key={route.id}
-            className={`p-3 rounded border cursor-pointer transition-all duration-300 ${
-              selectedRoute === route.id 
-                ? "border-cyber-purple bg-cyber-purple/10"
-                : getStatusClass(route.status)
-            }`}
-            onClick={() => handleSelectRoute(route.id)}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <div className={`w-3 h-3 rounded-full ${
-                  selectedRoute === route.id 
-                    ? "bg-cyber-purple" 
-                    : route.status === "active" 
-                      ? "bg-green-400" 
-                      : "bg-gray-500"
-                }`}></div>
-                <span className="font-tech text-sm">{route.name} Route</span>
-                
-                {route.status !== "available" && (
-                  <span className="text-xs px-1.5 py-0.5 rounded-sm font-tech bg-cyber-darkblue/80 border border-cyber-blue/20">
-                    {route.status.toUpperCase()}
-                  </span>
-                )}
-              </div>
-              
-              {getStatusIcon(route.status)}
-            </div>
-            
-            <div className="mt-2 flex justify-between text-xs text-gray-400">
-              <div>Latency: <span className="text-cyber-blue">{route.latency}ms</span></div>
-              <div>Hops: <span className="text-cyber-blue">{route.hops}</span></div>
-            </div>
+      <div className="mb-4 space-y-1">
+        <div className="text-gray-400 text-sm">Optimize network routes to game servers</div>
+        
+        <div className="flex items-center space-x-2 text-sm">
+          <span className="text-gray-400">Current status:</span>
+          {isOptimized ? (
+            <span className="text-cyber-green flex items-center">
+              <Zap size={14} className="mr-1" />
+              Optimized
+            </span>
+          ) : (
+            <span className="text-gray-400">Not optimized</span>
+          )}
+        </div>
+      </div>
+      
+      {isOptimizing && (
+        <div className="mb-4">
+          <div className="flex justify-between text-xs mb-1">
+            <span className="text-gray-400">Finding optimal routes...</span>
+            <span className="text-cyber-purple">{progress}%</span>
           </div>
-        ))}
-      </div>
+          <div className="w-full bg-gray-800 rounded-full h-2.5">
+            <div 
+              className="bg-gradient-to-r from-cyber-blue to-cyber-purple h-2.5 rounded-full transition-all duration-200"
+              style={{ width: `${progress}%` }}
+            ></div>
+          </div>
+        </div>
+      )}
       
-      <div className="mt-4 flex space-x-3">
-        <Button
-          onClick={handleApplyRoute}
-          disabled={selectedRoute === routes.find(r => r.status === "active")?.id}
-          className="flex-1 bg-gradient-to-r from-cyber-purple to-cyber-blue text-white border-0 hover:opacity-90 disabled:opacity-50"
-        >
-          APPLY ROUTE
-        </Button>
-        <Button
-          variant="outline"
-          className="bg-cyber-darkblue text-gray-300 border border-gray-600/50 hover:bg-cyber-darkblue/80"
-          onClick={() => setRoutes(generateRoutes() as RouteProps[])}
-        >
-          SCAN
+      <div className="flex flex-col space-y-2">
+        {!isOptimized ? (
+          <Button 
+            className="bg-cyber-purple hover:bg-cyber-purple/90 text-white"
+            disabled={isOptimizing}
+            onClick={handleOptimize}
+          >
+            {isOptimizing ? (
+              <RefreshCw size={16} className="mr-2 animate-spin" />
+            ) : (
+              <Zap size={16} className="mr-2" />
+            )}
+            {isOptimizing ? "Optimizing..." : "Optimize Routes"}
+          </Button>
+        ) : (
+          <Button 
+            variant="outline"
+            className="border-cyber-purple text-cyber-purple hover:bg-cyber-purple/10"
+            onClick={handleReset}
+          >
+            <RefreshCw size={16} className="mr-2" />
+            Reset Optimization
+          </Button>
+        )}
+        
+        <Button variant="ghost" className="text-gray-400 hover:text-white">
+          Game Servers
+          <ChevronRight size={16} className="ml-2" />
         </Button>
       </div>
     </div>
