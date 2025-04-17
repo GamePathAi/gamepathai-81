@@ -50,7 +50,7 @@ const Sidebar: React.FC = () => {
     <div className="w-64 bg-cyber-black border-r border-cyber-purple/30 flex-shrink-0 h-full overflow-y-auto hidden md:block">
       <div className="p-4">
         {/* Connection Status Panel */}
-        <div className="mb-4 bg-cyber-darkblue/80 rounded-md p-3 border border-cyber-blue/20 backdrop-blur-sm">
+        <div className="mb-3 bg-cyber-darkblue/80 rounded-md p-3 border border-cyber-blue/20 backdrop-blur-sm">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-gray-400 font-tech">CONNECTION STATUS</span>
             <span className="flex items-center text-green-400 font-tech text-xs">
@@ -83,7 +83,7 @@ const Sidebar: React.FC = () => {
         </div>
         
         {/* Combined Navigation with Regular and Premium Items */}
-        <div className="space-y-1 mb-4">
+        <div className="space-y-1 mb-3">
           {/* Regular items */}
           {navItems.filter(item => !item.isPremium).map((item, index) => (
             <SidebarItem 
@@ -96,7 +96,7 @@ const Sidebar: React.FC = () => {
         </div>
         
         {/* Premium Features Section */}
-        <div className="mb-4">
+        <div className="mb-3">
           <div className="text-xs text-gray-400 font-tech mb-2 px-4">PREMIUM FEATURES</div>
           <div className="space-y-1">
             {navItems.filter(item => item.isPremium).map((item, index) => (
@@ -115,9 +115,11 @@ const Sidebar: React.FC = () => {
         <div className="p-4 bg-gradient-to-r from-cyber-purple/20 to-cyber-blue/20 rounded-md border border-cyber-purple/30 relative overflow-hidden upgrade-pro-btn">
           <div className="mb-2 font-tech font-semibold text-cyber-blue">Upgrade to Pro</div>
           <p className="text-xs text-gray-300 mb-3">Get access to premium features and advanced optimizations</p>
-          <button className="cyber-btn text-xs py-1 w-full relative">
-            UPGRADE
-          </button>
+          <Link to="/pricing" className="block">
+            <button className="cyber-btn text-xs py-1 w-full relative">
+              UPGRADE
+            </button>
+          </Link>
           
           <div className="scan-line"></div>
         </div>

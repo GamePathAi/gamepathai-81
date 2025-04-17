@@ -41,7 +41,7 @@ const MetricChart: React.FC<MetricChartProps> = ({
     <ResponsiveContainer width="100%" height={height} className={metricType ? `${metricType}-graph` : ''}>
       <LineChart 
         data={data} 
-        margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
+        margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
         data-metric={metricType}
       >
         {showAxis && <XAxis dataKey="time" hide={!showAxis} stroke="rgba(255,255,255,0.5)" />}

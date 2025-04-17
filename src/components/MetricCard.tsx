@@ -71,7 +71,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
         </div>
       )}
       
-      {chartComponent && <div className="mt-2">{chartComponent}</div>}
+      {chartComponent && <div className="mt-2 h-16">{chartComponent}</div>}
     </div>
   );
 };

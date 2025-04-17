@@ -33,7 +33,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="container mx-auto">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <div>
           <h1 className="text-2xl font-cyber font-bold text-white mb-1">Dashboard</h1>
           <p className="text-gray-400 text-sm">Monitor and optimize your gaming connection</p>
@@ -48,7 +48,7 @@ const Dashboard: React.FC = () => {
         </Button>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-3">
         <MetricCard
           title="CURRENT PING"
           value={metrics.ping.current}
@@ -79,9 +79,9 @@ const Dashboard: React.FC = () => {
         />
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
         <div className="md:col-span-2">
-          <div className="mb-3 flex items-center justify-between">
+          <div className="mb-2 flex items-center justify-between">
             <h2 className="text-lg font-cyber font-semibold text-white flex items-center">
               <Play size={18} className="text-cyber-blue mr-2" />
               Detected Games
@@ -105,12 +105,12 @@ const Dashboard: React.FC = () => {
         </div>
         
         <div>
-          <div className="grid grid-cols-1 gap-3">
-            <div className="mb-3 flex items-center">
-              <BarChart4 size={18} className="text-cyber-purple mr-2" />
-              <h2 className="text-lg font-cyber font-semibold text-white">System Metrics</h2>
-            </div>
-            
+          <div className="mb-2 flex items-center">
+            <BarChart4 size={18} className="text-cyber-purple mr-2" />
+            <h2 className="text-lg font-cyber font-semibold text-white">System Metrics</h2>
+          </div>
+          
+          <div className="space-y-3">
             <MetricCard
               title="CPU USAGE"
               value={metrics.cpu.current}
@@ -151,7 +151,7 @@ const Dashboard: React.FC = () => {
         <RouteOptimizer />
       </div>
       
-      <div className="mt-4 p-4 border border-cyber-orange/30 bg-cyber-orange/10 rounded-md relative overflow-hidden">
+      <div className="mt-3 p-4 border border-cyber-orange/30 bg-cyber-orange/10 rounded-md relative overflow-hidden">
         <div className="flex items-start">
           <div className="mr-4 w-10 h-10 flex items-center justify-center rounded-full bg-cyber-orange/20 border border-cyber-orange/30">
             <Zap className="text-cyber-orange" size={20} />
