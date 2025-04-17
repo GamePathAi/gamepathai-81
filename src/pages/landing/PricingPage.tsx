@@ -182,21 +182,21 @@ const PricingPage: React.FC = () => {
         <meta name="description" content="Choose the right GamePath AI subscription plan to optimize your gaming experience. Compare features and pricing for Player, Co-op, and Alliance plans." />
       </Helmet>
 
-      <section className="py-20 relative overflow-hidden">
+      <section className="py-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-cyber-grid opacity-10 z-0"></div>
         
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-6 relative z-10">
           <div className="text-center max-w-3xl mx-auto">
-            <Badge variant="cyber" className="mb-4">Pricing</Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 font-tech">
+            <Badge variant="cyber" className="mb-6">Pricing</Badge>
+            <h1 className="text-4xl md:text-5xl font-bold mb-8 font-tech">
               Choose Your <span className="bg-gradient-to-r from-cyber-blue via-cyber-purple to-cyber-pink text-transparent bg-clip-text">Optimization Level</span>
             </h1>
-            <p className="text-lg text-gray-300 mb-10">
+            <p className="text-lg text-gray-300 mb-12 leading-relaxed">
               Select the plan that fits your gaming needs. All plans include our core optimization technologies with different levels of features and user counts.
             </p>
 
-            <div className="flex flex-col items-center mb-12">
-              <div className="inline-flex border-cyber-blue/30 bg-cyber-darkblue p-1 rounded-lg">
+            <div className="flex flex-col items-center mb-16">
+              <div className="inline-flex border-cyber-blue/30 bg-cyber-darkblue p-1 rounded-lg shadow-lg">
                 <ToggleGroup 
                   type="single" 
                   value={billingInterval} 
@@ -222,21 +222,21 @@ const PricingPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {plans.map((plan) => (
-              <div key={plan.id} className="flex">
-                <Card className={`flex-1 flex flex-col bg-cyber-darkblue border-cyber-${plan.color === "blue" ? "blue" : plan.color === "purple" ? "purple" : "green"}/30 ${plan.popular ? 'ring-2 ring-cyber-purple' : ''} relative`}>
+              <div key={plan.id} className="flex pricing-card">
+                <Card className={`flex-1 flex flex-col bg-cyber-darkblue border-cyber-${plan.color === "blue" ? "blue" : plan.color === "purple" ? "purple" : "green"}/30 ${plan.popular ? 'ring-2 ring-cyber-purple' : ''} relative shadow-[0_10px_30px_rgba(0,0,0,0.25)] hover:shadow-[0_15px_35px_rgba(51,195,240,0.2)]`}>
                   {plan.popular && (
                     <div className="absolute -top-4 left-0 right-0 flex justify-center">
-                      <span className="bg-gradient-to-r from-cyber-purple to-cyber-pink text-white text-xs font-semibold px-3 py-1 rounded-full">
+                      <span className="bg-gradient-to-r from-cyber-purple to-cyber-pink text-white text-xs font-semibold px-4 py-1 rounded-full shadow-lg">
                         Most Popular
                       </span>
                     </div>
                   )}
                   
-                  <CardContent className="p-6 flex-1">
-                    <div className="flex items-center mb-4">
-                      <div className={`w-10 h-10 rounded-full bg-cyber-${plan.color === "blue" ? "blue" : plan.color === "purple" ? "purple" : "green"}/20 flex items-center justify-center mr-3 text-cyber-${plan.color === "blue" ? "blue" : plan.color === "purple" ? "purple" : "green"}`}>
+                  <CardContent className="p-8 flex-1">
+                    <div className="flex items-center mb-6">
+                      <div className={`w-12 h-12 rounded-full bg-cyber-${plan.color === "blue" ? "blue" : plan.color === "purple" ? "purple" : "green"}/20 flex items-center justify-center mr-4 shadow-inner text-cyber-${plan.color === "blue" ? "blue" : plan.color === "purple" ? "purple" : "green"}`}>
                         {plan.icon}
                       </div>
                       <div>
@@ -245,9 +245,9 @@ const PricingPage: React.FC = () => {
                       </div>
                     </div>
                     
-                    <p className="text-gray-300 text-sm mb-6">{plan.description}</p>
+                    <p className="text-gray-300 text-sm mb-8">{plan.description}</p>
                     
-                    <div className="mb-6">
+                    <div className="mb-8">
                       <div className="text-3xl font-bold text-white flex items-end">
                         {formatPrice(plan.pricing[billingInterval])}
                         <span className="text-gray-400 text-sm font-normal ml-1">
@@ -256,7 +256,7 @@ const PricingPage: React.FC = () => {
                       </div>
                       
                       {billingInterval !== "monthly" && (
-                        <div className="text-sm text-cyber-blue mt-1">
+                        <div className="text-sm text-cyber-blue mt-2">
                           Save {billingInterval === "quarterly" ? plan.savings.quarterly : plan.savings.annual} compared to monthly
                         </div>
                       )}
@@ -264,16 +264,16 @@ const PricingPage: React.FC = () => {
                     
                     <Button 
                       variant={plan.popular ? "cyberAction" : "cyberOutline"}
-                      className="w-full mb-6"
+                      className="w-full mb-8 shadow-lg"
                       onClick={() => handleSelectPlan(plan)}
                     >
                       Get Started
                     </Button>
                     
-                    <div className="space-y-3">
+                    <div className="space-y-5">
                       {plan.features.map((feature, index) => (
-                        <div key={index} className="flex items-center">
-                          <div className={`flex-shrink-0 ${feature.included ? `text-cyber-${plan.color === "blue" ? "blue" : plan.color === "purple" ? "purple" : "green"}` : "text-gray-500"}`}>
+                        <div key={index} className="flex items-start hover:bg-cyber-black/20 p-2 rounded-md transition-colors">
+                          <div className={`flex-shrink-0 mt-0.5 ${feature.included ? `text-cyber-${plan.color === "blue" ? "blue" : plan.color === "purple" ? "purple" : "green"}` : "text-gray-500"}`}>
                             {feature.included ? <Check size={16} /> : <span className="block w-4 h-px bg-gray-500" />}
                           </div>
                           <span className={`ml-3 text-sm ${feature.included ? "text-gray-200" : "text-gray-500"}`}>
@@ -293,27 +293,29 @@ const PricingPage: React.FC = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-cyber-darkblue">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <Badge variant="cyberPurple" className="mb-4">Included With All Plans</Badge>
-            <h2 className="text-3xl font-bold mb-4 font-tech">Premium Features Standard</h2>
-            <p className="text-gray-300 max-w-2xl mx-auto">
+      <section className="py-24 bg-cyber-darkblue">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <Badge variant="cyberPurple" className="mb-6">Included With All Plans</Badge>
+            <h2 className="text-3xl font-bold mb-8 font-tech">Premium Features Standard</h2>
+            <p className="text-gray-300 max-w-2xl mx-auto leading-relaxed">
               Every GamePath AI subscription includes these powerful features at no additional cost.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {addOns.map((addon, index) => (
-              <Card key={index} className="bg-cyber-black border border-cyber-blue/20">
-                <CardContent className="p-6">
-                  <div className="flex items-center mb-4">
-                    {addon.icon}
-                    <h3 className="font-bold text-lg ml-3">{addon.name}</h3>
+              <Card key={index} className="bg-cyber-black border border-cyber-blue/20 shadow-[0_8px_25px_rgba(0,0,0,0.25)] hover:shadow-[0_10px_30px_rgba(51,195,240,0.15)] transition-all duration-300">
+                <CardContent className="p-8">
+                  <div className="flex items-center mb-6">
+                    <div className="w-10 h-10 rounded-full bg-cyber-darkblue/80 flex items-center justify-center mr-3">
+                      {addon.icon}
+                    </div>
+                    <h3 className="font-bold text-lg">{addon.name}</h3>
                   </div>
-                  <p className="text-gray-400 text-sm">{addon.description}</p>
+                  <p className="text-gray-400 text-sm leading-relaxed">{addon.description}</p>
                 </CardContent>
-                <CardFooter className="px-6 py-3 bg-gradient-to-r from-cyber-blue/10 to-transparent border-t border-cyber-blue/20">
+                <CardFooter className="px-8 py-4 bg-gradient-to-r from-cyber-blue/10 to-transparent border-t border-cyber-blue/20">
                   <span className="text-xs font-tech text-cyber-blue">Included with all plans</span>
                 </CardFooter>
               </Card>
@@ -322,20 +324,20 @@ const PricingPage: React.FC = () => {
         </div>
       </section>
 
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <Badge variant="cyber" className="mb-4">Common Questions</Badge>
-            <h2 className="text-3xl font-bold mb-4 font-tech">Pricing FAQ</h2>
-            <p className="text-gray-300 max-w-2xl mx-auto">
+      <section className="py-24">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <Badge variant="cyber" className="mb-6">Common Questions</Badge>
+            <h2 className="text-3xl font-bold mb-8 font-tech">Pricing FAQ</h2>
+            <p className="text-gray-300 max-w-2xl mx-auto leading-relaxed">
               Get answers to common questions about our pricing and subscription plans.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div>
-              <h3 className="text-xl font-bold mb-3 text-cyber-blue font-tech">Can I switch plans later?</h3>
-              <p className="text-gray-300">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-4xl mx-auto">
+            <div className="bg-cyber-darkblue border border-cyber-blue/20 rounded-lg p-8 shadow-lg hover:shadow-[0_5px_20px_rgba(51,195,240,0.1)] transition-all">
+              <h3 className="text-xl font-bold mb-4 text-cyber-blue font-tech">Can I switch plans later?</h3>
+              <p className="text-gray-300 leading-relaxed">
                 Yes! You can upgrade, downgrade, or change your billing cycle at any time. When upgrading, you'll only pay the prorated difference. When downgrading, changes will apply at the end of your current billing cycle.
               </p>
             </div>
@@ -364,19 +366,19 @@ const PricingPage: React.FC = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-cyber-darkblue">
-        <div className="container mx-auto px-4">
-          <div className="bg-gradient-to-r from-cyber-black to-cyber-darkblue border border-cyber-purple/30 rounded-lg p-8 md:p-12">
+      <section className="py-24 bg-cyber-darkblue">
+        <div className="container mx-auto px-6">
+          <div className="bg-gradient-to-r from-cyber-black to-cyber-darkblue border border-cyber-purple/30 rounded-lg p-10 md:p-16 shadow-2xl">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-              <div className="mb-6 md:mb-0 md:mr-8">
+              <div className="mb-8 md:mb-0 md:mr-8">
                 <Badge variant="cyberPurple" className="mb-4">Custom Solutions</Badge>
-                <h2 className="text-2xl md:text-3xl font-bold mb-4 font-tech">Need a tailored solution?</h2>
-                <p className="text-gray-300 max-w-xl">
+                <h2 className="text-2xl md:text-3xl font-bold mb-6 font-tech">Need a tailored solution?</h2>
+                <p className="text-gray-300 max-w-xl leading-relaxed">
                   For esports teams, gaming cafes, or organizations with special requirements, we offer custom enterprise plans with dedicated support and special features.
                 </p>
               </div>
               <div className="flex-shrink-0">
-                <Button variant="cyberAction" size="lg" asChild>
+                <Button variant="cyberAction" size="lg" className="shadow-xl" asChild>
                   <a href="mailto:enterprise@gamepath.ai">Contact Sales</a>
                 </Button>
               </div>
@@ -385,16 +387,16 @@ const PricingPage: React.FC = () => {
         </div>
       </section>
 
-      <section className="py-20">
-        <div className="container mx-auto px-4">
+      <section className="py-24">
+        <div className="container mx-auto px-6">
           <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 font-tech">
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 font-tech">
               Ready To <span className="bg-gradient-to-r from-cyber-blue to-cyber-purple text-transparent bg-clip-text">Transform</span> Your Gaming?
             </h2>
-            <p className="text-gray-300 mb-8">
+            <p className="text-gray-300 mb-10 leading-relaxed">
               Join thousands of gamers who have boosted their gaming performance with GamePath AI. Start your 7-day free trial today, no credit card required.
             </p>
-            <Button variant="cyberAction" size="lg" onClick={() => handleSelectPlan(plans[1])}>
+            <Button variant="cyberAction" size="lg" className="shadow-xl" onClick={() => handleSelectPlan(plans[1])}>
               Start Free Trial
             </Button>
           </div>

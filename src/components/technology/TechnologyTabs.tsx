@@ -9,13 +9,13 @@ const TechnologyTabs = () => {
   const { t } = useTranslation();
   
   return (
-    <section className="py-16 bg-cyber-darkblue/30 px-4">
+    <section className="py-24 bg-cyber-darkblue/30 px-4">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold text-white mb-12 text-center">{t('technology.title')}</h2>
+        <h2 className="text-3xl font-bold text-white mb-16 text-center">{t('technology.title')}</h2>
         
         <Tabs defaultValue="routing" className="w-full">
-          <div className="flex justify-center mb-8">
-            <TabsList className="bg-cyber-darkblue border border-gray-800">
+          <div className="flex justify-center mb-12">
+            <TabsList className="bg-cyber-darkblue border border-gray-800 shadow-lg">
               <TabsTrigger value="routing" className="data-[state=active]:bg-cyber-blue/20 data-[state=active]:text-cyber-blue">
                 <Network className="h-4 w-4 mr-2" />
                 {t('technology.adaptiveRouting.title')}
@@ -35,110 +35,112 @@ const TechnologyTabs = () => {
             </TabsList>
           </div>
           
-          <TabsContent value="routing" className="mt-8">
-            <TechnologyTabContent 
-              title={t('technology.adaptiveRouting.title')}
-              description={t('technology.adaptiveRouting.description')}
-              icon={<Network className="h-24 w-24 text-cyber-blue" />}
-              color="cyber-blue"
-              statTitle={t('technology.adaptiveRouting.averageLatencyReduction.title')}
-              statValue={t('technology.adaptiveRouting.averageLatencyReduction.value')}
-              features={[
-                {
-                  title: t('technology.adaptiveRouting.dynamicPathSelection.title'),
-                  description: t('technology.adaptiveRouting.dynamicPathSelection.description')
-                },
-                {
-                  title: t('technology.adaptiveRouting.serverSpecificOptimization.title'),
-                  description: t('technology.adaptiveRouting.serverSpecificOptimization.description')
-                },
-                {
-                  title: t('technology.adaptiveRouting.multiPointRouting.title'),
-                  description: t('technology.adaptiveRouting.multiPointRouting.description')
-                }
-              ]}
-              visualType="route"
-            />
-          </TabsContent>
-          
-          <TabsContent value="performance" className="mt-8">
-            <TechnologyTabContent 
-              title={t('technology.performanceAI.title')}
-              description={t('technology.performanceAI.description')}
-              icon={<BarChart4 className="h-24 w-24 text-cyber-purple" />}
-              color="cyber-purple"
-              statTitle={t('technology.performanceAI.fpsImprovement.title')}
-              statValue={t('technology.performanceAI.fpsImprovement.value')}
-              features={[
-                {
-                  title: t('technology.performanceAI.adaptiveResourceAllocation.title'),
-                  description: t('technology.performanceAI.adaptiveResourceAllocation.description')
-                },
-                {
-                  title: t('technology.performanceAI.gameSpecificProfiles.title'),
-                  description: t('technology.performanceAI.gameSpecificProfiles.description')
-                },
-                {
-                  title: t('technology.performanceAI.backgroundProcessManagement.title'),
-                  description: t('technology.performanceAI.backgroundProcessManagement.description')
-                }
-              ]}
-              reversed={true}
-              visualType="performance"
-            />
-          </TabsContent>
-          
-          <TabsContent value="security" className="mt-8">
-            <TechnologyTabContent 
-              title={t('technology.security.title')}
-              description={t('technology.security.description')}
-              icon={<Shield className="h-24 w-24 text-cyber-green" />}
-              color="cyber-green"
-              statTitle={t('technology.security.protectionRate.title')}
-              statValue={t('technology.security.protectionRate.value')}
-              features={[
-                {
-                  title: t('technology.security.ddosProtection.title'),
-                  description: t('technology.security.ddosProtection.description')
-                },
-                {
-                  title: t('technology.security.ipMasking.title'),
-                  description: t('technology.security.ipMasking.description')
-                },
-                {
-                  title: t('technology.security.antiCheatCompatibility.title'),
-                  description: t('technology.security.antiCheatCompatibility.description')
-                }
-              ]}
-              visualType="power"
-            />
-          </TabsContent>
-          
-          <TabsContent value="vpn" className="mt-8">
-            <TechnologyTabContent 
-              title={t('technology.vpn.title')}
-              description={t('technology.vpn.description')}
-              icon={<SatelliteDish className="h-24 w-24 text-cyber-orange" />}
-              color="cyber-orange"
-              statTitle={t('technology.vpn.globalServers.title')}
-              statValue={t('technology.vpn.globalServers.value')}
-              features={[
-                {
-                  title: t('technology.vpn.geoRestrictionBypass.title'),
-                  description: t('technology.vpn.geoRestrictionBypass.description')
-                },
-                {
-                  title: t('technology.vpn.splitTunneling.title'),
-                  description: t('technology.vpn.splitTunneling.description')
-                },
-                {
-                  title: t('technology.vpn.ispThrottlingPrevention.title'),
-                  description: t('technology.vpn.ispThrottlingPrevention.description')
-                }
-              ]}
-              reversed={true}
-            />
-          </TabsContent>
+          <div className="bg-cyber-darkblue border border-cyber-blue/20 rounded-lg p-8 shadow-[0_0_30px_rgba(0,0,0,0.3)]">
+            <TabsContent value="routing" className="mt-2">
+              <TechnologyTabContent 
+                title={t('technology.adaptiveRouting.title')}
+                description={t('technology.adaptiveRouting.description')}
+                icon={<Network className="h-24 w-24 text-cyber-blue" />}
+                color="cyber-blue"
+                statTitle={t('technology.adaptiveRouting.averageLatencyReduction.title')}
+                statValue={t('technology.adaptiveRouting.averageLatencyReduction.value')}
+                features={[
+                  {
+                    title: t('technology.adaptiveRouting.dynamicPathSelection.title'),
+                    description: t('technology.adaptiveRouting.dynamicPathSelection.description')
+                  },
+                  {
+                    title: t('technology.adaptiveRouting.serverSpecificOptimization.title'),
+                    description: t('technology.adaptiveRouting.serverSpecificOptimization.description')
+                  },
+                  {
+                    title: t('technology.adaptiveRouting.multiPointRouting.title'),
+                    description: t('technology.adaptiveRouting.multiPointRouting.description')
+                  }
+                ]}
+                visualType="route"
+              />
+            </TabsContent>
+            
+            <TabsContent value="performance" className="mt-2">
+              <TechnologyTabContent 
+                title={t('technology.performanceAI.title')}
+                description={t('technology.performanceAI.description')}
+                icon={<BarChart4 className="h-24 w-24 text-cyber-purple" />}
+                color="cyber-purple"
+                statTitle={t('technology.performanceAI.fpsImprovement.title')}
+                statValue={t('technology.performanceAI.fpsImprovement.value')}
+                features={[
+                  {
+                    title: t('technology.performanceAI.adaptiveResourceAllocation.title'),
+                    description: t('technology.performanceAI.adaptiveResourceAllocation.description')
+                  },
+                  {
+                    title: t('technology.performanceAI.gameSpecificProfiles.title'),
+                    description: t('technology.performanceAI.gameSpecificProfiles.description')
+                  },
+                  {
+                    title: t('technology.performanceAI.backgroundProcessManagement.title'),
+                    description: t('technology.performanceAI.backgroundProcessManagement.description')
+                  }
+                ]}
+                reversed={true}
+                visualType="performance"
+              />
+            </TabsContent>
+            
+            <TabsContent value="security" className="mt-2">
+              <TechnologyTabContent 
+                title={t('technology.security.title')}
+                description={t('technology.security.description')}
+                icon={<Shield className="h-24 w-24 text-cyber-green" />}
+                color="cyber-green"
+                statTitle={t('technology.security.protectionRate.title')}
+                statValue={t('technology.security.protectionRate.value')}
+                features={[
+                  {
+                    title: t('technology.security.ddosProtection.title'),
+                    description: t('technology.security.ddosProtection.description')
+                  },
+                  {
+                    title: t('technology.security.ipMasking.title'),
+                    description: t('technology.security.ipMasking.description')
+                  },
+                  {
+                    title: t('technology.security.antiCheatCompatibility.title'),
+                    description: t('technology.security.antiCheatCompatibility.description')
+                  }
+                ]}
+                visualType="power"
+              />
+            </TabsContent>
+            
+            <TabsContent value="vpn" className="mt-2">
+              <TechnologyTabContent 
+                title={t('technology.vpn.title')}
+                description={t('technology.vpn.description')}
+                icon={<SatelliteDish className="h-24 w-24 text-cyber-orange" />}
+                color="cyber-orange"
+                statTitle={t('technology.vpn.globalServers.title')}
+                statValue={t('technology.vpn.globalServers.value')}
+                features={[
+                  {
+                    title: t('technology.vpn.geoRestrictionBypass.title'),
+                    description: t('technology.vpn.geoRestrictionBypass.description')
+                  },
+                  {
+                    title: t('technology.vpn.splitTunneling.title'),
+                    description: t('technology.vpn.splitTunneling.description')
+                  },
+                  {
+                    title: t('technology.vpn.ispThrottlingPrevention.title'),
+                    description: t('technology.vpn.ispThrottlingPrevention.description')
+                  }
+                ]}
+                reversed={true}
+              />
+            </TabsContent>
+          </div>
         </Tabs>
       </div>
     </section>

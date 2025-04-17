@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
@@ -133,61 +132,70 @@ const FeaturesPage: React.FC = () => {
         <meta name="description" content="Discover the cutting-edge features of GamePath AI that optimize your gaming experience with route optimization, performance enhancement, and power management." />
       </Helmet>
 
-      {/* Hero Section */}
-      <section className="py-20 relative overflow-hidden">
+      {/* Hero Section with improved spacing */}
+      <section className="py-24 relative overflow-hidden">
         {/* Background Effects */}
         <div className="absolute inset-0 bg-cyber-grid opacity-10 z-0"></div>
         
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <Badge variant="cyber" className="mb-4">Features</Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 font-tech">
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="text-center max-w-3xl mx-auto mb-20">
+            <Badge variant="cyber" className="mb-6">Features</Badge>
+            <h1 className="text-4xl md:text-5xl font-bold mb-8 font-tech">
               Cutting-Edge <span className="bg-gradient-to-r from-cyber-blue via-cyber-purple to-cyber-pink text-transparent bg-clip-text">Gaming Technology</span>
             </h1>
-            <p className="text-lg text-gray-300">
+            <p className="text-lg text-gray-300 leading-relaxed">
               GamePath AI combines multiple advanced technologies to deliver a comprehensive gaming enhancement solution that optimizes every aspect of your gaming experience.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="bg-cyber-darkblue border-cyber-blue/30 hover:border-cyber-blue/70 transition-all">
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="w-16 h-16 rounded-full bg-cyber-blue/10 flex items-center justify-center mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="bg-cyber-darkblue border-cyber-blue/30 hover:border-cyber-blue/70 transition-all shadow-[0_0_20px_rgba(0,0,0,0.25)] hover:shadow-[0_0_25px_rgba(51,195,240,0.15)]">
+              <CardContent className="p-8 flex flex-col items-center text-center">
+                <div className="w-16 h-16 rounded-full bg-cyber-blue/10 flex items-center justify-center mb-6">
                   <Clock size={32} className="text-cyber-blue" />
                 </div>
-                <h3 className="text-xl font-bold mb-3 font-tech">Reduced Latency</h3>
-                <p className="text-gray-400">
-                  Cut your ping by up to 60% with our intelligent network routing technology.
+                <h3 className="text-xl font-bold mb-4 font-tech">Reduced Lag</h3>
+                <p className="text-gray-400 mb-6">
+                  AI-powered routing reduces ping by up to 60% by finding the optimal path to game servers.
                 </p>
+                <div className="mt-4 bg-cyber-black/30 p-4 rounded-md w-full shadow-inner">
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-gray-400">Average Ping Reduction</span>
+                    <span className="text-cyber-blue">42ms</span>
+                  </div>
+                  <div className="h-2 w-full bg-cyber-darkblue rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-cyber-blue to-cyber-purple w-[65%]"></div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
             
             <Card className="bg-cyber-darkblue border-cyber-purple/30 hover:border-cyber-purple/70 transition-all">
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="w-16 h-16 rounded-full bg-cyber-purple/10 flex items-center justify-center mb-4">
+              <CardContent className="p-8 flex flex-col items-center text-center">
+                <div className="w-16 h-16 rounded-full bg-cyber-purple/10 flex items-center justify-center mb-6">
                   <Zap size={32} className="text-cyber-purple" />
                 </div>
-                <h3 className="text-xl font-bold mb-3 font-tech">Enhanced FPS</h3>
-                <p className="text-gray-400">
+                <h3 className="text-xl font-bold mb-4 font-tech">Enhanced FPS</h3>
+                <p className="text-gray-400 mb-6">
                   Boost your frame rates with intelligent system resource optimization.
                 </p>
               </CardContent>
             </Card>
             
             <Card className="bg-cyber-darkblue border-cyber-green/30 hover:border-cyber-green/70 transition-all">
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="w-16 h-16 rounded-full bg-cyber-green/10 flex items-center justify-center mb-4">
+              <CardContent className="p-8 flex flex-col items-center text-center">
+                <div className="w-16 h-16 rounded-full bg-cyber-green/10 flex items-center justify-center mb-6">
                   <Shield size={32} className="text-cyber-green" />
                 </div>
-                <h3 className="text-xl font-bold mb-3 font-tech">System Protection</h3>
-                <p className="text-gray-400">
+                <h3 className="text-xl font-bold mb-4 font-tech">System Protection</h3>
+                <p className="text-gray-400 mb-6">
                   Smart thermal management prevents overheating during extended gaming sessions.
                 </p>
               </CardContent>
             </Card>
           </div>
           
-          <div className="text-center mt-8">
+          <div className="text-center mt-12">
             <Button variant="cyberOutline" asChild>
               <a href="#core-technologies">
                 Explore All Features <ArrowDownCircle className="ml-2 h-4 w-4" />
@@ -197,13 +205,13 @@ const FeaturesPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Core Technologies Section */}
-      <section id="core-technologies" className="py-20 bg-cyber-darkblue">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <Badge variant="cyberPurple" className="mb-4">Core Technologies</Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 font-tech">Our Advanced Features</h2>
-            <p className="text-gray-300 max-w-2xl mx-auto">
+      {/* Core Technologies Section with improved spacing */}
+      <section id="core-technologies" className="py-24 bg-cyber-darkblue">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-20">
+            <Badge variant="cyberPurple" className="mb-6">Core Technologies</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 font-tech">Our Advanced Features</h2>
+            <p className="text-gray-300 max-w-2xl mx-auto leading-relaxed">
               Dive deep into the technologies that make GamePath AI the ultimate gaming optimization platform.
             </p>
           </div>
@@ -254,18 +262,18 @@ const FeaturesPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Performance Comparison */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <Badge variant="cyber" className="mb-4">Performance Metrics</Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 font-tech">Measurable Improvements</h2>
-            <p className="text-gray-300 max-w-2xl mx-auto">
+      {/* Performance Comparison with improved spacing */}
+      <section className="py-24">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-20">
+            <Badge variant="cyber" className="mb-6">Performance Metrics</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 font-tech">Measurable Improvements</h2>
+            <p className="text-gray-300 max-w-2xl mx-auto leading-relaxed">
               See the real difference GamePath AI makes with before and after comparisons of key performance metrics.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Ping Improvement */}
             <Card className="bg-cyber-darkblue border-cyber-blue/30">
               <CardContent className="p-6">
@@ -369,18 +377,18 @@ const FeaturesPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Technical Specifications */}
-      <section className="py-20 bg-cyber-darkblue">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <Badge variant="cyberGreen" className="mb-4">Specifications</Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 font-tech">Technical Details</h2>
-            <p className="text-gray-300 max-w-2xl mx-auto">
+      {/* Technical Specifications with improved spacing */}
+      <section className="py-24 bg-cyber-darkblue">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-20">
+            <Badge variant="cyberGreen" className="mb-6">Specifications</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 font-tech">Technical Details</h2>
+            <p className="text-gray-300 max-w-2xl mx-auto leading-relaxed">
               GamePath AI is built with cutting-edge technology designed specifically for gamers who demand the best performance.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             {/* Network Specifications */}
             <Card className="bg-cyber-darkblue border-cyber-blue/30">
               <CardContent className="p-6">
@@ -471,12 +479,12 @@ const FeaturesPage: React.FC = () => {
       </section>
 
       {/* Interactive Demo Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <Badge variant="cyber" className="mb-4">Interactive Demo</Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 font-tech">See It In Action</h2>
-            <p className="text-gray-300 max-w-2xl mx-auto">
+      <section className="py-24">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-12">
+            <Badge variant="cyber" className="mb-6">Interactive Demo</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 font-tech">See It In Action</h2>
+            <p className="text-gray-300 max-w-2xl mx-auto leading-relaxed">
               Explore how GamePath AI works with our interactive demonstration of real-time network optimization.
             </p>
           </div>
@@ -486,7 +494,7 @@ const FeaturesPage: React.FC = () => {
             <div className="aspect-video bg-cyber-black rounded-lg border border-cyber-blue/30 flex items-center justify-center">
               <div className="text-center">
                 <div className="mb-4 text-cyber-blue font-tech">INTERACTIVE DEMO</div>
-                <p className="text-gray-400 mb-6 max-w-md mx-auto">
+                <p className="text-gray-400 mb-6 max-w-md mx-auto leading-relaxed">
                   In the actual implementation, this would be an interactive visualization showing network optimization in real-time.
                 </p>
                 <Button variant="cyberOutline">
@@ -498,18 +506,18 @@ const FeaturesPage: React.FC = () => {
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="py-20 bg-cyber-darkblue">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <Badge variant="cyberPurple" className="mb-4">FAQ</Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 font-tech">Frequently Asked Questions</h2>
-            <p className="text-gray-300 max-w-2xl mx-auto">
+      {/* FAQ Section with improved spacing */}
+      <section className="py-24 bg-cyber-darkblue">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-20">
+            <Badge variant="cyberPurple" className="mb-6">FAQ</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 font-tech">Frequently Asked Questions</h2>
+            <p className="text-gray-300 max-w-2xl mx-auto leading-relaxed">
               Get answers to common questions about GamePath AI and its features.
             </p>
           </div>
 
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-3xl mx-auto bg-cyber-darkblue border border-cyber-blue/20 rounded-lg p-8 shadow-[0_0_25px_rgba(0,0,0,0.3)]">
             <Accordion type="single" collapsible className="w-full">
               {faqs.map((faq, index) => (
                 <AccordionItem key={index} value={`item-${index}`} className="border-cyber-blue/20">
@@ -526,17 +534,17 @@ const FeaturesPage: React.FC = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="bg-gradient-to-r from-cyber-darkblue to-cyber-black border border-cyber-purple/30 rounded-lg p-8 md:p-12 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 font-tech">
+      {/* CTA Section with improved spacing */}
+      <section className="py-24">
+        <div className="container mx-auto px-6">
+          <div className="bg-gradient-to-r from-cyber-darkblue to-cyber-black border border-cyber-purple/30 rounded-lg p-10 md:p-16 text-center shadow-[0_0_35px_rgba(0,0,0,0.4)]">
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 font-tech">
               Ready To <span className="bg-gradient-to-r from-cyber-blue to-cyber-purple text-transparent bg-clip-text">Optimize</span> Your Gaming?
             </h2>
-            <p className="text-gray-300 mb-8 max-w-xl mx-auto">
+            <p className="text-gray-300 mb-10 max-w-xl mx-auto leading-relaxed">
               Get started with GamePath AI today and experience the difference advanced technology can make to your gaming.
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <div className="flex flex-col sm:flex-row justify-center gap-6">
               <Button variant="cyberAction" size="lg" asChild>
                 <Link to="/pricing">See Plans & Pricing</Link>
               </Button>
