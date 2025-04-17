@@ -67,7 +67,7 @@
   /* Enhanced card styles with shadow and glow effects */
   .card, .panel, .metric-card, .game-card, .route-card, .optimization-card, 
   [class*="card"], [class*="panel"], [class*="container"], .settings-section {
-    @apply bg-cyber-darkblue border border-cyber-blue/40 rounded-md shadow-[0_0_20px_rgba(0,0,0,0.25)] hover:shadow-[0_0_25px_rgba(51,195,240,0.15)] transition-all duration-300 my-4 p-6;
+    @apply bg-cyber-darkblue border border-cyber-blue/40 rounded-md shadow-[0_0_20px_rgba(0,0,0,0.25)] hover:shadow-[0_0_25px_rgba(51,195,240,0.15)] transition-all duration-300 my-6 p-8;
   }
   
   /* Game cards */
@@ -92,7 +92,7 @@
   /* Specific sections with increased spacing */
   .dashboard-section, .metrics-container, .games-section, 
   .optimization-section, .route-section, .connection-section {
-    @apply bg-cyber-black py-8 my-8;
+    @apply bg-cyber-black py-12 my-12;
   }
 
   /* Enhanced neon effects */
@@ -106,6 +106,10 @@
 
   .neon-green {
     @apply text-cyber-green drop-shadow-[0_0_8px_rgba(16,185,129,0.8)];
+  }
+
+  .neon-pink {
+    @apply text-cyber-pink drop-shadow-[0_0_8px_rgba(236,72,153,0.8)];
   }
   
   .font-tech {
@@ -144,25 +148,36 @@
 
   /* Feature cards with better spacing and hover effects */
   .feature-card {
-    @apply p-6 rounded-lg bg-cyber-darkblue border border-cyber-blue/30 shadow-lg hover:shadow-[0_0_20px_rgba(51,195,240,0.2)] transition-all duration-300 my-6;
+    @apply p-6 rounded-lg bg-cyber-darkblue border border-cyber-blue/30 shadow-lg hover:shadow-[0_0_20px_rgba(51,195,240,0.2)] transition-all duration-300 my-8;
   }
 
   .feature-icon {
-    @apply w-14 h-14 rounded-full flex items-center justify-center mb-4;
+    @apply w-14 h-14 rounded-full flex items-center justify-center mb-6;
   }
 
   /* Testimonial cards with enhanced visuals */
   .testimonial-card {
-    @apply rounded-lg border border-cyber-blue/30 bg-cyber-darkblue/50 p-6 shadow-lg hover:shadow-[0_0_20px_rgba(51,195,240,0.15)] transition-all duration-300;
+    @apply rounded-lg border border-cyber-blue/30 bg-cyber-darkblue/50 p-6 shadow-lg hover:shadow-[0_0_20px_rgba(51,195,240,0.15)] transition-all duration-300 my-2;
   }
 
   /* Grid and section layouts with better spacing */
   .feature-grid {
-    @apply grid gap-8 md:gap-10 my-12;
+    @apply grid gap-10 md:gap-12 my-16;
   }
 
   /* Call to action sections with better spacing */
   .cta-section {
-    @apply py-16 md:py-24 my-12;
+    @apply py-20 md:py-28 my-16;
+  }
+
+  /* Technology tabs with enhanced visual separation */
+  .tabs-container {
+    @apply bg-cyber-darkblue/80 border border-cyber-blue/30 rounded-lg shadow-[0_0_35px_rgba(0,0,0,0.35)] p-8;
+  }
+  
+  /* Visualization containers with enhanced glow effects */
+  .visualization-container {
+    @apply relative bg-cyber-darkblue/80 border border-cyber-blue/30 rounded-lg overflow-hidden shadow-[0_0_25px_rgba(51,195,240,0.2)];
   }
 }
+

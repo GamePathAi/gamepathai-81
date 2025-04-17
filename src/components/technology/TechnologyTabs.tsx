@@ -2,7 +2,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Network, Shield, BarChart4, SatelliteDish } from "lucide-react";
+import { Network, Shield, BarChart4, SatelliteDish, Cpu } from "lucide-react";
 import TechnologyTabContent from "./TechnologyTabContent";
 
 const TechnologyTabs = () => {
@@ -23,6 +23,10 @@ const TechnologyTabs = () => {
               <TabsTrigger value="performance" className="data-[state=active]:bg-cyber-purple/20 data-[state=active]:text-cyber-purple">
                 <BarChart4 className="h-4 w-4 mr-2" />
                 {t('technology.performanceAI.title')}
+              </TabsTrigger>
+              <TabsTrigger value="advanced" className="data-[state=active]:bg-cyber-pink/20 data-[state=active]:text-cyber-pink">
+                <Cpu className="h-4 w-4 mr-2" />
+                {t('technology.advancedMetrics.title')}
               </TabsTrigger>
               <TabsTrigger value="security" className="data-[state=active]:bg-cyber-green/20 data-[state=active]:text-cyber-green">
                 <Shield className="h-4 w-4 mr-2" />
@@ -86,6 +90,32 @@ const TechnologyTabs = () => {
                 ]}
                 reversed={true}
                 visualType="performance"
+              />
+            </TabsContent>
+            
+            <TabsContent value="advanced" className="mt-2">
+              <TechnologyTabContent 
+                title={t('technology.advancedMetrics.title') || "Advanced Performance Metrics"}
+                description={t('technology.advancedMetrics.description') || "Comprehensive system analysis and visualization of hardware metrics, providing detailed insights into your system's performance."}
+                icon={<Cpu className="h-24 w-24 text-cyber-pink" />}
+                color="cyber-pink"
+                statTitle={t('technology.advancedMetrics.systemOptimization.title') || "System Optimization"}
+                statValue={t('technology.advancedMetrics.systemOptimization.value') || "98%"}
+                features={[
+                  {
+                    title: t('technology.advancedMetrics.realTimeAnalytics.title') || "Real-Time Analytics",
+                    description: t('technology.advancedMetrics.realTimeAnalytics.description') || "Monitor all system metrics in real time with millisecond precision for immediate performance insights."
+                  },
+                  {
+                    title: t('technology.advancedMetrics.detailedHardwareReporting.title') || "Detailed Hardware Reporting",
+                    description: t('technology.advancedMetrics.detailedHardwareReporting.description') || "Comprehensive reporting on CPU, GPU, RAM usage with temperature monitoring and throttling detection."
+                  },
+                  {
+                    title: t('technology.advancedMetrics.AIRecommendations.title') || "AI-Driven Recommendations",
+                    description: t('technology.advancedMetrics.AIRecommendations.description') || "Receive intelligent suggestions for hardware upgrades and optimizations based on your specific usage patterns."
+                  }
+                ]}
+                visualType="advanced"
               />
             </TabsContent>
             

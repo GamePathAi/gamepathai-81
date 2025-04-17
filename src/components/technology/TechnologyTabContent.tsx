@@ -3,6 +3,7 @@ import React from "react";
 import RouteOptimizerVisualization from "./visualizations/RouteOptimizerVisualization";
 import PerformanceEnhancementVisualization from "./visualizations/PerformanceEnhancementVisualization";
 import PowerManagementVisualization from "./visualizations/PowerManagementVisualization";
+import AdvancedPerformanceVisualization from "./visualizations/AdvancedPerformanceVisualization";
 
 interface FeatureItem {
   title: string;
@@ -18,7 +19,7 @@ interface TechnologyTabContentProps {
   statValue: string;
   features: FeatureItem[];
   reversed?: boolean;
-  visualType?: "route" | "performance" | "power";
+  visualType?: "route" | "performance" | "power" | "advanced";
 }
 
 const TechnologyTabContent: React.FC<TechnologyTabContentProps> = ({
@@ -41,6 +42,8 @@ const TechnologyTabContent: React.FC<TechnologyTabContentProps> = ({
         return <PerformanceEnhancementVisualization />;
       case "power":
         return <PowerManagementVisualization />;
+      case "advanced":
+        return <AdvancedPerformanceVisualization />;
       default:
         // Fallback to the original icon-based visualization
         return (
