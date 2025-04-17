@@ -3,6 +3,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const TechnologyCTA = () => {
   const { t } = useTranslation();
@@ -19,16 +20,22 @@ const TechnologyCTA = () => {
             size="lg" 
             variant="cyberAction"
             className="w-full sm:w-auto px-8"
+            asChild
           >
-            {t('technology.cta.startFreeTrial')}
+            <Link to="/pricing">
+              {t('technology.cta.startFreeTrial')}
+            </Link>
           </Button>
           <Button 
             size="lg" 
             variant="cyberOutline" 
             className="w-full sm:w-auto px-8 flex items-center"
+            asChild
           >
-            {t('technology.cta.viewPricing')}
-            <ArrowRight className="ml-2 h-4 w-4" />
+            <Link to="/pricing">
+              {t('technology.cta.viewPricing')}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
           </Button>
         </div>
       </div>
