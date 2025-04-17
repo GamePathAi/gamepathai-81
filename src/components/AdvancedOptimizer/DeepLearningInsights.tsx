@@ -28,7 +28,7 @@ export const DeepLearningInsights: React.FC = () => {
         </p>
 
         <div className="bg-cyber-darkblue border border-cyber-purple/20 rounded-lg p-4 mb-6">
-          <div className="h-48">
+          <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
                 data={learningData}
@@ -47,8 +47,10 @@ export const DeepLearningInsights: React.FC = () => {
                   tickLine={{ stroke: "#374151" }}
                 />
                 <YAxis 
-                  hide={true}
+                  hide={false}
                   domain={[0, 100]}
+                  stroke="#6b7280"
+                  tick={{ fill: "#6b7280", fontSize: 10 }}
                 />
                 <Tooltip 
                   contentStyle={{ 
@@ -100,7 +102,7 @@ export const DeepLearningInsights: React.FC = () => {
         
         <div className="mt-6 space-y-3">
           <Button 
-            className="w-full bg-cyber-purple/20 text-cyber-purple hover:bg-cyber-purple/30 border border-cyber-purple/30 justify-between"
+            className="w-full bg-purple-600 text-white hover:bg-purple-700 border border-purple-500 justify-between"
           >
             <div className="flex items-center">
               <Brain size={16} className="mr-2" />
@@ -110,7 +112,7 @@ export const DeepLearningInsights: React.FC = () => {
           </Button>
           
           <Button 
-            className="w-full bg-cyber-blue/20 text-cyber-blue hover:bg-cyber-blue/30 border border-cyber-blue/30 justify-between"
+            className="w-full bg-blue-600 text-white hover:bg-blue-700 border border-blue-500 justify-between"
           >
             <div className="flex items-center">
               <Activity size={16} className="mr-2" />
@@ -120,7 +122,7 @@ export const DeepLearningInsights: React.FC = () => {
           </Button>
           
           <Button 
-            className="w-full bg-cyber-green/20 text-cyber-green hover:bg-cyber-green/30 border border-cyber-green/30 justify-between"
+            className="w-full bg-green-600 text-white hover:bg-green-700 border border-green-500 justify-between"
           >
             <div className="flex items-center">
               <Cpu size={16} className="mr-2" />
