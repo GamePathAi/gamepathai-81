@@ -7,5 +7,21 @@
     "pricing": "Preise",
     "login": "Anmelden",
     "getStarted": "Loslegen"
+  },
+  "technology": {
+    "title": "GamePath KI Technologie",
+    "subtitle": "Die fortschrittliche Technologie, die Ihre Spieloptimierungserfahrung antreibt",
+    "adaptiveRouting": {
+      "title": "Adaptive Routing",
+      "description": "Unsere proprietären Algorithmen analysieren Netzwerkbedingungen in Echtzeit, um den optimalen Pfad für Ihre Spieldaten zu finden."
+    },
+    "performanceAI": {
+      "title": "Performance KI",
+      "description": "Maschinelle Lernsysteme, die sich an Ihre Hardware-Konfiguration und Nutzungsmuster anpassen, für optimale Leistung."
+    },
+    "globalNetwork": {
+      "title": "Globales Netzwerk",
+      "description": "Zugriff auf optimierte Routen über unsere weltweite Serverinfrastruktur für Spiele mit niedriger Latenz überall."
+    }
   }
 }

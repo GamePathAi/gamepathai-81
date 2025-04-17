@@ -7,5 +7,21 @@
     "pricing": "料金",
     "login": "ログイン",
     "getStarted": "始める"
+  },
+  "technology": {
+    "title": "GamePath AI テクノロジー",
+    "subtitle": "ゲーム最適化体験を支える先進テクノロジー",
+    "adaptiveRouting": {
+      "title": "アダプティブルーティング",
+      "description": "当社独自のアルゴリズムがネットワーク状況をリアルタイムで分析し、ゲームデータの最適な経路を見つけます。"
+    },
+    "performanceAI": {
+      "title": "パフォーマンスAI",
+      "description": "ハードウェア構成と使用パターンに適応し、最適なパフォーマンスを実現する機械学習システム。"
+    },
+    "globalNetwork": {
+      "title": "グローバルネットワーク",
+      "description": "世界中のサーバーインフラを通じて最適化されたルートにアクセスし、どこでも低遅延のゲームを実現します。"
+    }
   }
 }

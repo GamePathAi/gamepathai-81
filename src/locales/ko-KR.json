@@ -7,5 +7,21 @@
     "pricing": "가격",
     "login": "로그인",
     "getStarted": "시작하기"
+  },
+  "technology": {
+    "title": "GamePath AI 기술",
+    "subtitle": "게임 최적화 경험을 지원하는 고급 기술",
+    "adaptiveRouting": {
+      "title": "적응형 라우팅",
+      "description": "독점 알고리즘이 네트워크 상태를 실시간으로 분석하여 게임 데이터의 최적 경로를 찾습니다."
+    },
+    "performanceAI": {
+      "title": "성능 AI",
+      "description": "최적의 성능을 위해 하드웨어 구성 및 사용 패턴에 적응하는 머신 러닝 시스템."
+    },
+    "globalNetwork": {
+      "title": "글로벌 네트워크",
+      "description": "전 세계 서버 인프라를 통한 최적화된 경로로 어디서나 지연 시간이 짧은 게임을 즐길 수 있습니다."
+    }
   }
 }

@@ -7,5 +7,21 @@
     "pricing": "价格",
     "login": "登录",
     "getStarted": "开始使用"
+  },
+  "technology": {
+    "title": "GamePath AI 技术",
+    "subtitle": "为您的游戏优化体验提供支持的先进技术",
+    "adaptiveRouting": {
+      "title": "自适应路由",
+      "description": "我们专有的算法实时分析网络条件，为您的游戏数据找到最佳路径。"
+    },
+    "performanceAI": {
+      "title": "性能 AI",
+      "description": "适应您的硬件配置和使用模式的机器学习系统，以实现最佳性能。"
+    },
+    "globalNetwork": {
+      "title": "全球网络",
+      "description": "通过我们的全球服务器基础设施获得优化路线，在任何地方都能低延迟游戏。"
+    }
   }
 }
