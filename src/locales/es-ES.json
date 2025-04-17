@@ -7,5 +7,75 @@
     "pricing": "Precios",
     "login": "Iniciar Sesión",
     "getStarted": "Comenzar"
+  },
+  "technology": {
+    "title": "Tecnología GamePath IA",
+    "subtitle": "La tecnología avanzada que impulsa tu experiencia de optimización de juegos",
+    "adaptiveRouting": {
+      "title": "Enrutamiento Adaptativo",
+      "description": "Nuestros algoritmos propietarios analizan las condiciones de la red en tiempo real para encontrar la ruta óptima para tus datos de juego."
+    },
+    "performanceAI": {
+      "title": "IA de Rendimiento",
+      "description": "Sistemas de aprendizaje automático que se adaptan a tu configuración de hardware y patrones de uso para un rendimiento óptimo."
+    },
+    "globalNetwork": {
+      "title": "Red Global",
+      "description": "Acceso a rutas optimizadas a través de nuestra infraestructura de servidores mundial para juegos con baja latencia en cualquier lugar."
+    },
+    "cta": {
+      "description": "Experimenta una reducción significativa de la latencia y mejoras de rendimiento con nuestra tecnología de juego adaptativa.",
+      "startFreeTrial": "Comenzar Prueba Gratuita",
+      "viewPricing": "Ver Precios"
+    }
+  },
+  "games": {
+    "meta": {
+      "description": "Optimiza tu experiencia de {game} con GamePath IA. Reduce la latencia, elimina la pérdida de paquetes y aumenta los FPS."
+    },
+    "notFound": {
+      "title": "Juego No Encontrado",
+      "message": "Lo sentimos, no pudimos encontrar información sobre este juego. Por favor, verifica la URL o explora nuestros juegos soportados."
+    },
+    "hero": {
+      "title": "Optimiza Tu Experiencia de {game}",
+      "subtitle": "Reduce el lag, aumenta los FPS y obtén una ventaja competitiva con la optimización específica para juegos de GamePath IA.",
+      "optimizeNow": "Optimizar Ahora",
+      "learnMore": "Saber Más"
+    },
+    "metrics": {
+      "latency": "Mejora de Latencia",
+      "fps": "Mejora de FPS",
+      "packetLoss": "Reducción de Pérdida de Paquetes",
+      "jitter": "Reducción de Fluctuación",
+      "improvement": "Mejora",
+      "reduction": "Reducción"
+    },
+    "performanceMetrics": {
+      "title": "Métricas de Rendimiento de {game}",
+      "subtitle": "Nuestros usuarios ven mejoras significativas en todas las áreas clave de rendimiento al jugar con GamePath IA."
+    },
+    "technicalImprovements": {
+      "title": "Mejoras Técnicas para {game}",
+      "subtitle": "Observa las diferencias tangibles que nuestra tecnología aporta a tu experiencia de juego.",
+      "before": "ANTES",
+      "after": "DESPUÉS"
+    },
+    "testimonials": {
+      "title": "Testimonios de Jugadores de {game}",
+      "subtitle": "Escucha lo que dicen los jugadores sobre su experiencia con GamePath IA."
+    },
+    "cta": {
+      "title": "¿Listo para Dominar en {game}?",
+      "description": "Únete a miles de jugadores de {game} que han mejorado su experiencia de juego con GamePath IA. Logra hasta un {latency}% menos de latencia y un {fps}% más de FPS.",
+      "latencyReduction": "Reducción de Latencia",
+      "fpsImprovement": "Mejora de FPS",
+      "packetLossReduction": "Reducción de Pérdida de Paquetes",
+      "tryForFree": "Pruébalo Gratis",
+      "exploreFeatures": "Explorar Características"
+    },
+    "card": {
+      "viewDetails": "Ver Detalles"
+    }
   }
 }

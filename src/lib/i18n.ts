@@ -36,6 +36,9 @@ i18n
       order: ['localStorage', 'navigator'],
       caches: ['localStorage'],
     },
+    debug: process.env.NODE_ENV === 'development', // Add debug mode in development to help track issues
+    keySeparator: '.',
+    nsSeparator: ':',
   });
 
 export default i18n;
