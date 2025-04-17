@@ -48,9 +48,9 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
               data={metrics.cpu.history} 
               color="#8B5CF6" 
               metricType="cpu" 
-              height={90}
+              height={140}
               showAxis={true}
-              strokeWidth={3}
+              strokeWidth={4}
             />
           }
           className="p-4 mb-0 h-auto min-h-[140px]"
@@ -68,9 +68,9 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
               data={metrics.gpu.history} 
               color="#D946EF" 
               metricType="gpu" 
-              height={90}
+              height={140}
               showAxis={true}
-              strokeWidth={3}
+              strokeWidth={4}
             />
           }
           className="p-4 mb-0 h-auto min-h-[140px]"
@@ -88,9 +88,9 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
               data={metrics.jitter.history} 
               color="#F97316" 
               metricType="jitter" 
-              height={90}
+              height={140}
               showAxis={true}
-              strokeWidth={3}
+              strokeWidth={4}
             />
           }
           className="p-4 mb-0 h-auto min-h-[140px]"

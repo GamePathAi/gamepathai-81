@@ -17,7 +17,7 @@ const MetricChart: React.FC<MetricChartProps> = ({
   data,
   dataKey = "value",
   color,
-  height = 180, // Increased default height by 50%
+  height = 200, // Increased default height
   strokeWidth = 4, // Increased from 3 to 4
   showAxis = true, // Always show axis by default now
   metricType,
@@ -57,8 +57,8 @@ const MetricChart: React.FC<MetricChartProps> = ({
         <svg width="0" height="0" style={{ position: 'absolute' }}>
           <defs>
             <filter id={filterId} x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="6" result="blur" /> {/* Increased glow intensity */}
-              <feFlood floodColor={chartColor} floodOpacity="0.7" result="color" /> {/* Increased opacity */}
+              <feGaussianBlur stdDeviation="8" result="blur" /> {/* Increased glow intensity */}
+              <feFlood floodColor={chartColor} floodOpacity="0.8" result="color" /> {/* Increased opacity */}
               <feComposite in="color" in2="blur" operator="in" result="glow" />
               <feMerge>
                 <feMergeNode in="glow" />
@@ -69,11 +69,12 @@ const MetricChart: React.FC<MetricChartProps> = ({
         </svg>
       )}
 
-      <ResponsiveContainer width="100%" height={height} className={metricType ? `${metricType}-graph` : ''}>
+      <ResponsiveContainer width="95%" height="90%" className={metricType ? `${metricType}-graph` : ''}>
         <LineChart 
           data={enhancedData} 
-          margin={{ top: 10, right: 20, left: 20, bottom: 10 }} // Adjusted margins for better visibility
+          margin={{ top: 5, right: 5, left: 5, bottom: 5 }} // Reduced margins to maximize chart area
           data-metric={metricType}
+          style={{ aspectRatio: 'auto' }} // Ensure responsive behavior
         >
           {showAxis && (
             <CartesianGrid 
@@ -114,12 +115,12 @@ const MetricChart: React.FC<MetricChartProps> = ({
             dataKey={dataKey}
             stroke={chartColor}
             strokeWidth={strokeWidth}
-            dot={showAxis ? { fill: chartColor, r: 3 } : false} // Slightly larger dots
-            activeDot={{ r: 6, fill: chartColor, stroke: '#FFFFFF' }} // Larger active dot
+            dot={showAxis ? { fill: chartColor, r: 4 } : false} // Larger dots
+            activeDot={{ r: 8, fill: chartColor, stroke: '#FFFFFF' }} // Larger active dot
             isAnimationActive={true}
             animationDuration={1500}
             filter={showGlow ? `url(#${filterId})` : undefined}
-            style={{ filter: showGlow ? `drop-shadow(0 0 5px ${chartColor})` : 'none' }} // Enhanced shadow
+            style={{ filter: showGlow ? `drop-shadow(0 0 8px ${chartColor})` : 'none' }} // Enhanced shadow
           />
         </LineChart>
       </ResponsiveContainer>
