@@ -108,6 +108,16 @@ export const AntiDDoSProtection: React.FC<{ isVPNActive: boolean }> = ({ isVPNAc
     }
   };
   
+  const getSeverityBgColor = (severity: string) => {
+    switch (severity) {
+      case "low": return "text-cyber-blue";
+      case "medium": return "text-cyber-orange";
+      case "high": return "text-cyber-red";
+      case "critical": return "text-cyber-pink";
+      default: return "text-gray-400";
+    }
+  };
+  
   const getStatusColor = (status: string) => {
     switch (status) {
       case "blocked": return "text-cyber-green";
@@ -129,7 +139,7 @@ export const AntiDDoSProtection: React.FC<{ isVPNActive: boolean }> = ({ isVPNAc
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div className="lg:col-span-2">
-        <Card className="cyber-card border-cyber-red/30">
+        <Card className="cyber-card border-cyber-red/30 bg-cyber-darkblue/90">
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
             <h3 className="text-lg font-tech flex items-center">
               <Shield className="mr-2 text-cyber-red" size={18} />
@@ -157,61 +167,59 @@ export const AntiDDoSProtection: React.FC<{ isVPNActive: boolean }> = ({ isVPNAc
               Real-time monitoring and mitigation of Distributed Denial of Service attacks targeted at your gaming connection
             </p>
             
-            <div className="space-y-4 mb-6">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className={`p-4 rounded-lg ${isVPNActive ? 'bg-cyber-red/10 border border-cyber-red/30' : 'bg-gray-800/50 border border-gray-700'}`}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <AlertTriangle size={18} className={isVPNActive ? "text-cyber-red" : "text-gray-500"} />
-                    <h4 className="font-tech text-sm">Protection Level</h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="p-4 rounded-lg bg-cyber-darkblue border border-cyber-red/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertTriangle size={18} className="text-cyber-red" />
+                  <h4 className="font-tech text-sm">Protection Level</h4>
+                </div>
+                <Select 
+                  value={protectionLevel} 
+                  onValueChange={setProtectionLevel}
+                  disabled={!isVPNActive || !ddosProtectionEnabled}
+                >
+                  <SelectTrigger className="bg-cyber-darkblue border-cyber-red/20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-cyber-darkblue border-cyber-red/20">
+                    <SelectItem value="minimal">Minimal</SelectItem>
+                    <SelectItem value="balanced">Balanced</SelectItem>
+                    <SelectItem value="aggressive">Aggressive</SelectItem>
+                    <SelectItem value="maximum">Maximum</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="p-4 rounded-lg bg-cyber-darkblue border border-cyber-red/30">
+                <div className="flex justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Eye size={18} className="text-cyber-blue" />
+                    <h4 className="font-tech text-sm">IP Masking</h4>
                   </div>
-                  <Select 
-                    value={protectionLevel} 
-                    onValueChange={setProtectionLevel}
+                  <Switch 
+                    checked={ipMaskingEnabled} 
+                    onCheckedChange={setIpMaskingEnabled}
                     disabled={!isVPNActive || !ddosProtectionEnabled}
-                  >
-                    <SelectTrigger className="bg-cyber-darkblue border-cyber-red/20">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-cyber-darkblue border-cyber-red/20">
-                      <SelectItem value="minimal">Minimal</SelectItem>
-                      <SelectItem value="balanced">Balanced</SelectItem>
-                      <SelectItem value="aggressive">Aggressive</SelectItem>
-                      <SelectItem value="maximum">Maximum</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    className="data-[state=checked]:bg-cyber-blue"
+                  />
                 </div>
-                
-                <div className={`p-4 rounded-lg ${isVPNActive ? 'bg-cyber-red/10 border border-cyber-red/30' : 'bg-gray-800/50 border border-gray-700'}`}>
-                  <div className="flex justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <Eye size={18} className={isVPNActive && ipMaskingEnabled ? "text-cyber-green" : "text-gray-500"} />
-                      <h4 className="font-tech text-sm">IP Masking</h4>
-                    </div>
-                    <Switch 
-                      checked={ipMaskingEnabled} 
-                      onCheckedChange={setIpMaskingEnabled}
-                      disabled={!isVPNActive || !ddosProtectionEnabled}
-                      className="data-[state=checked]:bg-cyber-green"
-                    />
+                <p className="text-xs text-gray-400">Hide real IP address from attackers</p>
+              </div>
+              
+              <div className="p-4 rounded-lg bg-cyber-darkblue border border-cyber-red/30">
+                <div className="flex justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Filter size={18} className="text-cyber-blue" />
+                    <h4 className="font-tech text-sm">Traffic Filtering</h4>
                   </div>
-                  <p className="text-xs text-gray-400">Hide real IP address from attackers</p>
+                  <Switch 
+                    checked={trafficFilteringEnabled} 
+                    onCheckedChange={setTrafficFilteringEnabled}
+                    disabled={!isVPNActive || !ddosProtectionEnabled}
+                    className="data-[state=checked]:bg-cyber-blue"
+                  />
                 </div>
-                
-                <div className={`p-4 rounded-lg ${isVPNActive ? 'bg-cyber-red/10 border border-cyber-red/30' : 'bg-gray-800/50 border border-gray-700'}`}>
-                  <div className="flex justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <Filter size={18} className={isVPNActive && trafficFilteringEnabled ? "text-cyber-green" : "text-gray-500"} />
-                      <h4 className="font-tech text-sm">Traffic Filtering</h4>
-                    </div>
-                    <Switch 
-                      checked={trafficFilteringEnabled} 
-                      onCheckedChange={setTrafficFilteringEnabled}
-                      disabled={!isVPNActive || !ddosProtectionEnabled}
-                      className="data-[state=checked]:bg-cyber-green"
-                    />
-                  </div>
-                  <p className="text-xs text-gray-400">Filter suspicious network traffic</p>
-                </div>
+                <p className="text-xs text-gray-400">Filter suspicious network traffic</p>
               </div>
             </div>
             
@@ -247,15 +255,15 @@ export const AntiDDoSProtection: React.FC<{ isVPNActive: boolean }> = ({ isVPNAc
                         <TableCell className="py-2 text-xs">{event.timestamp}</TableCell>
                         <TableCell className="py-2 text-sm font-tech">{event.type}</TableCell>
                         <TableCell className="py-2">
-                          <span className={`text-xs ${getSeverityColor(event.severity)}`}>
-                            {event.severity.toUpperCase()}
+                          <span className={`text-xs uppercase ${getSeverityColor(event.severity)}`}>
+                            {event.severity}
                           </span>
                         </TableCell>
                         <TableCell className="py-2 text-xs font-mono">{event.source}</TableCell>
                         <TableCell className="py-2">
-                          <span className={`text-xs px-2 py-0.5 rounded border ${getStatusBg(event.status)}`}>
+                          <span className={`text-xs px-2 py-0.5 rounded border uppercase ${getStatusBg(event.status)}`}>
                             <span className={getStatusColor(event.status)}>
-                              {event.status.toUpperCase()}
+                              {event.status}
                             </span>
                           </span>
                         </TableCell>
@@ -270,82 +278,76 @@ export const AntiDDoSProtection: React.FC<{ isVPNActive: boolean }> = ({ isVPNAc
       </div>
       
       <div>
-        <Card className="cyber-card border-cyber-red/30 mb-6">
+        <Card className="cyber-card border-cyber-red/30 bg-cyber-darkblue/90 mb-6">
           <CardHeader className="pb-2">
             <h3 className="text-lg font-tech flex items-center">
               <Shield className="mr-2 text-cyber-red" size={18} />
               Protection Status
             </h3>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className={`p-4 rounded-lg ${isVPNActive ? 'bg-cyber-darkblue/60 border border-cyber-blue/30' : 'bg-gray-800/50 border border-gray-700'}`}>
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-tech text-sm">Current Protection</h4>
-                  <span className={`text-xs px-2 py-0.5 rounded ${
-                    isVPNActive && ddosProtectionEnabled 
-                      ? "bg-cyber-green/20 text-cyber-green" 
-                      : "bg-cyber-red/20 text-cyber-red"
-                  }`}>
-                    {isVPNActive && ddosProtectionEnabled ? "PROTECTED" : "VULNERABLE"}
+          <CardContent className="p-0">
+            <div className="p-4 rounded-lg bg-cyber-darkblue/60 border border-cyber-blue/20 m-4">
+              <h4 className="font-tech text-sm mb-3">Current Protection</h4>
+              <div className={`inline-block px-3 py-1 rounded text-xs font-tech mb-4 ${
+                isVPNActive && ddosProtectionEnabled 
+                  ? "bg-cyber-green/20 text-cyber-green" 
+                  : "bg-cyber-red/20 text-cyber-red"
+              }`}>
+                {isVPNActive && ddosProtectionEnabled ? "PROTECTED" : "VULNERABLE"}
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">DDoS Protection</span>
+                  <span className={`text-sm ${ddosProtectionEnabled && isVPNActive ? "text-cyber-green" : "text-cyber-red"}`}>
+                    {ddosProtectionEnabled && isVPNActive ? "Active" : "Inactive"}
                   </span>
                 </div>
                 
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-400">DDoS Protection</span>
-                    <span className={`text-xs ${ddosProtectionEnabled && isVPNActive ? "text-cyber-green" : "text-cyber-red"}`}>
-                      {ddosProtectionEnabled && isVPNActive ? "Active" : "Inactive"}
-                    </span>
-                  </div>
-                  
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-400">IP Masking</span>
-                    <span className={`text-xs ${ipMaskingEnabled && isVPNActive ? "text-cyber-green" : "text-cyber-red"}`}>
-                      {ipMaskingEnabled && isVPNActive ? "Active" : "Inactive"}
-                    </span>
-                  </div>
-                  
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-400">Traffic Filtering</span>
-                    <span className={`text-xs ${trafficFilteringEnabled && isVPNActive ? "text-cyber-green" : "text-cyber-red"}`}>
-                      {trafficFilteringEnabled && isVPNActive ? "Active" : "Inactive"}
-                    </span>
-                  </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">IP Masking</span>
+                  <span className={`text-sm ${ipMaskingEnabled && isVPNActive ? "text-cyber-green" : "text-cyber-red"}`}>
+                    {ipMaskingEnabled && isVPNActive ? "Active" : "Inactive"}
+                  </span>
                 </div>
-              </div>
-              
-              <div className={`p-4 rounded-lg ${
-                isVPNActive ? 'bg-cyber-darkblue/60 border border-cyber-orange/30' : 'bg-gray-800/50 border border-gray-700'
-              }`}>
-                <h4 className="font-tech text-sm mb-3">Protection Statistics</h4>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="flex flex-col items-center justify-center p-2 bg-cyber-darkblue/80 rounded border border-cyber-darkblue">
-                    <span className="text-xs text-gray-400">Attacks Blocked</span>
-                    <span className="text-xl font-tech text-cyber-green">42</span>
-                    <span className="text-xs text-cyber-green">Last 24h</span>
-                  </div>
-                  
-                  <div className="flex flex-col items-center justify-center p-2 bg-cyber-darkblue/80 rounded border border-cyber-darkblue">
-                    <span className="text-xs text-gray-400">Current Threat</span>
-                    <span className="text-xl font-tech text-cyber-blue">LOW</span>
-                    <span className="text-xs text-cyber-blue">Normal activity</span>
-                  </div>
+                
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Traffic Filtering</span>
+                  <span className={`text-sm ${trafficFilteringEnabled && isVPNActive ? "text-cyber-green" : "text-cyber-red"}`}>
+                    {trafficFilteringEnabled && isVPNActive ? "Active" : "Inactive"}
+                  </span>
                 </div>
               </div>
             </div>
             
-            <Button 
-              className="w-full mt-4 bg-cyber-red/20 text-cyber-red hover:bg-cyber-red/30 border border-cyber-red/30" 
-              disabled={!isVPNActive}
-            >
-              <BarChart3 size={16} className="mr-2" />
-              View Detailed Analysis
-            </Button>
+            <div className="m-4">
+              <h4 className="font-tech text-sm mb-3">Protection Statistics</h4>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col items-center justify-center p-3 bg-cyber-darkblue rounded border border-cyber-darkblue/80">
+                  <span className="text-xs text-gray-400">Attacks Blocked</span>
+                  <span className="text-2xl font-tech text-cyber-green">42</span>
+                  <span className="text-xs text-cyber-green">Last 24h</span>
+                </div>
+                
+                <div className="flex flex-col items-center justify-center p-3 bg-cyber-darkblue rounded border border-cyber-darkblue/80">
+                  <span className="text-xs text-gray-400">Current Threat</span>
+                  <span className="text-2xl font-tech text-cyber-blue">LOW</span>
+                  <span className="text-xs text-cyber-blue">Normal activity</span>
+                </div>
+              </div>
+              
+              <Button 
+                className="w-full mt-4 bg-gradient-to-r from-cyber-purple/80 to-cyber-blue/80 hover:from-cyber-purple hover:to-cyber-blue text-white border-none" 
+                disabled={!isVPNActive}
+              >
+                <BarChart3 size={16} className="mr-2" />
+                View Detailed Analysis
+              </Button>
+            </div>
           </CardContent>
         </Card>
         
-        <Card className="cyber-card border-cyber-orange/30">
+        <Card className="cyber-card border-cyber-orange/30 bg-cyber-darkblue/90">
           <CardHeader className="pb-2">
             <h3 className="text-lg font-tech flex items-center">
               <AlertTriangle className="mr-2 text-cyber-orange" size={18} />
@@ -358,7 +360,7 @@ export const AntiDDoSProtection: React.FC<{ isVPNActive: boolean }> = ({ isVPNAc
             </p>
             
             <div className="space-y-3">
-              <div className="flex gap-3 items-start p-3 bg-cyber-darkblue/60 rounded border border-cyber-darkblue">
+              <div className="flex gap-3 items-start p-3 bg-cyber-darkblue rounded border border-cyber-darkblue/80">
                 <div className="p-1.5 bg-cyber-red/20 rounded">
                   <AlertTriangle size={16} className="text-cyber-red" />
                 </div>
@@ -370,7 +372,7 @@ export const AntiDDoSProtection: React.FC<{ isVPNActive: boolean }> = ({ isVPNAc
                 </div>
               </div>
               
-              <div className="flex gap-3 items-start p-3 bg-cyber-darkblue/60 rounded border border-cyber-darkblue">
+              <div className="flex gap-3 items-start p-3 bg-cyber-darkblue rounded border border-cyber-darkblue/80">
                 <div className="p-1.5 bg-cyber-orange/20 rounded">
                   <Eye size={16} className="text-cyber-orange" />
                 </div>
@@ -382,7 +384,7 @@ export const AntiDDoSProtection: React.FC<{ isVPNActive: boolean }> = ({ isVPNAc
                 </div>
               </div>
               
-              <div className="flex gap-3 items-start p-3 bg-cyber-darkblue/60 rounded border border-cyber-darkblue">
+              <div className="flex gap-3 items-start p-3 bg-cyber-darkblue rounded border border-cyber-darkblue/80">
                 <div className="p-1.5 bg-cyber-blue/20 rounded">
                   <Globe size={16} className="text-cyber-blue" />
                 </div>
