@@ -25,6 +25,11 @@ import BillingHistory from "./pages/BillingHistory";
 import ChangePlan from "./pages/ChangePlan";
 import CancelSubscription from "./pages/CancelSubscription";
 
+// Auth Pages
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
+
 // Landing Pages
 import HomePage from "./pages/landing/HomePage";
 import FeaturesPage from "./pages/landing/FeaturesPage";
@@ -50,6 +55,11 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <Routes>
+                {/* Auth Routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                
                 {/* Dashboard Routes */}
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
                 <Route path="/dashboard" element={<Index />} />
