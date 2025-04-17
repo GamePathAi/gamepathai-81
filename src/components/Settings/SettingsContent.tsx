@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Cog, Save, RotateCcw, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -85,8 +86,8 @@ const SettingsContent: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-4">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-3 gap-2">
+    <div className="w-full max-w-7xl mx-auto px-4 py-3">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-2 gap-2">
         <div className="flex items-center">
           <Cog size={28} className="text-cyber-blue mr-2" />
           <div>

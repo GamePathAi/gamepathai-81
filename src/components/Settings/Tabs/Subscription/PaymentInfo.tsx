@@ -10,12 +10,12 @@ interface PaymentInfoProps {
 const PaymentInfo: React.FC<PaymentInfoProps> = ({ onManageSubscription }) => {
   return (
     <div>
-      <h4 className="text-lg mb-4">Payment Information</h4>
+      <h4 className="text-lg mb-3">Payment Information</h4>
       
-      <div className="space-y-4">
-        <div className="bg-cyber-darkblue/50 border border-cyber-blue/20 rounded-lg p-4">
+      <div className="space-y-3">
+        <div className="bg-cyber-darkblue/50 border border-cyber-blue/20 rounded-lg p-3">
           <div className="flex items-start">
-            <div className="bg-cyber-blue/20 p-2 rounded-full mr-4">
+            <div className="bg-cyber-blue/20 p-2 rounded-full mr-3">
               <Globe className="h-5 w-5 text-cyber-blue" />
             </div>
             <div>
@@ -27,9 +27,9 @@ const PaymentInfo: React.FC<PaymentInfoProps> = ({ onManageSubscription }) => {
           </div>
         </div>
         
-        <div className="bg-cyber-darkblue/50 border border-cyber-blue/20 rounded-lg p-4">
+        <div className="bg-cyber-darkblue/50 border border-cyber-blue/20 rounded-lg p-3">
           <div className="flex items-start">
-            <div className="bg-cyber-blue/20 p-2 rounded-full mr-4">
+            <div className="bg-cyber-blue/20 p-2 rounded-full mr-3">
               <CreditCard className="h-5 w-5 text-cyber-blue" />
             </div>
             <div>
@@ -48,9 +48,9 @@ const PaymentInfo: React.FC<PaymentInfoProps> = ({ onManageSubscription }) => {
           </div>
         </div>
         
-        <div className="bg-cyber-red/10 border border-cyber-red/30 rounded-lg p-4">
+        <div className="bg-cyber-red/10 border border-cyber-red/30 rounded-lg p-3">
           <div className="flex items-start">
-            <div className="text-cyber-red mr-4">
+            <div className="text-cyber-red p-2 rounded-full mr-3">
               <AlertTriangle className="h-5 w-5" />
             </div>
             <div>

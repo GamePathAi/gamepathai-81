@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -41,8 +40,8 @@ const PerformanceSettings: React.FC<PerformanceSettingsProps> = ({ onChange }) =
   };
 
   return (
-    <div className="space-y-4">
-      <section className="space-y-3">
+    <div className="space-y-3">
+      <section className="space-y-2">
         <h2 className="text-lg font-bold text-cyber-blue">Resource Usage</h2>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -59,7 +58,7 @@ const PerformanceSettings: React.FC<PerformanceSettingsProps> = ({ onChange }) =
         </div>
       </section>
 
-      <section className="space-y-3">
+      <section className="space-y-2">
         <div className="flex justify-between items-center">
           <h2 className="text-lg font-bold text-cyber-blue">Monitoring Intensity</h2>
           <Badge variant="outline" className="bg-cyber-blue/10 text-cyber-blue border-cyber-blue/30">
@@ -67,7 +66,7 @@ const PerformanceSettings: React.FC<PerformanceSettingsProps> = ({ onChange }) =
           </Badge>
         </div>
         <p className="text-sm text-gray-400 mb-1">Controls how frequently data is collected</p>
-        <div className="py-2">
+        <div className="py-1">
           <Slider
             value={[settings.monitoringIntensity]}
             onValueChange={handleSliderChange}
@@ -90,7 +89,7 @@ const PerformanceSettings: React.FC<PerformanceSettingsProps> = ({ onChange }) =
         </div>
       </section>
 
-      <section className="space-y-3">
+      <section className="space-y-2">
         <h2 className="text-lg font-bold text-cyber-blue">Hardware Monitoring</h2>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -98,18 +97,12 @@ const PerformanceSettings: React.FC<PerformanceSettingsProps> = ({ onChange }) =
               <Label htmlFor="monitor-cpu">CPU temperature</Label>
               <p className="text-sm text-gray-400 mb-0">Monitor processor temperature</p>
             </div>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Switch
-                  id="monitor-cpu"
-                  checked={settings.monitorCPU}
-                  onCheckedChange={(value) => handleSwitchChange("monitorCPU", value)}
-                />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Monitor your CPU temperature in real-time</p>
-              </TooltipContent>
-            </Tooltip>
+            <Switch
+              id="monitor-cpu"
+              checked={settings.monitorCPU}
+              onCheckedChange={(value) => handleSwitchChange("monitorCPU", value)}
+              className="data-[state=checked]:bg-cyber-blue"
+            />
           </div>
 
           <div className="flex items-center justify-between">
@@ -150,7 +143,7 @@ const PerformanceSettings: React.FC<PerformanceSettingsProps> = ({ onChange }) =
         </div>
       </section>
 
-      <section className="space-y-3">
+      <section className="space-y-2">
         <h2 className="text-lg font-bold text-cyber-blue">Analytics</h2>
         <div className="space-y-2">
           <div className="flex items-center justify-between">

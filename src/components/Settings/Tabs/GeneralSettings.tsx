@@ -44,27 +44,21 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ onChange }) => {
   };
 
   return (
-    <div className="space-y-8">
-      <section className="space-y-4">
+    <div className="space-y-6">
+      <section className="space-y-3">
         <h2 className="text-lg font-bold text-cyber-blue">Application Behavior</h2>
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="launch-startup">Launch on startup</Label>
               <p className="text-sm text-gray-400">Start GamePath AI when your system boots</p>
             </div>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Switch
-                  id="launch-startup"
-                  checked={settings.launchOnStartup}
-                  onCheckedChange={(value) => handleSwitchChange("launchOnStartup", value)}
-                />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Automatically starts GamePath AI when your computer boots up</p>
-              </TooltipContent>
-            </Tooltip>
+            <Switch
+              id="launch-startup"
+              checked={settings.launchOnStartup}
+              onCheckedChange={(value) => handleSwitchChange("launchOnStartup", value)}
+              className="data-[state=checked]:bg-cyber-blue"
+            />
           </div>
 
           <div className="flex items-center justify-between">
@@ -105,7 +99,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ onChange }) => {
         </div>
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-3">
         <h2 className="text-lg font-bold text-cyber-blue">Language</h2>
         <div className="max-w-xs">
           <Select
@@ -126,7 +120,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ onChange }) => {
         </div>
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-3">
         <h2 className="text-lg font-bold text-cyber-blue">Notifications</h2>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -210,9 +204,9 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ onChange }) => {
         </div>
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-3">
         <h2 className="text-lg font-bold text-cyber-blue">Update Settings</h2>
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="check-updates">Check for updates automatically</Label>
