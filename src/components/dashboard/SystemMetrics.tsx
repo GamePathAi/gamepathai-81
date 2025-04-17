@@ -53,7 +53,7 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
               strokeWidth={2}
             />
           }
-          className="p-4 h-[200px]" // Increased height to 200px
+          className="p-4 h-[200px]"
         />
         
         <MetricCard
@@ -73,7 +73,7 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
               strokeWidth={2}
             />
           }
-          className="p-4 h-[200px]" // Increased height to 200px
+          className="p-4 h-[200px]"
         />
         
         <MetricCard
@@ -93,7 +93,7 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
               strokeWidth={2}
             />
           }
-          className="p-4 h-[200px]" // Increased height to 200px
+          className="p-4 h-[200px]"
         />
       </div>
     </div>

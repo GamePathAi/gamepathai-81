@@ -36,7 +36,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
         unit="ms"
         trend={metrics.ping.trend}
         trendValue={metrics.ping.trendValue}
-        icon={<Activity size={24} />}
+        icon={<Activity size={24} className="text-cyber-blue" />}
         chartComponent={
           <MetricChart 
             data={metrics.ping.history} 
@@ -44,10 +44,10 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
             metricType="ping" 
             height={180} 
             showAxis={true} 
-            strokeWidth={4}
+            strokeWidth={3}
           />
         }
-        className="h-80 flex flex-col metric-box" // Added metric-box class
+        className="h-[200px] flex flex-col"
       />
       
       <MetricCard
@@ -56,7 +56,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
         unit="%"
         trend={metrics.packetLoss.trend}
         trendValue={metrics.packetLoss.trendValue}
-        icon={<Signal size={24} />}
+        icon={<Signal size={24} className="text-red-400" />}
         chartComponent={
           <MetricChart 
             data={metrics.packetLoss.history} 
@@ -64,10 +64,10 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
             metricType="packet-loss" 
             height={180} 
             showAxis={true}
-            strokeWidth={4}
+            strokeWidth={3}
           />
         }
-        className="h-80 flex flex-col metric-box" // Added metric-box class
+        className="h-[200px] flex flex-col"
       />
       
       <MetricCard
@@ -75,7 +75,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
         value={metrics.fps.current}
         trend={metrics.fps.trend}
         trendValue={metrics.fps.trendValue}
-        icon={<Gauge size={24} />}
+        icon={<Gauge size={24} className="text-green-400" />}
         chartComponent={
           <MetricChart 
             data={metrics.fps.history} 
@@ -83,10 +83,10 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
             metricType="fps" 
             height={180} 
             showAxis={true}
-            strokeWidth={4}
+            strokeWidth={3}
           />
         }
-        className="h-80 flex flex-col metric-box" // Added metric-box class
+        className="h-[200px] flex flex-col"
       />
     </div>
   );

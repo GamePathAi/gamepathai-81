@@ -41,7 +41,6 @@ export const GamePerformanceOverview: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Game Detection Card */}
         <Card className="cyber-panel col-span-1">
           <CardContent className="p-4">
             <div className="flex items-start justify-between">
@@ -60,7 +59,6 @@ export const GamePerformanceOverview: React.FC = () => {
           </CardContent>
         </Card>
         
-        {/* Performance Score Card */}
         <Card className="cyber-panel col-span-1">
           <CardContent className="p-4">
             <h3 className="text-sm font-tech text-gray-400 mb-1">PERFORMANCE SCORE</h3>
@@ -84,7 +82,6 @@ export const GamePerformanceOverview: React.FC = () => {
           </CardContent>
         </Card>
         
-        {/* Hardware Stats */}
         <Card className="cyber-panel col-span-1">
           <CardContent className="p-4">
             <h3 className="text-sm font-tech text-gray-400 mb-3">HARDWARE UTILIZATION</h3>
@@ -117,7 +114,6 @@ export const GamePerformanceOverview: React.FC = () => {
         </Card>
       </div>
       
-      {/* Real-time Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <MetricCard
           title="CURRENT FPS"
@@ -125,7 +121,16 @@ export const GamePerformanceOverview: React.FC = () => {
           unit="fps"
           trend="up"
           trendValue="+14 from avg"
-          chartComponent={<MetricChart data={fpsData} height={60} metricType="fps" />}
+          chartComponent={
+            <MetricChart 
+              data={fpsData} 
+              height={60} 
+              metricType="fps" 
+              color="#10B981"
+              strokeWidth={2}
+            />
+          }
+          className="h-[200px]"
         />
         
         <MetricCard
@@ -134,7 +139,16 @@ export const GamePerformanceOverview: React.FC = () => {
           unit="ms"
           trend="down"
           trendValue="-1.3ms"
-          chartComponent={<MetricChart data={frametimeData} height={60} metricType="jitter" />}
+          chartComponent={
+            <MetricChart 
+              data={frametimeData} 
+              height={60} 
+              metricType="jitter" 
+              color="#F97316"
+              strokeWidth={2}
+            />
+          }
+          className="h-[200px]"
         />
         
         <MetricCard
@@ -143,6 +157,16 @@ export const GamePerformanceOverview: React.FC = () => {
           unit="ms"
           trend="stable"
           trendValue="stable"
+          chartComponent={
+            <MetricChart 
+              data={[]} 
+              height={60} 
+              metricType="ping" 
+              color="#33C3F0"
+              strokeWidth={2}
+            />
+          }
+          className="h-[200px]"
         />
         
         <MetricCard
@@ -151,10 +175,19 @@ export const GamePerformanceOverview: React.FC = () => {
           unit="fps"
           trend="down"
           trendValue="-6% from avg"
+          chartComponent={
+            <MetricChart 
+              data={[]} 
+              height={60} 
+              metricType="fps" 
+              color="#10B981"
+              strokeWidth={2}
+            />
+          }
+          className="h-[200px]"
         />
       </div>
       
-      {/* Game Issues */}
       <Card className="cyber-panel">
         <CardContent className="p-4">
           <h3 className="text-sm font-tech text-gray-400 mb-3 flex items-center">
@@ -186,7 +219,6 @@ export const GamePerformanceOverview: React.FC = () => {
         </CardContent>
       </Card>
       
-      {/* Recommendations */}
       <Card className="cyber-panel">
         <CardContent className="p-4">
           <h3 className="text-sm font-tech text-gray-400 mb-3 flex items-center">

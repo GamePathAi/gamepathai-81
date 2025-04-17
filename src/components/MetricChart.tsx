@@ -1,3 +1,4 @@
+
 import React from "react";
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
@@ -39,20 +40,20 @@ const MetricChart: React.FC<MetricChartProps> = ({
   
   const chartColor = getColor();
 
-  const filterId = `glow-${metricType || 'default'}`;
+  const filterId = `glow-${metricType || 'default'}-${Math.random().toString(36).substring(2, 9)}`;
 
   const enhancedData = data?.length >= 2 ? data : generatePlaceholderData(metricType);
   
   const metricLabel = getMetricLabel(metricType);
 
   return (
-    <div className="w-full h-full relative flex-grow">
+    <div className="w-full h-full relative flex-grow chart-container">
       {showGlow && (
         <svg width="0" height="0" style={{ position: 'absolute' }}>
           <defs>
             <filter id={filterId} x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="8" result="blur" />
-              <feFlood floodColor={chartColor} floodOpacity="0.8" result="color" />
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feFlood floodColor={chartColor} floodOpacity="0.5" result="color" />
               <feComposite in="color" in2="blur" operator="in" result="glow" />
               <feMerge>
                 <feMergeNode in="glow" />
@@ -66,7 +67,7 @@ const MetricChart: React.FC<MetricChartProps> = ({
       <ResponsiveContainer width="100%" height="100%">
         <LineChart 
           data={enhancedData} 
-          margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
+          margin={{ top: 5, right: 10, left: showAxis ? 10 : 0, bottom: 5 }}
           data-metric={metricType}
         >
           {showAxis && (
@@ -111,7 +112,7 @@ const MetricChart: React.FC<MetricChartProps> = ({
             dataKey={dataKey}
             stroke={chartColor}
             strokeWidth={strokeWidth}
-            dot={{ fill: chartColor, r: 3 }}
+            dot={{ fill: chartColor, r: 2 }}
             activeDot={{ r: 5, fill: chartColor, stroke: '#FFFFFF' }}
             isAnimationActive={true}
             animationDuration={1500}
@@ -122,13 +123,15 @@ const MetricChart: React.FC<MetricChartProps> = ({
         </LineChart>
       </ResponsiveContainer>
 
-      <div 
-        className="absolute top-0 left-0 w-full h-full opacity-30 animate-pulse-slow pointer-events-none" 
-        style={{
-          background: `radial-gradient(circle, ${chartColor}30 0%, transparent 70%)`,
-          mixBlendMode: 'screen'
-        }}
-      />
+      {showGlow && (
+        <div 
+          className="absolute top-0 left-0 w-full h-full opacity-30 animate-pulse-slow pointer-events-none" 
+          style={{
+            background: `radial-gradient(circle, ${chartColor}30 0%, transparent 70%)`,
+            mixBlendMode: 'screen'
+          }}
+        />
+      )}
     </div>
   );
 };
