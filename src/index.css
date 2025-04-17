@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -270,6 +269,92 @@
   /* Make sure the SVG width is correct for aspect ratio */
   .recharts-wrapper, 
   .recharts-surface {
+    width: 100% !important;
+  }
+
+  /* Target all chart containers in the system metrics section */
+  [class*="system-metrics"] [class*="chart"],
+  [class*="system-metrics"] [class*="graph"],
+  [class*="system-metrics"] [class*="container"],
+  div[class*="metric"] > div,
+  div[class*="metric"] > div > div {
+    height: 160px !important;
+    min-height: 160px !important;
+    max-height: none !important;
+    width: 100% !important;
+    position: relative !important;
+    margin: 8px 0 !important;
+    padding: 5px !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  /* Target the SVG or Canvas elements directly */
+  [class*="system-metrics"] svg,
+  [class*="system-metrics"] canvas,
+  div[class*="metric"] svg,
+  div[class*="metric"] canvas {
+    height: 160px !important;
+    width: 100% !important;
+    display: block !important;
+    aspect-ratio: auto 16/9 !important;
+    transform: none !important;
+    position: static !important;
+  }
+
+  /* Fix the parent containers of the charts */
+  [class*="system-metrics"] > div,
+  div[class*="metric-box"],
+  div[class*="metric"] {
+    height: auto !important;
+    min-height: 220px !important;
+    padding: 12px !important;
+    margin-bottom: 15px !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* Ensure chart lines and points are visible */
+  [class*="system-metrics"] path,
+  [class*="system-metrics"] circle,
+  div[class*="metric"] path,
+  div[class*="metric"] circle {
+    opacity: 1 !important;
+    visibility: visible !important;
+    stroke-width: 2px !important;
+  }
+
+  /* Fix chart labels */
+  [class*="system-metrics"] text,
+  [class*="system-metrics"] .tick,
+  div[class*="metric"] text,
+  div[class*="metric"] .tick {
+    font-size: 10px !important;
+    fill: rgba(255, 255, 255, 0.8) !important;
+    visibility: visible !important;
+  }
+
+  /* Fix spacing for the header area of metric boxes */
+  [class*="system-metrics"] [class*="header"],
+  div[class*="metric"] [class*="header"] {
+    margin-bottom: 10px !important;
+    height: auto !important;
+  }
+
+  /* Ensure grid lines are visible but subtle */
+  [class*="system-metrics"] [class*="grid"] line,
+  div[class*="metric"] [class*="grid"] line {
+    stroke: rgba(255, 255, 255, 0.1) !important;
+    stroke-width: 1px !important;
+  }
+
+  /* Fix for potential transform issues */
+  [class*="system-metrics"] [class*="plot-area"],
+  [class*="system-metrics"] [class*="chart-area"],
+  div[class*="metric"] [class*="plot-area"],
+  div[class*="metric"] [class*="chart-area"] {
+    transform: none !important;
+    height: 160px !important;
     width: 100% !important;
   }
 }
