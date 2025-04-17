@@ -1,39 +1,13 @@
-
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { GamePathLogo } from "@/components/GamePathLogo";
 import {
   NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
+  NavigationMenuItem,
 } from "@/components/ui/navigation-menu";
-import { LayoutDashboard, Menu, X } from "lucide-react";
-
-// Feature menu items
-const features = [
-  {
-    title: "Route Optimizer",
-    description: "Reduce lag with intelligent network routing.",
-    href: "/features#route-optimizer",
-    icon: "🛰️",
-  },
-  {
-    title: "Performance Enhancement",
-    description: "Boost FPS and reduce stutter in your games.",
-    href: "/features#performance-enhancement",
-    icon: "⚡",
-  },
-  {
-    title: "Power Management",
-    description: "Optimize power usage and prevent thermal throttling.",
-    href: "/features#power-management",
-    icon: "🔋",
-  },
-];
+import { LayoutDashboard, Zap, ArrowUp } from "lucide-react";
 
 const LandingHeader: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -44,16 +18,8 @@ const LandingHeader: React.FC = () => {
     return location.pathname === path;
   };
 
-  const handleUpgrade = () => {
-    navigate("/subscription");
-  };
-
-  const handleTryFree = () => {
-    navigate("/signup");
-  };
-
-  const handleDashboard = () => {
-    navigate("/dashboard");
+  const handleNavigation = (path: string) => {
+    navigate(path);
   };
 
   return (
@@ -68,47 +34,49 @@ const LandingHeader: React.FC = () => {
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-1">
+        <div className="hidden md:flex items-center space-x-4">
           <NavigationMenu>
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <Link 
-                  to="/features" 
-                  className={`group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-cyber-blue/10 hover:text-white ${isActive('/features') ? 'bg-cyber-blue/10 text-white' : 'text-white/90'}`}
-                >
-                  Features
-                </Link>
-              </NavigationMenuItem>
-              
-              <NavigationMenuItem>
-                <Link 
-                  to="/pricing" 
-                  className={`group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-cyber-darkblue/50 hover:text-white ${isActive('/pricing') ? 'bg-cyber-blue/10 text-white' : 'text-white/90'}`}
-                >
-                  Pricing
-                </Link>
-              </NavigationMenuItem>
-              
-              <NavigationMenuItem>
-                <Link 
-                  to="/technology" 
-                  className={`group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-cyber-darkblue/50 hover:text-white ${isActive('/technology') ? 'bg-cyber-blue/10 text-white' : 'text-white/90'}`}
-                >
-                  Technology
-                </Link>
-              </NavigationMenuItem>
+            <NavigationMenuList className="flex items-center space-x-2">
+              {['Features', 'Pricing', 'Technology'].map((item) => (
+                <NavigationMenuItem key={item}>
+                  <Link 
+                    to={`/${item.toLowerCase()}`}
+                    className={`group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-cyber-blue/10 hover:text-white ${isActive(`/${item.toLowerCase()}`) ? 'bg-cyber-blue/10 text-white' : 'text-white/90'}`}
+                  >
+                    {item}
+                  </Link>
+                </NavigationMenuItem>
+              ))}
             </NavigationMenuList>
           </NavigationMenu>
           
-          <div className="flex items-center space-x-2 ml-2">
-            <Button variant="cyberOutline" size="sm" onClick={handleDashboard} className="ml-2">
+          {/* Action Buttons with consistent spacing and styling */}
+          <div className="flex items-center space-x-2">
+            <Button 
+              variant="cyberOutline" 
+              size="sm" 
+              onClick={() => handleNavigation('/dashboard')} 
+              className="flex items-center"
+            >
               <LayoutDashboard size={16} className="mr-1" />
               Dashboard
             </Button>
-            <Button variant="cyber" size="sm" onClick={handleTryFree}>
+            <Button 
+              variant="cyber" 
+              size="sm" 
+              onClick={() => handleNavigation('/signup')} 
+              className="flex items-center"
+            >
+              <Zap size={16} className="mr-1" />
               Try Free
             </Button>
-            <Button variant="cyberAction" size="sm" onClick={handleUpgrade}>
+            <Button 
+              variant="cyberAction" 
+              size="sm" 
+              onClick={() => handleNavigation('/subscription')} 
+              className="flex items-center"
+            >
+              <ArrowUp size={16} className="mr-1" />
               Upgrade to Pro
             </Button>
           </div>
@@ -163,7 +131,7 @@ const LandingHeader: React.FC = () => {
                       className="w-full justify-center"
                       onClick={() => {
                         setMobileMenuOpen(false);
-                        handleTryFree();
+                        handleNavigation('/signup');
                       }}
                     >
                       Try Free
@@ -173,7 +141,7 @@ const LandingHeader: React.FC = () => {
                       className="w-full justify-center"
                       onClick={() => {
                         setMobileMenuOpen(false);
-                        handleUpgrade();
+                        handleNavigation('/subscription');
                       }}
                     >
                       Upgrade to Pro
@@ -183,7 +151,7 @@ const LandingHeader: React.FC = () => {
                       className="w-full justify-center bg-cyber-darkblue text-gray-300 border-gray-700"
                       onClick={() => {
                         setMobileMenuOpen(false);
-                        handleDashboard();
+                        handleNavigation('/dashboard');
                       }}
                     >
                       <LayoutDashboard size={16} className="mr-1" />
