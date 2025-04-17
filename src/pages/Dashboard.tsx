@@ -13,6 +13,9 @@ import GamesList from "@/components/dashboard/GamesList";
 import SystemMetrics from "@/components/dashboard/SystemMetrics";
 import PremiumFeatures from "@/components/dashboard/PremiumFeatures";
 
+// Define valid trend types to match component requirements
+type TrendType = "up" | "down" | "stable";
+
 const Dashboard: React.FC = () => {
   const [metrics, setMetrics] = useState(generateMetrics());
   const [games] = useState(generateGames());
@@ -33,27 +36,38 @@ const Dashboard: React.FC = () => {
   };
 
   // Convert number metrics to string for components that expect strings
+  // Also ensure that trend values are of the proper type
   const formattedMetrics = {
     ...metrics,
     ping: {
       ...metrics.ping,
-      current: String(metrics.ping.current)
+      current: String(metrics.ping.current),
+      trend: metrics.ping.trend as TrendType
+    },
+    packetLoss: {
+      ...metrics.packetLoss,
+      current: metrics.packetLoss.current,
+      trend: metrics.packetLoss.trend as TrendType
     },
     fps: {
       ...metrics.fps,
-      current: String(metrics.fps.current)
+      current: String(metrics.fps.current),
+      trend: metrics.fps.trend as TrendType
     },
     cpu: {
       ...metrics.cpu,
-      current: String(metrics.cpu.current)
+      current: String(metrics.cpu.current),
+      trend: metrics.cpu.trend as TrendType
     },
     gpu: {
       ...metrics.gpu,
-      current: String(metrics.gpu.current)
+      current: String(metrics.gpu.current),
+      trend: metrics.gpu.trend as TrendType
     },
     jitter: {
       ...metrics.jitter,
-      current: String(metrics.jitter.current)
+      current: String(metrics.jitter.current),
+      trend: metrics.jitter.trend as TrendType
     }
   };
 
