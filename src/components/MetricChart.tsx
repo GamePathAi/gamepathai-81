@@ -69,12 +69,12 @@ const MetricChart: React.FC<MetricChartProps> = ({
         </svg>
       )}
 
-      <ResponsiveContainer width="95%" height="95%" className={metricType ? `${metricType}-graph` : ''}>
+      <ResponsiveContainer width="98%" height="90%" className={metricType ? `${metricType}-graph` : ''}>
         <LineChart 
           data={enhancedData} 
-          margin={{ top: 5, right: 5, left: 5, bottom: 5 }} // Reduced margins to maximize chart area
+          margin={{ top: 10, right: 15, left: 5, bottom: 10 }} // Adjusted margins for better spacing
           data-metric={metricType}
-          style={{ aspectRatio: 'auto' }} // Ensure responsive behavior
+          style={{ aspectRatio: '3/1.5' }} // Added specific aspect ratio as requested
         >
           {showAxis && (
             <CartesianGrid 
@@ -89,6 +89,9 @@ const MetricChart: React.FC<MetricChartProps> = ({
             tick={{fill: "rgba(255,255,255,0.7)", fontSize: 11}} // More visible text
             tickLine={{stroke: "rgba(255,255,255,0.3)"}}
             axisLine={{stroke: "rgba(255,255,255,0.3)"}}
+            interval="preserveStartEnd" // Show start and end labels
+            minTickGap={15} // Better tick spacing
+            padding={{ left: 5, right: 5 }} // Better padding
           />}
           {showAxis && <YAxis 
             stroke="rgba(255,255,255,0.5)" // Increased contrast
@@ -96,6 +99,8 @@ const MetricChart: React.FC<MetricChartProps> = ({
             tickLine={{stroke: "rgba(255,255,255,0.3)"}}
             axisLine={{stroke: "rgba(255,255,255,0.3)"}}
             width={35} // Increased width to ensure numbers fit
+            tickCount={5} // Limit the number of ticks for cleaner look
+            padding={{ top: 5, bottom: 5 }} // Better padding
           />}
           <Tooltip 
             contentStyle={{ 
@@ -114,14 +119,15 @@ const MetricChart: React.FC<MetricChartProps> = ({
             type="monotone"
             dataKey={dataKey}
             stroke={chartColor}
-            strokeWidth={2.5} // Match the CSS specification
-            dot={showAxis ? { fill: chartColor, r: 4, className: "chart-point" } : false} // Larger dots with class
-            activeDot={{ r: 8, fill: chartColor, stroke: '#FFFFFF' }} // Larger active dot
+            strokeWidth={2} // Adjusted as requested
+            dot={showAxis ? { fill: chartColor, r: 3, className: "chart-point" } : false} // Adjusted size
+            activeDot={{ r: 5, fill: chartColor, stroke: '#FFFFFF' }} // Adjusted active dot size
             isAnimationActive={true}
             animationDuration={1500}
             filter={showGlow ? `url(#${filterId})` : undefined}
             style={{ filter: showGlow ? `drop-shadow(0 0 8px ${chartColor})` : 'none' }} // Enhanced shadow
             className="chart-line"
+            connectNulls={true} // Connect across null data points
           />
         </LineChart>
       </ResponsiveContainer>

@@ -35,7 +35,7 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
         <h2 className="text-lg font-cyber font-semibold text-white">System Metrics</h2>
       </div>
       
-      <div className="space-y-4">
+      <div className="space-y-6">
         <MetricCard
           title="CPU USAGE"
           value={metrics.cpu.current}
@@ -50,7 +50,7 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
               metricType="cpu" 
               height={180}
               showAxis={true}
-              strokeWidth={4}
+              strokeWidth={2}
             />
           }
           className="p-4 mb-0 h-auto min-h-[180px] metric-box"
@@ -70,7 +70,7 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
               metricType="gpu" 
               height={180}
               showAxis={true}
-              strokeWidth={4}
+              strokeWidth={2}
             />
           }
           className="p-4 mb-0 h-auto min-h-[180px] metric-box"
@@ -90,7 +90,7 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
               metricType="jitter" 
               height={180}
               showAxis={true}
-              strokeWidth={4}
+              strokeWidth={2}
             />
           }
           className="p-4 mb-0 h-auto min-h-[180px] metric-box"
