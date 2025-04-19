@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Settings, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,9 +12,9 @@ const Header: React.FC = () => {
     <header className="bg-cyber-darkblue border-b border-cyber-purple/30 backdrop-blur-sm sticky top-0 z-10">
       <div className="container mx-auto flex justify-between items-center h-16 px-4">
         <div className="flex items-center h-full">
-          <Link to="/dashboard" className="flex items-center space-x-2 align-middle">
-            <GamePathLogo size={32} className="self-center" />
-            <h1 className="text-2xl font-tech font-bold bg-gradient-to-r from-cyber-blue via-cyber-purple to-cyber-pink text-transparent bg-clip-text leading-none self-center">
+          <Link to="/dashboard" className="flex items-center gap-1.5">
+            <GamePathLogo size={20} className="w-6 h-6" />
+            <h1 className="text-2xl font-tech font-bold bg-gradient-to-r from-cyber-blue via-cyber-purple to-cyber-pink text-transparent bg-clip-text leading-none">
               GamePath AI
             </h1>
           </Link>
