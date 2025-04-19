@@ -10,14 +10,10 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Sliders, Route, Cpu, Thermometer, CalendarClock, BarChart4, StickyNote } from "lucide-react";
-import OptimizationPriorities from "./OptimizationPriorities";
+import { Sliders, Route, Settings, Thermometer } from "lucide-react";
+import OptimizationSettings from "./OptimizationSettings";
 import RouteSettings from "./RouteSettings";
-import ResourceProfile from "./ResourceProfile";
 import ThermalSettings from "./ThermalSettings";
-import SchedulingSettings from "./SchedulingSettings";
-import DetailedStats from "./DetailedStats";
-import CustomNotes from "./CustomNotes";
 import { toast } from "sonner";
 
 interface Game {
@@ -41,8 +37,8 @@ const GameSettingsModal: React.FC<GameSettingsModalProps> = ({
   game 
 }) => {
   const handleSaveSettings = () => {
-    toast.success(`Configurações para ${game?.name} salvas com sucesso!`, {
-      description: "As otimizações personalizadas serão aplicadas na próxima vez que você iniciar o jogo."
+    toast.success(`Settings saved for ${game?.name}`, {
+      description: "Custom optimizations will be applied next time you launch the game."
     });
     onOpenChange(false);
   };
@@ -51,74 +47,57 @@ const GameSettingsModal: React.FC<GameSettingsModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl h-[80vh] bg-cyber-darkblue border border-cyber-blue/30">
+      <DialogContent className="max-w-4xl bg-cyber-darkblue border border-cyber-blue/30">
         <DialogHeader>
           <DialogTitle className="text-xl font-tech flex items-center gap-2">
             <div className="w-8 h-8 overflow-hidden rounded-md">
               <img src={game.image} alt={game.name} className="w-full h-full object-cover" />
             </div>
-            <span>{game.name} - Configurações Específicas</span>
+            <span>{game.name} - Game Settings</span>
           </DialogTitle>
           <DialogDescription>
-            Personalize as configurações de otimização específicas para este jogo
+            Configure specific optimization settings for this game
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs defaultValue="optimization" className="flex flex-col h-full">
-          <div className="overflow-x-auto scrollbar-none">
-            <TabsList className="grid grid-cols-3 md:grid-cols-7 w-max md:w-full">
-              <TabsTrigger value="optimization" className="flex gap-1 items-center">
-                <Sliders size={16} />
-                <span className="hidden md:block">Otimização</span>
-              </TabsTrigger>
-              <TabsTrigger value="route" className="flex gap-1 items-center">
-                <Route size={16} />
-                <span className="hidden md:block">Rotas</span>
-              </TabsTrigger>
-              <TabsTrigger value="resource" className="flex gap-1 items-center">
-                <Cpu size={16} />
-                <span className="hidden md:block">Recursos</span>
-              </TabsTrigger>
-              <TabsTrigger value="thermal" className="flex gap-1 items-center">
-                <Thermometer size={16} />
-                <span className="hidden md:block">Térmico</span>
-              </TabsTrigger>
-              <TabsTrigger value="schedule" className="flex gap-1 items-center">
-                <CalendarClock size={16} />
-                <span className="hidden md:block">Agendamento</span>
-              </TabsTrigger>
-              <TabsTrigger value="stats" className="flex gap-1 items-center">
-                <BarChart4 size={16} />
-                <span className="hidden md:block">Estatísticas</span>
-              </TabsTrigger>
-              <TabsTrigger value="notes" className="flex gap-1 items-center">
-                <StickyNote size={16} />
-                <span className="hidden md:block">Notas</span>
-              </TabsTrigger>
-            </TabsList>
-          </div>
+        <Tabs defaultValue="optimization" className="w-full">
+          <TabsList className="grid grid-cols-4 gap-4">
+            <TabsTrigger value="optimization" className="flex items-center gap-2">
+              <Sliders className="h-4 w-4" />
+              <span>Optimization</span>
+            </TabsTrigger>
+            <TabsTrigger value="route" className="flex items-center gap-2">
+              <Route className="h-4 w-4" />
+              <span>Route</span>
+            </TabsTrigger>
+            <TabsTrigger value="resource" className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              <span>Resource</span>
+            </TabsTrigger>
+            <TabsTrigger value="thermal" className="flex items-center gap-2">
+              <Thermometer className="h-4 w-4" />
+              <span>Thermal</span>
+            </TabsTrigger>
+          </TabsList>
 
-          <div className="flex-1 overflow-y-auto mt-4">
-            <TabsContent value="optimization" className="h-full">
-              <OptimizationPriorities game={game} />
+          <div className="mt-4 p-4 border border-cyber-blue/20 rounded-lg bg-cyber-darkblue/50">
+            <TabsContent value="optimization">
+              <OptimizationSettings game={game} />
             </TabsContent>
-            <TabsContent value="route" className="h-full">
+            
+            <TabsContent value="route">
               <RouteSettings game={game} />
             </TabsContent>
-            <TabsContent value="resource" className="h-full">
-              <ResourceProfile game={game} />
+            
+            <TabsContent value="resource">
+              <div className="text-center py-8 text-gray-400">
+                <Settings className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>Resource settings coming soon...</p>
+              </div>
             </TabsContent>
-            <TabsContent value="thermal" className="h-full">
+            
+            <TabsContent value="thermal">
               <ThermalSettings game={game} />
-            </TabsContent>
-            <TabsContent value="schedule" className="h-full">
-              <SchedulingSettings game={game} />
-            </TabsContent>
-            <TabsContent value="stats" className="h-full">
-              <DetailedStats game={game} />
-            </TabsContent>
-            <TabsContent value="notes" className="h-full">
-              <CustomNotes game={game} />
             </TabsContent>
           </div>
         </Tabs>
@@ -126,17 +105,17 @@ const GameSettingsModal: React.FC<GameSettingsModalProps> = ({
         <DialogFooter className="flex justify-between sm:justify-between gap-2">
           <Button
             variant="outline"
-            className="border-cyber-blue/30 hover:bg-cyber-blue/10"
             onClick={() => onOpenChange(false)}
+            className="border-cyber-blue/30 hover:bg-cyber-blue/10"
           >
-            Cancelar
+            Cancel
           </Button>
           <Button
             variant="cyber"
-            className="bg-cyber-blue/20 border-cyber-blue hover:bg-cyber-blue/30"
             onClick={handleSaveSettings}
+            className="bg-cyber-blue/20 border-cyber-blue hover:bg-cyber-blue/30"
           >
-            Salvar Configurações
+            Save Settings
           </Button>
         </DialogFooter>
       </DialogContent>
