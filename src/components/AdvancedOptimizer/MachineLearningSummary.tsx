@@ -27,6 +27,17 @@ const performanceData = [
   { time: "7d", value: 72 },
 ];
 
+// Add confidence data for the chart
+const confidenceData = [
+  { time: "1d", value: 75 },
+  { time: "2d", value: 78 },
+  { time: "3d", value: 83 },
+  { time: "4d", value: 85 },
+  { time: "5d", value: 89 },
+  { time: "6d", value: 91 },
+  { time: "7d", value: 94 },
+];
+
 const optimizationData = [
   { name: "CPU", before: 72, after: 58 },
   { name: "GPU", before: 84, after: 65 },
@@ -84,6 +95,13 @@ export const MachineLearningSummary: React.FC = () => {
               icon={<Zap size={18} />}
               trend="stable"
               trendValue="Consistent"
+              chartComponent={
+                <MetricChart 
+                  data={confidenceData} 
+                  color="#EC4899"
+                  metricType="cpu"
+                />
+              }
             />
           </div>
           
