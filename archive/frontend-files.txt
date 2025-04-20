@@ -1,0 +1,2337 @@
+Let's archive all the frontend files into a single directory:
+
+# FRONTEND ARCHIVE - GamePath AI
+
+## 1. COMPONENTS
+
+### GamePathLogo.tsx
+```typescript
+import React from "react";
+import { HexagonBorder } from "./logo/HexagonBorder";
+import { CircuitPattern } from "./logo/CircuitPattern";
+import { LogoNodes } from "./logo/LogoNodes";
+import { LogoGradients } from "./logo/LogoGradients";
+
+interface GamePathLogoProps {
+  className?: string;
+  size?: number;
+}
+
+export const GamePathLogo: React.FC<GamePathLogoProps> = ({ 
+  className = "w-8 h-8",
+  size = 32
+}) => {
+  return (
+    <div className={className}>
+      <svg 
+        width={size} 
+        height={size} 
+        viewBox="0 0 100 100"  
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg"
+        className="filter drop-shadow-[0_0_3px_rgba(51,195,240,0.3)]"
+      >
+        <HexagonBorder />
+        <CircuitPattern />
+        <LogoNodes />
+        <LogoGradients />
+      </svg>
+    </div>
+  );
+};
+
+export default GamePathLogo;
+```
+
+### Header.tsx
+```typescript
+import React from "react";
+import { Settings, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import GamePathLogo from "./GamePathLogo";
+import { Link } from "react-router-dom";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import NotificationCenter from "./NotificationCenter";
+import ConnectionToggle from "./ConnectionToggle";
+
+const Header: React.FC = () => {
+  return (
+    <header className="bg-cyber-darkblue border-b border-cyber-purple/30 backdrop-blur-sm sticky top-0 z-10">
+      <div className="container mx-auto flex justify-between items-center h-16 px-4">
+        <div className="flex items-center h-full">
+          <Link to="/dashboard" className="flex items-center gap-1.5">
+            <GamePathLogo size={32} className="w-8 h-8" />
+            <h1 className="text-2xl font-tech font-bold bg-gradient-to-r from-cyber-blue via-cyber-purple to-cyber-pink text-transparent bg-clip-text leading-none">
+              GamePath AI
+            </h1>
+          </Link>
+        </div>
+        
+        <div className="flex items-center space-x-4">
+          <ConnectionToggle />
+          
+          <NotificationCenter />
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link to="/settings">
+                <Button variant="ghost" size="icon" className="text-cyber-blue hover:text-cyber-purple hover:bg-cyber-blue/10">
+                  <Settings size={20} />
+                </Button>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Settings</p>
+            </TooltipContent>
+          </Tooltip>
+          
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 rounded-full border-2 border-cyber-purple flex items-center justify-center bg-cyber-darkblue">
+              <User size={18} className="text-cyber-purple" />
+            </div>
+            <span className="text-sm font-tech hidden md:inline-block">USER_01</span>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+};
+
+export default Header;
+```
+
+## 2. HOOKS
+
+### use-mobile.tsx
+```typescript
+import * as React from "react"
+
+const MOBILE_BREAKPOINT = 768
+
+export function useIsMobile() {
+  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
+
+  React.useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
+    const onChange = () => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+    }
+    mql.addEventListener("change", onChange)
+    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+    return () => mql.removeEventListener("change", onChange)
+  }, [])
+
+  return !!isMobile
+}
+```
+
+### use-toast.ts
+```typescript
+import * as React from "react"
+import type { ToastActionElement, ToastProps } from "@/components/ui/toast"
+
+const TOAST_LIMIT = 1
+const TOAST_REMOVE_DELAY = 1000000
+
+type ToasterToast = ToastProps & {
+  id: string
+  title?: React.ReactNode
+  description?: React.ReactNode
+  action?: ToastActionElement
+}
+
+const actionTypes = {
+  ADD_TOAST: "ADD_TOAST",
+  UPDATE_TOAST: "UPDATE_TOAST",
+  DISMISS_TOAST: "DISMISS_TOAST",
+  REMOVE_TOAST: "REMOVE_TOAST",
+} as const
+
+let count = 0
+
+function genId() {
+  count = (count + 1) % Number.MAX_SAFE_INTEGER
+  return count.toString()
+}
+
+type ActionType = typeof actionTypes
+
+type Action =
+  | {
+      type: ActionType["ADD_TOAST"]
+      toast: ToasterToast
+    }
+  | {
+      type: ActionType["UPDATE_TOAST"]
+      toast: Partial<ToasterToast>
+    }
+  | {
+      type: ActionType["DISMISS_TOAST"]
+      toastId?: ToasterToast["id"]
+    }
+  | {
+      type: ActionType["REMOVE_TOAST"]
+      toastId?: ToasterToast["id"]
+    }
+
+interface State {
+  toasts: ToasterToast[]
+}
+
+const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>()
+
+const addToRemoveQueue = (toastId: string) => {
+  if (toastTimeouts.has(toastId)) {
+    return
+  }
+
+  const timeout = setTimeout(() => {
+    toastTimeouts.delete(toastId)
+    dispatch({
+      type: "REMOVE_TOAST",
+      toastId: toastId,
+    })
+  }, TOAST_REMOVE_DELAY)
+
+  toastTimeouts.set(toastId, timeout)
+}
+
+export const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case "ADD_TOAST":
+      return {
+        ...state,
+        toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
+      }
+
+    case "UPDATE_TOAST":
+      return {
+        ...state,
+        toasts: state.toasts.map((t) =>
+          t.id === action.toast.id ? { ...t, ...action.toast } : t
+        ),
+      }
+
+    case "DISMISS_TOAST": {
+      const { toastId } = action
+
+      // ! Side effects ! - This could be extracted into a dismissToast() action,
+      // but I'll keep it here for simplicity
+      if (toastId) {
+        addToRemoveQueue(toastId)
+      } else {
+        state.toasts.forEach((toast) => {
+          addToRemoveQueue(toast.id)
+        })
+      }
+
+      return {
+        ...state,
+        toasts: state.toasts.map((t) =>
+          t.id === toastId || toastId === undefined
+            ? {
+                ...t,
+                open: false,
+              }
+            : t
+        ),
+      }
+    }
+    case "REMOVE_TOAST":
+      if (action.toastId === undefined) {
+        return {
+          ...state,
+          toasts: [],
+        }
+      }
+      return {
+        ...state,
+        toasts: state.toasts.filter((t) => t.id !== action.toastId),
+      }
+  }
+}
+
+const listeners: Array<(state: State) => void> = []
+
+let memoryState: State = { toasts: [] }
+
+function dispatch(action: Action) {
+  memoryState = reducer(memoryState, action)
+  listeners.forEach((listener) => {
+    listener(memoryState)
+  })
+}
+
+type Toast = Omit<ToasterToast, "id">
+
+function toast({ ...props }: Toast) {
+  const id = genId()
+
+  const update = (props: ToasterToast) =>
+    dispatch({
+      type: "UPDATE_TOAST",
+      toast: { ...props, id },
+    })
+  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
+
+  dispatch({
+    type: "ADD_TOAST",
+    toast: {
+      ...props,
+      id,
+      open: true,
+      onOpenChange: (open) => {
+        if (!open) dismiss()
+      },
+    },
+  })
+
+  return {
+    id: id,
+    dismiss,
+    update,
+  }
+}
+
+function useToast() {
+  const [state, setState] = React.useState<State>(memoryState)
+
+  React.useEffect(() => {
+    listeners.push(setState)
+    return () => {
+      const index = listeners.indexOf(setState)
+      if (index > -1) {
+        listeners.splice(index, 1)
+      }
+    }
+  }, [state])
+
+  return {
+    ...state,
+    toast,
+    dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
+  }
+}
+
+export { useToast, toast }
+```
+
+### use-notifications.tsx
+```typescript
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+
+export interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: "optimization" | "performance" | "connection" | "update" | "trial";
+  date: Date;
+  read: boolean;
+}
+
+interface NotificationContextType {
+  notifications: Notification[];
+  addNotification: (notification: Omit<Notification, "id" | "date" | "read">) => void;
+  clearNotification: (id: string) => void;
+  markAllAsRead: () => void;
+  hasUnread: boolean;
+}
+
+const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
+
+// Mock notifications data - in a real app these would be fetched from a backend
+const mockNotifications: Notification[] = [
+  {
+    id: "1",
+    title: "Route optimization applied",
+    message: "A better route to the Tokyo server has been automatically applied.",
+    type: "optimization",
+    date: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
+    read: false,
+  },
+  {
+    id: "2",
+    title: "High GPU temperature",
+    message: "Your GPU is running at 82°C, which is above optimal levels.",
+    type: "performance",
+    date: new Date(Date.now() - 1000 * 60 * 25), // 25 minutes ago
+    read: false,
+  },
+  {
+    id: "3",
+    title: "Network instability detected",
+    message: "Packet loss increased to 5% on your connection.",
+    type: "connection",
+    date: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
+    read: true,
+  },
+  {
+    id: "4",
+    title: "New version available",
+    message: "GamePath AI v2.1.0 is now available for download.",
+    type: "update",
+    date: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
+    read: true,
+  },
+  {
+    id: "5",
+    title: "Trial period ending soon",
+    message: "Your Pro trial will expire in 5 days. Upgrade now to keep access.",
+    type: "trial",
+    date: new Date(Date.now() - 1000 * 60 * 60 * 48), // 2 days ago
+    read: true,
+  },
+];
+
+export const NotificationProvider = ({ children }: { children: ReactNode }) => {
+  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
+  
+  const hasUnread = notifications.some(notification => !notification.read);
+
+  // In a real app, you would fetch notifications from an API
+  // useEffect(() => {
+  //   const fetchNotifications = async () => {
+  //     // Fetch notifications from API
+  //   };
+  //   fetchNotifications();
+  // }, []);
+
+  const addNotification = (notification: Omit<Notification, "id" | "date" | "read">) => {
+    const newNotification: Notification = {
+      ...notification,
+      id: Date.now().toString(),
+      date: new Date(),
+      read: false,
+    };
+    setNotifications(prev => [newNotification, ...prev]);
+  };
+
+  const clearNotification = (id: string) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
+
+  const markAllAsRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  };
+
+  return (
+    <NotificationContext.Provider
+      value={{ 
+        notifications, 
+        addNotification, 
+        clearNotification, 
+        markAllAsRead,
+        hasUnread
+      }}
+    >
+      {children}
+    </NotificationContext.Provider>
+  );
+};
+
+export const useNotifications = () => {
+  const context = useContext(NotificationContext);
+  if (context === undefined) {
+    throw new Error("useNotifications must be used within a NotificationProvider");
+  }
+  return context;
+};
+```
+
+## 3. CONTEXTS
+
+### CheckoutContext.tsx
+```typescript
+import React, { createContext, useContext, useState } from 'react';
+
+export type BillingInterval = 'monthly' | 'quarterly' | 'annual';
+
+export interface PlanFeature {
+  name: string;
+  included: boolean;
+  info?: string;
+}
+
+export interface PricingPlan {
+  id: string;
+  name: string;
+  description?: string;
+  userCount: number;
+  pricing: {
+    monthly: number;
+    quarterly: number;
+    annual: number;
+  };
+  features?: PlanFeature[] | string[];
+  popular?: boolean;
+  color?: string;
+}
+
+interface CheckoutContextType {
+  selectedPlan: PricingPlan | null;
+  setSelectedPlan: (plan: PricingPlan) => void;
+  billingInterval: BillingInterval;
+  setBillingInterval: (interval: BillingInterval) => void;
+  customerInfo: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    address?: string;
+  };
+  setCustomerInfo: (info: any) => void;
+  clearCheckout: () => void;
+}
+
+const defaultContext: CheckoutContextType = {
+  selectedPlan: null,
+  setSelectedPlan: () => {},
+  billingInterval: 'monthly',
+  setBillingInterval: () => {},
+  customerInfo: {
+    firstName: '',
+    lastName: '',
+    email: '',
+    address: '',
+  },
+  setCustomerInfo: () => {},
+  clearCheckout: () => {},
+};
+
+const CheckoutContext = createContext<CheckoutContextType>(defaultContext);
+
+export const useCheckout = () => useContext(CheckoutContext);
+
+export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [selectedPlan, setSelectedPlan] = useState<PricingPlan | null>(null);
+  const [billingInterval, setBillingInterval] = useState<BillingInterval>('monthly');
+  const [customerInfo, setCustomerInfo] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    address: '',
+  });
+
+  const clearCheckout = () => {
+    setSelectedPlan(null);
+    setBillingInterval('monthly');
+    setCustomerInfo({
+      firstName: '',
+      lastName: '',
+      email: '',
+      address: '',
+    });
+  };
+
+  return (
+    <CheckoutContext.Provider
+      value={{
+        selectedPlan,
+        setSelectedPlan,
+        billingInterval,
+        setBillingInterval,
+        customerInfo,
+        setCustomerInfo,
+        clearCheckout,
+      }}
+    >
+      {children}
+    </CheckoutContext.Provider>
+  );
+};
+```
+
+## 4. SERVICES
+
+### subscriptionApi.ts
+```typescript
+// Subscription API service for GamePath AI
+// This file contains placeholder API calls that will later be connected to the backend
+
+// Define types for the API responses
+export type SubscriptionPlan = 'player' | 'co-op' | 'alliance';
+export type SubscriptionStatus = 'active' | 'canceled' | 'past_due' | 'trialing';
+export type PaymentMethod = {
+  id: string;
+  type: 'card' | 'paypal';
+  brand?: string;
+  last4?: string;
+  expMonth?: number;
+  expYear?: number;
+  isDefault: boolean;
+};
+export type AddOn = {
+  id: string;
+  name: string;
+  price: number;
+  isActive: boolean;
+  includedInPlans?: SubscriptionPlan[];
+};
+export type Invoice = {
+  id: string;
+  date: Date;
+  amount: number;
+  status: 'paid' | 'pending' | 'failed' | 'refunded';
+  items: Array<{
+    name: string;
+    amount: number;
+  }>;
+  pdfUrl?: string;
+};
+
+export type Subscription = {
+  id: string;
+  plan: SubscriptionPlan;
+  status: SubscriptionStatus;
+  currentPeriodStart: Date;
+  currentPeriodEnd: Date;
+  cancelAtPeriodEnd: boolean;
+  amount: number;
+  interval: 'month' | 'year';
+  currency: string;
+  users: number;
+  addOns: string[];
+};
+
+// Mock API implementation
+class SubscriptionApi {
+  // Get current subscription details
+  async getCurrentSubscription(): Promise<Subscription> {
+    // Simulating API call delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Return mock data
+    return {
+      id: 'sub_123456',
+      plan: 'co-op',
+      status: 'active',
+      currentPeriodStart: new Date(2025, 2, 15),
+      currentPeriodEnd: new Date(2025, 3, 15),
+      cancelAtPeriodEnd: false,
+      amount: 17.99,
+      interval: 'month',
+      currency: 'USD',
+      users: 2,
+      addOns: ['vpn_integration', 'advanced_optimizer']
+    };
+  }
+  
+  // Get available add-ons
+  async getAvailableAddOns(): Promise<AddOn[]> {
+    // Simulating API call delay
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    // Return mock data
+    return [
+      {
+        id: 'advanced_optimizer',
+        name: 'Advanced Optimizer',
+        price: 2.99,
+        isActive: true,
+        includedInPlans: ['alliance']
+      },
+      {
+        id: 'power_manager',
+        name: 'Power Manager',
+        price: 1.99,
+        isActive: false,
+      },
+      {
+        id: 'vpn_integration',
+        name: 'VPN Integration',
+        price: 3.99,
+        isActive: true,
+        includedInPlans: ['co-op', 'alliance']
+      }
+    ];
+  }
+  
+  // Get payment methods
+  async getPaymentMethods(): Promise<PaymentMethod[]> {
+    // Simulating API call delay
+    await new Promise(resolve => setTimeout(resolve, 400));
+    
+    // Return mock data
+    return [
+      {
+        id: 'pm_123456',
+        type: 'card',
+        brand: 'visa',
+        last4: '4242',
+        expMonth: 12,
+        expYear: 2026,
+        isDefault: true
+      },
+      {
+        id: 'pm_654321',
+        type: 'card',
+        brand: 'mastercard',
+        last4: '8765',
+        expMonth: 3,
+        expYear: 2025,
+        isDefault: false
+      }
+    ];
+  }
+  
+  // Add payment method
+  async addPaymentMethod(paymentDetails: any): Promise<PaymentMethod> {
+    // In a real implementation, this would submit to a payment processor
+    // Simulating API call delay
+    await new Promise(resolve => setTimeout(resolve, 600));
+    
+    // Return mock data for the new payment method
+    return {
+      id: 'pm_new123',
+      type: 'card',
+      brand: paymentDetails.brand || 'visa',
+      last4: paymentDetails.last4 || '1234',
+      expMonth: paymentDetails.expMonth || 12,
+      expYear: paymentDetails.expYear || 2027,
+      isDefault: false
+    };
+  }
+  
+  // Set default payment method
+  async setDefaultPaymentMethod(paymentMethodId: string): Promise<{ success: boolean }> {
+    // Simulating API call delay
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    // Return success response
+    return { success: true };
+  }
+  
+  // Delete payment method
+  async deletePaymentMethod(paymentMethodId: string): Promise<{ success: boolean }> {
+    // Simulating API call delay
+    await new Promise(resolve => setTimeout(resolve, 400));
+    
+    // Return success response
+    return { success: true };
+  }
+  
+  // Get billing history
+  async getBillingHistory(): Promise<Invoice[]> {
+    // Simulating API call delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Return mock data
+    return [
+      {
+        id: 'inv_123456',
+        date: new Date(2025, 2, 15),
+        amount: 17.99,
+        status: 'paid',
+        items: [
+          { name: 'Co-op Plan', amount: 17.99 }
+        ]
+      },
+      {
+        id: 'inv_123455',
+        date: new Date(2025, 1, 15),
+        amount: 20.98,
+        status: 'paid',
+        items: [
+          { name: 'Co-op Plan', amount: 17.99 },
+          { name: 'Advanced Optimizer', amount: 2.99 }
+        ]
+      },
+      {
+        id: 'inv_123454',
+        date: new Date(2025, 0, 15),
+        amount: 17.99,
+        status: 'paid',
+        items: [
+          { name: 'Co-op Plan', amount: 17.99 }
+        ]
+      },
+      {
+        id: 'inv_123453',
+        date: new Date(2024, 11, 15),
+        amount: 9.99,
+        status: 'refunded',
+        items: [
+          { name: 'Player Plan', amount: 9.99 }
+        ]
+      }
+    ];
+  }
+  
+  // Get invoice details
+  async getInvoiceDetails(invoiceId: string): Promise<Invoice> {
+    // Simulating API call delay
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    // Return mock invoice data
+    return {
+      id: invoiceId,
+      date: new Date(2025, 2, 15),
+      amount: 17.99,
+      status: 'paid',
+      items: [
+        { name: 'Co-op Plan', amount: 17.99 }
+      ],
+      pdfUrl: '#'
+    };
+  }
+  
+  // Update subscription plan
+  async updateSubscriptionPlan(planId: string, options?: { addOns?: string[] }): Promise<Subscription> {
+    // Simulating API call delay
+    await new Promise(resolve => setTimeout(resolve, 700));
+    
+    // Return updated subscription
+    return {
+      id: 'sub_123456',
+      plan: planId as SubscriptionPlan,
+      status: 'active',
+      currentPeriodStart: new Date(2025, 2, 15),
+      currentPeriodEnd: new Date(2025, 3, 15),
+      cancelAtPeriodEnd: false,
+      amount: planId === 'player' ? 9.99 : planId === 'co-op' ? 17.99 : 29.99,
+      interval: 'month',
+      currency: 'USD',
+      users: planId === 'player' ? 1 : planId === 'co-op' ? 2 : 5,
+      addOns: options?.addOns || ['vpn_integration']
+    };
+  }
+  
+  // Cancel subscription
+  async cancelSubscription(reason: string): Promise<{ success: boolean, message: string }> {
+    // Simulating API call delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Return success response
+    return { 
+      success: true, 
+      message: "Your subscription has been canceled and will remain active until the end of your billing period."
+    };
+  }
+  
+  // Resume canceled subscription
+  async resumeSubscription(): Promise<{ success: boolean, message: string }> {
+    // Simulating API call delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Return success response
+    return { 
+      success: true, 
+      message: "Your subscription has been successfully resumed."
+    };
+  }
+}
+
+export const subscriptionApi = new SubscriptionApi();
+```
+
+## 5. LOCALIZATION FILES
+
+### en-US.json
+```json
+{
+  "header": {
+    "appName": "GamePath AI",
+    "features": "Features",
+    "technology": "Technology", 
+    "pricing": "Pricing",
+    "login": "Login",
+    "getStarted": "Get Started"
+  },
+  "technology": {
+    "title": "GamePath AI Technology",
+    "subtitle": "The advanced technology powering your gaming optimization experience",
+    "adaptiveRouting": {
+      "title": "Adaptive Routing",
+      "description": "Our proprietary algorithms analyze network conditions in real-time to find the optimal path for your gaming data.",
+      "dynamicPathSelection": {
+        "title": "Dynamic Path Selection",
+        "description": "Automatically selects the best network path based on real-time conditions"
+      },
+      "serverSpecificOptimization": {
+        "title": "Server Optimization",
+        "description": "Custom routing profiles for specific game servers"
+      },
+      "multiPointRouting": {
+        "title": "Multi-Point Routing",
+        "description": "Uses multiple connection points to ensure the most stable experience"
+      },
+      "averageLatencyReduction": {
+        "title": "Average Latency Reduction",
+        "value": "45%"
+      }
+    },
+    "performanceAI": {
+      "title": "Performance AI",
+      "description": "Machine learning systems that adapt to your hardware configuration and usage patterns for optimal performance.",
+      "adaptiveResourceAllocation": {
+        "title": "Adaptive Resource Allocation",
+        "description": "Dynamically allocates system resources based on game requirements"
+      },
+      "gameSpecificProfiles": {
+        "title": "Game-Specific Profiles",
+        "description": "Custom optimization profiles for thousands of popular games"
+      },
+      "backgroundProcessManagement": {
+        "title": "Background Process Management",
+        "description": "Intelligently manages system processes to prioritize gaming performance"
+      },
+      "fpsImprovement": {
+        "title": "Average FPS Improvement",
+        "value": "27%"
+      }
+    },
+    "globalNetwork": {
+      "title": "Global Network",
+      "description": "Access to optimized routes across our worldwide server infrastructure for low-latency gaming anywhere."
+    },
+    "security": {
+      "title": "Gaming Security",
+      "description": "Advanced protection features that keep your gaming experience safe and your data private.",
+      "ddosProtection": {
+        "title": "DDoS Protection",
+        "description": "Real-time protection against denial-of-service attacks"
+      },
+      "ipMasking": {
+        "title": "IP Masking",
+        "description": "Hide your real IP address to prevent targeting and swatting"
+      },
+      "antiCheatCompatibility": {
+        "title": "Anti-Cheat Compatibility",
+        "description": "Full compatibility with all major anti-cheat systems"
+      },
+      "protectionRate": {
+        "title": "Attack Prevention Rate",
+        "value": "99.7%"
+      }
+    },
+    "vpn": {
+      "title": "Gaming VPN",
+      "description": "Our specialized VPN optimized specifically for gaming performance and security.",
+      "geoRestrictionBypass": {
+        "title": "Geo-Restriction Bypass",
+        "description": "Access games and servers from any region regardless of your location"
+      },
+      "splitTunneling": {
+        "title": "Split Tunneling",
+        "description": "Route only game traffic through our optimized network"
+      },
+      "ispThrottlingPrevention": {
+        "title": "ISP Throttling Prevention",
+        "description": "Bypass ISP speed limits and traffic shaping for maximum throughput"
+      },
+      "globalServers": {
+        "title": "Global Server Network",
+        "value": "250+ Locations"
+      }
+    },
+    "cta": {
+      "description": "Experience significant latency reduction and performance improvements with our adaptive gaming technology.",
+      "startFreeTrial": "Start Free Trial",
+      "viewPricing": "View Pricing"
+    }
+  },
+  "games": {
+    "meta": {
+      "description": "Optimize your {game} experience with GamePath AI. Reduce latency, eliminate packet loss, and boost FPS."
+    },
+    "notFound": {
+      "title": "Game Not Found",
+      "message": "Sorry, we couldn't find information about this game. Please check the URL or explore our supported games below."
+    },
+    "hero": {
+      "title": "Optimize Your {game} Experience",
+      "subtitle": "Reduce lag, increase FPS, and gain a competitive edge with GamePath AI's game-specific optimization.",
+      "optimizeNow": "Optimize Now",
+      "learnMore": "Learn More"
+    },
+    "metrics": {
+      "latency": "Latency Improvement",
+      "fps": "FPS Improvement",
+      "packetLoss": "Packet Loss Reduction",
+      "jitter": "Jitter Reduction",
+      "improvement": "Improvement",
+      "reduction": "Reduction"
+    },
+    "performanceMetrics": {
+      "title": "{game} Performance Metrics",
+      "subtitle": "Our users see significant improvements in all key performance areas when playing with GamePath AI."
+    },
+    "technicalImprovements": {
+      "title": "Technical Improvements for {game}",
+      "subtitle": "See the tangible differences our technology makes to your gaming experience.",
+      "before": "BEFORE",
+      "after": "AFTER"
+    },
+    "testimonials": {
+      "title": "{game} Player Testimonials",
+      "subtitle": "Hear what players are saying about their experience with GamePath AI."
+    },
+    "cta": {
+      "title": "Ready to Dominate in {game}?",
+      "description": "Join thousands of {game} players who have improved their gaming experience with GamePath AI. Achieve up to {latency}% lower latency and {fps}% higher FPS.",
+      "latencyReduction": "Latency Reduction",
+      "fpsImprovement": "FPS Improvement",
+      "packetLossReduction": "Packet Loss Reduction",
+      "tryForFree": "Try For Free",
+      "exploreFeatures": "Explore Features"
+    },
+    "card": {
+      "viewDetails": "View Details"
+    }
+  }
+}
+```
+
+### es-ES.json
+```json
+{
+  "header": {
+    "appName": "GamePath IA",
+    "features": "Características",
+    "technology": "Tecnología", 
+    "pricing": "Precios",
+    "login": "Iniciar Sesión",
+    "getStarted": "Comenzar"
+  },
+  "technology": {
+    "title": "Tecnología GamePath IA",
+    "subtitle": "La tecnología avanzada que impulsa tu experiencia de optimización de juegos",
+    "adaptiveRouting": {
+      "title": "Enrutamiento Adaptativo",
+      "description": "Nuestros algoritmos propietarios analizan las condiciones de la red en tiempo real para encontrar la ruta óptima para tus datos de juego."
+    },
+    "performanceAI": {
+      "title": "IA de Rendimiento",
+      "description": "Sistemas de aprendizaje automático que se adaptan a tu configuración de hardware y patrones de uso para un rendimiento óptimo."
+    },
+    "globalNetwork": {
+      "title": "Red Global",
+      "description": "Acceso a rutas optimizadas a través de nuestra infraestructura de servidores mundial para juegos con baja latencia en cualquier lugar."
+    },
+    "security": {
+      "title": "Seguridad de Juegos",
+      "description": "Funciones avanzadas de protección que mantienen tu experiencia de juego segura y tus datos privados.",
+      "ddosProtection": {
+        "title": "Protección DDoS",
+        "description": "Protección en tiempo real contra ataques de denegación de servicio"
+      },
+      "ipMasking": {
+        "title": "Enmascaramiento de IP",
+        "description": "Oculta tu dirección IP real para evitar ser objetivo de ataques"
+      },
+      "antiCheatCompatibility": {
+        "title": "Compatibilidad con Anti-Trampas",
+        "description": "Compatibilidad completa con todos los principales sistemas anti-trampas"
+      },
+      "protectionRate": {
+        "title": "Tasa de Prevención de Ataques",
+        "value": "99,7%"
+      }
+    },
+    "vpn": {
+      "title": "VPN para Juegos",
+      "description": "Nuestra VPN especializada optimizada específicamente para rendimiento y seguridad en juegos.",
+      "geoRestrictionBypass": {
+        "title": "Bypass de Restricciones Geográficas",
+        "description": "Accede a juegos y servidores desde cualquier región independientemente de tu ubicación"
+      },
+      "splitTunneling": {
+        "title": "Túnel Dividido",
+        "description": "Enruta solo el tráfico de juegos a través de nuestra red optimizada"
+      },
+      "ispThrottlingPrevention": {
+        "title": "Prevención de Limitaciones ISP",
+        "description": "Evita los límites de velocidad y la modelación de tráfico del ISP para un máximo rendimiento"
+      },
+      "globalServers": {
+        "title": "Red de Servidores Globales",
+        "value": "Más de 250 ubicaciones"
+      }
+    },
+    "cta": {
+      "description": "Experimenta una reducción significativa de la latencia y mejoras de rendimiento con nuestra tecnología de juego adaptativa.",
+      "startFreeTrial": "Comenzar Prueba Gratuita",
+      "viewPricing": "Ver Precios",
+      "checkout": {
+        "plan": "Confirmar Plan",
+        "payment": "Detalles de Pago",
+        "processing": "Procesando",
+        "success": "¡Éxito!"
+      }
+    }
+  },
+  "games": {
+    "meta": {
+      "description": "Optimiza tu experiencia de {game} con GamePath IA. Reduce la latencia, elimina la pérdida de paquetes y aumenta los FPS."
+    },
+    "notFound": {
+      "title": "Juego No Encontrado",
+      "message": "Lo sentimos, no pudimos encontrar información sobre este juego. Por favor, verifica la URL o explora nuestros juegos soportados."
+    },
+    "hero": {
+      "title": "Optimiza Tu Experiencia de {game}",
+      "subtitle": "Reduce el lag, aumenta los FPS y obtén una ventaja competitiva con la optimización específica para juegos de GamePath IA.",
+      "optimizeNow": "Optimizar Ahora",
+      "learnMore": "Saber Más"
+    },
+    "metrics": {
+      "latency": "Mejora de Latencia",
+      "fps": "Mejora de FPS",
+      "packetLoss": "Reducción de Pérdida de Paquetes",
+      "jitter": "Reducción de Fluctuación",
+      "improvement": "Mejora",
+      "reduction": "Reducción"
+    },
+    "performanceMetrics": {
+      "title": "Métricas de Rendimiento de {game}",
+      "subtitle": "Nuestros usuarios ven mejoras significativas en todas las áreas clave de rendimiento al jugar con GamePath IA."
+    },
+    "technicalImprovements": {
+      "title": "Mejoras Técnicas para {game}",
+      "subtitle": "Observa las diferencias tangibles que nuestra tecnología aporta a tu experiencia de juego.",
+      "before": "ANTES",
+      "after": "DESPUÉS"
+    },
+    "testimonials": {
+      "title": "Testimonios de Jugadores de {game}",
+      "subtitle": "Escucha lo que dicen los jugadores sobre su experiencia con GamePath IA."
+    },
+    "cta": {
+      "title": "¿Listo para Dominar en {game}?",
+      "description": "Únete a miles de jugadores de {game} que han mejorado su experiencia de juego con GamePath IA. Logra hasta un {latency}% menos de latencia y un {fps}% más de FPS.",
+      "latencyReduction": "Reducción de Latencia",
+      "fpsImprovement": "Mejora de FPS",
+      "packetLossReduction": "Reducción de Pérdida de Paquetes",
+      "tryForFree": "Pruébalo Gratis",
+      "exploreFeatures": "Explorar Características"
+    },
+    "card": {
+      "viewDetails": "Ver Detalles"
+    }
+  },
+  "checkout": {
+    "plan": {
+      "title": "Confirmar Tu Plan",
+      "subtitle": "Revisa tu selección y ciclo de facturación antes de continuar",
+      "selectedPlan": "Plan Seleccionado",
+      "billingCycle": "Ciclo de Facturación",
+      "monthly": "Mensual",
+      "quarterly": "Trimestral",
+      "annual": "Anual",
+      "savePercent": "Ahorra ~{percent}%",
+      "continueToPayment": "Continuar al Pago"
+    },
+    "payment": {
+      "title": "Detalles de Pago",
+      "subtitle": "Ingresa tu información para completar tu compra",
+      "customerInfo": "Información del Cliente",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Correo electrónico",
+      "paymentInfo": "Información de Pago",
+      "cardDetails": "Detalles de la tarjeta",
+      "securePayment": "Pago Seguro",
+      "encrypted": "Tu información de pago está cifrada y segura",
+      "terms": "Al completar tu compra, aceptas nuestros Términos de Servicio y Política de Privacidad",
+      "completePurchase": "Completar Compra"
+    },
+    "processing": {
+      "title": "Procesando Tu Suscripción",
+      "subtitle": "Espera mientras configuramos tu cuenta",
+      "settingUp": "Configurando tu cuenta de GamePath IA",
+      "takeMoment": "Esto solo tomará un momento",
+      "step1": "Verificando información de pago",
+      "step2": "Creando tu cuenta",
+      "step3": "Configurando tu suscripción",
+      "secure": "Todas las transacciones son seguras y cifradas"
+    },
+    "success": {
+      "title": "¡Suscripción Confirmada!",
+      "subtitle": "Tu viaje de optimización de GamePath IA comienza ahora",
+      "welcome": "Bienvenido a GamePath IA",
+      "activated": "Tu suscripción ha sido activada exitosamente",
+      "details": "Detalles de la Suscripción",
+      "plan": "Plan",
+      "billing": "Facturación",
+      "nextPayment": "Próximo pago el {date}",
+      "includes": "Tu suscripción incluye:",
+      "routeOpt": "Optimización de Ruta",
+      "reduceLatency": "Reduce la latencia hasta un 45%",
+      "perfEnhance": "Mejora de Rendimiento",
+      "boostFps": "Aumenta los FPS hasta un 20%",
+      "nextSteps": "Próximos Pasos",
+      "downloadClient": "Descargar Cliente de GamePath IA",
+      "installSoftware": "Instala nuestro software de optimización para comenzar",
+      "download": "Descargar Cliente",
+      "dashboardSetup": "Configuración del Panel",
+      "configureProfile": "Configura tu perfil de juego y preferencias",
+      "goToDashboard": "Ir al Panel",
+      "accessDashboard": "Acceder a Tu Panel"
+    }
+  }
+}
+```
+
+### fr-FR.json
+```json
+{
+  "header": {
+    "appName": "GamePath IA",
+    "features": "Fonctionnalités",
+    "technology": "Technologie", 
+    "pricing": "Tarification",
+    "login": "Connexion",
+    "getStarted": "Commencer"
+  },
+  "technology": {
+    "title": "Technologie GamePath IA",
+    "subtitle": "La technologie avancée qui alimente votre expérience d'optimisation de jeu",
+    "adaptiveRouting": {
+      "title": "Routage Adaptatif",
+      "description": "Nos algorithmes propriétaires analysent les conditions du réseau en temps réel pour trouver le chemin optimal pour vos données de jeu."
+    },
+    "performanceAI": {
+      "title": "IA de Performance",
+      "description": "Systèmes d'apprentissage automatique qui s'adaptent à votre configuration matérielle et à vos habitudes d'utilisation pour des performances optimales."
+    },
+    "globalNetwork": {
+      "title": "Réseau Mondial",
+      "description": "Accès à des routes optimisées à travers notre infrastructure mondiale de serveurs pour des jeux à faible latence partout."
+    },
+    "security": {
+      "title": "Sécurité des Jeux",
+      "description": "Fonctionnalités de protection avancées qui gardent votre expérience de jeu sécurisée et vos données privées.",
+      "ddosProtection": {
+        "title": "Protection DDoS",
+        "description": "Protection en temps réel contre les attaques par déni de service"
+      },
+      "ipMasking": {
+        "title": "Masquage d'IP",
+        "description": "Masquez votre adresse IP réelle pour éviter le ciblage"
+      },
+      "antiCheatCompatibility": {
+        "title": "Compatibilité Anti-Triche",
+        "description": "Compatibilité complète avec tous les principaux systèmes anti-triche"
+      },
+      "protectionRate": {
+        "title": "Taux de Prévention d'Attaques",
+        "value": "99,7%"
+      }
+    },
+    "vpn": {
+      "title": "VPN pour les Jeux",
+      "description": "Notre VPN spécialisé optimisé spécifiquement pour la performance et la sécurité des jeux.",
+      "geoRestrictionBypass": {
+        "title": "Contournement des Restrictions Géographiques",
+        "description": "Accédez aux jeux et serveurs de n'importe quelle région, quelle que soit votre localisation"
+      },
+      "splitTunneling": {
+        "title": "Tunneling Divisé",
+        "description": "Acheminez uniquement le trafic de jeu via notre réseau optimisé"
+      },
+      "ispThrottlingPrevention": {
+        "title": "Prévention de Limitation FAI",
+        "description": "Contournez les limites de vitesse et la mise en forme du trafic des FAI pour un débit maximal"
+      },
+      "globalServers": {
+        "title": "Réseau de Serveurs Mondial",
+        "value": "Plus de 250 Emplacements"
+      }
+    },
+    "cta": {
+      "description": "Expérimentez une réduction significative de la latence et des améliorations de performance avec notre technologie de jeu adaptative.",
+      "startFreeTrial": "Commencer l'Essai Gratuit",
+      "viewPricing": "Voir les Tarifs"
+    }
+  },
+  "games": {
+    "meta": {
+      "description": "Optimisez votre expérience {game} avec GamePath IA. Réduisez la latence, éliminez les pertes de paquets et augmentez les FPS."
+    },
+    "notFound": {
+      "title": "Jeu Non Trouvé",
+      "message": "Désolé, nous n'avons pas trouvé d'informations sur ce jeu. Veuillez vérifier l'URL ou explorer nos jeux pris en charge ci-dessous."
+    },
+    "hero": {
+      "title": "Optimisez Votre Expérience {game}",
+      "subtitle": "Réduisez les lags, augmentez les FPS et obtenez un avantage concurrentiel avec l'optimisation spécifique aux jeux de GamePath IA.",
+      "optimizeNow": "Optimiser Maintenant",
+      "learnMore": "En Savoir Plus"
+    },
+    "metrics": {
+      "latency": "Amélioration de la Latence",
+      "fps": "Amélioration des FPS",
+      "packetLoss": "Réduction des Pertes de Paquets",
+      "jitter": "Réduction des Fluctuations",
+      "improvement": "Amélioration",
+      "reduction": "Réduction"
+    },
+    "performanceMetrics": {
+      "title": "Métriques de Performance pour {game}",
+      "subtitle": "Nos utilisateurs constatent des améliorations significatives dans tous les domaines de performance clés lorsqu'ils jouent avec GamePath IA."
+    },
+    "technicalImprovements": {
+      "title": "Améliorations Techniques pour {game}",
+      "subtitle": "Voyez les différences tangibles que notre technologie apporte à votre expérience de jeu.",
+      "before": "AVANT",
+      "after": "APRÈS"
+    },
+    "testimonials": {
+      "title": "Témoignages des Joueurs de {game}",
+      "subtitle": "Découvrez ce que les joueurs disent de leur expérience avec GamePath IA."
+    },
+    "cta": {
+      "title": "Prêt à Dominer dans {game}?",
+      "description": "Rejoignez des milliers de joueurs de {game} qui ont amélioré leur expérience de jeu avec GamePath IA. Obtenez jusqu'à {latency}% de latence en moins et {fps}% de FPS en plus.",
+      "latencyReduction": "Réduction de Latence",
+      "fpsImprovement": "Amélioration des FPS",
+      "packetLossReduction": "Réduction des Pertes de Paquets",
+      "tryForFree": "Essayer Gratuitement",
+      "exploreFeatures": "Explorer les Fonctionnalités"
+    },
+    "card": {
+      "viewDetails": "Voir les Détails"
+    }
+  }
+}
+```
+
+### de-DE.json
+```json
+{
+  "header": {
+    "appName": "GamePath KI",
+    "features": "Funktionen",
+    "technology": "Technologie", 
+    "pricing": "Preise",
+    "login": "Anmelden",
+    "getStarted": "Loslegen"
+  },
+  "technology": {
+    "title": "GamePath KI Technologie",
+    "subtitle": "Die fortschrittliche Technologie, die Ihre Spieloptimierungserfahrung antreibt",
+    "adaptiveRouting": {
+      "title": "Adaptive Routing",
+      "description": "Unsere proprietären Algorithmen analysieren Netzwerkbedingungen in Echtzeit, um den optimalen Pfad für Ihre Spieldaten zu finden."
+    },
+    "performanceAI": {
+      "title": "Performance KI",
+      "description": "Maschinelle Lernsysteme, die sich an Ihre Hardware-Konfiguration und Nutzungsmuster anpassen, für optimale Leistung."
+    },
+    "globalNetwork": {
+      "title": "Globales Netzwerk",
+      "description": "Zugriff auf optimierte Routen über unsere weltweite Serverinfrastruktur für Spiele mit niedriger Latenz überall."
+    }
+  }
+}
+```
+
+### ru-RU.json
+```json
+{
+  "header": {
+    "appName": "GamePath ИИ",
+    "features": "Возможности",
+    "technology": "Технология", 
+    "pricing": "Цены",
+    "login": "Вход",
+    "getStarted": "Начать"
+  },
+  "technology": {
+    "title": "Технология GamePath ИИ",
+    "subtitle": "Передовая технология, обеспечивающая оптимизацию игрового процесса",
+    "adaptiveRouting": {
+      "title": "Адаптивная маршрутизация",
+      "description": "Наши проприетарные алгоритмы анализируют состояние сети в реальном времени, чтобы найти оптимальный путь для ваших игровых данных."
+    },
+    "performanceAI": {
+      "title": "ИИ производительности",
+      "description": "Системы машинного обучения, которые адаптируются к конфигурации вашего оборудования и моделям использования для оптимальной производительности."
+    },
+    "globalNetwork": {
+      "title": "Глобальная сеть",
+      "description": "Доступ к оптимизированным маршрутам через нашу всемирную серверную инфраструктуру для игр с низкой задержкой в любой точке мира."
+    }
+  }
+}
+```
+
+### ja-JP.json
+```json
+{
+  "header": {
+    "appName": "GamePath AI",
+    "features": "機能",
+    "technology": "テクノロジー", 
+    "pricing": "料金",
+    "login": "ログイン",
+    "getStarted": "始める"
+  },
+  "technology": {
+    "title": "GamePath AI テクノロジー",
+    "subtitle": "ゲーム最適化体験を支える先進テクノロジー",
+    "adaptiveRouting": {
+      "title": "アダプティブルーティング",
+      "description": "当社独自のアルゴリズムがネットワーク状況をリアルタイムで分析し、ゲームデータの最適な経路を見つけます。"
+    },
+    "performanceAI": {
+      "title": "パフォーマンスAI",
+      "description": "ハードウェア構成と使用パターンに適応し、最適なパフォーマンスを実現する機械学習システム。"
+    },
+    "globalNetwork": {
+      "title": "グローバルネットワーク",
+      "description": "世界中のサーバーインフラを通じて最適化されたルートにアクセスし、どこでも低遅延のゲームを実現します。"
+    }
+  }
+}
+```
+
+### ko-KR.json
+```json
+{
+  "header": {
+    "appName": "GamePath AI",
+    "features": "기능",
+    "technology": "기술", 
+    "pricing": "가격",
+    "login": "로그인",
+    "getStarted": "시작하기"
+  },
+  "technology": {
+    "title": "GamePath AI 기술",
+    "subtitle": "게임 최적화 경험을 지원하는 고급 기술",
+    "adaptiveRouting": {
+      "title": "적응형 라우팅",
+      "description": "독점 알고리즘이 네트워크 상태를 실시간으로 분석하여 게임 데이터의 최적 경로를 찾습니다."
+    },
+    "performanceAI": {
+      "title": "성능 AI",
+      "description": "최적의 성능을 위해 하드웨어 구성 및 사용 패턴에 적응하는 머신 러닝 시스템."
+    },
+    "globalNetwork": {
+      "title": "글로벌 네트워크",
+      "description": "전 세계 서버 인프라를 통한 최적화된 경로로 어디서나 지연 시간이 짧은 게임을 즐길 수 있습니다."
+    }
+  }
+}
+```
+
+### pt-BR.json
+```json
+{
+  "header": {
+    "appName": "GamePath IA",
+    "features": "Recursos",
+    "technology": "Tecnologia", 
+    "pricing": "Preços",
+    "login": "Entrar",
+    "getStarted": "Começar"
+  },
+  "technology": {
+    "title": "Tecnologia GamePath IA",
+    "subtitle": "A tecnologia avançada que impulsiona sua experiência de otimização de jogos",
+    "adaptiveRouting": {
+      "title": "Roteamento Adaptativo",
+      "description": "Nossos algoritmos proprietários analisam as condições da rede em tempo real para encontrar o caminho ideal para seus dados de jogo."
+    },
+    "performanceAI": {
+      "title": "IA de Desempenho",
+      "description": "Sistemas de aprendizado de máquina que se adaptam à configuração do seu hardware e padrões de uso para um desempenho ideal."
+    },
+    "globalNetwork": {
+      "title": "Rede Global",
+      "description": "Acesso a rotas otimizadas em nossa infraestrutura de servidores mundial para jogos com baixa latência em qualquer lugar."
+    }
+  }
+}
+```
+
+### zh-CN.json
+```json
+{
+  "header": {
+    "appName": "GamePath AI",
+    "features": "功能",
+    "technology": "技术", 
+    "pricing": "价格",
+    "login": "登录",
+    "getStarted": "开始使用"
+  },
+  "technology": {
+    "title": "GamePath AI 技术",
+    "subtitle": "为您的游戏优化体验提供支持的先进技术",
+    "adaptiveRouting": {
+      "title": "自适应路由",
+      "description": "我们专有的算法实时分析网络条件，为您的游戏数据找到最佳路径。",
+      "dynamicPathSelection": {
+        "title": "动态路径选择",
+        "description": "根据实时条件自动选择最佳网络路径"
+      },
+      "serverSpecificOptimization": {
+        "title": "服务器优化",
+        "description": "特定游戏服务器的自定义路由配置"
+      },
+      "multiPointRouting": {
+        "title": "多点路由",
+        "description": "使用多个连接点确保最稳定的体验"
+      },
+      "averageLatencyReduction": {
+        "title": "平均延迟降低",
+        "value": "45%"
+      }
+    },
+    "performanceAI": {
+      "title": "性能 AI",
+      "description": "适应您的硬件配置和使用模式的机器学习系统，以实现最佳性能。"
+    },
+    "globalNetwork": {
+      "title": "全球网络",
+      "description": "通过我们的全球服务器基础设施获得优化路线，在任何地方都能低延迟游戏。"
+    },
+    "cta": {
+      "description": "通过我们的自适应游戏技术体验显著的延迟降低和性能提升。",
+      "startFreeTrial": "开始免费试用",
+      "viewPricing": "查看价格"
+    }
+  },
+  "games": {
+    "meta": {
+      "description": "使用 GamePath AI 优化您的 {game} 体验。减少延迟，消除数据包丢失，提高 FPS。"
+    },
+    "notFound": {
+      "title": "找不到游戏",
+      "message": "抱歉，我们找不到关于这款游戏的信息。请检查 URL 或探索我们支持的游戏。"
+    },
+    "hero": {
+      "title": "优化您的 {game} 体验",
+      "subtitle": "通过 GamePath AI 的游戏特定优化，减少延迟，提高 FPS，获得竞争优势。",
+      "optimizeNow": "立即优化",
+      "learnMore": "了解更多"
+    },
+    "metrics": {
+      "latency": "延迟改善",
+      "fps": "FPS 提升",
+      "packetLoss": "数据包丢失减少",
+      "jitter": "抖动减少",
+      "improvement": "提升",
+      "reduction": "减少"
+    },
+    "performanceMetrics": {
+      "title": "{game} 性能指标",
+      "subtitle": "使用 GamePath AI 时，我们的用户在所有关键性能领域都看到显著改善。"
+    },
+    "technicalImprovements": {
+      "title": "{game} 的技术改进",
+      "subtitle": "了解我们的技术为您的游戏体验带来的切实差异。",
+      "before": "优化前",
+      "after": "优化后"
+    },
+    "testimonials": {
+      "title": "{game} 玩家评价",
+      "subtitle": "听听玩家们对 GamePath AI 体验的评价。"
+    },
+    "cta": {
+      "title": "准备好在 {game} 中主宰战场了吗？",
+      "description": "加入数千名通过 GamePath AI 改善游戏体验的 {game} 玩家。实现高达 {latency}% 的延迟降低和 {fps}% 的 FPS 提升。",
+      "latencyReduction": "延迟降低",
+      "fpsImprovement": "FPS 提升",
+      "packetLossReduction": "数据包丢失减少",
+      "tryForFree": "免费试用",
+      "exploreFeatures": "探索功能"
+    },
+    "card": {
+      "viewDetails": "查看详情"
+    }
+  }
+}
+```
+
+## 6. STYLES
+
+### index.css
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-cyber-black text-white;
+  }
+  
+  main {
+    @apply bg-cyber-black;
+  }
+
+  section {
+    @apply py-6 md:py-8;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply mb-4;
+  }
+
+  p {
+    @apply mb-3 leading-relaxed;
+  }
+}
+
+@layer components {
+  .button-light, button[data-theme="light"] {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    color: #121223 !important; 
+    font-weight: 600 !important;
+    border: 1px solid rgba(51, 195, 240, 0.4) !important;
+  }
+  
+  .button-light:hover, button[data-theme="light"]:hover {
+    background-color: #ffffff !important;
+    box-shadow: 0 0 10px rgba(51, 195, 240, 0.4) !important;
+  }
+
+  .cyber-panel {
+    @apply bg-cyber-darkblue border border-cyber-blue/30 rounded-md p-4 shadow-lg shadow-cyber-blue/5 relative my-3;
+  }
+  
+  /* Status tag styles */
+  .tag-fully-optimized, .fully-optimized, [data-status="fully-optimized"] {
+    @apply bg-green-500/20 text-green-400 border border-green-500/30 rounded px-3 py-1 text-xs font-tech shadow-sm shadow-green-500/10;
+  }
+  
+  .tag-network-optimized, .network-optimized, [data-status="network-optimized"] {
+    @apply bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/30 rounded px-3 py-1 text-xs font-tech shadow-sm shadow-cyber-blue/10;
+  }
+  
+  .tag-system-optimized, .system-optimized, [data-status="system-optimized"] {
+    @apply bg-cyber-purple/20 text-cyber-purple border border-cyber-purple/30 rounded px-3 py-1 text-xs font-tech shadow-sm shadow-cyber-purple/10;
+  }
+  
+  .tag-not-optimized, .not-optimized, [data-status="not-optimized"] {
+    @apply bg-gray-500/20 text-gray-400 border border-gray-500/30 rounded px-3 py-1 text-xs font-tech shadow-sm shadow-gray-500/10;
+  }
+  
+  /* Card and container styles */
+  .card, .panel, .metric-card, .game-card, .route-card, .optimization-card, 
+  [class*="card"], [class*="panel"], [class*="container"], .settings-section {
+    @apply bg-cyber-darkblue border border-cyber-blue/40 rounded-md shadow-[0_0_20px_rgba(0,0,0,0.25)] hover:shadow-[0_0_25px_rgba(51,195,240,0.15)] transition-all duration-300 my-3 p-4;
+  }
+  
+  .game-card, .game-container, .detected-game {
+    @apply bg-[#151530] border-cyber-purple/30 hover:border-cyber-purple/50;
+  }
+  
+  h1, h2, h3, h4, h5, .title, .heading {
+    @apply text-white;
+  }
+  
+  .metric-value, .current-value, .numeric-value, [class*="value"] {
+    @apply text-cyber-blue;
+  }
+  
+  /* Chart container sizing fixes */
+  .chart-container, .graph-container, .chart-wrapper {
+    @apply bg-transparent;
+    max-height: 180px !important;
+    height: 100% !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+  
+  /* Section spacing fixes */
+  .dashboard-section, .metrics-container, .games-section, 
+  .optimization-section, .route-section, .connection-section {
+    @apply bg-cyber-black py-4 my-4;
+  }
+
+  /* Settings page spacing */
+  .settings-section {
+    @apply my-2 py-2;
+  }
+
+  .settings-section > div {
+    margin-bottom: 0.5rem !important;
+  }
+
+  .settings-section > h2 {
+    margin-bottom: 0.25rem !important;
+    margin-top: 0.5rem !important;
+  }
+
+  /* Fix spacing in tabs */
+  .tabs-content > div {
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  /* Fix icon sizing */
+  [class*="lucide"], 
+  svg[data-lucide] {
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+  }
+
+  button [class*="lucide"],
+  .button [class*="lucide"],
+  button svg[data-lucide],
+  .button svg[data-lucide] {
+    width: 1rem !important;
+    height: 1rem !important;
+  }
+
+  h1 [class*="lucide"],
+  h2 [class*="lucide"],
+  h3 [class*="lucide"],
+  .heading [class*="lucide"] {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+  }
+
+  /* Neon text effects */
+  .neon-blue {
+    @apply text-cyber-blue drop-shadow-[0_0_8px_rgba(51,195,240,0.8)];
+  }
+  
+  .neon-purple {
+    @apply text-cyber-purple drop-shadow-[0_0_8px_rgba(139,92,246,0.8)];
+  }
+
+  .neon-green {
+    @apply text-cyber-green drop-shadow-[0_0_8px_rgba(16,185,129,0.8)];
+  }
+
+  .neon-pink {
+    @apply text-cyber-pink drop-shadow-[0_0_8px_rgba(236,72,153,0.8)];
+  }
+  
+  .font-tech {
+    @apply font-mono tracking-wide;
+  }
+
+  /* Pricing card effects */
+  .pricing-card {
+    @apply transition-all duration-300 hover:translate-y-[-5px];
+  }
+
+  /* Upgrade button scan line animation */
+  .upgrade-pro-btn .scan-line {
+    position: absolute;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, transparent, rgba(51, 195, 240, 0.8), transparent);
+    animation: laser-scan 3s ease-in-out infinite;
+    z-index: 10;
+  }
+
+  @keyframes laser-scan {
+    0%, 100% {
+      top: -100%;
+      opacity: 0;
+    }
+    25%, 75% {
+      opacity: 1;
+    }
+    50% {
+      top: 110%;
+      opacity: 1;
+    }
+  }
+
+  /* Feature card styles */
+  .feature-card {
+    @apply p-4 rounded-lg bg-cyber-darkblue border border-cyber-blue/30 shadow-lg hover:shadow-[0_0_20px_rgba(51,195,240,0.2)] transition-all duration-300 my-4;
+  }
+
+  .feature-icon {
+    @apply w-12 h-12 rounded-full flex items-center justify-center mb-3;
+  }
+
+  /* Testimonial card styles */
+  .testimonial-card {
+    @apply rounded-lg border border-cyber-blue/30 bg-cyber-darkblue/50 p-4 shadow-lg hover:shadow-[0_0_20px_rgba(51,195,240,0.15)] transition-all duration-300 my-2;
+  }
+
+  /* Layout spacing */
+  .feature-grid {
+    @apply grid gap-6 md:gap-8 my-8;
+  }
+
+  .cta-section {
+    @apply py-12 md:py-16 my-8;
+  }
+
+  /* Tab container styles */
+  .tabs-container {
+    @apply bg-cyber-darkblue/80 border border-cyber-blue/30 rounded-lg shadow-[0_0_35px_rgba(0,0,0,0.35)] p-4;
+  }
+  
+  /* Visualization container styles */
+  .visualization-container {
+    @apply relative bg-cyber-darkblue/80 border border-cyber-blue/30 rounded-lg overflow-hidden shadow-[0_0_25px_rgba(51,195,240,0.2)] min-h-[240px] flex items-center justify-center;
+  }
+
+  /* Feature page visualization */
+  .feature-page-visualization {
+    @apply min-h-[260px] border-2 border-cyber-blue/50 shadow-[0_0_30px_rgba(51,195,240,0.3)];
+  }
+  
+  /* Animation effects */
+  .animated-feature {
+    @apply transition-all duration-700 transform;
+  }
+  
+  .animated-feature:hover {
+    @apply scale-105;
+  }
+  
+  /* Core tech item styles */
+  .core-tech-item {
+    @apply my-6 p-4 rounded-lg border border-cyber-blue/30 shadow-[0_0_25px_rgba(0,0,0,0.3)] hover:shadow-[0_0_30px_rgba(51,195,240,0.25)] transition-all duration-500;
+  }
+  
+  /* Pulse glow animation */
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 15px rgba(51, 195, 240, 0.2);
+    }
+    50% {
+      box-shadow: 0 0 30px rgba(51, 195, 240, 0.5);
+    }
+  }
+  
+  .pulse-glow {
+    animation: pulse-glow 3s infinite ease-in-out;
+  }
+
+  /* Recharts-specific fixes */
+  .recharts-responsive-container {
+    max-height: 180px !important;
+    height: 100% !important;
+  }
+
+  .recharts-surface {
+    overflow: visible;
+  }
+
+  /* Make sure axis labels are readable */
+  .recharts-cartesian-axis-tick text {
+    font-size: 10px !important;
+    fill: rgba(255, 255, 255, 0.8) !important;
+  }
+
+  /* Fix tooltip styles */
+  .recharts-tooltip-wrapper {
+    z-index: 1000 !important;
+  }
+
+  .recharts-tooltip-item {
+    display: flex;
+    align-items: center;
+    margin: 4px 0;
+  }
+
+  /* Fix dot rendering */
+  .recharts-dot {
+    r: 2px !important;
+  }
+
+  .recharts-active-dot {
+    r: 4px !important;
+  }
+
+  /* Fix stroke width for lines */
+  .recharts-line .recharts-curve {
+    stroke-width: 2px !important;
+  }
+
+  /* Advanced Optimizer page fixes */
+  .advanced-optimizer-page .chart-container,
+  .machine-learning-summary .chart-container,
+  .performance-page .chart-container {
+    max-height: 180px !important;
+  }
+
+  /* Nested spacing reduction */
+  .space-y-6 > .space-y-4,
+  .space-y-5 > .space-y-4 {
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .space-y-8 {
+    margin-top: 1rem;
+  }
+  
+  .space-y-8 > * {
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+}
+```
+
+## 7. UTILITIES
+
+### utils.ts
+```typescript
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+```
+
+## 8. LAYOUTS
+
+### AccountLayout.tsx
+```typescript
+import React from "react";
+import Layout from "@/components/Layout";
+
+interface AccountLayoutProps {
+  children: React.ReactNode;
+  requireSubscription?: boolean;
+}
+
+const AccountLayout: React.FC<AccountLayoutProps> = ({ children, requireSubscription = false }) => {
+  return (
+    <Layout requireSubscription={requireSubscription}>
+      <div className="w-full max-w-7xl mx-auto px-4">
+        {children}
+      </div>
+    </Layout>
+  );
+};
+
+export default AccountLayout;
+```
+
+## 9. PAGES
+
+### PaymentMethods.tsx
+```typescript
+import React, { useState } from "react";
+import { Helmet } from "react-helmet-async";
+import { useNavigate } from "react-router-dom";
+import AccountLayout from "@/components/Layout/AccountLayout";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { 
+  CreditCard, 
+  Plus, 
+  Shield,
+  AlertTriangle,
+  Trash2,
+  ArrowLeft,
+  Lock
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { useSubscription } from "@/hooks/use-subscription";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const PaymentMethods = () => {
+  const navigate = useNavigate();
+  const { 
+    paymentMethods, 
+    isLoading, 
+    addPaymentMethod, 
+    setDefaultPaymentMethod, 
+    deletePaymentMethod 
+  } = useSubscription();
+  
+  const [isAddingCard, setIsAddingCard] = useState(false);
+  const [cardToDelete, setCardToDelete] = useState<string | null>(null);
+  
+  const [newCard, setNewCard] = useState({
+    cardNumber: "",
+    cardholderName: "",
+    expiryMonth: "",
+    expiryYear: "",
+    cvc: "",
+    brand: "visa" // Default brand for demonstration
+  });
+
+  const handleGoBack = () => {
+    navigate("/account");
+  };
+
+  const handleAddCard = async () => {
+    try {
+      // Basic form validation
+      if (!newCard.cardholderName || !newCard.cardNumber || !newCard.expiryMonth || 
+          !newCard.expiryYear || !newCard.cvc) {
+        toast.error("Please fill out all fields");
+        return;
+      }
+      
+      // In a real implementation, this would call your API to add the card
+      await addPaymentMethod({
+        ...newCard,
+        last4: newCard.cardNumber.slice(-4)
+      });
+      
+      setIsAddingCard(false);
+      
+      // Reset form
+      setNewCard({
+        cardNumber: "",
+        cardholderName: "",
+        expiryMonth: "",
+        expiryYear: "",
+        cvc: "",
+        brand: "visa"
+      });
+    } catch (error) {
+      console.error("Failed to add payment method:", error);
+    }
+  };
+
+  const handleDeleteCard = async (id: string) => {
+    try {
+      await deletePaymentMethod(id);
+      setCardToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete payment method:", error);
+    }
+  };
+
+  const handleSetDefault = async (id: string) => {
+    try {
+      await setDefaultPaymentMethod(id);
+    } catch (error) {
+      console.error("Failed to set default payment method:", error);
+    }
+  };
+
+  const formatExpiryDate = (month: number, year: number) => {
+    return `${month.toString().padStart(2, '0')}/${year.toString().slice(-2)}`;
+  };
+
+  const isExpiryInvalid = (month: number, year: number) => {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+    
+    return (year < currentYear || (year === currentYear && month < currentMonth));
+  };
+
+  return (
+    <AccountLayout requireSubscription>
+      <Helmet>
+        <title>Payment Methods | GamePath AI</title>
+      </Helmet>
+
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="mb-2"
+              onClick={handleGoBack}
+            >
+              <ArrowLeft size={16} className="mr-1" />
+              Back to Account
+            </Button>
+            <h1 className="text-2xl font-bold text-white">Payment Methods</h1>
+            <p className="text-gray-400">Manage your payment options for GamePath AI</p>
+          </div>
+          <Dialog open={isAddingCard} onOpenChange={setIsAddingCard}>
+            <DialogTrigger asChild>
+              <Button variant="cyberAction">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Payment Method
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px] bg-cyber-darkblue border-cyber-blue/30">
+              <DialogHeader>
+                <DialogTitle>Add Payment Method</DialogTitle>
+                <DialogDescription>
+                  Enter your card details to add a new payment method.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="cardholderName">Cardholder Name</Label>
+                  <Input
+                    id="cardholderName"
+                    placeholder="Name on card"
+                    value={newCard.cardholderName}
+                    onChange={(e) => setNewCard({...newCard, cardholderName: e.target.value})}
+                    className="bg-cyber-darkblue border-gray-700"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="cardNumber">Card Number</Label>
+                  <Input
+                    id="cardNumber"
+                    placeholder="1234 5678 9012 3456"
+                    value={newCard.cardNumber}
+                    onChange={(e) => setNewCard({...newCard, cardNumber: e.target.value})}
+                    className="bg-cyber-darkblue border-gray-700"
+                  />
+                </div>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="expiryMonth">Expiry Month</Label>
+                    <Select
+                      value={newCard.expiryMonth}
+                      onValueChange={(value) => setNewCard({...newCard, expiryMonth: value})}
+                    >
+                      <SelectTrigger className="bg-cyber-darkblue border-gray-700">
+                        <SelectValue placeholder="MM" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-cyber-darkblue border-gray-700">
+                        {Array.from({length: 12}, (_, i) => i + 1).map((month) => (
+                          <SelectItem key={month} value={month.toString()}>
+                            {month.toString().padStart(2, '0')}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="expiryYear">Expiry Year</Label>
+                    <Select
+                      value={newCard.expiryYear}
+                      onValueChange={(value) => setNewCard({...newCard, expiryYear: value})}
+                    >
+                      <SelectTrigger className="bg-cyber-darkblue border-gray-700">
+                        <SelectValue placeholder="YY" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-cyber-darkblue border-gray-700">
+                        {Array.from({length: 10}, (_, i) => new Date().getFullYear() + i).map((year) => (
+                          <SelectItem key={year} value={year.toString()}>
+                            {year}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="cvc">CVC</Label>
+                    <Input
+                      id="cvc"
+                      placeholder="123"
+                      value={newCard.cvc}
+                      onChange={(e) => setNewCard({...newCard, cvc: e.target.value})}
+                      className="bg-cyber-darkblue border-gray-700"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="cardBrand">Card Type</Label>
+                  <Select
+                    value={newCard.brand}
+                    onValueChange={(value) => setNewCard({...newCard, brand: value})}
+                  >
+                    <SelectTrigger className="bg-cyber-darkblue border-gray-700">
+                      <SelectValue placeholder="Select card type" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-cyber-darkblue border-gray-700">
+                      <SelectItem value="visa">Visa</SelectItem>
+                      <SelectItem value="mastercard">Mastercard</SelectItem>
+                      <SelectItem value="amex">American Express</SelectItem>
+                      <SelectItem value="discover">Discover</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <DialogFooter>
+                <div className="flex items-center text-xs text-gray-400 mb-3 w-full">
+                  <Lock className="h-3 w-3 mr-1" />
+                  Your payment information is securely encrypted
+                </div>
+                <div className="flex gap-3 w-full">
+                  <Button variant="outline" onClick={() => setIsAddingCard(false)} className="flex-1">
+                    Cancel
+                  </Button>
+                  <Button variant="cyberAction" onClick={handleAddCard} className="flex-1">
+                    Add Card
+                  </Button>
+                </div>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        <Card className="border-cyber-blue/30 bg-cyber-darkblue/60">
+          <CardHeader className="border-b border-gray-800">
+            <h2 className="text-xl font-semibold">Your Payment Methods</h2>
+          </CardHeader>
+          
+          <CardContent className="pt-6">
+            <div className="space-y-6">
+              {isLoading ? (
+                // Loading state
+                Array.from({ length: 2 }).map((_, index) => (
+                  <div key={index} className="p-4 border rounded-lg border-gray-700 bg-cyber-darkblue/50">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <Skeleton className="w-12 h-8 rounded-md" />
+                        <div>
+                          <Skeleton className="h-5 w-32 mb-2" />
+                          <Skeleton className="h-4 w-24" />
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Skeleton className="h-8 w-24" />
+                        <Skeleton className="h-8 w-8" />
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : paymentMethods.length > 0 ? (
+                paymentMethods.map((method) => (
+                  <div 
+                    key={method.id} 
+                    className={`p-4 border rounded-lg flex items-center justify-between
+                      ${method.isDefault 
+                        ? 'border-cyber-blue bg-cyber-blue/10' 
+                        : 'border-gray-700 bg-cyber-darkblue'
+                      }
+                    `}
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-8 bg-gray-800 rounded-md flex items-center justify-center">
+                        <CreditCard className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <div>
+                        <div className="font-medium capitalize flex items-center">
+                          {method.brand} •••• {method.last4}
+                          {method.isDefault && (
+                            <Badge variant="cyber" className="ml-2 py-0">Default</Badge>
+                          )}
+                        </div>
+                        <div className="text-sm text-gray-400 flex items-center space-x-2">
+                          <span>Expires {formatExpiryDate(method.expMonth || 0, method.expYear || 0)}</span>
+                          {isExpiryInvalid(method.expMonth || 0, method.expYear || 0) && (
+                            <span className="text-cyber-red flex items-center">
+                              <AlertTriangle className="h-3 w-3 mr-1" />
+                              Expired
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      {!method.isDefault && (
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleSetDefault(method.id)}
+                        >
+                          Set Default
+                        </Button>
+                      )}
+                      
+                      <AlertDialog open={cardToDelete === method.id} onOpenChange={(open) => {
+                        if (!open) setCardToDelete(null);
+                      }}>
+                        <Button 
+                          variant="destructive" 
+                          size="sm"
+                          onClick={() => setCardToDelete(method.id)}
+                          disabled={paymentMethods.length === 1}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                        <AlertDialogContent className="bg-cyber-darkblue border-cyber-blue/30">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Remove Payment Method</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to remove this payment method?
+                              {method.isDefault && (
+                                <p className="mt-2 text-cyber-red">
+                                  This is your default payment method. Removing it will affect your subscription.
+                                </p>
+                              )}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction 
+                              onClick={() => handleDeleteCard(method.id)}
+                              className="bg-cyber-red hover:bg-cyber-red/80"
+                            >
+                              Remove
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center p-12">
+                  <CreditCard className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                  <h3 className="text-lg font-medium mb-2">No Payment Methods</h3>
+                  <p className="text-gray-400 mb-4">
+                    You haven't added any payment methods yet.
+                  </p>
+                  <Button variant="cyberAction" onClick={() => setIsAddingCard(true)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Payment Method
+                  </Button>
+                </div>
+              )}
+            </div>
+          </CardContent>
+          <CardFooter className="border-t border-gray-800 pt-6 flex flex-col items-start">
+            <div className="bg-cyber-darkblue/50 border border-cyber-blue/20 rounded-lg p-4 w-full">
+              <div className="flex items-start">
+                <div className="bg-cyber-blue/20 p-2 rounded-full mr-4">
+                  <Shield className="h-5 w-5 text-cyber-blue" />
+                </div>
+                <div>
+                  <h5 className="font-medium text-sm">Secure Payment Processing</h5>
+                  <p className="text-sm text-gray-400 mt-1">
+                    Your payment information is securely encrypted and stored with bank-level security. 
+                    We never store your full card details on our servers.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardFooter>
+        </Card>
+      </div>
+    </AccountLayout>
+  );
+};
+
+export default PaymentMethods;
+```
+
+## 10. ENTRY POINT
+
+### main.tsx
+```typescript
+import { createRoot } from 'react-dom/client';
+import { I18nextProvider } from 'react-i18next';
+import i18n from './lib/i18n';
+import App from './App.tsx';
+import './index.css';
+
+// Importar a fonte Inter
+import '@fontsource/inter/400.css';  // Fonte regular
+import '@fontsource/inter/600.css';  // Fonte semi-bold
+import '@fontsource/inter/700.css';  // Fonte bold
+
+// Import i18n configuration before rendering the app
+import './lib/i18n.ts';
+import { CheckoutProvider } from './contexts/CheckoutContext';
+
+createRoot(document.getElementById("root")!).render(
+  <I18nextProvider i18n={i18n}>
+    <CheckoutProvider>
+      <App />
+    </CheckoutProvider>
+  </I18nextProvider>
+);
+```
