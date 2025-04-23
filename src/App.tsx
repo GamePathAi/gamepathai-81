@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import NetworkMetrics from "./pages/NetworkMetrics";
@@ -53,52 +53,50 @@ const App = () => (
           <SubscriptionProvider>
             <Toaster />
             <Sonner />
-            <BrowserRouter>
-              <Routes>
-                {/* Auth Routes */}
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                
-                {/* Dashboard Routes */}
-                <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                <Route path="/dashboard" element={<Index />} />
-                <Route path="/network-metrics" element={<NetworkMetrics />} />
-                <Route path="/system-optimization" element={<SystemOptimization />} />
-                <Route path="/route-optimizer" element={<RouteOptimizerPage />} />
-                <Route path="/performance" element={<Performance />} />
-                <Route path="/advanced-optimizer" element={<AdvancedOptimizer />} />
-                <Route path="/vpn-integration" element={<VPNIntegration />} />
-                <Route path="/power-manager" element={<PowerManager />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/subscription" element={<SubscriptionManagement />} />
-                <Route path="/account/subscription" element={<AccountSubscription />} />
-                
-                {/* Account Related Routes */}
-                <Route path="/account" element={<Account />} />
-                <Route path="/account/payment-methods" element={<PaymentMethods />} />
-                <Route path="/account/billing-history" element={<BillingHistory />} />
-                <Route path="/account/change-plan" element={<ChangePlan />} />
-                <Route path="/account/cancel-subscription" element={<CancelSubscription />} />
-                
-                {/* Checkout Routes */}
-                <Route path="/checkout/plan" element={<CheckoutPlanPage />} />
-                <Route path="/checkout/payment" element={<CheckoutPaymentPage />} />
-                <Route path="/checkout/processing" element={<CheckoutProcessingPage />} />
-                <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
-                
-                {/* Landing Pages */}
-                <Route path="/landing" element={<HomePage />} />
-                <Route path="/features" element={<FeaturesPage />} />
-                <Route path="/pricing" element={<PricingPage />} />
-                <Route path="/technology" element={<TechnologyPage />} />
-                
-                {/* Game-specific Landing Pages */}
-                <Route path="/games/:gameName" element={<GamePage />} />
-                
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
+            <Routes>
+              {/* Auth Routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              
+              {/* Dashboard Routes */}
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/dashboard" element={<Index />} />
+              <Route path="/network-metrics" element={<NetworkMetrics />} />
+              <Route path="/system-optimization" element={<SystemOptimization />} />
+              <Route path="/route-optimizer" element={<RouteOptimizerPage />} />
+              <Route path="/performance" element={<Performance />} />
+              <Route path="/advanced-optimizer" element={<AdvancedOptimizer />} />
+              <Route path="/vpn-integration" element={<VPNIntegration />} />
+              <Route path="/power-manager" element={<PowerManager />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/subscription" element={<SubscriptionManagement />} />
+              <Route path="/account/subscription" element={<AccountSubscription />} />
+              
+              {/* Account Related Routes */}
+              <Route path="/account" element={<Account />} />
+              <Route path="/account/payment-methods" element={<PaymentMethods />} />
+              <Route path="/account/billing-history" element={<BillingHistory />} />
+              <Route path="/account/change-plan" element={<ChangePlan />} />
+              <Route path="/account/cancel-subscription" element={<CancelSubscription />} />
+              
+              {/* Checkout Routes */}
+              <Route path="/checkout/plan" element={<CheckoutPlanPage />} />
+              <Route path="/checkout/payment" element={<CheckoutPaymentPage />} />
+              <Route path="/checkout/processing" element={<CheckoutProcessingPage />} />
+              <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
+              
+              {/* Landing Pages */}
+              <Route path="/landing" element={<HomePage />} />
+              <Route path="/features" element={<FeaturesPage />} />
+              <Route path="/pricing" element={<PricingPage />} />
+              <Route path="/technology" element={<TechnologyPage />} />
+              
+              {/* Game-specific Landing Pages */}
+              <Route path="/games/:gameName" element={<GamePage />} />
+              
+              <Route path="*" element={<NotFound />} />
+            </Routes>
           </SubscriptionProvider>
         </NotificationProvider>
       </TooltipProvider>
