@@ -1,11 +1,69 @@
 
 import React from "react";
 import { Helmet } from "react-helmet-async";
+import { useNavigate } from "react-router-dom";
 import LandingLayout from "@/components/Layout/LandingLayout";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Download, Activity, Wifi, UserRound, Video, BookOpen, UsersRound, Mail } from "lucide-react";
 
 const SupportPage = () => {
+  const navigate = useNavigate();
+
+  const commonIssues = [
+    {
+      icon: Download,
+      title: "Installation Problems",
+      description: "Get help with installation, compatibility, and setup",
+      path: "/support/installation"
+    },
+    {
+      icon: Activity,
+      title: "Performance Issues",
+      description: "Optimize your gaming performance and resolve bottlenecks",
+      path: "/support/performance"
+    },
+    {
+      icon: Wifi,
+      title: "Network Connectivity",
+      description: "Resolve connection issues and optimize your network",
+      path: "/support/network"
+    },
+    {
+      icon: UserRound,
+      title: "Account Management",
+      description: "Manage your account, subscriptions, and settings",
+      path: "/support/account"
+    }
+  ];
+
+  const supportResources = [
+    {
+      icon: Video,
+      title: "Video Tutorials",
+      description: "Learn through step-by-step video guides",
+      path: "/support/tutorials"
+    },
+    {
+      icon: BookOpen,
+      title: "Knowledge Base",
+      description: "Browse our comprehensive documentation",
+      path: "/support/knowledge-base"
+    },
+    {
+      icon: UsersRound,
+      title: "Community Forums",
+      description: "Connect with other users and share solutions",
+      path: "/support/community"
+    },
+    {
+      icon: Mail,
+      title: "Contact Support",
+      description: "Get direct assistance from our support team",
+      path: "/support/contact"
+    }
+  ];
+
   return (
     <LandingLayout>
       <Helmet>
@@ -21,33 +79,56 @@ const SupportPage = () => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 mb-12">
-            <Card>
+            <Card className="bg-cyber-darkblue border-cyber-blue/30">
               <CardHeader>
-                <CardTitle>Common Issues</CardTitle>
+                <CardTitle className="text-white">Common Issues</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <Button variant="cyberOutline" className="w-full">Installation Problems</Button>
-                  <Button variant="cyberOutline" className="w-full">Performance Issues</Button>
-                  <Button variant="cyberOutline" className="w-full">Network Connectivity</Button>
-                  <Button variant="cyberOutline" className="w-full">Account Management</Button>
-                </div>
+              <CardContent className="space-y-4">
+                {commonIssues.map((issue, index) => (
+                  <Button
+                    key={index}
+                    variant="cyberOutline"
+                    className="w-full justify-start gap-3"
+                    onClick={() => navigate(issue.path)}
+                  >
+                    <issue.icon className="w-5 h-5" />
+                    {issue.title}
+                  </Button>
+                ))}
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-cyber-darkblue border-cyber-blue/30">
               <CardHeader>
-                <CardTitle>Support Resources</CardTitle>
+                <CardTitle className="text-white">Support Resources</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <Button variant="cyberOutline" className="w-full">Video Tutorials</Button>
-                  <Button variant="cyberOutline" className="w-full">Knowledge Base</Button>
-                  <Button variant="cyberOutline" className="w-full">Community Forums</Button>
-                  <Button variant="cyberOutline" className="w-full">Contact Support</Button>
-                </div>
+              <CardContent className="space-y-4">
+                {supportResources.map((resource, index) => (
+                  <Button
+                    key={index}
+                    variant="cyberOutline"
+                    className="w-full justify-start gap-3"
+                    onClick={() => navigate(resource.path)}
+                  >
+                    <resource.icon className="w-5 h-5" />
+                    {resource.title}
+                  </Button>
+                ))}
               </CardContent>
             </Card>
+          </div>
+
+          <div className="text-center">
+            <p className="text-gray-400 mb-4">
+              Need immediate assistance? Our support team is available 24/7.
+            </p>
+            <Button 
+              variant="cyberAction"
+              onClick={() => navigate("/support/contact")}
+            >
+              <Mail className="w-5 h-5 mr-2" />
+              Contact Support
+            </Button>
           </div>
         </div>
       </div>

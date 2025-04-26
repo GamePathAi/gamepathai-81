@@ -50,7 +50,7 @@ import SupportPage from "./pages/resources/SupportPage";
 import StatusPage from "./pages/resources/StatusPage";
 import FaqPage from "./pages/resources/FaqPage";
 import QuickStartGuide from "./pages/resources/docs/QuickStartGuide";
-import Installation from "./pages/resources/docs/Installation";
+import InstallationPage from "./pages/resources/docs/Installation";
 import BasicConfiguration from "./pages/resources/docs/BasicConfiguration";
 import PerformanceTuning from "./pages/resources/docs/PerformanceTuning";
 import NetworkOptimization from "./pages/resources/docs/NetworkOptimization";
@@ -120,12 +120,13 @@ const App = () => (
               {/* Resources Pages */}
               <Route path="/docs" element={<DocumentationPage />} />
               <Route path="/support" element={<SupportPage />} />
+              <Route path="/support/installation" element={<InstallationPage />} />
               <Route path="/status" element={<StatusPage />} />
               <Route path="/faq" element={<FaqPage />} />
               
               {/* Documentation Routes */}
               <Route path="/docs/quick-start" element={<QuickStartGuide />} />
-              <Route path="/docs/installation" element={<Installation />} />
+              <Route path="/docs/installation" element={<InstallationPage />} />
               <Route path="/docs/basic-configuration" element={<BasicConfiguration />} />
               <Route path="/docs/performance-tuning" element={<PerformanceTuning />} />
               <Route path="/docs/network-optimization" element={<NetworkOptimization />} />
