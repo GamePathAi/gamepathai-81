@@ -1,6 +1,6 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
-import { Network, Shield, Globe, Server, Cpu } from "lucide-react";
+import { Network, Shield, Globe, Server, Cpu, Zap } from "lucide-react";
 
 export const AdaptiveRoutingSection: React.FC = () => {
   return (
