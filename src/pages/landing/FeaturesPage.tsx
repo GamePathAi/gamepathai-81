@@ -1,10 +1,11 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import LandingLayout from "@/components/landing/LandingLayout";
 import FeatureSection from "@/components/landing/FeatureSection";
-import { Sparkles, ShieldCheck, Rocket, Users, Code, Cloud } from "lucide-react";
+import { Sparkles, ShieldCheck, Rocket, Users, Code, Cloud, Globe } from "lucide-react";
 
 const FeaturesPage: React.FC = () => {
   return (
