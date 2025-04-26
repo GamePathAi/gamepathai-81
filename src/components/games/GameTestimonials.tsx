@@ -1,40 +1,25 @@
 
-import React from "react";
-import { useTranslation } from "react-i18next";
-import { GameData } from "@/hooks/useGameData";
-import { Star } from "lucide-react";
+import React from 'react';
+import { GameData } from '@/hooks/useGameData';
+import { Star } from 'lucide-react';
 
 interface GameTestimonialsProps {
   game: GameData;
 }
 
 const GameTestimonials: React.FC<GameTestimonialsProps> = ({ game }) => {
-  const { t } = useTranslation();
-  
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }).map((_, i) => (
-      <Star
-        key={i}
-        size={16}
-        fill={i < rating ? "#33C3F0" : "none"}
-        className={i < rating ? "text-cyber-blue" : "text-gray-500"}
-      />
-    ));
-  };
-
   return (
-    <section className="py-16 bg-cyber-darkblue relative">
-      {/* Background accents */}
-      <div className="absolute left-0 top-1/4 w-64 h-64 bg-cyber-blue/10 rounded-full blur-[100px] -z-10"></div>
-      <div className="absolute right-0 bottom-1/4 w-80 h-80 bg-cyber-purple/10 rounded-full blur-[100px] -z-10"></div>
-      
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold font-tech text-white mb-4">
-            {t('games.testimonials.title', { game: game.name })}
+    <section className="py-20 bg-cyber-darkblue">
+      <div className="container mx-auto px-6">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 font-tech">
+            What Players Say About{" "}
+            <span className="bg-gradient-to-r from-cyber-blue to-cyber-purple text-transparent bg-clip-text">
+              {game.name}
+            </span>
           </h2>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-            {t('games.testimonials.subtitle')}
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            Real feedback from gamers who have enhanced their {game.name} experience with GamePath AI
           </p>
         </div>
         
@@ -42,37 +27,38 @@ const GameTestimonials: React.FC<GameTestimonialsProps> = ({ game }) => {
           {game.testimonials.map((testimonial) => (
             <div 
               key={testimonial.id} 
-              className="bg-cyber-cardblue border border-cyber-blue/20 p-6 rounded-lg relative"
+              className="bg-cyber-cardblue border border-cyber-blue/30 rounded-xl p-6 hover:border-cyber-blue/60 transition-all"
             >
-              {/* Quote top accent */}
-              <div className="absolute -top-3 -left-3 text-cyber-blue/20 text-6xl">"</div>
-              
-              <div className="mb-4 flex">
-                {renderStars(testimonial.rating)}
-              </div>
-              
-              <p className="text-gray-300 mb-6 relative z-10">"{testimonial.quote}"</p>
-              
-              <div className="flex items-center mt-4">
+              <div className="flex items-center mb-4">
                 {testimonial.avatar ? (
                   <img 
                     src={testimonial.avatar} 
                     alt={testimonial.name} 
-                    className="w-12 h-12 rounded-full border-2 border-cyber-blue/30 mr-4"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
+                    className="w-12 h-12 rounded-full mr-4 object-cover border border-cyber-blue/30"
                   />
                 ) : (
-                  <div className="w-12 h-12 rounded-full bg-cyber-blue/20 border-2 border-cyber-blue/30 flex items-center justify-center text-cyber-blue mr-4">
-                    {testimonial.name.charAt(0)}
+                  <div className="w-12 h-12 rounded-full mr-4 bg-cyber-blue/20 flex items-center justify-center border border-cyber-blue/30">
+                    <span className="text-cyber-blue font-bold text-lg">
+                      {testimonial.name.charAt(0)}
+                    </span>
                   </div>
                 )}
                 
                 <div>
-                  <div className="font-tech text-white">{testimonial.name}</div>
-                  <div className="text-cyber-blue text-xs">{testimonial.role}</div>
+                  <h4 className="font-bold text-white">{testimonial.name}</h4>
+                  <p className="text-sm text-gray-400">{testimonial.role}</p>
                 </div>
+              </div>
+              
+              <p className="text-gray-300 mb-4 italic">"{testimonial.quote}"</p>
+              
+              <div className="flex">
+                {[...Array(5)].map((_, i) => (
+                  <Star 
+                    key={i}
+                    className={`h-5 w-5 ${i < testimonial.rating ? 'text-cyber-blue fill-cyber-blue' : 'text-gray-600'}`}
+                  />
+                ))}
               </div>
             </div>
           ))}

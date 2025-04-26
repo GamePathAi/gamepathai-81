@@ -1,154 +1,72 @@
 
-import React from "react";
-import { useTranslation } from "react-i18next";
-import { GameData } from "@/hooks/useGameData";
-import MetricCard from "@/components/MetricCard";
-import { LineChart, Activity, Zap, WifiOff } from "lucide-react";
-import MetricChart from "@/components/MetricChart";
+import React from 'react';
+import { GameData } from '@/hooks/useGameData';
+import { ArrowTrendingUp, ActivitySquare, Signal, WifiOff } from 'lucide-react';
 
 interface GamePerformanceMetricsProps {
   game: GameData;
 }
 
 const GamePerformanceMetrics: React.FC<GamePerformanceMetricsProps> = ({ game }) => {
-  const { t } = useTranslation();
-
-  // Mock data for charts
-  const latencyData = [
-    { time: "Before", value: 100 },
-    { time: "", value: 95 },
-    { time: "", value: 98 },
-    { time: "", value: 90 },
-    { time: "", value: 95 },
-    { time: "", value: 85 },
-    { time: "After", value: 50 },
-    { time: "", value: 55 },
-    { time: "", value: 48 },
-    { time: "", value: 52 },
-    { time: "", value: 49 },
-    { time: "", value: 51 }
-  ];
-
-  const fpsData = [
-    { time: "Before", value: 60 },
-    { time: "", value: 55 },
-    { time: "", value: 65 },
-    { time: "", value: 58 },
-    { time: "", value: 62 },
-    { time: "", value: 57 },
-    { time: "After", value: 120 },
-    { time: "", value: 118 },
-    { time: "", value: 125 },
-    { time: "", value: 130 },
-    { time: "", value: 122 },
-    { time: "", value: 128 }
-  ];
-
-  const packetLossData = [
-    { time: "Before", value: 5 },
-    { time: "", value: 4.5 },
-    { time: "", value: 6 },
-    { time: "", value: 5.8 },
-    { time: "", value: 5.2 },
-    { time: "", value: 5.9 },
-    { time: "After", value: 0.5 },
-    { time: "", value: 0.4 },
-    { time: "", value: 0.6 },
-    { time: "", value: 0.3 },
-    { time: "", value: 0.5 },
-    { time: "", value: 0.4 }
-  ];
-
-  const jitterData = [
-    { time: "Before", value: 12 },
-    { time: "", value: 14 },
-    { time: "", value: 11 },
-    { time: "", value: 13 },
-    { time: "", value: 15 },
-    { time: "", value: 12 },
-    { time: "After", value: 3 },
-    { time: "", value: 3.5 },
-    { time: "", value: 2.8 },
-    { time: "", value: 3.2 },
-    { time: "", value: 2.9 },
-    { time: "", value: 3.1 }
+  const { performanceMetrics } = game;
+  
+  const metrics = [
+    {
+      title: "Latency Improvement",
+      value: `${performanceMetrics.latencyImprovement}%`,
+      description: "Lower ping time to game servers",
+      icon: <Signal className="h-6 w-6 text-cyber-blue" />
+    },
+    {
+      title: "FPS Improvement",
+      value: `${performanceMetrics.fpsImprovement}%`,
+      description: "Higher and more stable frame rates",
+      icon: <ActivitySquare className="h-6 w-6 text-cyber-purple" />
+    },
+    {
+      title: "Packet Loss Reduction",
+      value: `${performanceMetrics.packetLossReduction}%`,
+      description: "Fewer dropped packets for smoother gameplay",
+      icon: <WifiOff className="h-6 w-6 text-cyber-green" />
+    },
+    {
+      title: "Jitter Reduction",
+      value: `${performanceMetrics.jitterReduction}%`,
+      description: "More consistent connection quality",
+      icon: <ArrowTrendingUp className="h-6 w-6 text-cyber-blue" />
+    }
   ];
 
   return (
-    <section className="py-16 bg-cyber-black">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold font-tech text-white mb-4">
-            {t('games.performanceMetrics.title', { game: game.name })}
+    <section className="py-20 bg-cyber-darkblue">
+      <div className="container mx-auto px-6">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 font-tech">
+            Performance Metrics for{" "}
+            <span className="bg-gradient-to-r from-cyber-blue to-cyber-purple text-transparent bg-clip-text">
+              {game.name}
+            </span>
           </h2>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-            {t('games.performanceMetrics.subtitle')}
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            Our AI-driven optimization delivers measurable improvements
+            across all performance metrics for {game.name}.
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <MetricCard
-            title={t('games.metrics.latency')}
-            value={`${game.performanceMetrics.latencyImprovement}%`}
-            icon={<Activity className="h-5 w-5" />}
-            trend="down"
-            trendValue={t('games.metrics.improvement')}
-            chartComponent={
-              <MetricChart 
-                data={latencyData} 
-                metricType="ping"
-                height={80}
-              />
-            }
-          />
-          
-          <MetricCard
-            title={t('games.metrics.fps')}
-            value={`${game.performanceMetrics.fpsImprovement}%`}
-            icon={<LineChart className="h-5 w-5" />}
-            trend="up"
-            trendValue={t('games.metrics.improvement')}
-            chartComponent={
-              <MetricChart 
-                data={fpsData}
-                metricType="fps"
-                color="#10B981"
-                height={80}
-              />
-            }
-          />
-          
-          <MetricCard
-            title={t('games.metrics.packetLoss')}
-            value={`${game.performanceMetrics.packetLossReduction}%`}
-            icon={<WifiOff className="h-5 w-5" />}
-            trend="down"
-            trendValue={t('games.metrics.reduction')}
-            chartComponent={
-              <MetricChart 
-                data={packetLossData}
-                metricType="packet-loss"
-                color="#F43F5E"
-                height={80}
-              />
-            }
-          />
-          
-          <MetricCard
-            title={t('games.metrics.jitter')}
-            value={`${game.performanceMetrics.jitterReduction}%`}
-            icon={<Zap className="h-5 w-5" />}
-            trend="down"
-            trendValue={t('games.metrics.reduction')}
-            chartComponent={
-              <MetricChart 
-                data={jitterData}
-                metricType="jitter"
-                color="#F97316"
-                height={80}
-              />
-            }
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {metrics.map((metric, index) => (
+            <div 
+              key={index} 
+              className="bg-cyber-cardblue border border-cyber-blue/30 rounded-xl p-6 hover:border-cyber-blue/60 transition-all hover:shadow-glow"
+            >
+              <div className="bg-cyber-blue/10 p-3 rounded-full w-fit mb-4">
+                {metric.icon}
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">{metric.title}</h3>
+              <p className="text-4xl font-bold text-cyber-blue mb-2">{metric.value}</p>
+              <p className="text-gray-300">{metric.description}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>
