@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
+
 import Index from "./pages/Index";
 import NetworkMetrics from "./pages/NetworkMetrics";
 import NotFound from "./pages/NotFound";
@@ -51,6 +52,7 @@ import FaqPage from "./pages/resources/FaqPage";
 import QuickStartGuide from "./pages/resources/docs/QuickStartGuide";
 import Installation from "./pages/resources/docs/Installation";
 import BasicConfiguration from "./pages/resources/docs/BasicConfiguration";
+import PerformanceTuning from "./pages/resources/docs/PerformanceTuning";
 import NetworkOptimization from "./pages/resources/docs/NetworkOptimization";
 import CustomConfigurations from "./pages/resources/docs/CustomConfigurations";
 
@@ -125,7 +127,7 @@ const App = () => (
               <Route path="/docs/quick-start" element={<QuickStartGuide />} />
               <Route path="/docs/installation" element={<Installation />} />
               <Route path="/docs/basic-configuration" element={<BasicConfiguration />} />
-              <Route path="/docs/performance-tuning" element={<Performance />} />
+              <Route path="/docs/performance-tuning" element={<PerformanceTuning />} />
               <Route path="/docs/network-optimization" element={<NetworkOptimization />} />
               <Route path="/docs/custom-configurations" element={<CustomConfigurations />} />
             </Routes>
