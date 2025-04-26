@@ -315,4 +315,89 @@
     margin-top: 1rem !important;
     margin-bottom: 1rem !important;
   }
+
+  /* Blog Cyberpunk Animations */
+  @keyframes scan-line {
+    0% {
+      top: -10%;
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 0.5;
+    }
+    100% {
+      top: 110%;
+      opacity: 0.3;
+    }
+  }
+
+  .scan-line {
+    animation: scan-line 3s ease-in-out infinite;
+  }
+
+  @keyframes data-flow {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  /* Cyberpunk glitch effect */
+  @keyframes glitch {
+    0% {
+      clip-path: inset(40% 0 61% 0);
+      transform: translate(-10px, -5px);
+    }
+    20% {
+      clip-path: inset(92% 0 1% 0);
+      transform: translate(8px, 2px);
+    }
+    40% {
+      clip-path: inset(43% 0 1% 0);
+      transform: translate(-4px, 10px);
+    }
+    60% {
+      clip-path: inset(25% 0 58% 0);
+      transform: translate(3px, -12px);
+    }
+    80% {
+      clip-path: inset(54% 0 7% 0);
+      transform: translate(-3px, 8px);
+    }
+    100% {
+      clip-path: inset(58% 0 43% 0);
+      transform: translate(10px, -5px);
+    }
+  }
+
+  /* Cyber neon text effect */
+  .cyber-text-glow {
+    text-shadow: 0 0 5px rgba(0, 240, 255, 0.8), 
+                 0 0 10px rgba(0, 240, 255, 0.5), 
+                 0 0 15px rgba(0, 240, 255, 0.3);
+  }
+
+  /* Cyber box shadow */
+  .cyber-box-glow {
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.8), 
+                0 0 10px rgba(0, 240, 255, 0.5), 
+                0 0 15px rgba(0, 240, 255, 0.3);
+  }
+
+  /* Data grid background */
+  .cyber-grid-bg {
+    background-image: linear-gradient(to right, rgba(0, 240, 255, 0.2) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(0, 240, 255, 0.2) 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-position: center center;
+  }
+
+  /* Digital noise background */
+  .digital-noise {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGQ9Ik0wIDBoMzAwdjMwMEgweiIgZmlsdGVyPSJ1cmwoI2EpIiBvcGFjaXR5PSIuMDUiLz48L3N2Zz4=');
+    opacity: 0.3;
+    mix-blend-mode: overlay;
+  }
 }
