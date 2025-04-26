@@ -4,7 +4,7 @@ import { Zap, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import GameSettingsModal from "./GameSpecificSettings/GameSettingsModal";
+import EnhancedGameSettingsModal from "./GameSpecificSettings/EnhancedGameSettingsModal";
 
 interface GameCardProps {
   game: {
@@ -95,7 +95,7 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
         </div>
       </div>
 
-      <GameSettingsModal
+      <EnhancedGameSettingsModal
         open={settingsOpen}
         onOpenChange={setSettingsOpen}
         game={game}
