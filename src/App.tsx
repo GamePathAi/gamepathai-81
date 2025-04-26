@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -24,24 +23,11 @@ import PaymentMethods from "./pages/PaymentMethods";
 import BillingHistory from "./pages/BillingHistory";
 import ChangePlan from "./pages/ChangePlan";
 import CancelSubscription from "./pages/CancelSubscription";
-
-// Auth Pages
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import ForgotPassword from "./pages/ForgotPassword";
-
-// Landing Pages
-import HomePage from "./pages/landing/HomePage";
-import FeaturesPage from "./pages/landing/FeaturesPage";
-import PricingPage from "./pages/landing/PricingPage";
-import TechnologyPage from "./pages/landing/TechnologyPage";
-import GamePage from "./pages/landing/GamePage";
-
-// Checkout Pages
-import CheckoutPlanPage from "./pages/checkout/CheckoutPlanPage";
-import CheckoutPaymentPage from "./pages/checkout/CheckoutPaymentPage";
-import CheckoutProcessingPage from "./pages/checkout/CheckoutProcessingPage";
-import CheckoutSuccessPage from "./pages/checkout/CheckoutSuccessPage";
+import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
+import TermsOfService from "./pages/legal/TermsOfService";
+import CookiePolicy from "./pages/legal/CookiePolicy";
+import GDPRCompliance from "./pages/legal/GDPRCompliance";
+import Games from "./pages/Games";
 
 const queryClient = new QueryClient();
 
@@ -54,12 +40,10 @@ const App = () => (
             <Toaster />
             <Sonner />
             <Routes>
-              {/* Auth Routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               
-              {/* Dashboard Routes */}
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Index />} />
               <Route path="/network-metrics" element={<NetworkMetrics />} />
@@ -73,27 +57,30 @@ const App = () => (
               <Route path="/subscription" element={<SubscriptionManagement />} />
               <Route path="/account/subscription" element={<AccountSubscription />} />
               
-              {/* Account Related Routes */}
               <Route path="/account" element={<Account />} />
               <Route path="/account/payment-methods" element={<PaymentMethods />} />
               <Route path="/account/billing-history" element={<BillingHistory />} />
               <Route path="/account/change-plan" element={<ChangePlan />} />
               <Route path="/account/cancel-subscription" element={<CancelSubscription />} />
               
-              {/* Checkout Routes */}
               <Route path="/checkout/plan" element={<CheckoutPlanPage />} />
               <Route path="/checkout/payment" element={<CheckoutPaymentPage />} />
               <Route path="/checkout/processing" element={<CheckoutProcessingPage />} />
               <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
               
-              {/* Landing Pages */}
               <Route path="/landing" element={<HomePage />} />
               <Route path="/features" element={<FeaturesPage />} />
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/technology" element={<TechnologyPage />} />
               
-              {/* Game-specific Landing Pages */}
               <Route path="/games/:gameName" element={<GamePage />} />
+              
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfService />} />
+              <Route path="/cookies" element={<CookiePolicy />} />
+              <Route path="/gdpr" element={<GDPRCompliance />} />
+              
+              <Route path="/games" element={<Games />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>
