@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Check, Shield, Zap, Settings, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import GameSettingsModal from "./GameSettingsModal";
+import EnhancedGameSettingsModal from "../GameSpecificSettings/EnhancedGameSettingsModal";
 
 interface Game {
   id: string;
@@ -153,7 +153,7 @@ const GamesList: React.FC<GamesListProps> = ({ games }) => {
         })}
       </div>
       
-      <GameSettingsModal 
+      <EnhancedGameSettingsModal 
         open={settingsOpen}
         onOpenChange={setSettingsOpen}
         game={selectedGame}
