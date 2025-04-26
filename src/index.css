@@ -400,4 +400,45 @@
     opacity: 0.3;
     mix-blend-mode: overlay;
   }
+
+  /* Blog-specific styles */
+  .blog-grid-bg {
+    background-image: linear-gradient(to right, rgba(0, 240, 255, 0.1) 1px, transparent 1px),
+                     linear-gradient(to bottom, rgba(0, 240, 255, 0.1) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: center center;
+  }
+
+  .blog-card-hover {
+    @apply transition-all duration-300;
+  }
+  
+  .blog-card-hover:hover {
+    @apply transform scale-[1.02] shadow-[0_0_30px_rgba(0,240,255,0.2)];
+  }
+
+  /* Article content typography */
+  .article-content {
+    @apply text-gray-300 leading-relaxed;
+  }
+  
+  .article-content h1 {
+    @apply text-3xl font-tech text-white mb-6;
+  }
+  
+  .article-content h2 {
+    @apply text-2xl font-tech text-cyber-blue mb-4;
+  }
+  
+  .article-content p {
+    @apply mb-4;
+  }
+  
+  .article-content pre {
+    @apply bg-cyber-darkblue/50 p-4 rounded-lg border border-cyber-blue/30 my-4;
+  }
+  
+  .article-content code {
+    @apply text-cyber-blue font-mono;
+  }
 }
