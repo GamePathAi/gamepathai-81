@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -43,6 +44,7 @@ import TechnologyPage from "./pages/landing/TechnologyPage";
 import GamePage from "./pages/landing/GamePage";
 import AboutPage from "./pages/company/AboutPage";
 import BlogPage from "./pages/company/BlogPage";
+import BlogArticlePage from "./pages/company/BlogArticlePage";
 import CareersPage from "./pages/company/CareersPage";
 import ContactPage from "./pages/company/ContactPage";
 import DocumentationPage from "./pages/resources/DocumentationPage";
@@ -55,6 +57,7 @@ import BasicConfiguration from "./pages/resources/docs/BasicConfiguration";
 import PerformanceTuning from "./pages/resources/docs/PerformanceTuning";
 import NetworkOptimization from "./pages/resources/docs/NetworkOptimization";
 import CustomConfigurations from "./pages/resources/docs/CustomConfigurations";
+import SupportInstallationPage from "./pages/support/InstallationPage";
 
 const queryClient = new QueryClient();
 
@@ -114,13 +117,14 @@ const App = () => (
               {/* Company Pages */}
               <Route path="/about" element={<AboutPage />} />
               <Route path="/blog" element={<BlogPage />} />
+              <Route path="/blog/:slug" element={<BlogArticlePage />} />
               <Route path="/careers" element={<CareersPage />} />
               <Route path="/contact" element={<ContactPage />} />
               
               {/* Resources Pages */}
               <Route path="/docs" element={<DocumentationPage />} />
               <Route path="/support" element={<SupportPage />} />
-              <Route path="/support/installation" element={<InstallationPage />} />
+              <Route path="/support/installation" element={<SupportInstallationPage />} />
               <Route path="/status" element={<StatusPage />} />
               <Route path="/faq" element={<FaqPage />} />
               
