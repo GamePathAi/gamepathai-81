@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Helmet } from "react-helmet-async";
+import { MapPin, Mail } from "lucide-react";
 import LandingLayout from "@/components/Layout/LandingLayout";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -59,14 +60,18 @@ const ContactPage = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <h3 className="font-semibold text-white mb-2">Email</h3>
-                  <p className="text-gray-400">support@gamepath.ai</p>
+                  <h3 className="font-semibold text-white mb-2 flex items-center gap-2">
+                    <Mail className="w-5 h-5" /> Email
+                  </h3>
+                  <p className="text-gray-400">contact@gamepathai.com</p>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white mb-2">Location</h3>
+                  <h3 className="font-semibold text-white mb-2 flex items-center gap-2">
+                    <MapPin className="w-5 h-5" /> Location
+                  </h3>
                   <p className="text-gray-400">
-                    123 Gaming Street<br />
-                    Tech Valley, CA 94025<br />
+                    1 Hacker Way<br />
+                    Mountain View, CA 94043<br />
                     United States
                   </p>
                 </div>
@@ -87,3 +92,4 @@ const ContactPage = () => {
 };
 
 export default ContactPage;
+
