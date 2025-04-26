@@ -1,10 +1,9 @@
-
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import LandingLayout from "@/components/Layout/LandingLayout";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { briefcase } from "lucide-react";
+import { Briefcase } from "lucide-react";
 
 const AboutPage = () => {
   return (
