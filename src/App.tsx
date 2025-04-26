@@ -48,6 +48,11 @@ import DocumentationPage from "./pages/resources/DocumentationPage";
 import SupportPage from "./pages/resources/SupportPage";
 import StatusPage from "./pages/resources/StatusPage";
 import FaqPage from "./pages/resources/FaqPage";
+import QuickStartGuide from "./pages/resources/docs/QuickStartGuide";
+import Installation from "./pages/resources/docs/Installation";
+import BasicConfiguration from "./pages/resources/docs/BasicConfiguration";
+import NetworkOptimization from "./pages/resources/docs/NetworkOptimization";
+import CustomConfigurations from "./pages/resources/docs/CustomConfigurations";
 
 const queryClient = new QueryClient();
 
@@ -115,6 +120,14 @@ const App = () => (
               <Route path="/support" element={<SupportPage />} />
               <Route path="/status" element={<StatusPage />} />
               <Route path="/faq" element={<FaqPage />} />
+              
+              {/* Documentation Routes */}
+              <Route path="/docs/quick-start" element={<QuickStartGuide />} />
+              <Route path="/docs/installation" element={<Installation />} />
+              <Route path="/docs/basic-configuration" element={<BasicConfiguration />} />
+              <Route path="/docs/performance-tuning" element={<Performance />} />
+              <Route path="/docs/network-optimization" element={<NetworkOptimization />} />
+              <Route path="/docs/custom-configurations" element={<CustomConfigurations />} />
             </Routes>
           </SubscriptionProvider>
         </NotificationProvider>
