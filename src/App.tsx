@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -41,6 +40,14 @@ import FeaturesPage from "./pages/landing/FeaturesPage";
 import PricingPage from "./pages/landing/PricingPage";
 import TechnologyPage from "./pages/landing/TechnologyPage";
 import GamePage from "./pages/landing/GamePage";
+import AboutPage from "./pages/company/AboutPage";
+import BlogPage from "./pages/company/BlogPage";
+import CareersPage from "./pages/company/CareersPage";
+import ContactPage from "./pages/company/ContactPage";
+import DocumentationPage from "./pages/resources/DocumentationPage";
+import SupportPage from "./pages/resources/SupportPage";
+import StatusPage from "./pages/resources/StatusPage";
+import FaqPage from "./pages/resources/FaqPage";
 
 const queryClient = new QueryClient();
 
@@ -96,6 +103,18 @@ const App = () => (
               <Route path="/games" element={<Games />} />
               
               <Route path="*" element={<NotFound />} />
+              
+              {/* Company Pages */}
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/blog" element={<BlogPage />} />
+              <Route path="/careers" element={<CareersPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              
+              {/* Resources Pages */}
+              <Route path="/docs" element={<DocumentationPage />} />
+              <Route path="/support" element={<SupportPage />} />
+              <Route path="/status" element={<StatusPage />} />
+              <Route path="/faq" element={<FaqPage />} />
             </Routes>
           </SubscriptionProvider>
         </NotificationProvider>
