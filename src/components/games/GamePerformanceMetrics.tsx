@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { GameData } from '@/hooks/useGameData';
-import { ArrowTrendingUp, ActivitySquare, Signal, WifiOff } from 'lucide-react';
+import { Signal, ActivitySquare, WifiOff, TrendingUp } from 'lucide-react';
 
 interface GamePerformanceMetricsProps {
   game: GameData;
@@ -33,7 +33,7 @@ const GamePerformanceMetrics: React.FC<GamePerformanceMetricsProps> = ({ game })
       title: "Jitter Reduction",
       value: `${performanceMetrics.jitterReduction}%`,
       description: "More consistent connection quality",
-      icon: <ArrowTrendingUp className="h-6 w-6 text-cyber-blue" />
+      icon: <TrendingUp className="h-6 w-6 text-cyber-blue" />
     }
   ];
 
