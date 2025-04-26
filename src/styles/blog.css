@@ -1,0 +1,99 @@
+
+@layer components {
+  /* Blog Cyberpunk Animations */
+  @keyframes scan-line {
+    0% {
+      top: -10%;
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 0.5;
+    }
+    100% {
+      top: 110%;
+      opacity: 0.3;
+    }
+  }
+
+  .scan-line {
+    animation: scan-line 3s ease-in-out infinite;
+  }
+
+  @keyframes data-flow {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  /* Cyberpunk glitch effect */
+  @keyframes glitch {
+    0% {
+      clip-path: inset(40% 0 61% 0);
+      transform: translate(-10px, -5px);
+    }
+    20% {
+      clip-path: inset(92% 0 1% 0);
+      transform: translate(8px, 2px);
+    }
+    40% {
+      clip-path: inset(43% 0 1% 0);
+      transform: translate(-4px, 10px);
+    }
+    60% {
+      clip-path: inset(25% 0 58% 0);
+      transform: translate(3px, -12px);
+    }
+    80% {
+      clip-path: inset(54% 0 7% 0);
+      transform: translate(-3px, 8px);
+    }
+    100% {
+      clip-path: inset(58% 0 43% 0);
+      transform: translate(10px, -5px);
+    }
+  }
+
+  /* Blog-specific styles */
+  .blog-grid-bg {
+    background-image: linear-gradient(to right, rgba(0, 240, 255, 0.1) 1px, transparent 1px),
+                     linear-gradient(to bottom, rgba(0, 240, 255, 0.1) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: center center;
+  }
+
+  .blog-card-hover {
+    @apply transition-all duration-300;
+  }
+  
+  .blog-card-hover:hover {
+    @apply transform scale-[1.02] shadow-[0_0_30px_rgba(0,240,255,0.2)];
+  }
+
+  /* Article content typography */
+  .article-content {
+    @apply text-gray-300 leading-relaxed;
+  }
+  
+  .article-content h1 {
+    @apply text-3xl font-tech text-white mb-6;
+  }
+  
+  .article-content h2 {
+    @apply text-2xl font-tech text-cyber-blue mb-4;
+  }
+  
+  .article-content p {
+    @apply mb-4;
+  }
+  
+  .article-content pre {
+    @apply bg-cyber-darkblue/50 p-4 rounded-lg border border-cyber-blue/30 my-4;
+  }
+  
+  .article-content code {
+    @apply text-cyber-blue font-mono;
+  }
+}

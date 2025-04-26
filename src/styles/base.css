@@ -1,0 +1,26 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-cyber-black text-white;
+  }
+  
+  main {
+    @apply bg-cyber-black;
+  }
+
+  section {
+    @apply py-6 md:py-8;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply mb-4;
+  }
+
+  p {
+    @apply mb-3 leading-relaxed;
+  }
+}

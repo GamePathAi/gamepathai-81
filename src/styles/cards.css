@@ -1,0 +1,15 @@
+
+@layer components {
+  .cyber-panel {
+    @apply bg-cyber-darkblue border border-cyber-blue/30 rounded-md p-4 shadow-lg shadow-cyber-blue/5 relative my-3;
+  }
+  
+  .card, .panel, .metric-card, .game-card, .route-card, .optimization-card, 
+  [class*="card"], [class*="panel"], [class*="container"], .settings-section {
+    @apply bg-cyber-darkblue border border-cyber-blue/40 rounded-md shadow-[0_0_20px_rgba(0,0,0,0.25)] hover:shadow-[0_0_25px_rgba(51,195,240,0.15)] transition-all duration-300 my-3 p-4;
+  }
+  
+  .game-card, .game-container, .detected-game {
+    @apply bg-[#151530] border-cyber-purple/30 hover:border-cyber-purple/50;
+  }
+}
