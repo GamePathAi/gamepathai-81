@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import { 
   Cpu, 
   HardDrive, 
-  Memory, 
+  MemoryStick,
   BarChart, 
   History,
   Shield,
@@ -159,7 +158,7 @@ const ResourceDetail: React.FC<ResourceDetailProps> = ({ game }) => {
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <div className="flex items-center">
-                <Memory className="h-4 w-4 text-cyber-green mr-2" />
+                <MemoryStick className="h-4 w-4 text-cyber-green mr-2" />
                 <span className="text-sm text-white">Memory Limit</span>
               </div>
               <span className="text-xs text-cyber-green">{limitRam}%</span>
