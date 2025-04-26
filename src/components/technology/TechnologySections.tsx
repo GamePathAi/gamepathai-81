@@ -1,13 +1,12 @@
-
 import React from "react";
 import { Badge } from "@/components/ui/badge";
-import { Zap, Network, Shield, Globe, Server } from "lucide-react";
+import { Network, Shield, Globe, Server, Cpu } from "lucide-react";
 
 export const AdaptiveRoutingSection: React.FC = () => {
   return (
-    <section className="py-20 bg-cyber-dark">
+    <section className="py-12 bg-cyber-dark">
       <div className="container mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           <div>
             <Badge variant="cyber" className="mb-4">Core Technology</Badge>
             <h2 className="text-3xl font-bold mb-6 font-tech">
@@ -37,12 +36,10 @@ export const AdaptiveRoutingSection: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="bg-cyber-darkblue border border-cyber-blue/30 rounded-lg p-6">
-            <div className="aspect-video bg-cyber-black rounded flex items-center justify-center">
-              <div className="text-center">
-                <Network className="h-20 w-20 text-cyber-blue mx-auto mb-4 opacity-70" />
-                <div className="text-lg font-tech text-cyber-blue">Adaptive Routing Visualization</div>
-              </div>
+          <div className="bg-cyber-darkblue border border-cyber-blue/30 rounded-lg p-6 hover:border-cyber-blue/60 transition-all duration-500">
+            <div className="aspect-video bg-[url('/images/network-routes.webp')] bg-cover bg-center rounded-lg relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-t from-cyber-black to-transparent opacity-60"></div>
+              <div className="absolute inset-0 bg-cyber-blue/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             </div>
           </div>
         </div>
@@ -53,15 +50,13 @@ export const AdaptiveRoutingSection: React.FC = () => {
 
 export const PerformanceAISection: React.FC = () => {
   return (
-    <section className="py-20 bg-cyber-darkblue">
+    <section className="py-12 bg-cyber-darkblue">
       <div className="container mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="order-2 lg:order-1 bg-cyber-dark border border-cyber-blue/30 rounded-lg p-6">
-            <div className="aspect-video bg-cyber-black rounded flex items-center justify-center">
-              <div className="text-center">
-                <Server className="h-20 w-20 text-cyber-purple mx-auto mb-4 opacity-70" />
-                <div className="text-lg font-tech text-cyber-purple">Performance AI Diagram</div>
-              </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          <div className="order-2 lg:order-1 bg-cyber-dark border border-cyber-purple/30 rounded-lg p-6 hover:border-cyber-purple/60 transition-all duration-500">
+            <div className="aspect-video bg-[url('/images/performance-ai.webp')] bg-cover bg-center rounded-lg relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-t from-cyber-black to-transparent opacity-60"></div>
+              <div className="absolute inset-0 bg-cyber-purple/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             </div>
           </div>
           <div className="order-1 lg:order-2">
@@ -101,9 +96,9 @@ export const PerformanceAISection: React.FC = () => {
 
 export const GlobalNetworkSection: React.FC = () => {
   return (
-    <section className="py-20 bg-cyber-dark">
+    <section className="py-12 bg-cyber-dark">
       <div className="container mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           <div>
             <Badge variant="cyber" className="mb-4">Infrastructure</Badge>
             <h2 className="text-3xl font-bold mb-6 font-tech">
@@ -133,12 +128,10 @@ export const GlobalNetworkSection: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="bg-cyber-darkblue border border-cyber-blue/30 rounded-lg p-6">
-            <div className="aspect-video bg-cyber-black rounded flex items-center justify-center">
-              <div className="text-center">
-                <Globe className="h-20 w-20 text-cyber-green mx-auto mb-4 opacity-70" />
-                <div className="text-lg font-tech text-cyber-green">Global Network Map</div>
-              </div>
+          <div className="bg-cyber-darkblue border border-cyber-green/30 rounded-lg p-6 hover:border-cyber-green/60 transition-all duration-500">
+            <div className="aspect-video bg-[url('/images/global-network.webp')] bg-cover bg-center rounded-lg relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-t from-cyber-black to-transparent opacity-60"></div>
+              <div className="absolute inset-0 bg-cyber-green/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             </div>
           </div>
         </div>
@@ -149,15 +142,13 @@ export const GlobalNetworkSection: React.FC = () => {
 
 export const SecuritySection: React.FC = () => {
   return (
-    <section className="py-20 bg-cyber-darkblue">
+    <section className="py-12 bg-cyber-darkblue">
       <div className="container mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="order-2 lg:order-1 bg-cyber-dark border border-cyber-blue/30 rounded-lg p-6">
-            <div className="aspect-video bg-cyber-black rounded flex items-center justify-center">
-              <div className="text-center">
-                <Shield className="h-20 w-20 text-cyber-orange mx-auto mb-4 opacity-70" />
-                <div className="text-lg font-tech text-cyber-orange">Security Protection Diagram</div>
-              </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          <div className="order-2 lg:order-1 bg-cyber-dark border border-cyber-orange/30 rounded-lg p-6 hover:border-cyber-orange/60 transition-all duration-500">
+            <div className="aspect-video bg-[url('/images/security-shield.webp')] bg-cover bg-center rounded-lg relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-t from-cyber-black to-transparent opacity-60"></div>
+              <div className="absolute inset-0 bg-cyber-orange/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             </div>
           </div>
           <div className="order-1 lg:order-2">
@@ -197,9 +188,9 @@ export const SecuritySection: React.FC = () => {
 
 export const VPNSection: React.FC = () => {
   return (
-    <section className="py-20 bg-cyber-dark">
+    <section className="py-12 bg-cyber-dark">
       <div className="container mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           <div>
             <Badge variant="cyber" className="mb-4">Specialized VPN</Badge>
             <h2 className="text-3xl font-bold mb-6 font-tech">
@@ -229,12 +220,10 @@ export const VPNSection: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="bg-cyber-darkblue border border-cyber-blue/30 rounded-lg p-6">
-            <div className="aspect-video bg-cyber-black rounded flex items-center justify-center">
-              <div className="text-center">
-                <Shield className="h-20 w-20 text-cyber-blue mx-auto mb-4 opacity-70" />
-                <div className="text-lg font-tech text-cyber-blue">VPN Technology Illustration</div>
-              </div>
+          <div className="bg-cyber-darkblue border border-cyber-blue/30 rounded-lg p-6 hover:border-cyber-blue/60 transition-all duration-500">
+            <div className="aspect-video bg-[url('/images/gaming-vpn.webp')] bg-cover bg-center rounded-lg relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-t from-cyber-black to-transparent opacity-60"></div>
+              <div className="absolute inset-0 bg-cyber-blue/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             </div>
           </div>
         </div>
