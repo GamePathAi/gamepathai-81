@@ -3,12 +3,12 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import LandingLayout from '@/components/landing/LandingLayout';
-import { GameHero } from '@/components/games/GameHero';
-import { GamePerformanceMetrics } from '@/components/games/GamePerformanceMetrics';
-import { TechnicalImprovements } from '@/components/games/TechnicalImprovements';
-import { GameTestimonials } from '@/components/games/GameTestimonials';
+import GameHero from '@/components/games/GameHero';
+import GamePerformanceMetrics from '@/components/games/GamePerformanceMetrics';
+import TechnicalImprovements from '@/components/games/TechnicalImprovements';
+import GameTestimonials from '@/components/games/GameTestimonials';
 import GameCTA from '@/components/games/GameCTA';
-import useGameData from '@/hooks/useGameData';
+import { useGameData } from '@/hooks/useGameData';
 
 // Fix for the issue where GameData is not assignable to string
 const GamePage: React.FC = () => {
@@ -42,27 +42,21 @@ const GamePage: React.FC = () => {
       </Helmet>
       
       <GameHero 
-        name={game.name}
-        description={game.description}
-        image={game.heroImage}
-        publisher={game.publisher}
-        genre={game.genre}
+        game={game}
       />
       
       <GamePerformanceMetrics
-        latencyImprovement={game.performance.latency}
-        fpsImprovement={game.performance.fps}
-        packetLoss={game.performance.packetLoss}
+        game={game}
       />
       
-      <TechnicalImprovements game={game.name} improvements={game.improvements} />
+      <TechnicalImprovements game={game} />
       
-      <GameTestimonials testimonials={game.testimonials} />
+      <GameTestimonials game={game} />
       
       <GameCTA 
         game={game.name} 
-        latency={game.performance.latency} 
-        fps={game.performance.fps} 
+        latency={game.performanceMetrics.latencyImprovement} 
+        fps={game.performanceMetrics.fpsImprovement} 
       />
     </LandingLayout>
   );

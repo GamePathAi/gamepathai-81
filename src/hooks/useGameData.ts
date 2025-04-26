@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -201,5 +200,12 @@ export const useGameData = (gameSlug?: string) => {
     fetchGameData();
   }, [gameSlug, i18n.language]);
 
-  return { gameData, isLoading, error };
+  // Add a getGameBySlug function to the returned object
+  const getGameBySlug = (slug: string): GameData | null => {
+    return gamesMockData[slug] || null;
+  };
+
+  return { gameData, isLoading, error, getGameBySlug };
 };
+
+export default useGameData;
