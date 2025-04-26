@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -28,6 +29,18 @@ import TermsOfService from "./pages/legal/TermsOfService";
 import CookiePolicy from "./pages/legal/CookiePolicy";
 import GDPRCompliance from "./pages/legal/GDPRCompliance";
 import Games from "./pages/Games";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
+import CheckoutPlanPage from "./pages/checkout/CheckoutPlanPage";
+import CheckoutPaymentPage from "./pages/checkout/CheckoutPaymentPage";
+import CheckoutProcessingPage from "./pages/checkout/CheckoutProcessingPage";
+import CheckoutSuccessPage from "./pages/checkout/CheckoutSuccessPage";
+import HomePage from "./pages/landing/HomePage";
+import FeaturesPage from "./pages/landing/FeaturesPage";
+import PricingPage from "./pages/landing/PricingPage";
+import TechnologyPage from "./pages/landing/TechnologyPage";
+import GamePage from "./pages/landing/GamePage";
 
 const queryClient = new QueryClient();
 
