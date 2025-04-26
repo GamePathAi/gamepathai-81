@@ -1,97 +1,46 @@
+import React, { createContext, useState, useContext } from 'react';
 
-import React, { createContext, useContext, useState } from 'react';
-
-export type BillingInterval = 'monthly' | 'quarterly' | 'annual';
-
-export interface PlanFeature {
-  name: string;
-  included: boolean;
-  info?: string;
-}
-
-export interface PricingPlan {
+// Define the types for the plans
+interface Plan {
   id: string;
   name: string;
-  description?: string;
+  description: string;
   userCount: number;
   pricing: {
     monthly: number;
     quarterly: number;
     annual: number;
   };
-  features?: PlanFeature[] | string[];
-  popular?: boolean;
-  color?: string;
+  features: string[];
 }
 
+// Define the context type
 interface CheckoutContextType {
-  selectedPlan: PricingPlan | null;
-  setSelectedPlan: (plan: PricingPlan) => void;
-  billingInterval: BillingInterval;
-  setBillingInterval: (interval: BillingInterval) => void;
-  customerInfo: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    address?: string;
-  };
-  setCustomerInfo: (info: any) => void;
-  clearCheckout: () => void;
+  selectedPlan: Plan | null;
+  setSelectedPlan: (plan: Plan | null) => void;
+  billingInterval: 'monthly' | 'quarterly' | 'annual';
+  setBillingInterval: (interval: 'monthly' | 'quarterly' | 'annual') => void;
 }
 
-const defaultContext: CheckoutContextType = {
+// Create the context with default values
+const CheckoutContext = createContext<CheckoutContextType>({
   selectedPlan: null,
   setSelectedPlan: () => {},
   billingInterval: 'monthly',
   setBillingInterval: () => {},
-  customerInfo: {
-    firstName: '',
-    lastName: '',
-    email: '',
-    address: '',
-  },
-  setCustomerInfo: () => {},
-  clearCheckout: () => {},
-};
+});
 
-const CheckoutContext = createContext<CheckoutContextType>(defaultContext);
-
-export const useCheckout = () => useContext(CheckoutContext);
-
+// Create a provider component
 export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [selectedPlan, setSelectedPlan] = useState<PricingPlan | null>(null);
-  const [billingInterval, setBillingInterval] = useState<BillingInterval>('monthly');
-  const [customerInfo, setCustomerInfo] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    address: '',
-  });
-
-  const clearCheckout = () => {
-    setSelectedPlan(null);
-    setBillingInterval('monthly');
-    setCustomerInfo({
-      firstName: '',
-      lastName: '',
-      email: '',
-      address: '',
-    });
-  };
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  const [billingInterval, setBillingInterval] = useState<'monthly' | 'quarterly' | 'annual'>('monthly');
 
   return (
-    <CheckoutContext.Provider
-      value={{
-        selectedPlan,
-        setSelectedPlan,
-        billingInterval,
-        setBillingInterval,
-        customerInfo,
-        setCustomerInfo,
-        clearCheckout,
-      }}
-    >
+    <CheckoutContext.Provider value={{ selectedPlan, setSelectedPlan, billingInterval, setBillingInterval }}>
       {children}
     </CheckoutContext.Provider>
   );
 };
+
+// Create a custom hook to use the context
+export const useCheckout = () => useContext(CheckoutContext);

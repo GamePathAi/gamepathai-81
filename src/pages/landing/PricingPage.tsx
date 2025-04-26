@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -394,10 +395,10 @@ const PricingPage: React.FC = () => {
               Ready To <span className="bg-gradient-to-r from-cyber-blue to-cyber-purple text-transparent bg-clip-text">Transform</span> Your Gaming?
             </h2>
             <p className="text-gray-300 mb-10 leading-relaxed">
-              Join thousands of gamers who have boosted their gaming performance with GamePath AI. Start your 7-day free trial today, no credit card required.
+              Join thousands of gamers who have boosted their gaming performance with GamePath AI. Start your 3-Day Free Trial today, no credit card required.
             </p>
-            <Button variant="cyberAction" size="lg" className="shadow-xl" onClick={() => handleSelectPlan(plans[1])}>
-              Start Free Trial
+            <Button variant="cyberAction" size="lg" className="shadow-xl" onClick={() => navigate("/pricing")}>
+              Start 3-Day Free Trial
             </Button>
           </div>
         </div>

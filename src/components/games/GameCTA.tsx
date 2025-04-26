@@ -1,83 +1,60 @@
 
-import React from "react";
-import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
-import { GameData } from "@/hooks/useGameData";
-import { ArrowRight, Zap } from "lucide-react";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { useTranslation } from 'react-i18next';
 
 interface GameCTAProps {
-  game: GameData;
+  game: string;
+  latency: number;
+  fps: number;
 }
 
-const GameCTA: React.FC<GameCTAProps> = ({ game }) => {
+const GameCTA: React.FC<GameCTAProps> = ({ 
+  game, 
+  latency, 
+  fps 
+}) => {
   const { t } = useTranslation();
   
   return (
-    <section className="py-16 bg-gradient-to-br from-cyber-blue/20 to-cyber-purple/20 px-4 relative overflow-hidden">
-      {/* Background accents */}
-      <div className="absolute -top-24 -right-24 w-64 h-64 bg-cyber-blue/40 rounded-full blur-[80px] -z-10 opacity-50"></div>
-      <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-cyber-purple/30 rounded-full blur-[100px] -z-10 opacity-40"></div>
-      
-      <div className="max-w-4xl mx-auto text-center relative z-10">
-        <h2 className="text-3xl font-bold text-white mb-4">
-          {t('games.cta.title', { game: game.name })}
-        </h2>
-        
-        <p className="text-xl text-gray-300 mb-8">
-          {t('games.cta.description', { 
-            game: game.name, 
-            latency: game.performanceMetrics.latencyImprovement,
-            fps: game.performanceMetrics.fpsImprovement 
-          })}
-        </p>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          <div className="bg-cyber-darkblue/60 backdrop-blur-sm p-5 rounded-lg border border-cyber-blue/20 hover:border-cyber-blue/40 transition-colors">
-            <div className="text-cyber-blue text-4xl font-tech mb-2">
-              {game.performanceMetrics.latencyImprovement}%
+    <section className="py-16 bg-cyber-darkblue">
+      <div className="container mx-auto px-4">
+        <div className="max-w-5xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-6">
+            {t('games.cta.title', { game })}
+          </h2>
+          <p className="text-xl text-gray-300 mb-10">
+            {t('games.cta.description', { game, latency, fps })}
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <div className="bg-cyber-black/50 p-6 rounded-lg border border-cyber-blue/30">
+              <div className="text-3xl font-bold text-cyber-blue mb-2">{latency}%</div>
+              <div className="text-sm text-gray-400">{t('games.cta.latencyReduction')}</div>
             </div>
-            <div className="text-gray-400 text-sm">
-              {t('games.cta.latencyReduction')}
+            <div className="bg-cyber-black/50 p-6 rounded-lg border border-cyber-blue/30">
+              <div className="text-3xl font-bold text-cyber-green mb-2">{fps}%</div>
+              <div className="text-sm text-gray-400">{t('games.cta.fpsImprovement')}</div>
+            </div>
+            <div className="bg-cyber-black/50 p-6 rounded-lg border border-cyber-blue/30">
+              <div className="text-3xl font-bold text-cyber-purple mb-2">99.7%</div>
+              <div className="text-sm text-gray-400">{t('games.cta.packetLossReduction')}</div>
             </div>
           </div>
           
-          <div className="bg-cyber-darkblue/60 backdrop-blur-sm p-5 rounded-lg border border-cyber-purple/20 hover:border-cyber-purple/40 transition-colors">
-            <div className="text-cyber-purple text-4xl font-tech mb-2">
-              {game.performanceMetrics.fpsImprovement}%
-            </div>
-            <div className="text-gray-400 text-sm">
-              {t('games.cta.fpsImprovement')}
-            </div>
+          <div className="flex flex-col md:flex-row justify-center gap-4">
+            <Link to="/pricing">
+              <Button variant="cyberAction" size="lg">
+                {t('games.cta.tryForFree').replace('Free Trial', '3-Day Free Trial')}
+              </Button>
+            </Link>
+            <Link to="/features">
+              <Button variant="cyberOutline" size="lg">
+                {t('games.cta.exploreFeatures')}
+              </Button>
+            </Link>
           </div>
-          
-          <div className="bg-cyber-darkblue/60 backdrop-blur-sm p-5 rounded-lg border border-cyber-green/20 hover:border-cyber-green/40 transition-colors">
-            <div className="text-cyber-green text-4xl font-tech mb-2">
-              {game.performanceMetrics.packetLossReduction}%
-            </div>
-            <div className="text-gray-400 text-sm">
-              {t('games.cta.packetLossReduction')}
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button 
-            size="lg" 
-            variant="cyberAction"
-            className="w-full sm:w-auto px-8 py-6 text-lg group"
-          >
-            <Zap size={18} className="mr-2 group-hover:rotate-12 transition-transform duration-300" />
-            {t('games.cta.tryForFree')}
-          </Button>
-          
-          <Button 
-            size="lg" 
-            variant="cyberOutline" 
-            className="w-full sm:w-auto px-8 py-6 text-lg flex items-center justify-center group"
-          >
-            {t('games.cta.exploreFeatures')}
-            <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
-          </Button>
         </div>
       </div>
     </section>

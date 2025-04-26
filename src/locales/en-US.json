@@ -97,7 +97,7 @@
     },
     "cta": {
       "description": "Experience significant latency reduction and performance improvements with our adaptive gaming technology.",
-      "startFreeTrial": "Start Free Trial",
+      "startFreeTrial": "Start 3-Day Free Trial",
       "viewPricing": "View Pricing"
     }
   },
@@ -143,7 +143,7 @@
       "latencyReduction": "Latency Reduction",
       "fpsImprovement": "FPS Improvement",
       "packetLossReduction": "Packet Loss Reduction",
-      "tryForFree": "Try For Free",
+      "tryForFree": "Try 3-Day Free Trial",
       "exploreFeatures": "Explore Features"
     },
     "card": {
