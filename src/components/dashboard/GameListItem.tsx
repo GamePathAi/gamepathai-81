@@ -1,21 +1,12 @@
-
 import React from "react";
 import { Check, Shield, Zap, Settings, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Game } from "@/hooks/useGames";
 
 interface GameOptimizationStatus {
   text: string;
   color: string;
   icon?: React.ReactNode;
-}
-
-interface Game {
-  id: string;
-  name: string;
-  image: string;
-  genre: string;
-  isOptimized: boolean;
-  optimizationType?: "both" | "network" | "system";
 }
 
 interface GameListItemProps {

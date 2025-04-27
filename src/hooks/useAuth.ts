@@ -1,10 +1,22 @@
-﻿import { useState, useEffect } from "react";
+
+import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { authService } from "../services/authService";
 import { apiClient } from "../services/api";
 
+interface AuthResponse {
+  access_token: string;
+  refresh_token?: string;
+}
+
+interface UserData {
+  id: string;
+  email: string;
+  username: string;
+}
+
 export function useAuth() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const queryClient = useQueryClient();
   
@@ -17,7 +29,7 @@ export function useAuth() {
     }
     
     // Validar token obtendo perfil do usuário
-    apiClient.fetch("/api/user/profile")
+    apiClient.fetch<UserData>("/api/user/profile")
       .then(userData => setUser(userData))
       .catch(() => {
         // Token inválido, fazer logout
@@ -27,21 +39,21 @@ export function useAuth() {
   }, []);
   
   const login = async (email: string, password: string) => {
-    const response = await authService.login(email, password);
+    const response = await authService.login(email, password) as AuthResponse;
     localStorage.setItem("auth_token", response.access_token);
     
     // Obter perfil do usuário após login
-    const userData = await apiClient.fetch("/api/user/profile");
+    const userData = await apiClient.fetch<UserData>("/api/user/profile");
     setUser(userData);
     return userData;
   };
   
   const register = async (email: string, username: string, password: string) => {
-    const response = await authService.register(email, username, password);
+    const response = await authService.register(email, username, password) as AuthResponse;
     localStorage.setItem("auth_token", response.access_token);
     
     // Obter perfil do usuário após registro
-    const userData = await apiClient.fetch("/api/user/profile");
+    const userData = await apiClient.fetch<UserData>("/api/user/profile");
     setUser(userData);
     return userData;
   };
