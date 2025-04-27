@@ -3,31 +3,23 @@ import React from "react";
 import MetricCard from "@/components/MetricCard";
 import MetricChart from "@/components/MetricChart";
 import { BarChart4, Cpu, Zap, Activity } from "lucide-react";
+import { useMetrics } from "@/hooks/useMetrics";
 
-interface SystemMetricsProps {
-  metrics: {
-    cpu: {
-      current: string;
-      trend: "up" | "down" | "stable";
-      trendValue: string;
-      history: Array<{ time: string; value: number }>;
-    };
-    gpu: {
-      current: string;
-      trend: "up" | "down" | "stable";
-      trendValue: string;
-      history: Array<{ time: string; value: number }>;
-    };
-    jitter: {
-      current: string;
-      trend: "up" | "down" | "stable";
-      trendValue: string;
-      history: Array<{ time: string; value: number }>;
-    };
-  };
-}
+const SystemMetrics: React.FC = () => {
+  const { system, jitter, isLoading } = useMetrics();
 
-const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
+  if (isLoading.system) {
+    return (
+      <div className="h-full system-metrics-container animate-pulse">
+        <div className="space-y-5">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-[200px] bg-cyber-darkblue/50 rounded-lg" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full system-metrics-container">
       <div className="mb-3 flex items-center">
@@ -38,14 +30,14 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
       <div className="space-y-5">
         <MetricCard
           title="CPU USAGE"
-          value={metrics.cpu.current}
+          value={system?.cpu?.usage || "0"}
           unit=" %"
-          trend={metrics.cpu.trend}
-          trendValue={metrics.cpu.trendValue}
+          trend={system?.cpu?.trend || "stable"}
+          trendValue={system?.cpu?.trendValue || "0%"}
           icon={<Cpu size={16} className="text-cyber-purple" />}
           chartComponent={
             <MetricChart 
-              data={metrics.cpu.history} 
+              data={system?.cpu?.history || []} 
               color="#8B5CF6" 
               metricType="cpu" 
               height={160}
@@ -58,14 +50,14 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
         
         <MetricCard
           title="GPU USAGE"
-          value={metrics.gpu.current}
+          value={system?.gpu?.usage || "0"}
           unit=" %"
-          trend={metrics.gpu.trend}
-          trendValue={metrics.gpu.trendValue}
+          trend={system?.gpu?.trend || "stable"}
+          trendValue={system?.gpu?.trendValue || "0%"}
           icon={<Zap size={16} className="text-cyber-pink" />}
           chartComponent={
             <MetricChart 
-              data={metrics.gpu.history} 
+              data={system?.gpu?.history || []} 
               color="#D946EF" 
               metricType="gpu" 
               height={160}
@@ -78,14 +70,14 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ metrics }) => {
         
         <MetricCard
           title="CONNECTION JITTER"
-          value={metrics.jitter.current}
+          value={jitter?.current || "0"}
           unit=" ms"
-          trend={metrics.jitter.trend}
-          trendValue={metrics.jitter.trendValue}
+          trend={jitter?.trend || "stable"}
+          trendValue={jitter?.trendValue || "0ms"}
           icon={<Activity size={16} className="text-cyber-orange" />}
           chartComponent={
             <MetricChart 
-              data={metrics.jitter.history} 
+              data={jitter?.history || []} 
               color="#F97316" 
               metricType="jitter" 
               height={160}

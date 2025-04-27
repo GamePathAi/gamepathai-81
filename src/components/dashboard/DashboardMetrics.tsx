@@ -3,43 +3,36 @@ import React from "react";
 import MetricCard from "@/components/MetricCard";
 import MetricChart from "@/components/MetricChart";
 import { Activity, Signal, Gauge } from "lucide-react";
+import { useMetrics } from "@/hooks/useMetrics";
 
-interface DashboardMetricsProps {
-  metrics: {
-    ping: {
-      current: string;
-      trend: "up" | "down" | "stable";
-      trendValue: string;
-      history: Array<{ time: string; value: number }>;
-    };
-    packetLoss: {
-      current: string;
-      trend: "up" | "down" | "stable";
-      trendValue: string;
-      history: Array<{ time: string; value: number }>;
-    };
-    fps: {
-      current: string;
-      trend: "up" | "down" | "stable";
-      trendValue: string;
-      history: Array<{ time: string; value: number }>;
-    };
-  };
-}
+const DashboardMetrics: React.FC = () => {
+  const { 
+    ping,
+    fps,
+    jitter,
+    isLoading: { ping: isPingLoading, fps: isFpsLoading, jitter: isJitterLoading }
+  } = useMetrics();
 
-const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
+  if (isPingLoading || isFpsLoading || isJitterLoading) {
+    return <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="h-[200px] bg-cyber-darkblue/50 animate-pulse rounded-lg" />
+      ))}
+    </div>;
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
       <MetricCard
         title="CURRENT PING"
-        value={metrics.ping.current}
+        value={ping?.current || "0"}
         unit="ms"
-        trend={metrics.ping.trend}
-        trendValue={metrics.ping.trendValue}
+        trend={ping?.trend || "stable"}
+        trendValue={ping?.trendValue || "0ms"}
         icon={<Activity size={20} className="text-cyber-blue" />}
         chartComponent={
           <MetricChart 
-            data={metrics.ping.history} 
+            data={ping?.history || []} 
             color="#33C3F0" 
             metricType="ping" 
             height={160} 
@@ -52,14 +45,14 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
       
       <MetricCard
         title="PACKET LOSS"
-        value={metrics.packetLoss.current}
+        value={jitter?.current || "0"}
         unit="%"
-        trend={metrics.packetLoss.trend}
-        trendValue={metrics.packetLoss.trendValue}
+        trend={jitter?.trend || "stable"}
+        trendValue={jitter?.trendValue || "0%"}
         icon={<Signal size={20} className="text-red-400" />}
         chartComponent={
           <MetricChart 
-            data={metrics.packetLoss.history} 
+            data={jitter?.history || []} 
             color="#F43F5E" 
             metricType="packet-loss" 
             height={160} 
@@ -72,13 +65,13 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ metrics }) => {
       
       <MetricCard
         title="FPS"
-        value={metrics.fps.current}
-        trend={metrics.fps.trend}
-        trendValue={metrics.fps.trendValue}
+        value={fps?.current || "0"}
+        trend={fps?.trend || "stable"}
+        trendValue={fps?.trendValue || "0"}
         icon={<Gauge size={20} className="text-green-400" />}
         chartComponent={
           <MetricChart 
-            data={metrics.fps.history} 
+            data={fps?.history || []} 
             color="#10B981" 
             metricType="fps" 
             height={160} 
