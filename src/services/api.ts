@@ -1,4 +1,5 @@
-﻿const API_BASE_URL = "http://gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com";
+
+const API_BASE_URL = "http://gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com";
 
 export const apiClient = {
   async fetch(endpoint: string, options: RequestInit = {}) {
@@ -17,7 +18,8 @@ export const apiClient = {
     try {
       const response = await fetch(url, {
         ...options,
-        headers
+        headers,
+        mode: 'cors' // Explicitamente definir modo CORS
       });
       
       if (!response.ok) {

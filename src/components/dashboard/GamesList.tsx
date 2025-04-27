@@ -3,29 +3,16 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Check, Shield, Zap, Settings, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { useGames } from "@/hooks/useGames";
 import EnhancedGameSettingsModal from "../GameSpecificSettings/EnhancedGameSettingsModal";
 
-interface Game {
-  id: string;
-  name: string;
-  image: string;
-  isOptimized: boolean;
-  genre: string;
-  optimizationType: "both" | "network" | "system" | "none";
-}
-
-interface GamesListProps {
-  games: Game[];
-}
-
-const GamesList: React.FC<GamesListProps> = ({ games }) => {
-  const [selectedGame, setSelectedGame] = useState<Game | null>(null);
+const GamesList: React.FC = () => {
+  const [selectedGame, setSelectedGame] = useState<any | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [optimizingGameId, setOptimizingGameId] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { games, isLoading, optimizeGame, isOptimizing } = useGames();
 
-  const getOptimizationStatus = (game: Game) => {
+  const getOptimizationStatus = (game: any) => {
     if (!game.isOptimized) return { text: "NOT OPTIMIZED", color: "text-gray-400" };
     
     switch (game.optimizationType) {
@@ -52,33 +39,15 @@ const GamesList: React.FC<GamesListProps> = ({ games }) => {
     }
   };
 
-  const handleOptimize = (game: Game) => {
-    if (optimizingGameId) return;
-    
-    setOptimizingGameId(game.id);
-    toast.success(`Optimizing ${game.name}...`, {
-      description: "Applying intelligent routing and system optimizations"
-    });
-    
-    // Simulate optimization process
-    setTimeout(() => {
-      setOptimizingGameId(null);
-      toast.success(`${game.name} optimization completed`, {
-        description: "Game has been fully optimized for best performance"
-      });
-    }, 2000);
-  };
-
-  const handleOpenSettings = (game: Game) => {
-    setSelectedGame(game);
-    setSettingsOpen(true);
-  };
-
-  const handleGameConfig = (game: Game) => {
-    navigate(`/game-config/${game.id}`, { 
-      state: { game } 
-    });
-  };
+  if (isLoading) {
+    return <div className="col-span-2">
+      <div className="animate-pulse space-y-4">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-24 bg-cyber-darkblue/50 rounded-lg" />
+        ))}
+      </div>
+    </div>;
+  }
 
   return (
     <div className="col-span-2">
@@ -88,9 +57,8 @@ const GamesList: React.FC<GamesListProps> = ({ games }) => {
       </div>
       
       <div className="space-y-4">
-        {games.map((game) => {
+        {games?.map((game) => {
           const optimizationStatus = getOptimizationStatus(game);
-          const isOptimizing = optimizingGameId === game.id;
           
           return (
             <div 
@@ -103,9 +71,6 @@ const GamesList: React.FC<GamesListProps> = ({ games }) => {
                     src={game.image} 
                     alt={game.name} 
                     className="w-full h-full object-cover shadow-inner"
-                    onError={(e) => {
-                      e.currentTarget.src = "https://images.unsplash.com/photo-1634152962476-4b8a00e1915c?auto=format&fit=crop&w=64&h=64&q=80";
-                    }}
                   />
                 </div>
                 <div className="p-3">
@@ -123,11 +88,11 @@ const GamesList: React.FC<GamesListProps> = ({ games }) => {
                 <div className="flex space-x-2">
                   {(!game.isOptimized || game.optimizationType !== "both") && (
                     <Button 
-                      onClick={() => handleOptimize(game)} 
+                      onClick={() => optimizeGame(game.id)} 
                       variant="cyber"
                       size="sm"
                       disabled={isOptimizing}
-                      className={`bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/50 hover:bg-cyber-blue/30 text-xs px-3 py-1 transition-colors ${isOptimizing ? 'animate-pulse' : ''}`}
+                      className="bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/50 hover:bg-cyber-blue/30 text-xs px-3 py-1 transition-colors"
                     >
                       {isOptimizing ? (
                         <Loader2 size={14} className="mr-1 animate-spin" />
@@ -138,7 +103,10 @@ const GamesList: React.FC<GamesListProps> = ({ games }) => {
                     </Button>
                   )}
                   <Button
-                    onClick={() => handleOpenSettings(game)}
+                    onClick={() => {
+                      setSelectedGame(game);
+                      setSettingsOpen(true);
+                    }}
                     variant="outline"
                     size="sm"
                     className="bg-cyber-darkblue/80 text-gray-400 border border-gray-500/30 hover:bg-cyber-darkblue hover:text-white hover:border-cyber-blue/50 p-1 transition-all"

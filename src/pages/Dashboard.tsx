@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { generateGames } from "@/utils/mockData";
 import { toast } from "sonner";
 import ConnectionOptimizer from "@/components/ConnectionOptimizer";
 import RouteOptimizer from "@/components/RouteOptimizer";
@@ -13,18 +12,7 @@ import GamesList from "@/components/dashboard/GamesList";
 import SystemMetrics from "@/components/dashboard/SystemMetrics";
 import PremiumFeatures from "@/components/dashboard/PremiumFeatures";
 
-// Define the Game type to match the one in GamesList
-interface Game {
-  id: string;
-  name: string;
-  image: string;
-  isOptimized: boolean;
-  genre: string;
-  optimizationType: "both" | "network" | "system" | "none";
-}
-
 const Dashboard: React.FC = () => {
-  const [games] = useState<Game[]>(generateGames());
   const [isOptimizing, setIsOptimizing] = useState(false);
   
   const handleOptimizeAll = () => {
@@ -78,7 +66,7 @@ const Dashboard: React.FC = () => {
       
       {/* Games and System Metrics Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-        <GamesList games={games} />
+        <GamesList />
         <SystemMetrics />
       </div>
       
