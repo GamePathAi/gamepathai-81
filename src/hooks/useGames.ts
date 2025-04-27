@@ -4,6 +4,15 @@ import { gamesService } from "../services/gamesService";
 import { toast } from "sonner";
 import { generateGames } from "@/utils/mockData/gameData";
 
+export interface Game {
+  id: string;
+  name: string;
+  image: string;
+  isOptimized: boolean;
+  genre: string;
+  optimizationType?: "both" | "network" | "system" | "none";
+}
+
 export function useGames() {
   const queryClient = useQueryClient();
 
@@ -11,7 +20,7 @@ export function useGames() {
     queryKey: ["games"],
     queryFn: async () => {
       try {
-        return await gamesService.getGames();
+        return await gamesService.getGames() as Game[];
       } catch (error) {
         console.log("Falling back to mock games data");
         return generateGames();

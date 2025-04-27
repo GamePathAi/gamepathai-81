@@ -2,7 +2,7 @@
 const API_BASE_URL = "http://gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com";
 
 export const apiClient = {
-  async fetch(endpoint: string, options: RequestInit = {}) {
+  async fetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
     const headers = {
       "Content-Type": "application/json",
@@ -30,7 +30,7 @@ export const apiClient = {
           
           if (renewed) {
             // Tentar novamente com o novo token
-            return apiClient.fetch(endpoint, options);
+            return apiClient.fetch<T>(endpoint, options);
           }
         }
         
@@ -41,7 +41,7 @@ export const apiClient = {
         };
       }
       
-      return response.json();
+      return response.json() as Promise<T>;
     } catch (error) {
       console.error(`API request failed for ${endpoint}:`, error);
       throw {

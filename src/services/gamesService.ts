@@ -1,9 +1,10 @@
 
 import { apiClient } from "./api";
+import { Game } from "@/hooks/useGames";
 
 export const gamesService = {
   getGames: () => 
-    apiClient.fetch("/api/games"),
+    apiClient.fetch<Game[]>("/api/games"),
     
   getGameDetails: (gameId: string) => 
     apiClient.fetch(`/api/games/${gameId}`),

@@ -4,6 +4,7 @@ import MetricCard from "@/components/MetricCard";
 import MetricChart from "@/components/MetricChart";
 import { Activity, Signal, Gauge } from "lucide-react";
 import { useMetrics } from "@/hooks/useMetrics";
+import { MetricData } from "@/types/metrics";
 
 const DashboardMetrics: React.FC = () => {
   const { 
@@ -21,18 +22,34 @@ const DashboardMetrics: React.FC = () => {
     </div>;
   }
 
+  // Prepare safe metric accessors to handle potential undefined values
+  const getPingValue = (ping?: MetricData) => ping?.current?.toString() || "0";
+  const getPingTrend = (ping?: MetricData) => ping?.trend || "stable";
+  const getPingTrendValue = (ping?: MetricData) => ping?.trendValue || "0ms";
+  const getPingHistory = (ping?: MetricData) => ping?.history || [];
+
+  const getJitterValue = (jitter?: MetricData) => jitter?.current?.toString() || "0";
+  const getJitterTrend = (jitter?: MetricData) => jitter?.trend || "stable";
+  const getJitterTrendValue = (jitter?: MetricData) => jitter?.trendValue || "0%";
+  const getJitterHistory = (jitter?: MetricData) => jitter?.history || [];
+
+  const getFpsValue = (fps?: MetricData) => fps?.current?.toString() || "0";
+  const getFpsTrend = (fps?: MetricData) => fps?.trend || "stable";
+  const getFpsTrendValue = (fps?: MetricData) => fps?.trendValue || "0";
+  const getFpsHistory = (fps?: MetricData) => fps?.history || [];
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
       <MetricCard
         title="CURRENT PING"
-        value={ping?.current || "0"}
+        value={getPingValue(ping)}
         unit="ms"
-        trend={ping?.trend || "stable"}
-        trendValue={ping?.trendValue || "0ms"}
+        trend={getPingTrend(ping)}
+        trendValue={getPingTrendValue(ping)}
         icon={<Activity size={20} className="text-cyber-blue" />}
         chartComponent={
           <MetricChart 
-            data={ping?.history || []} 
+            data={getPingHistory(ping)} 
             color="#33C3F0" 
             metricType="ping" 
             height={160} 
@@ -45,14 +62,14 @@ const DashboardMetrics: React.FC = () => {
       
       <MetricCard
         title="PACKET LOSS"
-        value={jitter?.current || "0"}
+        value={getJitterValue(jitter)}
         unit="%"
-        trend={jitter?.trend || "stable"}
-        trendValue={jitter?.trendValue || "0%"}
+        trend={getJitterTrend(jitter)}
+        trendValue={getJitterTrendValue(jitter)}
         icon={<Signal size={20} className="text-red-400" />}
         chartComponent={
           <MetricChart 
-            data={jitter?.history || []} 
+            data={getJitterHistory(jitter)} 
             color="#F43F5E" 
             metricType="packet-loss" 
             height={160} 
@@ -65,13 +82,13 @@ const DashboardMetrics: React.FC = () => {
       
       <MetricCard
         title="FPS"
-        value={fps?.current || "0"}
-        trend={fps?.trend || "stable"}
-        trendValue={fps?.trendValue || "0"}
+        value={getFpsValue(fps)}
+        trend={getFpsTrend(fps)}
+        trendValue={getFpsTrendValue(fps)}
         icon={<Gauge size={20} className="text-green-400" />}
         chartComponent={
           <MetricChart 
-            data={fps?.history || []} 
+            data={getFpsHistory(fps)} 
             color="#10B981" 
             metricType="fps" 
             height={160} 

@@ -15,8 +15,8 @@ export const metricsClient = {
           await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
         }
         
-        return await apiClient.fetch(endpoint);
-      } catch (error) {
+        return await apiClient.fetch<T>(endpoint);
+      } catch (error: any) {
         lastError = error;
         
         // Se erro for diferente de problemas de rede, não tente novamente

@@ -1,11 +1,13 @@
 
+import { TimeSeriesData, MetricData, SystemData } from '@/types/metrics';
+
 // Helper function to generate generic time-series data
 export const generateTimeSeriesData = (
   count = 20, 
   baseValue = 30, 
   variance = 15
-) => {
-  const data = [];
+): TimeSeriesData[] => {
+  const data: TimeSeriesData[] = [];
   const timeMarkers = [
     "30m", "25m", "20m", "15m", "10m", "5m", "now"
   ];
@@ -31,27 +33,27 @@ export const generateMetrics = () => {
       trend: Math.random() > 0.5 ? "down" : "up",
       trendValue: `${Math.floor(Math.random() * 20)}%`,
       history: generateTimeSeriesData(7)
-    },
+    } as MetricData,
     packetLoss: {
-      current: (Math.random() * 2).toFixed(1),
+      current: Number((Math.random() * 2).toFixed(1)),
       trend: Math.random() > 0.7 ? "up" : "stable",
       trendValue: `${(Math.random() * 0.5).toFixed(1)}%`,
       history: generateTimeSeriesData(7, 1, 1)
-    },
+    } as MetricData,
     fps: {
       current: Math.floor(Math.random() * 60) + 80,
       trend: Math.random() > 0.3 ? "up" : "down",
       trendValue: `${Math.floor(Math.random() * 15)}%`,
       history: generateTimeSeriesData(7, 120, 30)
-    },
+    } as MetricData,
     cpu: {
-      current: Math.floor(Math.random() * 30) + 20,
+      usage: Math.floor(Math.random() * 30) + 20,
       trend: "stable",
       trendValue: "0%",
       history: generateTimeSeriesData(7, 30, 10)
     },
     gpu: {
-      current: Math.floor(Math.random() * 40) + 50,
+      usage: Math.floor(Math.random() * 40) + 50,
       trend: Math.random() > 0.5 ? "up" : "stable",
       trendValue: `${Math.floor(Math.random() * 10)}%`,
       history: generateTimeSeriesData(7, 70, 20)
@@ -61,6 +63,6 @@ export const generateMetrics = () => {
       trend: "down",
       trendValue: `${Math.floor(Math.random() * 30)}%`,
       history: generateTimeSeriesData(7, 3, 2)
-    }
+    } as MetricData
   };
 };

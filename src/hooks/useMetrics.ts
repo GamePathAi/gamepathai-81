@@ -2,6 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { metricsService } from "../services/metricsService";
 import { useState, useEffect } from "react";
+import { MetricData, SystemData } from "../types/metrics";
 
 export function useMetrics(gameId?: string) {
   const [isOfflineMode, setIsOfflineMode] = useState<boolean>(false);
@@ -61,10 +62,10 @@ export function useMetrics(gameId?: string) {
   });
   
   return {
-    ping: pingQuery.data,
-    jitter: jitterQuery.data,
-    fps: fpsQuery.data,
-    system: systemQuery.data,
+    ping: pingQuery.data as MetricData | undefined,
+    jitter: jitterQuery.data as MetricData | undefined,
+    fps: fpsQuery.data as MetricData | undefined,
+    system: systemQuery.data as SystemData | undefined,
     isLoading: {
       ping: pingQuery.isLoading,
       jitter: jitterQuery.isLoading,
