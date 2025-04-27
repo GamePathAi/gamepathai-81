@@ -1,5 +1,11 @@
 
-const API_BASE_URL = "http://gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com";
+// Configuração do ambiente
+const API_ENV = {
+  production: "http://gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com",
+  local: "http://localhost:3000" // Ajuste esta porta para a do seu servidor local
+};
+
+const API_BASE_URL = import.meta.env.VITE_USE_LOCAL_API ? API_ENV.local : API_ENV.production;
 
 export const apiClient = {
   async fetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -15,21 +21,20 @@ export const apiClient = {
     }
     
     try {
+      console.log(`Fazendo requisição para: ${url}`);
       const response = await fetch(url, {
         ...options,
         headers,
         mode: 'cors',
-        credentials: 'include' // Incluir cookies nas requisições cross-origin
+        credentials: 'include'
       });
       
       if (!response.ok) {
-        // Se o erro for 401 (Unauthorized), tentar renovar o token
         if (response.status === 401) {
           console.log("Token expirado, tentando renovar...");
           const renewed = await tryRenewToken();
           
           if (renewed) {
-            // Tentar novamente com o novo token
             return apiClient.fetch<T>(endpoint, options);
           }
         }
@@ -43,10 +48,10 @@ export const apiClient = {
       
       return response.json() as Promise<T>;
     } catch (error) {
-      console.error(`API request failed for ${endpoint}:`, error);
+      console.error(`Falha na requisição para ${endpoint}:`, error);
       throw {
         status: 'error',
-        message: 'Failed to fetch data from server',
+        message: 'Falha ao buscar dados do servidor',
         originalError: error
       };
     }
