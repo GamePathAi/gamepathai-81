@@ -9,7 +9,6 @@ export const apiClient = {
       ...(options.headers || {})
     };
     
-    // Adicionar token de autenticação se disponível
     const token = localStorage.getItem("auth_token");
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
@@ -19,21 +18,25 @@ export const apiClient = {
       const response = await fetch(url, {
         ...options,
         headers,
-        mode: 'cors' // Explicitamente definir modo CORS
+        mode: 'cors'
       });
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        return Promise.reject({
+        throw {
           status: response.status,
           ...errorData
-        });
+        };
       }
       
       return response.json();
     } catch (error) {
-      console.error("API request failed:", error);
-      return Promise.reject(error);
+      console.error(`API request failed for ${endpoint}:`, error);
+      throw {
+        status: 'error',
+        message: 'Failed to fetch data from server',
+        originalError: error
+      };
     }
   }
 };
