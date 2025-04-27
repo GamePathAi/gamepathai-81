@@ -1,8 +1,8 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { generateMetrics, generateGames } from "@/utils/mockData";
+import { generateGames } from "@/utils/mockData";
 import { toast } from "sonner";
 import ConnectionOptimizer from "@/components/ConnectionOptimizer";
 import RouteOptimizer from "@/components/RouteOptimizer";
@@ -12,9 +12,6 @@ import DashboardMetrics from "@/components/dashboard/DashboardMetrics";
 import GamesList from "@/components/dashboard/GamesList";
 import SystemMetrics from "@/components/dashboard/SystemMetrics";
 import PremiumFeatures from "@/components/dashboard/PremiumFeatures";
-
-// Define valid trend types to match component requirements
-type TrendType = "up" | "down" | "stable";
 
 // Define the Game type to match the one in GamesList
 interface Game {
@@ -27,18 +24,8 @@ interface Game {
 }
 
 const Dashboard: React.FC = () => {
-  const [metrics, setMetrics] = useState(generateMetrics());
   const [games] = useState<Game[]>(generateGames());
   const [isOptimizing, setIsOptimizing] = useState(false);
-  
-  // Update metrics periodically for a real-time effect
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setMetrics(generateMetrics());
-    }, 3000);
-    
-    return () => clearInterval(interval);
-  }, []);
   
   const handleOptimizeAll = () => {
     if (isOptimizing) return;
@@ -55,42 +42,6 @@ const Dashboard: React.FC = () => {
         description: "All games and routes have been optimized"
       });
     }, 3000);
-  };
-
-  // Convert number metrics to string for components that expect strings
-  // Also ensure that trend values are of the proper type
-  const formattedMetrics = {
-    ...metrics,
-    ping: {
-      ...metrics.ping,
-      current: String(metrics.ping.current),
-      trend: metrics.ping.trend as TrendType
-    },
-    packetLoss: {
-      ...metrics.packetLoss,
-      current: metrics.packetLoss.current,
-      trend: metrics.packetLoss.trend as TrendType
-    },
-    fps: {
-      ...metrics.fps,
-      current: String(metrics.fps.current),
-      trend: metrics.fps.trend as TrendType
-    },
-    cpu: {
-      ...metrics.cpu,
-      current: String(metrics.cpu.current),
-      trend: metrics.cpu.trend as TrendType
-    },
-    gpu: {
-      ...metrics.gpu,
-      current: String(metrics.gpu.current),
-      trend: metrics.gpu.trend as TrendType
-    },
-    jitter: {
-      ...metrics.jitter,
-      current: String(metrics.jitter.current),
-      trend: metrics.jitter.trend as TrendType
-    }
   };
 
   return (
@@ -123,12 +74,12 @@ const Dashboard: React.FC = () => {
       </div>
       
       {/* Main Metrics Section */}
-      <DashboardMetrics metrics={formattedMetrics} />
+      <DashboardMetrics />
       
       {/* Games and System Metrics Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
         <GamesList games={games} />
-        <SystemMetrics metrics={formattedMetrics} />
+        <SystemMetrics />
       </div>
       
       {/* Optimization Tools Section */}
