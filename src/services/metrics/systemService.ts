@@ -16,13 +16,13 @@ export const systemService = {
       
       return {
         cpu: {
-          usage: cpuData.current,
+          usage: cpuData.usage,
           trend: cpuData.trend as 'up' | 'down' | 'stable',
           trendValue: cpuData.trendValue,
           history: cpuData.history
         },
         gpu: {
-          usage: gpuData.current,
+          usage: gpuData.usage,
           trend: gpuData.trend as 'up' | 'down' | 'stable',
           trendValue: gpuData.trendValue,
           history: gpuData.history
@@ -31,3 +31,4 @@ export const systemService = {
     }
   }
 };
+
