@@ -1,30 +1,63 @@
-﻿import { useQuery } from "@tanstack/react-query";
+
+import { useQuery } from "@tanstack/react-query";
 import { metricsService } from "../services/metricsService";
+import { useState, useEffect } from "react";
 
 export function useMetrics(gameId?: string) {
+  const [isOfflineMode, setIsOfflineMode] = useState<boolean>(false);
+  
+  // Verificar se estamos em modo offline (backend indisponível)
+  useEffect(() => {
+    const checkBackend = async () => {
+      try {
+        const response = await fetch("http://gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com/api/health", { 
+          mode: 'cors',
+          method: 'HEAD',
+          cache: 'no-cache'
+        });
+        setIsOfflineMode(!response.ok);
+      } catch (error) {
+        setIsOfflineMode(true);
+      }
+    };
+    
+    checkBackend();
+    const interval = setInterval(checkBackend, 60000); // Verificar a cada minuto
+    
+    return () => clearInterval(interval);
+  }, []);
+  
   const pingQuery = useQuery({
     queryKey: ["metrics", "ping"],
     queryFn: metricsService.getPing,
-    refetchInterval: 10000 // Atualizar a cada 10 segundos
+    refetchInterval: isOfflineMode ? false : 10000, // Atualizar a cada 10 segundos se estiver online
+    retry: isOfflineMode ? false : 1,
+    staleTime: 5000
   });
   
   const jitterQuery = useQuery({
     queryKey: ["metrics", "jitter"],
     queryFn: metricsService.getJitter,
-    refetchInterval: 10000
+    refetchInterval: isOfflineMode ? false : 10000,
+    retry: isOfflineMode ? false : 1,
+    staleTime: 5000
   });
   
   const fpsQuery = useQuery({
     queryKey: ["metrics", "fps", gameId],
     queryFn: () => metricsService.getFps(gameId),
-    refetchInterval: 5000,
-    enabled: !!gameId // Só buscar FPS se tiver um jogo
+    refetchInterval: isOfflineMode ? false : 5000,
+    enabled: !!gameId, // Só buscar FPS se tiver um jogo
+    retry: isOfflineMode ? false : 1,
+    staleTime: 5000
   });
   
   const systemQuery = useQuery({
     queryKey: ["metrics", "system"],
     queryFn: metricsService.getSystem,
-    refetchInterval: 15000 // Atualizar a cada 15 segundos
+    refetchInterval: isOfflineMode ? false : 15000, // Atualizar a cada 15 segundos se estiver online
+    retry: isOfflineMode ? false : 1,
+    staleTime: 5000
   });
   
   return {
@@ -43,6 +76,13 @@ export function useMetrics(gameId?: string) {
       jitter: jitterQuery.isError,
       fps: fpsQuery.isError,
       system: systemQuery.isError
+    },
+    isOfflineMode,
+    refetch: () => {
+      pingQuery.refetch();
+      jitterQuery.refetch();
+      fpsQuery.refetch();
+      systemQuery.refetch();
     }
   };
 }

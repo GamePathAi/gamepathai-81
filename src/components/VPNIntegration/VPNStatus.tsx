@@ -1,9 +1,10 @@
-
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Shield, Globe, Clock, Bolt } from "lucide-react";
+import { Shield, Globe, Clock, Bolt, AlertTriangle, Wifi, WifiOff } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useVpn } from "@/hooks/useVpn";
 
 interface VPNStatusProps {
   isActive: boolean;
@@ -11,6 +12,8 @@ interface VPNStatusProps {
 }
 
 export const VPNStatus: React.FC<VPNStatusProps> = ({ isActive, onToggle }) => {
+  const { isBackendOnline } = useVpn();
+  
   return (
     <Card className={`cyber-card border-${isActive ? 'cyber-green' : 'cyber-red'}/30 transition-all duration-300`}>
       <CardContent className="p-6">
@@ -22,9 +25,26 @@ export const VPNStatus: React.FC<VPNStatusProps> = ({ isActive, onToggle }) => {
             </div>
             
             <div>
-              <h3 className="font-tech text-lg section-title mb-1">
-                {isActive ? 'VPN Protected' : 'VPN Disconnected'}
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="font-tech text-lg section-title mb-1">
+                  {isActive ? 'VPN Protected' : 'VPN Disconnected'}
+                </h3>
+                
+                {isBackendOnline === false && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="p-1 rounded-full bg-amber-500/20 text-amber-500">
+                          <AlertTriangle size={14} />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Servidor offline. Usando dados simulados.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+              </div>
               <p className={`text-sm ${isActive ? 'text-cyber-green' : 'text-cyber-red'}`}>
                 {isActive ? 
                   'Your gaming traffic is secured and optimized' : 
