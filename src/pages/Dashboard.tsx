@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Zap, Server, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -68,7 +67,7 @@ const Dashboard: React.FC = () => {
     <div className="container mx-auto">
       {/* Status do Backend */}
       {backendStatus === 'offline' && (
-        <Alert variant="destructive" className="mb-4 bg-amber-500/10 border-amber-500/50">
+        <Alert variant="default" className="mb-4 bg-amber-500/10 border-amber-500/50">
           <AlertTriangle className="h-4 w-4 text-amber-500" />
           <AlertTitle className="text-amber-500">Modo offline ativado</AlertTitle>
           <AlertDescription className="flex items-center justify-between">
