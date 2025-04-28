@@ -13,10 +13,13 @@ export const addCorsHeaders = (request: RequestInit): RequestInit => {
     headers: {
       ...request.headers,
       'X-No-Redirect': '1', // Prevent redirects
-      'X-Requested-With': 'XMLHttpRequest' // Mark as AJAX request
+      'X-Requested-With': 'XMLHttpRequest', // Mark as AJAX request
+      'Cache-Control': 'no-cache, no-store', // Prevent caching
+      'Pragma': 'no-cache'
     },
     mode: 'cors',
-    credentials: 'include'
+    credentials: 'include',
+    cache: 'no-store' // Prevent cache at fetch level
   };
 };
 
@@ -30,12 +33,16 @@ export const setupFetchInterceptor = (): void => {
   const originalFetch = window.fetch;
   
   window.fetch = async function(input: RequestInfo | URL, init?: RequestInit) {
-    // Only modify API requests
-    if (typeof input === 'string' && input.includes('/api/')) {
-      const enhancedInit = addCorsHeaders(init || {});
-      return originalFetch(input, enhancedInit);
+    // Always add no-redirect headers to all requests
+    const enhancedInit = addCorsHeaders(init || {});
+    
+    // Remove any gamepathai.com URLs that might have been added incorrectly
+    let url = typeof input === 'string' ? input : input.toString();
+    if (url.includes('gamepathai.com')) {
+      console.warn('Intercepting potential redirect URL:', url);
+      url = url.replace(/https?:\/\/gamepathai\.com/g, '');
     }
     
-    return originalFetch(input, init);
+    return originalFetch(url, enhancedInit);
   };
 };

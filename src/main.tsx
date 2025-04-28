@@ -21,10 +21,16 @@ import { initializeApp } from "./utils/appInitializer";
 // Initialize application configurations 
 initializeApp();
 
-// REMOVED: Console notification about redirection (this was causing confusion)
-
 // Criar cliente de consulta para React Query
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 5000,
+      refetchOnWindowFocus: false
+    }
+  }
+});
 
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>

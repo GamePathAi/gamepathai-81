@@ -4,19 +4,22 @@
  */
 export function isWebAuthnSupported(): boolean {
   try {
-    // Check if we're in Electron
+    // Check if we're in Electron - explicitly return false
     const isElectron = typeof window !== 'undefined' && 
       window.navigator.userAgent.toLowerCase().indexOf(' electron/') > -1;
 
-    // WebAuthn isn't available in Electron, so return false
     if (isElectron) {
+      console.log("Running in Electron environment, WebAuthn not supported");
       return false;
     }
 
-    // For regular browsers, check if WebAuthn is supported
-    return typeof window !== 'undefined' && 
-           window.PublicKeyCredential !== undefined && 
-           typeof window.PublicKeyCredential === 'function';
+    // Safety check for environments where PublicKeyCredential might not be defined
+    if (typeof window === 'undefined' || 
+        typeof window.PublicKeyCredential === 'undefined') {
+      return false;
+    }
+
+    return true;
   } catch (error) {
     console.warn("Error checking WebAuthn support:", error);
     return false;

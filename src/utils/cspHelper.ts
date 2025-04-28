@@ -12,12 +12,12 @@ const CSP_SOURCES = {
   STYLE: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
   SCRIPT: ["'self'", "https://js.stripe.com", "'unsafe-inline'", "'unsafe-eval'"],
   FONT: ["'self'", "https://fonts.gstatic.com"],
-  IMG: ["'self'", "data:", "https://*.stripe.com"],
+  IMG: ["'self'", "data:", "https://*.stripe.com", "blob:"],
   CONNECT: [
     "'self'", 
     "https://*.stripe.com", 
-    "https://gamepathai.com", 
-    "http://localhost:8080",
+    "http://localhost:*",
+    "https://localhost:*",
     "https://gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com",
     "wss://*.stripe.com"
   ]
@@ -56,3 +56,38 @@ export const addCSPMetaTag = (): void => {
   metaTag.content = generateCSPMeta();
   document.head.appendChild(metaTag);
 };
+
+/**
+ * Removes any Kaspersky or other security software injected scripts
+ * that might be causing redirection issues
+ */
+export const removeInjectedScripts = (): void => {
+  if (typeof document === 'undefined') return;
+  
+  // Find and remove any script tags from security software
+  const scripts = document.querySelectorAll('script');
+  scripts.forEach(script => {
+    const src = script.getAttribute('src') || '';
+    if (src.includes('kaspersky') || 
+        src.includes('scr.kaspersky-labs.com') ||
+        src.includes('kis.v2.scr')) {
+      console.log('Removing potentially problematic script:', src);
+      script.remove();
+    }
+  });
+  
+  // Also check for related CSS
+  const links = document.querySelectorAll('link[rel="stylesheet"]');
+  links.forEach(link => {
+    const href = link.getAttribute('href') || '';
+    if (href.includes('kaspersky') || 
+        href.includes('scr.kaspersky-labs.com') ||
+        href.includes('abn/main.css')) {
+      console.log('Removing potentially problematic stylesheet:', href);
+      link.remove();
+    }
+  });
+};
+
+// Export the removal function
+export { removeInjectedScripts };

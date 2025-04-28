@@ -18,23 +18,32 @@ export default defineConfig(({ mode }) => ({
         rewrite: (path) => path.replace(/^\/api/, '/api'),
         configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
-            console.log('proxy error', err);
+            console.error('proxy error', err);
           });
           proxy.on('proxyReq', (proxyReq, req, _res) => {
-            // Modificar cabeçalhos para evitar redirecionamentos
-            proxyReq.setHeader('X-Forwarded-Host', req.headers.host || '');
+            // Block redirections by custom headers
             proxyReq.setHeader('X-No-Redirect', '1');
+            proxyReq.setHeader('X-Requested-With', 'XMLHttpRequest');
+            proxyReq.setHeader('X-Forwarded-Host', req.headers.host || '');
+            
+            // Remove referer to prevent cross-origin issues
+            proxyReq.removeHeader('referer');
             
             if (mode === 'development') {
               console.log('Enviando requisição para:', req.url);
             }
           });
           proxy.on('proxyRes', (proxyRes, req, _res) => {
-            // Bloquear cabeçalhos de redirecionamento
+            // Forcefully remove redirect headers
             if (proxyRes.headers.location) {
               console.log('Bloqueando redirecionamento:', proxyRes.headers.location);
               delete proxyRes.headers.location;
             }
+            
+            // Ensure CORS headers are properly set
+            proxyRes.headers['access-control-allow-origin'] = '*';
+            proxyRes.headers['access-control-allow-methods'] = 'GET,HEAD,PUT,PATCH,POST,DELETE';
+            proxyRes.headers['access-control-allow-headers'] = 'Content-Type, Authorization, X-No-Redirect';
             
             if (mode === 'development') {
               console.log('Recebeu resposta para:', req.url, 'status:', proxyRes.statusCode);
@@ -59,5 +68,9 @@ export default defineConfig(({ mode }) => ({
     // Definir variáveis globais
     'process.env.IS_ELECTRON': process.env.IS_ELECTRON || 'false',
     'process.env.NODE_ENV': JSON.stringify(mode),
+  },
+  // Force disable HMR (Hot Module Replacement) to prevent redirects
+  server: {
+    hmr: false
   },
 }));

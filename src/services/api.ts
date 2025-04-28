@@ -2,7 +2,7 @@
 // Importing our URL redirection utilities
 import { getApiBaseUrl, isElectron } from "../utils/urlRedirects";
 
-// Configure API base URL based on environment
+// Configure API base URL - always use proxy
 const API_BASE_URL = getApiBaseUrl();
 
 // Remove noisy logging and only log in development
@@ -16,19 +16,17 @@ export const apiClient = {
     // Ensure endpoint starts with / for proper URL joining
     const formattedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
     
-    // Remover duplicações de API path
+    // Remove duplications of API path
     const cleanedEndpoint = formattedEndpoint.replace(/\/api\/api\//g, '/api/');
     
-    // Construir URL apropriada para o ambiente
+    // Ensure we're using the proxy path
     const url = API_BASE_URL + cleanedEndpoint;
-    
-    // Only log in development
-    if (isDev) {
-      console.log(`API request to: ${url}`);
-    }
     
     const headers = {
       "Content-Type": "application/json",
+      "X-No-Redirect": "1", // Prevent redirects
+      "Cache-Control": "no-cache, no-store", // Prevent caching
+      "Pragma": "no-cache",
       ...(options.headers || {})
     };
     
@@ -46,7 +44,8 @@ export const apiClient = {
         ...options,
         headers,
         mode: 'cors',
-        credentials: 'include'
+        credentials: 'include',
+        cache: 'no-store' // Prevent browser caching
       });
       
       if (!response.ok) {
@@ -87,11 +86,14 @@ async function tryRenewToken() {
     const response = await fetch(`${API_BASE_URL}/auth/refresh-token`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "X-No-Redirect": "1", // Prevent redirects
+        "Cache-Control": "no-cache" // Prevent caching
       },
       body: JSON.stringify({ refresh_token: refreshToken }),
       mode: 'cors',
-      credentials: 'include'
+      credentials: 'include',
+      cache: 'no-store'
     });
     
     if (!response.ok) return false;
@@ -112,7 +114,6 @@ async function tryRenewToken() {
 // Função para testar a conexão com o backend
 export const testBackendConnection = async () => {
   try {
-    // Usar a URL base correta para o ambiente
     const url = `${API_BASE_URL}/health`.replace(/\/api\/api\//g, '/api/');
     
     if (isDev) {
@@ -125,22 +126,21 @@ export const testBackendConnection = async () => {
     const response = await fetch(url, { 
       mode: 'cors',
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "X-No-Redirect": "1", // Prevent redirects
+        "Cache-Control": "no-cache" // Prevent caching
       },
-      signal: controller.signal
+      signal: controller.signal,
+      cache: 'no-store'
     });
     
     clearTimeout(timeoutId);
     
-    if (response.ok) {
-      if (isDev) {
-        console.log("Backend connection successful");
-      }
-      return true;
-    } else {
-      console.error(`Backend health check failed with status: ${response.status}`);
-      return false;
+    if (isDev) {
+      console.log(`Backend connection ${response.ok ? 'successful' : 'failed'} with status: ${response.status}`);
     }
+    
+    return response.ok;
   } catch (error) {
     if (error.name === 'AbortError') {
       console.error("Backend connection test timed out");
