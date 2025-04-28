@@ -3,16 +3,20 @@ import { apiClient } from './api';
 import { toast } from "sonner";
 import { isWebAuthnSupported } from "../utils/webAuthnSupport";
 
+// URL do backend para verificação de saúde
+const HEALTH_ENDPOINT = "http://gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com/api/health";
+
 // Função para verificar se o backend está disponível
 const checkBackendAvailability = async () => {
   try {
-    const response = await fetch("http://gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com/api/health", { 
+    const response = await fetch(HEALTH_ENDPOINT, { 
       mode: 'cors',
       method: 'HEAD',
       cache: 'no-cache'
     });
     return response.ok;
   } catch (error) {
+    console.warn("Backend health check failed:", error);
     return false;
   }
 };
@@ -21,9 +25,6 @@ const handleApiError = (error: any, fallback: any, endpoint: string) => {
   // Verificar se é erro CORS
   if (error.message && error.message.includes('Failed to fetch')) {
     console.warn(`Possível erro CORS no endpoint ${endpoint}`);
-    toast.error("Erro de conexão", {
-      description: "Não foi possível acessar o servidor. Verifique sua conexão."
-    });
   } else {
     console.error(`Erro na API (${endpoint}):`, error);
   }
@@ -65,8 +66,11 @@ export const vpnService = {
         return getMockVpnStatus();
       }
       
-      return await apiClient.fetch('/api/vpn/status');
+      const result = await apiClient.fetch('/api/vpn/status');
+      console.log("VPN status from API:", result);
+      return result;
     } catch (error) {
+      console.error("Error fetching VPN status:", error);
       return handleApiError(error, getMockVpnStatus(), '/api/vpn/status');
     }
   },
@@ -74,8 +78,15 @@ export const vpnService = {
   connect: async (serverId: string) => {
     try {
       // Check for WebAuthn support and use appropriate connection method
-      const connectionMethod = isWebAuthnSupported() ? 'webauthn' : 'standard';
-      console.log(`Using ${connectionMethod} connection method`);
+      let connectionMethod = 'standard';
+      try {
+        if (isWebAuthnSupported()) {
+          connectionMethod = 'webauthn';
+          console.log("Using WebAuthn connection method");
+        }
+      } catch (error) {
+        console.warn("WebAuthn check failed:", error);
+      }
       
       const isBackendAvailable = await checkBackendAvailability();
       if (!isBackendAvailable) {
@@ -98,13 +109,19 @@ export const vpnService = {
         return getMockVpnStatus();
       }
       
-      return await apiClient.fetch('/api/vpn/connect', {
+      const response = await apiClient.fetch('/api/vpn/connect', {
         method: 'POST',
         body: JSON.stringify({ 
           server_id: serverId,
           auth_method: connectionMethod 
         })
       });
+      
+      toast.success("VPN conectada", {
+        description: `Conexão estabelecida com sucesso`
+      });
+      
+      return response;
     } catch (error) {
       toast.error("Falha ao conectar à VPN", {
         description: "Verifique sua conexão e tente novamente"
@@ -131,9 +148,15 @@ export const vpnService = {
         return getMockVpnStatus();
       }
       
-      return await apiClient.fetch('/api/vpn/disconnect', {
+      const response = await apiClient.fetch('/api/vpn/disconnect', {
         method: 'POST'
       });
+      
+      toast.success("VPN desconectada", {
+        description: "Desconexão realizada com sucesso"
+      });
+      
+      return response;
     } catch (error) {
       toast.error("Falha ao desconectar da VPN", {
         description: "Verifique sua conexão e tente novamente"

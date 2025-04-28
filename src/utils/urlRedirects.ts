@@ -22,12 +22,13 @@ export const isProduction = (): boolean => {
  * Gets the appropriate base URL for API calls based on environment
  */
 export const getApiBaseUrl = (): string => {
-  if (isProduction()) {
-    return `https://${DOMAINS.PRODUCTION}/api`;
+  // Para ambiente de desenvolvimento, use diretamente a API da AWS
+  if (!isProduction()) {
+    return `http://${DOMAINS.AWS_BACKEND}/api`;
   }
   
-  // For local development
-  return `http://${DOMAINS.LOCAL_DEVELOPMENT}/api`;
+  // Para produção
+  return `https://${DOMAINS.PRODUCTION}/api`;
 };
 
 /**
@@ -35,26 +36,7 @@ export const getApiBaseUrl = (): string => {
  * Used for consistent API access across environments
  */
 export const mapToProdUrl = (url: string): string => {
-  // Only perform mapping in production environment
-  if (!isProduction()) {
-    return url;
-  }
-  
-  // Replace localhost references with production domain
-  if (url.includes(DOMAINS.LOCAL_DEVELOPMENT)) {
-    return url.replace(
-      `http://${DOMAINS.LOCAL_DEVELOPMENT}`, 
-      `https://${DOMAINS.PRODUCTION}`
-    );
-  }
-  
-  // Replace AWS backend URLs with production domain
-  if (url.includes(DOMAINS.AWS_BACKEND)) {
-    return url.replace(
-      `http://${DOMAINS.AWS_BACKEND}`, 
-      `https://${DOMAINS.PRODUCTION}`
-    );
-  }
-  
+  // Desativando o mapeamento para permitir conexões diretas
   return url;
 };
+

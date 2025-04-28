@@ -12,12 +12,13 @@ export const initializeApp = () => {
   // Log environment information
   console.log(`Running in ${isProduction() ? 'PRODUCTION' : 'DEVELOPMENT'} environment`);
   
-  // Set up redirect logging (helps with debugging)
-  setupRedirectLogging();
+  // Desativando o logging de redirecionamento para simplificar
+  // setupRedirectLogging();
 };
 
 /**
  * Sets up console logging for URL redirects for debugging purposes
+ * (Desativado para evitar confusão)
  */
 const setupRedirectLogging = () => {
   // Only perform in development mode
@@ -38,22 +39,15 @@ const setupRedirectLogging = () => {
     
     // Log localhost redirects
     if (url.includes(DOMAINS.LOCAL_DEVELOPMENT)) {
-      const targetUrl = url.replace(
-        `http://${DOMAINS.LOCAL_DEVELOPMENT}`,
-        `http://${DOMAINS.PRODUCTION}`
-      );
-      console.log(`URL redirecionada: ${url} -> ${targetUrl}`);
+      console.log(`Debug - Local URL: ${url}`);
     }
     
     // Log AWS backend redirects
     if (url.includes(DOMAINS.AWS_BACKEND)) {
-      const targetUrl = url.replace(
-        `http://${DOMAINS.AWS_BACKEND}`,
-        `http://${DOMAINS.PRODUCTION}`
-      );
-      console.log(`URL AWS redirecionada: ${url} -> ${targetUrl}`);
+      console.log(`Debug - AWS URL: ${url}`);
     }
     
     return originalFetch.apply(this, [input, init]);
   };
 };
+

@@ -13,9 +13,6 @@ export const apiClient = {
     const formattedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
     const url = `${API_BASE_URL}${formattedEndpoint}`;
     
-    // Map URL to production domain if needed
-    const mappedUrl = mapToProdUrl(url);
-    
     const headers = {
       "Content-Type": "application/json",
       ...(options.headers || {})
@@ -28,7 +25,7 @@ export const apiClient = {
     
     try {
       console.log(`Fazendo requisição para: ${url}`);
-      const response = await fetch(mappedUrl, {
+      const response = await fetch(url, {
         ...options,
         headers,
         mode: 'cors',
@@ -101,10 +98,7 @@ export const testBackendConnection = async () => {
     const url = `${API_BASE_URL}/health`;
     console.log("Testando conexão com:", url);
     
-    // Map URL to production domain if needed
-    const mappedUrl = mapToProdUrl(url);
-    
-    const response = await fetch(mappedUrl, { 
+    const response = await fetch(url, { 
       mode: 'cors',
       headers: {
         "Content-Type": "application/json"

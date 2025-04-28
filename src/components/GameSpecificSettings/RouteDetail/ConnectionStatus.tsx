@@ -5,28 +5,42 @@ import { useMetrics } from "@/hooks/useMetrics";
 import { cn } from "@/lib/utils";
 
 const ConnectionStatus: React.FC = () => {
-  const { status } = useVpn();
+  const { status, isConnected } = useVpn();
   const { ping, jitter } = useMetrics();
   
   // Dados seguros para exibição
-  const isConnected = status?.connected || false;
   const serverLocation = status?.serverLocation || "São Paulo, BR";
   const pingValue = ping?.current?.toString() || "15";
   const packetLoss = jitter?.current?.toString() || "0.01";
   
+  // Tempo de conexão formatado
+  const getConnectionTime = () => {
+    if (!status?.connectionTime) return "--:--:--";
+    
+    const now = Date.now();
+    const connectedTime = status.connectionTime;
+    const diffInSeconds = Math.floor((now - connectedTime) / 1000);
+    
+    const hours = Math.floor(diffInSeconds / 3600);
+    const minutes = Math.floor((diffInSeconds % 3600) / 60);
+    const seconds = diffInSeconds % 60;
+    
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
+  
   // Classes dinâmicas para os valores de latência
   const getPingClass = (ping: string) => {
     const pingNumber = parseFloat(ping);
-    if (pingNumber < 50) return "latency-low";
-    if (pingNumber < 100) return "latency-medium";
-    return "latency-high";
+    if (pingNumber < 50) return "text-cyber-green";
+    if (pingNumber < 100) return "text-cyber-yellow";
+    return "text-cyber-red";
   };
   
   const getPacketLossClass = (loss: string) => {
     const lossNumber = parseFloat(loss);
-    if (lossNumber < 1) return "latency-low";
-    if (lossNumber < 2) return "latency-medium";
-    return "latency-high";
+    if (lossNumber < 1) return "text-cyber-green";
+    if (lossNumber < 2) return "text-cyber-yellow";
+    return "text-cyber-red";
   };
 
   return (
@@ -54,6 +68,12 @@ const ConnectionStatus: React.FC = () => {
           <span className="text-gray-400">Packet Loss</span>
           <span className={getPacketLossClass(packetLoss)}>{packetLoss}%</span>
         </div>
+        {isConnected && (
+          <div className="flex justify-between">
+            <span className="text-gray-400">Connected</span>
+            <span className="text-cyber-blue">{getConnectionTime()}</span>
+          </div>
+        )}
       </div>
     </div>
   );

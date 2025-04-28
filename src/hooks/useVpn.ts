@@ -41,8 +41,11 @@ export function useVpn() {
       }
     };
     
+    // Verificar imediatamente na inicialização
     checkBackend();
-    const interval = setInterval(checkBackend, 30000); // Verificar a cada 30 segundos
+    
+    // Configurar verificação periódica
+    const interval = setInterval(checkBackend, 15000); // Verificar a cada 15 segundos
     
     return () => clearInterval(interval);
   }, [isBackendOnline]);
@@ -62,15 +65,25 @@ export function useVpn() {
     staleTime: 30000
   });
   
+  // Função para lidar com WebAuthn de forma segura
   const connectWithAuth = async (serverId: string) => {
-    // Use WebAuthn if supported, otherwise use regular authentication
-    if (isWebAuthnSupported()) {
-      console.log("Using WebAuthn for authentication");
-      // WebAuthn implementation would go here
+    try {
+      // Tentativa de usar WebAuthn se suportado
+      let webAuthnSupported = false;
+      try {
+        webAuthnSupported = isWebAuthnSupported();
+        if (webAuthnSupported) {
+          console.log("Using WebAuthn for authentication");
+        }
+      } catch (error) {
+        console.warn("Error checking WebAuthn support:", error);
+      }
+      
+      // Conectar com o serviço VPN
       return await vpnService.connect(serverId);
-    } else {
-      console.log("WebAuthn not supported, using fallback authentication");
-      // Fallback authentication method
+    } catch (error) {
+      console.error("Connection authentication error:", error);
+      // Revertendo para autenticação padrão
       return await vpnService.connect(serverId);
     }
   };
@@ -105,6 +118,9 @@ export function useVpn() {
     }
   });
   
+  // Determinar se o VPN está realmente conectado
+  const isConnected = statusQuery.data?.connected || false;
+  
   return {
     status: statusQuery.data,
     isLoading: statusQuery.isLoading,
@@ -115,6 +131,7 @@ export function useVpn() {
     disconnect: disconnectMutation.mutate,
     isConnecting: connectMutation.isPending,
     isDisconnecting: disconnectMutation.isPending,
+    isConnected, // Adicionando propriedade explícita
     isBackendOnline,
     isWebAuthnSupported: isWebAuthnSupported(),
     refetch: () => {

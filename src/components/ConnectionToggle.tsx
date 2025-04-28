@@ -1,15 +1,21 @@
 
 import React from "react";
 import { Power, AlertTriangle, Wifi, WifiOff } from "lucide-react";
-import { Toggle } from "@/components/ui/toggle";
-import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useVpn } from "@/hooks/useVpn";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const ConnectionToggle: React.FC = () => {
-  const { status, connect, disconnect, isConnecting, isDisconnecting, isBackendOnline, refetch } = useVpn();
-  const isConnected = status?.connected || false;
+  const { 
+    status, 
+    connect, 
+    disconnect, 
+    isConnecting, 
+    isDisconnecting, 
+    isBackendOnline, 
+    refetch,
+    isConnected
+  } = useVpn();
 
   const toggleConnection = async () => {
     if (isConnecting || isDisconnecting) return;
@@ -17,19 +23,11 @@ const ConnectionToggle: React.FC = () => {
     try {
       if (isConnected) {
         await disconnect();
-        toast.info("GamePath AI Desconectado", {
-          description: "Recursos de otimização foram pausados",
-        });
       } else {
         await connect(status?.recommendedServer || "auto");
-        toast.success("GamePath AI Conectado", {
-          description: "Todos os recursos de otimização estão ativos",
-        });
       }
     } catch (error) {
-      toast.error("Falha na conexão", {
-        description: "Por favor, tente novamente mais tarde",
-      });
+      console.error("Connection toggle error:", error);
     }
   };
 
