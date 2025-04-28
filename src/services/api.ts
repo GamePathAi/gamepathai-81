@@ -1,6 +1,6 @@
 
 // Importing our new URL redirection utilities
-import { getApiBaseUrl } from "../utils/urlRedirects";
+import { getApiBaseUrl, isElectron } from "../utils/urlRedirects";
 
 // Configure API base URL based on environment
 const API_BASE_URL = getApiBaseUrl();
@@ -15,10 +15,10 @@ export const apiClient = {
     // Remover duplicações de API path
     const cleanedEndpoint = formattedEndpoint.replace(/\/api\/api\//g, '/api/');
     
-    // Usar URL relativa quando for desenvolvimento local com proxy
-    const url = typeof window !== 'undefined' && window.location.hostname === 'localhost'
-      ? cleanedEndpoint  // O proxy já está configurado no vite.config.ts
-      : `${API_BASE_URL}${cleanedEndpoint}`;
+    // Construir URL apropriada para o ambiente
+    const url = API_BASE_URL + cleanedEndpoint;
+    
+    console.log(`API request to: ${url}`);
     
     const headers = {
       "Content-Type": "application/json",
@@ -102,10 +102,8 @@ async function tryRenewToken() {
 // Função para testar a conexão com o backend
 export const testBackendConnection = async () => {
   try {
-    // Construir URL baseada no ambiente
-    const url = typeof window !== 'undefined' && window.location.hostname === 'localhost'
-      ? '/api/health'  // Usar proxy local
-      : `${API_BASE_URL}/health`.replace(/\/api\/api\//g, '/api/');
+    // Usar a URL base correta para o ambiente
+    const url = `${API_BASE_URL}/health`.replace(/\/api\/api\//g, '/api/');
     
     console.log("Testando conexão com:", url);
     
