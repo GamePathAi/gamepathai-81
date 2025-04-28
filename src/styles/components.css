@@ -100,3 +100,8 @@
 .latency-high {
   @apply text-red-500;
 }
+
+/* Route optimizer specific styles */
+.route-optimizer-progress {
+  @apply bg-gradient-to-r from-cyber-blue to-cyber-purple;
+}

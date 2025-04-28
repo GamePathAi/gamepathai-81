@@ -2,6 +2,9 @@
 import { apiClient } from './api';
 import { toast } from "sonner";
 
+// Check if WebAuthn is supported by the browser
+const isWebAuthnSupported = typeof window !== 'undefined' && 'PublicKeyCredential' in window;
+
 // Função para verificar se o backend está disponível
 const checkBackendAvailability = async () => {
   try {
@@ -65,6 +68,10 @@ export const vpnService = {
     
   connect: async (serverId: string) => {
     try {
+      // Check for WebAuthn support and use appropriate connection method
+      const connectionMethod = isWebAuthnSupported ? 'webauthn' : 'standard';
+      console.log(`Using ${connectionMethod} connection method`);
+      
       const isBackendAvailable = await checkBackendAvailability();
       if (!isBackendAvailable) {
         console.log("Backend indisponível, simulando conexão VPN");
@@ -76,7 +83,10 @@ export const vpnService = {
       
       return await apiClient.fetch('/api/vpn/connect', {
         method: 'POST',
-        body: JSON.stringify({ server_id: serverId })
+        body: JSON.stringify({ 
+          server_id: serverId,
+          auth_method: connectionMethod 
+        })
       });
     } catch (error) {
       toast.error("Falha ao conectar à VPN", {

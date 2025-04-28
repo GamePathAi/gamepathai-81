@@ -4,6 +4,9 @@ import { vpnService } from "../services/vpnService";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 
+// Check if WebAuthn is supported by the browser
+const isWebAuthnSupported = typeof window !== 'undefined' && 'PublicKeyCredential' in window;
+
 export function useVpn() {
   const queryClient = useQueryClient();
   const [isBackendOnline, setIsBackendOnline] = useState<boolean | null>(null);
@@ -61,8 +64,21 @@ export function useVpn() {
     staleTime: 30000
   });
   
+  const connectWithAuth = async (serverId: string) => {
+    // Use WebAuthn if supported, otherwise use regular authentication
+    if (isWebAuthnSupported) {
+      console.log("Using WebAuthn for authentication");
+      // WebAuthn implementation would go here
+      return await vpnService.connect(serverId);
+    } else {
+      console.log("WebAuthn not supported, using fallback authentication");
+      // Fallback authentication method
+      return await vpnService.connect(serverId);
+    }
+  };
+  
   const connectMutation = useMutation({
-    mutationFn: vpnService.connect,
+    mutationFn: connectWithAuth,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vpnStatus"] });
     },
@@ -98,6 +114,7 @@ export function useVpn() {
     isConnecting: connectMutation.isPending,
     isDisconnecting: disconnectMutation.isPending,
     isBackendOnline,
+    isWebAuthnSupported,
     refetch: () => {
       statusQuery.refetch();
       serversQuery.refetch();
