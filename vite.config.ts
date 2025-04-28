@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => ({
         target: 'https://gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '/api')
+        rewrite: (path) => path
       }
     }
   },

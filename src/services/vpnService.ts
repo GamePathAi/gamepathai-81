@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { isWebAuthnSupported } from "../utils/webAuthnSupport";
 
 // URL do backend para verificação de saúde
-const HEALTH_ENDPOINT = "http://gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com/api/health";
+const HEALTH_ENDPOINT = "/api/health";
 
 // Função para verificar se o backend está disponível
 const checkBackendAvailability = async () => {
@@ -66,12 +66,11 @@ export const vpnService = {
         return getMockVpnStatus();
       }
       
-      const result = await apiClient.fetch('/api/vpn/status');
-      console.log("VPN status from API:", result);
+      const result = await apiClient.fetch('/vpn/status');
       return result;
     } catch (error) {
       console.error("Error fetching VPN status:", error);
-      return handleApiError(error, getMockVpnStatus(), '/api/vpn/status');
+      return handleApiError(error, getMockVpnStatus(), '/vpn/status');
     }
   },
     
@@ -82,7 +81,6 @@ export const vpnService = {
       try {
         if (isWebAuthnSupported()) {
           connectionMethod = 'webauthn';
-          console.log("Using WebAuthn connection method");
         }
       } catch (error) {
         console.warn("WebAuthn check failed:", error);
@@ -109,7 +107,7 @@ export const vpnService = {
         return getMockVpnStatus();
       }
       
-      const response = await apiClient.fetch('/api/vpn/connect', {
+      const response = await apiClient.fetch('/vpn/connect', {
         method: 'POST',
         body: JSON.stringify({ 
           server_id: serverId,
@@ -148,7 +146,7 @@ export const vpnService = {
         return getMockVpnStatus();
       }
       
-      const response = await apiClient.fetch('/api/vpn/disconnect', {
+      const response = await apiClient.fetch('/vpn/disconnect', {
         method: 'POST'
       });
       
@@ -173,9 +171,9 @@ export const vpnService = {
         return mockVpnServers;
       }
       
-      return await apiClient.fetch('/api/vpn/available-servers');
+      return await apiClient.fetch('/vpn/available-servers');
     } catch (error) {
-      return handleApiError(error, mockVpnServers, '/api/vpn/available-servers');
+      return handleApiError(error, mockVpnServers, '/vpn/available-servers');
     }
   }
 };

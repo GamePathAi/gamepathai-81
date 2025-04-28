@@ -22,9 +22,13 @@ export const isProduction = (): boolean => {
  * Gets the appropriate base URL for API calls based on environment
  */
 export const getApiBaseUrl = (): string => {
-  // Em desenvolvimento, use API diretamente sem redirecionamentos
+  // Em desenvolvimento, usar o proxy configurado no vite.config.ts
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    return '/api';
+  }
+  
+  // Para ambiente AWS de desenvolvimento
   if (!isProduction()) {
-    // Use a API da AWS diretamente
     return `https://${DOMAINS.AWS_BACKEND}/api`;
   }
   

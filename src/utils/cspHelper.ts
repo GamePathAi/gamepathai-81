@@ -9,16 +9,17 @@
 // Define allowed sources for different CSP directives
 const CSP_SOURCES = {
   DEFAULT: ["'self'"],
-  STYLE: ["'self'", "https://fonts.googleapis.com"],
-  SCRIPT: ["'self'", "https://js.stripe.com"],
+  STYLE: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
+  SCRIPT: ["'self'", "https://js.stripe.com", "'unsafe-inline'", "'unsafe-eval'"],
   FONT: ["'self'", "https://fonts.gstatic.com"],
   IMG: ["'self'", "data:", "https://*.stripe.com"],
   CONNECT: [
     "'self'", 
     "https://*.stripe.com", 
     "https://gamepathai.com", 
-    "http://localhost:3000",
-    "http://gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com"
+    "http://localhost:8080",
+    "https://gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com",
+    "wss://*.stripe.com"
   ]
 };
 
@@ -32,7 +33,8 @@ export const generateCSPMeta = (): string => {
     `script-src ${CSP_SOURCES.SCRIPT.join(' ')};`,
     `font-src ${CSP_SOURCES.FONT.join(' ')};`,
     `img-src ${CSP_SOURCES.IMG.join(' ')};`,
-    `connect-src ${CSP_SOURCES.CONNECT.join(' ')};`
+    `connect-src ${CSP_SOURCES.CONNECT.join(' ')};`,
+    "frame-src 'self' https://*.stripe.com;"
   ].join(' ');
 };
 
@@ -54,15 +56,3 @@ export const addCSPMetaTag = (): void => {
   metaTag.content = generateCSPMeta();
   document.head.appendChild(metaTag);
 };
-
-/**
- * Instructions for backend CSP configuration
- * 
- * For server-side implementation, the following header should be set:
- * 
- * Content-Security-Policy: default-src 'self'; style-src 'self' https://fonts.googleapis.com; 
- * script-src 'self' https://js.stripe.com; font-src 'self' https://fonts.gstatic.com; 
- * img-src 'self' data: https://*.stripe.com; 
- * connect-src 'self' https://*.stripe.com https://gamepathai.com http://localhost:3000 
- * http://gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com;
- */
