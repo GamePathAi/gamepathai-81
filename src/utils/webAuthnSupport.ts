@@ -7,6 +7,16 @@
  */
 export const isWebAuthnSupported = (): boolean => {
   try {
+    // Check for Electron environment
+    const isElectron = typeof window !== 'undefined' && 
+                      window.navigator.userAgent.toLowerCase().indexOf(' electron/') > -1;
+    
+    // WebAuthn isn't directly supported in Electron in the same way
+    if (isElectron) {
+      console.info('Running in Electron environment - WebAuthn support limited');
+      return false;
+    }
+    
     // Checar se window existe primeiro (para SSR)
     if (typeof window === 'undefined') return false;
     
