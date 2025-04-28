@@ -6,7 +6,7 @@
 // Domain configurations
 export const DOMAINS = {
   PRODUCTION: 'gamepathai.com',
-  LOCAL_DEVELOPMENT: 'localhost:3000', 
+  LOCAL_DEVELOPMENT: 'localhost:8080', // Atualizado para porta 8080 do Vite
   AWS_BACKEND: 'gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com'
 };
 
@@ -22,9 +22,10 @@ export const isProduction = (): boolean => {
  * Gets the appropriate base URL for API calls based on environment
  */
 export const getApiBaseUrl = (): string => {
-  // Para ambiente de desenvolvimento, use diretamente a API da AWS
+  // Em desenvolvimento, use API diretamente sem redirecionamentos
   if (!isProduction()) {
-    return `http://${DOMAINS.AWS_BACKEND}/api`;
+    // Use a API da AWS diretamente
+    return `https://${DOMAINS.AWS_BACKEND}/api`;
   }
   
   // Para produção
@@ -36,7 +37,6 @@ export const getApiBaseUrl = (): string => {
  * Used for consistent API access across environments
  */
 export const mapToProdUrl = (url: string): string => {
-  // Desativando o mapeamento para permitir conexões diretas
+  // Desativando completamente o mapeamento para permitir conexões diretas
   return url;
 };
-

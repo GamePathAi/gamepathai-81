@@ -11,7 +11,11 @@ export const apiClient = {
   async fetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     // Ensure endpoint starts with / for proper URL joining
     const formattedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-    const url = `${API_BASE_URL}${formattedEndpoint}`;
+    
+    // Remova duplicações de API path
+    const cleanedEndpoint = formattedEndpoint.replace(/\/api\/api\//g, '/api/');
+    
+    const url = `${API_BASE_URL}${cleanedEndpoint}`;
     
     const headers = {
       "Content-Type": "application/json",
@@ -95,15 +99,22 @@ async function tryRenewToken() {
 // Função para testar a conexão com o backend
 export const testBackendConnection = async () => {
   try {
-    const url = `${API_BASE_URL}/health`;
+    // Use URL limpa sem duplicação de caminho
+    const url = `${API_BASE_URL}/health`.replace(/\/api\/api\//g, '/api/');
     console.log("Testando conexão com:", url);
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 segundos timeout
     
     const response = await fetch(url, { 
       mode: 'cors',
       headers: {
         "Content-Type": "application/json"
-      }
+      },
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
     
     if (response.ok) {
       console.log("Backend connection successful");
@@ -113,7 +124,11 @@ export const testBackendConnection = async () => {
       return false;
     }
   } catch (error) {
-    console.error("Backend connection test failed:", error);
+    if (error.name === 'AbortError') {
+      console.error("Backend connection test timed out");
+    } else {
+      console.error("Backend connection test failed:", error);
+    }
     return false;
   }
 };

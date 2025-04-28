@@ -12,7 +12,7 @@ export const initializeApp = () => {
   // Log environment information
   console.log(`Running in ${isProduction() ? 'PRODUCTION' : 'DEVELOPMENT'} environment`);
   
-  // Desativando o logging de redirecionamento para simplificar
+  // Desativando completamente o logging de redirecionamento
   // setupRedirectLogging();
 };
 
@@ -50,4 +50,3 @@ const setupRedirectLogging = () => {
     return originalFetch.apply(this, [input, init]);
   };
 };
-

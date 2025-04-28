@@ -7,13 +7,34 @@
  */
 export const isWebAuthnSupported = (): boolean => {
   try {
-    // Checar se window e navegador existem primeiro
+    // Checar se window existe primeiro (para SSR)
     if (typeof window === 'undefined') return false;
     
     // Verificar se o objeto PublicKeyCredential existe
-    return typeof window.PublicKeyCredential !== 'undefined';
+    if (typeof window.PublicKeyCredential === 'undefined') {
+      console.info('WebAuthn não é suportado neste navegador');
+      return false;
+    }
+    
+    return true;
   } catch (error) {
-    console.warn('Error checking WebAuthn support:', error);
+    console.warn('Erro ao verificar suporte WebAuthn:', error);
+    return false;
+  }
+};
+
+/**
+ * Verifica se o recurso de biometria está disponível 
+ */
+export const isBiometricsAvailable = async (): Promise<boolean> => {
+  try {
+    if (!isWebAuthnSupported()) return false;
+    
+    // Verifica se o método de autenticação está disponível
+    // @ts-ignore - Suprimir erro se o método não existir
+    return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable?.() || false;
+  } catch (error) {
+    console.warn('Erro ao verificar disponibilidade de biometria:', error);
     return false;
   }
 };
