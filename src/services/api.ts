@@ -1,11 +1,15 @@
 
 // Configuração do ambiente
 const API_ENV = {
-  production: "http://gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com",
-  local: "http://localhost:3000" // Ajuste esta porta para a do seu servidor local
+  production: window.location.origin,
+  local: "http://localhost:3000"
 };
 
-const API_BASE_URL = import.meta.env.VITE_USE_LOCAL_API ? API_ENV.local : API_ENV.production;
+// Detectar ambiente automaticamente
+const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+const API_BASE_URL = isLocalhost ? API_ENV.local : API_ENV.production;
+
+console.log("API_BASE_URL sendo usado:", API_BASE_URL);
 
 export const apiClient = {
   async fetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
