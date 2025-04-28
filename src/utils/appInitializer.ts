@@ -25,7 +25,16 @@ const setupRedirectLogging = () => {
   
   const originalFetch = window.fetch;
   window.fetch = function(input: RequestInfo | URL, init?: RequestInit) {
-    const url = typeof input === 'string' ? input : input.url;
+    let url: string;
+    
+    if (typeof input === 'string') {
+      url = input;
+    } else if (input instanceof Request) {
+      url = input.url;
+    } else {
+      // Handle URL object
+      url = input.toString();
+    }
     
     // Log localhost redirects
     if (url.includes(DOMAINS.LOCAL_DEVELOPMENT)) {

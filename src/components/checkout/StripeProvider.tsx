@@ -28,10 +28,20 @@ export const StripeProvider: React.FC<StripeProviderProps> = ({ children }) => {
         borderRadius: '4px',
       },
       rules: {
-        '.Input': 'stripe-input-class',
-        '.Input:focus': 'stripe-input-focus-class',
-        '.Label': 'stripe-label-class',
-        '.Error': 'stripe-error-class'
+        '.Input': {
+          backgroundColor: 'var(--colorBackground)',
+          borderColor: 'var(--colorPrimary)',
+        },
+        '.Input:focus': {
+          borderColor: 'var(--colorPrimary)',
+          boxShadow: '0 0 0 1px var(--colorPrimary)'
+        },
+        '.Label': {
+          color: 'var(--colorText)'
+        },
+        '.Error': {
+          color: 'var(--colorDanger)'
+        }
       }
     },
     // Set loader to 'never' to avoid additional network requests
