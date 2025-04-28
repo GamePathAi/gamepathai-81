@@ -33,6 +33,12 @@ const ConnectionToggle: React.FC = () => {
     }
   };
 
+  const getButtonStatusClass = () => {
+    if (isConnecting || isDisconnecting) return "opacity-50 cursor-not-allowed";
+    if (isConnected) return "status-connected hover:bg-cyber-green/30";
+    return "status-disconnected hover:bg-cyber-darkblue hover:text-white";
+  };
+
   return (
     <div className="flex items-center gap-2">
       {isBackendOnline === false && (
@@ -64,20 +70,13 @@ const ConnectionToggle: React.FC = () => {
         disabled={isConnecting || isDisconnecting}
         className={cn(
           "font-tech text-xs px-3 py-1.5 rounded flex items-center gap-1.5 transition-all duration-300",
-          isConnected 
-            ? "bg-cyber-green/20 border border-cyber-green/50 text-cyber-green hover:bg-cyber-green/30" 
-            : "bg-cyber-darkblue/80 border border-gray-500/30 text-gray-400 hover:bg-cyber-darkblue hover:text-white",
-          (isConnecting || isDisconnecting) && "opacity-50 cursor-not-allowed"
+          getButtonStatusClass()
         )}
       >
-        <span 
-          className={cn(
-            "inline-block w-2 h-2 rounded-full",
-            isConnected 
-              ? "bg-cyber-green animate-pulse" 
-              : "bg-gray-500"
-          )}
-        />
+        <span className={cn(
+          "status-indicator",
+          isConnected ? "active" : "inactive"
+        )} />
         {isConnecting ? "CONECTANDO..." : 
          isDisconnecting ? "DESCONECTANDO..." : 
          isConnected ? "CONECTADO" : "DESCONECTADO"}

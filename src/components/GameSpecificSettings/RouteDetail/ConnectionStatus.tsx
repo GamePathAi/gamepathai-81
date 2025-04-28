@@ -12,11 +12,11 @@ const ConnectionStatus: React.FC = () => {
         </div>
         <div className="flex justify-between">
           <span className="text-gray-400">Ping</span>
-          <span className="text-cyber-green">15ms</span>
+          <span className="latency-low">15ms</span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-400">Packet Loss</span>
-          <span className="text-cyber-green">0.01%</span>
+          <span className="latency-low">0.01%</span>
         </div>
       </div>
     </div>

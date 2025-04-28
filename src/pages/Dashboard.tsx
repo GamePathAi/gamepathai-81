@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Zap, Server, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import GamesList from "@/components/dashboard/GamesList";
 import SystemMetrics from "@/components/dashboard/SystemMetrics";
 import PremiumFeatures from "@/components/dashboard/PremiumFeatures";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { cn } from "@/lib/utils";
 
 const Dashboard: React.FC = () => {
   const [isOptimizing, setIsOptimizing] = useState(false);
@@ -67,9 +69,9 @@ const Dashboard: React.FC = () => {
     <div className="container mx-auto">
       {/* Status do Backend */}
       {backendStatus === 'offline' && (
-        <Alert variant="default" className="mb-4 bg-amber-500/10 border-amber-500/50">
-          <AlertTriangle className="h-4 w-4 text-amber-500" />
-          <AlertTitle className="text-amber-500">Modo offline ativado</AlertTitle>
+        <Alert variant="default" className="mb-4 alert-offline">
+          <AlertTriangle className="h-4 w-4 alert-offline-text" />
+          <AlertTitle className="alert-offline-text">Modo offline ativado</AlertTitle>
           <AlertDescription className="flex items-center justify-between">
             <span>
               Não foi possível conectar ao servidor. Usando dados simulados temporariamente.
@@ -104,7 +106,7 @@ const Dashboard: React.FC = () => {
           >
             {isOptimizing ? (
               <>
-                <span className="animate-pulse mr-1">⚡</span>
+                <span className={cn("mr-1", isOptimizing && "animate-pulse")}>⚡</span>
                 OTIMIZANDO...
               </>
             ) : (

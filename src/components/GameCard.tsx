@@ -59,7 +59,7 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
           <img 
             src={game.image} 
             alt={game.name} 
-            className="w-full h-32 object-cover transition-transform duration-300 hover:scale-110" 
+            className="w-full h-32 object-cover hover-scale" 
           />
           <div className="absolute inset-0 bg-gradient-to-t from-cyber-black to-transparent"></div>
           <div className="absolute bottom-2 left-2 text-xs font-tech bg-cyber-darkblue/80 px-2 py-1 rounded border border-cyber-blue/30">
