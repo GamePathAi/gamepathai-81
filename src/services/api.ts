@@ -1,11 +1,15 @@
 
-// Importing our new URL redirection utilities
+// Importing our URL redirection utilities
 import { getApiBaseUrl, isElectron } from "../utils/urlRedirects";
 
 // Configure API base URL based on environment
 const API_BASE_URL = getApiBaseUrl();
 
-console.log("API_BASE_URL being used:", API_BASE_URL);
+// Remove noisy logging and only log in development
+const isDev = process.env.NODE_ENV === 'development';
+if (isDev) {
+  console.log("API_BASE_URL being used:", API_BASE_URL);
+}
 
 export const apiClient = {
   async fetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -18,7 +22,10 @@ export const apiClient = {
     // Construir URL apropriada para o ambiente
     const url = API_BASE_URL + cleanedEndpoint;
     
-    console.log(`API request to: ${url}`);
+    // Only log in development
+    if (isDev) {
+      console.log(`API request to: ${url}`);
+    }
     
     const headers = {
       "Content-Type": "application/json",
@@ -31,7 +38,10 @@ export const apiClient = {
     }
     
     try {
-      console.log(`Fazendo requisição para: ${url}`);
+      if (isDev) {
+        console.log(`Fazendo requisição para: ${url}`);
+      }
+      
       const response = await fetch(url, {
         ...options,
         headers,
@@ -105,7 +115,9 @@ export const testBackendConnection = async () => {
     // Usar a URL base correta para o ambiente
     const url = `${API_BASE_URL}/health`.replace(/\/api\/api\//g, '/api/');
     
-    console.log("Testando conexão com:", url);
+    if (isDev) {
+      console.log("Testando conexão com:", url);
+    }
     
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 segundos timeout
@@ -121,7 +133,9 @@ export const testBackendConnection = async () => {
     clearTimeout(timeoutId);
     
     if (response.ok) {
-      console.log("Backend connection successful");
+      if (isDev) {
+        console.log("Backend connection successful");
+      }
       return true;
     } else {
       console.error(`Backend health check failed with status: ${response.status}`);

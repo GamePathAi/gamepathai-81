@@ -1,19 +1,21 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { vpnService } from "../services/vpnService";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { isWebAuthnSupported } from "../utils/webAuthnSupport";
+import { getApiBaseUrl } from "../utils/urlRedirects";
 
 export function useVpn() {
   const queryClient = useQueryClient();
   const [isBackendOnline, setIsBackendOnline] = useState<boolean | null>(null);
+  const apiBaseUrl = getApiBaseUrl();
   
   // Verificar periodicamente se o backend está disponível
   useEffect(() => {
     const checkBackend = async () => {
       try {
-        const response = await fetch("http://gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com/api/health", { 
+        const healthUrl = `${apiBaseUrl}/health`;
+        const response = await fetch(healthUrl, { 
           mode: 'cors',
           method: 'HEAD',
           cache: 'no-cache'
@@ -48,7 +50,7 @@ export function useVpn() {
     const interval = setInterval(checkBackend, 15000); // Verificar a cada 15 segundos
     
     return () => clearInterval(interval);
-  }, [isBackendOnline]);
+  }, [isBackendOnline, apiBaseUrl]);
   
   const statusQuery = useQuery({
     queryKey: ["vpnStatus"],

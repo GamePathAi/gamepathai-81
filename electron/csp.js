@@ -5,6 +5,23 @@ const { session } = require('electron');
  * Content Security Policy configuration for Electron
  */
 function setupCsp() {
+  // Intercepta requisições para evitar redirecionamentos não autorizados
+  session.defaultSession.webRequest.onBeforeRequest((details, callback) => {
+    const url = new URL(details.url);
+    
+    // Bloquear redirecionamentos para domínios externos em requisições de API
+    if (details.url.includes('/api/') && 
+        !details.url.includes('localhost') && 
+        !details.url.includes('127.0.0.1') && 
+        !url.hostname.includes('gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com')) {
+      console.log('Blocking external API redirect:', details.url);
+      callback({cancel: true});
+      return;
+    }
+    
+    callback({});
+  });
+
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {

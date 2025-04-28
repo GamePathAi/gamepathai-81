@@ -1,55 +1,24 @@
 
 /**
- * Checks if the browser supports WebAuthn
- * 
- * This function safely checks for WebAuthn support without throwing errors
- * in environments where it's not available.
+ * Check if the browser supports WebAuthn and handles Electron environment correctly
  */
-export const isWebAuthnSupported = (): boolean => {
+export function isWebAuthnSupported(): boolean {
   try {
-    // Check for Electron environment
+    // Check if we're in Electron
     const isElectron = typeof window !== 'undefined' && 
-                      window.navigator.userAgent.toLowerCase().indexOf(' electron/') > -1;
-    
-    // WebAuthn isn't directly supported in Electron in the same way
-    if (isElectron) {
-      console.info('Running in Electron environment - WebAuthn support limited');
-      return false;
-    }
-    
-    // Checar se window existe primeiro (para SSR)
-    if (typeof window === 'undefined') return false;
-    
-    // Verificar se o objeto PublicKeyCredential existe
-    // Usar verificação segura com operador in
-    if (!('PublicKeyCredential' in window)) {
-      console.info('WebAuthn não é suportado neste navegador');
-      return false;
-    }
-    
-    return true;
-  } catch (error) {
-    console.warn('Erro ao verificar suporte WebAuthn:', error);
-    return false;
-  }
-};
+      window.navigator.userAgent.toLowerCase().indexOf(' electron/') > -1;
 
-/**
- * Verifica se o recurso de biometria está disponível 
- */
-export const isBiometricsAvailable = async (): Promise<boolean> => {
-  try {
-    if (!isWebAuthnSupported()) return false;
-    
-    // Verifica se o método de autenticação está disponível
-    // Verificação segura usando reflexão para evitar erros
-    const publicKey = window['PublicKeyCredential'];
-    if (publicKey && typeof publicKey.isUserVerifyingPlatformAuthenticatorAvailable === 'function') {
-      return await publicKey.isUserVerifyingPlatformAuthenticatorAvailable();
+    // WebAuthn isn't available in Electron, so return false
+    if (isElectron) {
+      return false;
     }
-    return false;
+
+    // For regular browsers, check if WebAuthn is supported
+    return typeof window !== 'undefined' && 
+           window.PublicKeyCredential !== undefined && 
+           typeof window.PublicKeyCredential === 'function';
   } catch (error) {
-    console.warn('Erro ao verificar disponibilidade de biometria:', error);
+    console.warn("Error checking WebAuthn support:", error);
     return false;
   }
-};
+}

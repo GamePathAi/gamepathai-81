@@ -1,6 +1,7 @@
 
 /**
  * URL redirector utility for handling different environments
+ * REDIRECTION COMPLETELY DISABLED to prevent unwanted redirects
  */
 
 // Domain configurations
@@ -29,6 +30,7 @@ export const isElectron = (): boolean => {
 
 /**
  * Gets the appropriate base URL for API calls based on environment
+ * FIXED: Now properly returns environment-specific URLs without redirection
  */
 export const getApiBaseUrl = (): string => {
   // Para ambiente Electron, verificar se está em desenvolvimento
@@ -38,28 +40,28 @@ export const getApiBaseUrl = (): string => {
   }
   
   // Em desenvolvimento web, usar o proxy configurado no vite.config.ts
-  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+  if (typeof window !== 'undefined' && 
+      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
     console.log('Running in local development environment');
-    return '/api';
+    return '/api'; // Sempre usar o proxy local
   }
   
   // Para ambiente AWS de desenvolvimento
-  if (!isProduction()) {
+  if (typeof window !== 'undefined' && 
+      window.location.hostname.includes(DOMAINS.AWS_BACKEND)) {
     console.log('Running in AWS development environment');
-    return `https://${DOMAINS.AWS_BACKEND}/api`;
+    return `/api`; // Use local path with proxy
   }
   
   // Para produção
   console.log('Running in production environment');
-  return `https://${DOMAINS.PRODUCTION}/api`;
+  return `/api`; // Use local path with proxy
 };
 
 /**
- * DESATIVADO: Maps a local or AWS URL to the production URL
- * Esta função está completamente desativada para evitar redirecionamentos indesejados
+ * COMPLETELY DISABLED: No URL mapping to production
  */
 export const mapToProdUrl = (url: string): string => {
-  // Desativado completamente para preservar URLs originais
+  // Completely disabled to prevent any redirects
   return url;
 };
-

@@ -21,10 +21,24 @@ export default defineConfig(({ mode }) => ({
             console.log('proxy error', err);
           });
           proxy.on('proxyReq', (proxyReq, req, _res) => {
-            console.log('Enviando requisição para:', req.url);
+            // Modificar cabeçalhos para evitar redirecionamentos
+            proxyReq.setHeader('X-Forwarded-Host', req.headers.host || '');
+            proxyReq.setHeader('X-No-Redirect', '1');
+            
+            if (mode === 'development') {
+              console.log('Enviando requisição para:', req.url);
+            }
           });
           proxy.on('proxyRes', (proxyRes, req, _res) => {
-            console.log('Recebeu resposta para:', req.url, 'status:', proxyRes.statusCode);
+            // Bloquear cabeçalhos de redirecionamento
+            if (proxyRes.headers.location) {
+              console.log('Bloqueando redirecionamento:', proxyRes.headers.location);
+              delete proxyRes.headers.location;
+            }
+            
+            if (mode === 'development') {
+              console.log('Recebeu resposta para:', req.url, 'status:', proxyRes.statusCode);
+            }
           });
         }
       }
@@ -41,4 +55,9 @@ export default defineConfig(({ mode }) => ({
     },
   },
   base: process.env.IS_ELECTRON === 'true' ? './' : '/',
+  define: {
+    // Definir variáveis globais
+    'process.env.IS_ELECTRON': process.env.IS_ELECTRON || 'false',
+    'process.env.NODE_ENV': JSON.stringify(mode),
+  },
 }));

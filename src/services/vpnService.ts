@@ -2,9 +2,13 @@
 import { apiClient } from './api';
 import { toast } from "sonner";
 import { isWebAuthnSupported } from "../utils/webAuthnSupport";
+import { getApiBaseUrl } from "../utils/urlRedirects";
+
+// Get the correct API base URL for the current environment
+const apiBaseUrl = getApiBaseUrl();
 
 // URL do backend para verificação de saúde
-const HEALTH_ENDPOINT = "/api/health";
+const HEALTH_ENDPOINT = `${apiBaseUrl}/health`;
 
 // Função para verificar se o backend está disponível
 const checkBackendAvailability = async () => {

@@ -21,8 +21,7 @@ import { initializeApp } from "./utils/appInitializer";
 // Initialize application configurations 
 initializeApp();
 
-// Console notification about redirection
-console.log("Redirecionamento de localhost:3000 e AWS ativado");
+// REMOVED: Console notification about redirection (this was causing confusion)
 
 // Criar cliente de consulta para React Query
 const queryClient = new QueryClient();
