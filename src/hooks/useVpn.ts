@@ -3,9 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { vpnService } from "../services/vpnService";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
-
-// Check if WebAuthn is supported by the browser
-const isWebAuthnSupported = typeof window !== 'undefined' && 'PublicKeyCredential' in window;
+import { isWebAuthnSupported } from "../utils/webAuthnSupport";
 
 export function useVpn() {
   const queryClient = useQueryClient();
@@ -66,7 +64,7 @@ export function useVpn() {
   
   const connectWithAuth = async (serverId: string) => {
     // Use WebAuthn if supported, otherwise use regular authentication
-    if (isWebAuthnSupported) {
+    if (isWebAuthnSupported()) {
       console.log("Using WebAuthn for authentication");
       // WebAuthn implementation would go here
       return await vpnService.connect(serverId);
@@ -114,7 +112,7 @@ export function useVpn() {
     isConnecting: connectMutation.isPending,
     isDisconnecting: disconnectMutation.isPending,
     isBackendOnline,
-    isWebAuthnSupported,
+    isWebAuthnSupported: isWebAuthnSupported(),
     refetch: () => {
       statusQuery.refetch();
       serversQuery.refetch();

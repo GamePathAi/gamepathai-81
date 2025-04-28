@@ -1,19 +1,21 @@
 
-// Configuração do ambiente
-const API_ENV = {
-  production: window.location.origin,
-  local: "http://localhost:3000"
-};
+// Importing our new URL redirection utilities
+import { getApiBaseUrl, mapToProdUrl } from "../utils/urlRedirects";
 
-// Detectar ambiente automaticamente
-const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-const API_BASE_URL = isLocalhost ? API_ENV.local : API_ENV.production;
+// Configure API base URL based on environment
+const API_BASE_URL = getApiBaseUrl();
 
-console.log("API_BASE_URL sendo usado:", API_BASE_URL);
+console.log("API_BASE_URL being used:", API_BASE_URL);
 
 export const apiClient = {
   async fetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const url = `${API_BASE_URL}${endpoint}`;
+    // Ensure endpoint starts with / for proper URL joining
+    const formattedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const url = `${API_BASE_URL}${formattedEndpoint}`;
+    
+    // Map URL to production domain if needed
+    const mappedUrl = mapToProdUrl(url);
+    
     const headers = {
       "Content-Type": "application/json",
       ...(options.headers || {})
@@ -26,7 +28,7 @@ export const apiClient = {
     
     try {
       console.log(`Fazendo requisição para: ${url}`);
-      const response = await fetch(url, {
+      const response = await fetch(mappedUrl, {
         ...options,
         headers,
         mode: 'cors',
@@ -68,7 +70,7 @@ async function tryRenewToken() {
     const refreshToken = localStorage.getItem("refresh_token");
     if (!refreshToken) return false;
     
-    const response = await fetch(`${API_BASE_URL}/api/auth/refresh-token`, {
+    const response = await fetch(`${API_BASE_URL}/auth/refresh-token`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -96,7 +98,13 @@ async function tryRenewToken() {
 // Função para testar a conexão com o backend
 export const testBackendConnection = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/health`, { 
+    const url = `${API_BASE_URL}/health`;
+    console.log("Testando conexão com:", url);
+    
+    // Map URL to production domain if needed
+    const mappedUrl = mapToProdUrl(url);
+    
+    const response = await fetch(mappedUrl, { 
       mode: 'cors',
       headers: {
         "Content-Type": "application/json"

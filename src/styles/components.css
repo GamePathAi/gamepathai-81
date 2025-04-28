@@ -105,3 +105,31 @@
 .route-optimizer-progress {
   @apply bg-gradient-to-r from-cyber-blue to-cyber-purple;
 }
+
+/* Stripe Elements CSS-based styling (CSP compatible) */
+.stripe-input-class {
+  background-color: #1a1a2e;
+  border: 1px solid #33C3F0;
+  border-radius: 4px;
+  color: white;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.stripe-input-focus-class {
+  border-color: #33C3F0;
+  box-shadow: 0 0 0 2px rgba(51, 195, 240, 0.3);
+}
+
+.stripe-label-class {
+  color: #a0aec0;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.stripe-error-class {
+  color: #F43F5E;
+  margin-top: 4px;
+  font-size: 12px;
+}
+

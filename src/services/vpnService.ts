@@ -1,9 +1,7 @@
 
 import { apiClient } from './api';
 import { toast } from "sonner";
-
-// Check if WebAuthn is supported by the browser
-const isWebAuthnSupported = typeof window !== 'undefined' && 'PublicKeyCredential' in window;
+import { isWebAuthnSupported } from "../utils/webAuthnSupport";
 
 // Função para verificar se o backend está disponível
 const checkBackendAvailability = async () => {
@@ -69,7 +67,7 @@ export const vpnService = {
   connect: async (serverId: string) => {
     try {
       // Check for WebAuthn support and use appropriate connection method
-      const connectionMethod = isWebAuthnSupported ? 'webauthn' : 'standard';
+      const connectionMethod = isWebAuthnSupported() ? 'webauthn' : 'standard';
       console.log(`Using ${connectionMethod} connection method`);
       
       const isBackendAvailable = await checkBackendAvailability();
