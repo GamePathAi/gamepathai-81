@@ -89,5 +89,4 @@ export const removeInjectedScripts = (): void => {
   });
 };
 
-// Export the removal function
-export { removeInjectedScripts };
+// Removed the duplicate export here

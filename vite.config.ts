@@ -6,9 +6,27 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  plugins: [
+    react(),
+    mode === 'development' &&
+    componentTagger(),
+  ].filter(Boolean),
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  base: process.env.IS_ELECTRON === 'true' ? './' : '/',
+  define: {
+    // Definir variáveis globais
+    'process.env.IS_ELECTRON': process.env.IS_ELECTRON || 'false',
+    'process.env.NODE_ENV': JSON.stringify(mode),
+  },
   server: {
     host: "::",
     port: 8080,
+    // Force disable HMR (Hot Module Replacement) to prevent redirects
+    hmr: false,
     proxy: {
       // Configuração de proxy aprimorada
       '/api': {
@@ -52,25 +70,5 @@ export default defineConfig(({ mode }) => ({
         }
       }
     }
-  },
-  plugins: [
-    react(),
-    mode === 'development' &&
-    componentTagger(),
-  ].filter(Boolean),
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
-  base: process.env.IS_ELECTRON === 'true' ? './' : '/',
-  define: {
-    // Definir variáveis globais
-    'process.env.IS_ELECTRON': process.env.IS_ELECTRON || 'false',
-    'process.env.NODE_ENV': JSON.stringify(mode),
-  },
-  // Force disable HMR (Hot Module Replacement) to prevent redirects
-  server: {
-    hmr: false
-  },
+  }
 }));
