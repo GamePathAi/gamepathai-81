@@ -31,14 +31,21 @@ const handleApiError = (error: any, fallback: any, endpoint: string) => {
   return fallback;
 };
 
+// Estado local para mock de VPN status (para manter consistência entre chamadas)
+let mockVpnConnectionState = false;
+let mockConnectionTimestamp: number | null = null;
+let mockServerLocation: string | null = null;
+
 // Mock de dados para VPN status
-const mockVpnStatus = {
-  connected: false,
-  serverIp: null,
-  serverLocation: null,
-  recommendedServer: "auto",
-  connectionTime: null,
-  lastError: null
+const getMockVpnStatus = () => {
+  return {
+    connected: mockVpnConnectionState,
+    serverIp: mockVpnConnectionState ? "192.168.1.1" : null,
+    serverLocation: mockVpnConnectionState ? (mockServerLocation || "São Paulo, BR") : null,
+    recommendedServer: "auto",
+    connectionTime: mockConnectionTimestamp,
+    lastError: null
+  };
 };
 
 // Mock de dados para servidores disponíveis
@@ -55,12 +62,12 @@ export const vpnService = {
       const isBackendAvailable = await checkBackendAvailability();
       if (!isBackendAvailable) {
         console.log("Backend indisponível, usando dados mockados para VPN status");
-        return mockVpnStatus;
+        return getMockVpnStatus();
       }
       
       return await apiClient.fetch('/api/vpn/status');
     } catch (error) {
-      return handleApiError(error, mockVpnStatus, '/api/vpn/status');
+      return handleApiError(error, getMockVpnStatus(), '/api/vpn/status');
     }
   },
     
@@ -73,10 +80,22 @@ export const vpnService = {
       const isBackendAvailable = await checkBackendAvailability();
       if (!isBackendAvailable) {
         console.log("Backend indisponível, simulando conexão VPN");
+        
+        // Atualizar estado mockado
+        mockVpnConnectionState = true;
+        mockConnectionTimestamp = Date.now();
+        
+        // Selecionar servidor com base no ID
+        const server = mockVpnServers.find(s => s.id === serverId);
+        mockServerLocation = server ? 
+          (server.id === "auto" ? "São Paulo, BR" : server.name) : 
+          "São Paulo, BR";
+        
         toast.success("VPN conectada (modo simulado)", {
-          description: "Usando dados simulados pois o servidor está offline"
+          description: `Conectado a ${mockServerLocation} (simulado)`
         });
-        return { ...mockVpnStatus, connected: true, serverIp: "192.168.1.1", serverLocation: "Simulado" };
+        
+        return getMockVpnStatus();
       }
       
       return await apiClient.fetch('/api/vpn/connect', {
@@ -99,10 +118,17 @@ export const vpnService = {
       const isBackendAvailable = await checkBackendAvailability();
       if (!isBackendAvailable) {
         console.log("Backend indisponível, simulando desconexão VPN");
+        
+        // Atualizar estado mockado
+        mockVpnConnectionState = false;
+        mockConnectionTimestamp = null;
+        mockServerLocation = null;
+        
         toast.success("VPN desconectada (modo simulado)", {
           description: "Usando dados simulados pois o servidor está offline"
         });
-        return mockVpnStatus;
+        
+        return getMockVpnStatus();
       }
       
       return await apiClient.fetch('/api/vpn/disconnect', {

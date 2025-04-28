@@ -72,6 +72,7 @@ const ConnectionToggle: React.FC = () => {
           "font-tech text-xs px-3 py-1.5 rounded flex items-center gap-1.5 transition-all duration-300",
           getButtonStatusClass()
         )}
+        aria-label={isConnected ? "Desconectar" : "Conectar"}
       >
         <span className={cn(
           "status-indicator",

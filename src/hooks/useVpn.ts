@@ -50,9 +50,9 @@ export function useVpn() {
   const statusQuery = useQuery({
     queryKey: ["vpnStatus"],
     queryFn: vpnService.getStatus,
-    refetchInterval: 5000, // Atualizar a cada 5 segundos
+    refetchInterval: 3000, // Atualizar a cada 3 segundos para manter a UI sincronizada
     retry: 1,
-    staleTime: 10000
+    staleTime: 2000 // Reduzido para garantir atualizações mais frequentes
   });
   
   const serversQuery = useQuery({
@@ -79,6 +79,8 @@ export function useVpn() {
     mutationFn: connectWithAuth,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vpnStatus"] });
+      // Invalidar também as métricas para atualizar ping e jitter
+      queryClient.invalidateQueries({ queryKey: ["metrics"] });
     },
     onError: (error: any) => {
       console.error("VPN connection error:", error);
@@ -92,6 +94,8 @@ export function useVpn() {
     mutationFn: vpnService.disconnect,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vpnStatus"] });
+      // Invalidar também as métricas para atualizar ping e jitter
+      queryClient.invalidateQueries({ queryKey: ["metrics"] });
     },
     onError: (error: any) => {
       console.error("VPN disconnection error:", error);
