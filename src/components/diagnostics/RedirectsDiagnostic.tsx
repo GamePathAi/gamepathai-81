@@ -171,7 +171,7 @@ const RedirectsDiagnostic: React.FC = () => {
           )}
           
           {diagnoseComplete && connectionStatus === 'offline' && (
-            <Alert variant="warning">
+            <Alert variant="destructive">
               <ShieldAlert className="h-4 w-4" />
               <AlertTitle>Conexão Backend Indisponível</AlertTitle>
               <AlertDescription>

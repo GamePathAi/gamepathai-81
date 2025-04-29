@@ -1,3 +1,4 @@
+
 /**
  * Middleware utilities for handling CORS and preventing unwanted redirects
  */
@@ -75,7 +76,7 @@ export const setupFetchInterceptor = (): void => {
       console.log('✅ Converted to relative URL:', url);
       
       // Log specific information about redirects to gamepathai.com
-      if (originalUrl.includes('gamepathai.com')) {
+      if (typeof originalUrl === 'string' && originalUrl.includes('gamepathai.com')) {
         console.log('🚨 Blocked potential redirect to gamepathai.com');
       }
     }
@@ -111,7 +112,7 @@ export const setupFetchInterceptor = (): void => {
       const response = await originalFetch(url, enhancedInit);
       
       // Check response URL for potential redirect that slipped through
-      if (response.url.includes('gamepathai.com')) {
+      if (typeof response.url === 'string' && response.url.includes('gamepathai.com')) {
         console.error('⚠️ Response URL indicates redirect happened:', response.url);
         throw new Error('Detected redirect in response: ' + response.url);
       }
@@ -164,7 +165,7 @@ export const setupRedirectDetector = (): void => {
   // NEW: Add specific monitor for ML requests
   const originalOpen = XMLHttpRequest.prototype.open;
   XMLHttpRequest.prototype.open = function(method, url, ...args) {
-    const urlStr = url.toString();
+    const urlStr = typeof url === 'string' ? url : url.toString();
     
     if (urlStr.includes('/ml/') || urlStr.includes('gamepathai.com')) {
       console.log('🔍 Monitoring ML XHR request:', urlStr);
@@ -176,6 +177,7 @@ export const setupRedirectDetector = (): void => {
 
 /**
  * ENHANCED: Setup stronger ML protection specifically for URLs
+ * FIXED: Don't try to override native browser methods
  */
 export const setupMLProtection = (): void => {
   if (typeof window === 'undefined') return;
@@ -190,7 +192,7 @@ export const setupMLProtection = (): void => {
     
     if (typeof url === 'string') {
       // Log ML requests
-      if (url.toString().includes('/ml/')) {
+      if (url.includes('/ml/')) {
         console.log('🧠 XHR ML Request:', url);
       }
       
@@ -199,12 +201,12 @@ export const setupMLProtection = (): void => {
           (url.includes('/api/') || url.includes('localhost'))) {
         
         console.log('⚠️ Found absolute URL in XHR:', url);
-        fixedUrl = fixAbsoluteUrl(url.toString());
+        fixedUrl = fixAbsoluteUrl(url);
         console.log('✅ Using fixed URL:', fixedUrl);
       }
       
       // Block suspicious URLs
-      if (detectRedirectAttempt(url.toString())) {
+      if (detectRedirectAttempt(url)) {
         console.error('🚨 Blocked suspicious XHR URL:', url);
         throw new Error('Blocked potential redirect in XHR: ' + url);
       }
@@ -227,22 +229,30 @@ export const setupMLProtection = (): void => {
     return originalSetItem.call(this, key, value);
   };
   
-  // Monitor Location API
-  const originalAssign = window.location.assign;
-  window.location.assign = function(url) {
-    if (url.includes('gamepathai.com')) {
-      console.error('🚨 Blocked navigation to gamepathai.com:', url);
-      return;
+  // Instead of trying to override Location API methods (which are read-only),
+  // we'll monitor navigation events
+  window.addEventListener('click', function(event) {
+    const target = event.target as HTMLElement;
+    if (target.tagName === 'A') {
+      const link = target as HTMLAnchorElement;
+      const href = link.href;
+      
+      if (href && href.includes('gamepathai.com')) {
+        console.error('🚨 Blocked navigation to gamepathai.com:', href);
+        event.preventDefault();
+      }
     }
-    return originalAssign.call(this, url);
-  };
+  }, true);
   
-  const originalReplace = window.location.replace;
-  window.location.replace = function(url) {
-    if (url.includes('gamepathai.com')) {
-      console.error('🚨 Blocked navigation replacement to gamepathai.com:', url);
-      return;
+  // Add a more robust navigation watcher
+  window.addEventListener('beforeunload', function(event) {
+    const currentLocation = window.location.href;
+    if (currentLocation.includes('gamepathai.com') && 
+        !currentLocation.includes(window.location.hostname)) {
+      console.error('🚨 Detected potential redirect to gamepathai.com');
+      event.preventDefault();
+      return event.returnValue = 'Navigation to external domain detected';
     }
-    return originalReplace.call(this, url);
-  };
+  });
 };
+

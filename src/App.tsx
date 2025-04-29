@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -57,6 +58,7 @@ import PerformanceTuning from "./pages/resources/docs/PerformanceTuning";
 import NetworkOptimization from "./pages/resources/docs/NetworkOptimization";
 import CustomConfigurations from "./pages/resources/docs/CustomConfigurations";
 import SupportInstallationPage from "./pages/support/InstallationPage";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -74,7 +76,8 @@ const App = () => (
               <Route path="/forgot-password" element={<ForgotPassword />} />
               
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<Index />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/index" element={<Index />} />
               <Route path="/network-metrics" element={<NetworkMetrics />} />
               <Route path="/system-optimization" element={<SystemOptimization />} />
               <Route path="/route-optimizer" element={<RouteOptimizerPage />} />
