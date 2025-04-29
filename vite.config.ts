@@ -1,3 +1,4 @@
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -35,10 +36,10 @@ export default defineConfig(({ mode }) => ({
         bypass: (req) => {
           // Skip proxying for frontend assets
           if (
-            req.url.startsWith('/assets/') || 
-            req.url.startsWith('/favicon.ico') || 
-            req.url.startsWith('/src/') || 
-            req.url.startsWith('/images/') ||
+            req.url && req.url.startsWith('/assets/') || 
+            req.url && req.url.startsWith('/favicon.ico') || 
+            req.url && req.url.startsWith('/src/') || 
+            req.url && req.url.startsWith('/images/') ||
             req.url === '/'
           ) {
             return req.url;
@@ -65,7 +66,7 @@ export default defineConfig(({ mode }) => ({
             proxyReq.removeHeader('origin');
             
             if (mode === 'development') {
-              console.log('📤 Proxy sending request to:', req.url);
+              console.log('📤 Proxy sending request to:', req.url || 'unknown URL');
             }
           });
           
@@ -74,7 +75,7 @@ export default defineConfig(({ mode }) => ({
             if (proxyRes.headers.location) {
               console.log('⛔ BLOCKED REDIRECT in proxy response:', {
                 location: proxyRes.headers.location,
-                from: req.url,
+                from: req.url || 'unknown URL',
                 statusCode: proxyRes.statusCode
               });
               
@@ -100,7 +101,7 @@ export default defineConfig(({ mode }) => ({
             proxyRes.headers['x-frame-options'] = 'DENY';
             
             if (mode === 'development') {
-              console.log('📥 Proxy received response for:', req.url, 'status:', proxyRes.statusCode);
+              console.log('📥 Proxy received response for:', req.url || 'unknown URL', 'status:', proxyRes.statusCode);
             }
           });
           
@@ -146,7 +147,7 @@ export default defineConfig(({ mode }) => ({
             proxyReq.removeHeader('origin');
             
             if (mode === 'development') {
-              console.log('🧠 ML Proxy sending request to:', req.url);
+              console.log('🧠 ML Proxy sending request to:', req.url || 'unknown URL');
             }
           });
           
@@ -155,7 +156,7 @@ export default defineConfig(({ mode }) => ({
             if (proxyRes.headers.location) {
               console.log('⛔ BLOCKED ML REDIRECT in proxy response:', {
                 location: proxyRes.headers.location,
-                from: req.url,
+                from: req.url || 'unknown URL',
                 statusCode: proxyRes.statusCode,
                 contentType: proxyRes.headers['content-type'] || 'none'
               });
@@ -186,7 +187,7 @@ export default defineConfig(({ mode }) => ({
             proxyRes.headers['access-control-max-age'] = '86400';
             
             if (mode === 'development') {
-              console.log('🧠 ML Proxy received response for:', req.url, 
+              console.log('🧠 ML Proxy received response for:', req.url || 'unknown URL', 
                 'status:', proxyRes.statusCode);
             }
           });
