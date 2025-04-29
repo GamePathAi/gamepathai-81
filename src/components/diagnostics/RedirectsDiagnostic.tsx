@@ -58,32 +58,32 @@ const RedirectsDiagnostic: React.FC = () => {
       });
     }
     
-    // Test AWS load balancer directly
+    // Test API endpoint directly
     try {
-      const awsResult = await mlUrlDiagnostics.testUrl(
-        'http://gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com/api/health'
-      );
+      // Use relative path instead of absolute URL
+      const apiResult = await mlUrlDiagnostics.testUrl('/api/health');
       results.push({
-        url: 'AWS LB (/api/health)',
-        redirected: awsResult.wasRedirected,
-        target: awsResult.finalUrl,
-        isGamePathAI: awsResult.isGamePathAI,
-        status: awsResult.responseStatus
+        url: 'API Direct (/api/health)',
+        redirected: apiResult.wasRedirected,
+        target: apiResult.finalUrl,
+        isGamePathAI: apiResult.isGamePathAI,
+        status: apiResult.responseStatus
       });
     } catch (error) {
       results.push({
-        url: 'AWS LB (/api/health)',
+        url: 'API Direct (/api/health)',
         redirected: true,
         target: 'Error testing URL',
         isGamePathAI: false
       });
     }
     
-    // Test localhost directly (common issue source)
+    // Test localhost directly (common issue source) - only for diagnostic purposes
     try {
-      const localhostResult = await mlUrlDiagnostics.testUrl('http://localhost:3000/api/health');
+      // Using relative path instead of hardcoded URL
+      const localhostResult = await mlUrlDiagnostics.testUrl('/api/health');
       results.push({
-        url: 'localhost:3000',
+        url: 'Local API Test',
         redirected: localhostResult.wasRedirected,
         target: localhostResult.finalUrl,
         isGamePathAI: localhostResult.isGamePathAI,
@@ -91,7 +91,7 @@ const RedirectsDiagnostic: React.FC = () => {
       });
     } catch (error) {
       results.push({
-        url: 'localhost:3000',
+        url: 'Local API Test',
         redirected: true,
         target: 'Error testing URL',
         isGamePathAI: false

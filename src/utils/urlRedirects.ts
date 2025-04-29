@@ -40,13 +40,6 @@ export const isElectron = (): boolean => {
  * ENHANCED: Always returns a relative URL to prevent redirects
  */
 export const getApiBaseUrl = (isMlOperation = false): string => {
-  // Debug URL usage to detect potential redirect issues
-  if (isMlOperation) {
-    console.log('🧠 Using ML API proxy: /api/ml');
-  } else {
-    console.log('🔒 Using local API proxy: /api');
-  }
-  
   // Always return a relative URL to prevent redirects
   return isMlOperation ? '/api/ml' : '/api';
 };
@@ -66,6 +59,41 @@ export const mapToProdUrl = (url: string, isMlOperation = false): string => {
   // Always return original URL - never redirect
   return url;
 };
+
+/**
+ * NEW: Sanitize API URLs to ensure they're always relative
+ * Removes any references to localhost or absolute URLs
+ */
+export function sanitizeApiUrl(url: string): string {
+  if (!url) return url;
+  
+  // Remove localhost:3000 or any other absolute URLs for API calls
+  if (url.includes('http://localhost:3000')) {
+    return url.replace('http://localhost:3000', '');
+  }
+  
+  // Also handle AWS load balancer URLs
+  if (url.includes(DOMAINS.AWS_BACKEND)) {
+    const urlObj = new URL(url);
+    return urlObj.pathname + urlObj.search;
+  }
+  
+  // Handle any other absolute URLs with /api in them
+  if ((url.startsWith('http://') || url.startsWith('https://')) && url.includes('/api')) {
+    try {
+      const urlObj = new URL(url);
+      return urlObj.pathname + urlObj.search;
+    } catch (e) {
+      // If parsing fails, try a simple regex approach
+      const pathMatch = url.match(/https?:\/\/[^\/]+(\/.*)/);
+      if (pathMatch && pathMatch[1]) {
+        return pathMatch[1];
+      }
+    }
+  }
+  
+  return url;
+}
 
 /**
  * Detect potential redirect attempts in URLs
@@ -248,29 +276,8 @@ export const fixAbsoluteUrl = (url: string): string => {
     return url;
   }
   
-  // Handle http:// or https:// URLs
-  if (url.startsWith('http://') || url.startsWith('https://')) {
-    try {
-      // Extract the path part of the URL
-      const urlObj = new URL(url);
-      
-      // Log the conversion for debugging
-      console.log(`🔄 Converting absolute URL to relative: ${url} -> ${urlObj.pathname}${urlObj.search}`);
-      
-      // Return just the path and query parameters
-      return `${urlObj.pathname}${urlObj.search}`;
-    } catch (e) {
-      console.error("❌ Failed to parse URL:", url, e);
-      // If parsing fails, try a simple regex approach
-      const pathMatch = url.match(/https?:\/\/[^\/]+(\/.*)/);
-      if (pathMatch && pathMatch[1]) {
-        return pathMatch[1];
-      }
-    }
-  }
-  
-  // If we can't process it, return as is
-  return url;
+  // Use the sanitizeApiUrl function for consistency
+  return sanitizeApiUrl(url);
 };
 
 /**

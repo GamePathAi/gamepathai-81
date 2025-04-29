@@ -1,8 +1,8 @@
 
 // Importing our URL redirection utilities
-import { getApiBaseUrl, isElectron, isTrustedDevelopmentEnvironment, fixAbsoluteUrl } from "../utils/urlRedirects";
+import { getApiBaseUrl, isElectron, isTrustedDevelopmentEnvironment, fixAbsoluteUrl, sanitizeApiUrl } from "../utils/urlRedirects";
 
-// Configure API base URL - always use proxy
+// Configure API base URL - always use relative URLs
 const API_BASE_URL = getApiBaseUrl();
 
 // Remove noisy logging and only log in development
@@ -21,22 +21,19 @@ export const apiClient = {
       .replace(/\/api\/api\//g, '/api/')  // Replace "/api/api/" with "/api/"
       .replace(/^\/api\/api$/, '/api');   // Handle edge case
     
-    // Build the final URL ensuring only one /api/ prefix
-    let url = API_BASE_URL;
-    if (cleanedEndpoint.startsWith('/api') && API_BASE_URL.endsWith('/api')) {
-      // If both have /api, use the path after /api from cleanedEndpoint
-      url += cleanedEndpoint.substring(4); // Skip the '/api' part
+    // IMPROVED: Always use relative URLs by using path joining
+    let url = '';
+    
+    // If the endpoint already includes the full path, don't add the API_BASE_URL
+    if (cleanedEndpoint.startsWith('/api')) {
+      url = cleanedEndpoint;
     } else {
-      url += cleanedEndpoint;
+      // Join API_BASE_URL with the cleaned endpoint
+      url = `${API_BASE_URL}${cleanedEndpoint}`;
     }
     
-    // MELHORADO: verificar e corrigir qualquer URL absoluto
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      console.warn('⚠️ URL absoluto detectado:', url);
-      // Substituir por URL relativo para usar o proxy do Vite
-      url = fixAbsoluteUrl(url);
-      console.log('✅ URL corrigido para usar proxy:', url);
-    }
+    // FINAL CHECK: Ensure absolute URLs are converted to relative paths
+    url = sanitizeApiUrl(url);
     
     const headers = {
       "Content-Type": "application/json",
@@ -68,9 +65,11 @@ export const apiClient = {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 seconds timeout
       
-      // NOVA: Debug log para detectar redirecionamentos
+      // FINAL CHECK: Log and sanitize any absolute URLs
       if (url.includes('http://') || url.includes('https://')) {
         console.log(`⚠️ URL absoluto detectado na requisição: ${url}`);
+        url = sanitizeApiUrl(url);
+        console.log(`✅ URL convertido para: ${url}`);
       }
       
       // Conjunto avançado de opções para fetch
@@ -171,7 +170,10 @@ async function tryRenewToken() {
     const refreshToken = localStorage.getItem("refresh_token");
     if (!refreshToken) return false;
     
-    const response = await fetch(`${API_BASE_URL}/auth/refresh-token`, {
+    // IMPROVED: Always use relative URLs for API calls
+    const url = `${API_BASE_URL}/auth/refresh-token`.replace(/\/api\/api\//g, '/api/');
+    
+    const response = await fetch(sanitizeApiUrl(url), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -202,22 +204,23 @@ async function tryRenewToken() {
 // Função para testar a conexão com o backend
 export const testBackendConnection = async () => {
   try {
-    // Make sure we use a clean path without duplicated /api/
+    // IMPROVED: Always use relative URLs for API calls
     const url = `${API_BASE_URL}/health`.replace(/\/api\/api\//g, '/api/');
+    const sanitizedUrl = sanitizeApiUrl(url);
     
     if (isDev) {
-      console.log("Testando conexão com:", url);
+      console.log("Testando conexão com:", sanitizedUrl);
     }
     
     // Check if the URL is absolute (contains http:// or https://)
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      console.warn('⚠️ URL absoluto detectado no teste de conexão:', url);
+    if (sanitizedUrl.startsWith('http://') || sanitizedUrl.startsWith('https://')) {
+      console.warn('⚠️ URL absoluto detectado no teste de conexão:', sanitizedUrl);
     }
     
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 segundos timeout
     
-    const response = await fetch(url, { 
+    const response = await fetch(sanitizedUrl, { 
       mode: 'cors',
       headers: {
         "Accept": "application/json",
@@ -236,16 +239,16 @@ export const testBackendConnection = async () => {
     clearTimeout(timeoutId);
     
     // MELHORADO: Verificação mais rigorosa de redirecionamentos
-    if (response.url && response.url !== url) {
-      const originalUrl = new URL(url, window.location.origin);
+    if (response.url && response.url !== sanitizedUrl) {
+      const originalUrl = new URL(sanitizedUrl, window.location.origin);
       const redirectedUrl = new URL(response.url, window.location.origin);
       
-      console.log(`⚠️ URL redirecionada: ${url} -> ${response.url}`);
+      console.log(`⚠️ URL redirecionada: ${sanitizedUrl} -> ${response.url}`);
       
       if (originalUrl.host !== redirectedUrl.host || 
           redirectedUrl.href.includes('gamepathai.com')) {
         console.error('⚠️ Redirecionamento detectado no teste de conexão:', {
-          original: url,
+          original: sanitizedUrl,
           redirected: response.url
         });
         return false;
@@ -268,18 +271,19 @@ export const testBackendConnection = async () => {
 };
 
 /**
- * NEW: Function to check for redirections by AWS load balancer
+ * Function to check for redirections by AWS load balancer
  */
 export const testAWSConnection = async () => {
   try {
-    const url = 'http://gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com/api/health';
+    // IMPROVED: Use relative URL for testing AWS connection
+    const awsHealthUrl = '/api/health';
     
-    console.log("Testando conexão AWS com:", url);
+    console.log("Testando conexão AWS com:", awsHealthUrl);
     
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
     
-    const response = await fetch(url, { 
+    const response = await fetch(awsHealthUrl, { 
       mode: 'cors',
       headers: {
         "Accept": "application/json",
@@ -293,7 +297,7 @@ export const testAWSConnection = async () => {
     clearTimeout(timeoutId);
     
     if (response.type === 'opaqueredirect') {
-      console.log("⚠️ URL AWS redirecionada:", url, "->", "Redireção detectada");
+      console.log("⚠️ URL AWS redirecionada:", awsHealthUrl, "->", "Redireção detectada");
       return false;
     }
     

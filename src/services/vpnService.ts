@@ -1,13 +1,14 @@
+
 import { apiClient } from './api';
 import { toast } from "sonner";
 import { isWebAuthnSupported } from "../utils/webAuthnSupport";
-import { getApiBaseUrl } from "../utils/urlRedirects";
+import { getApiBaseUrl, sanitizeApiUrl } from "../utils/urlRedirects";
 
 // Get the correct API base URL for the current environment
 const apiBaseUrl = getApiBaseUrl();
 
-// URL do backend para verificação de saúde
-const HEALTH_ENDPOINT = `${apiBaseUrl}/health`.replace(/\/api\/api\//g, '/api/');
+// URL do backend para verificação de saúde - always use relative paths
+const HEALTH_ENDPOINT = '/api/health';
 
 // Função para verificar se o backend está disponível
 const checkBackendAvailability = async () => {

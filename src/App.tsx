@@ -75,7 +75,7 @@ const App = () => (
               <Route path="/signup" element={<Signup />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/" element={<Dashboard />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/index" element={<Index />} />
               <Route path="/network-metrics" element={<NetworkMetrics />} />

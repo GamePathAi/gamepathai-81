@@ -3,7 +3,7 @@
  * Middleware utilities for handling CORS and preventing unwanted redirects
  */
 
-import { detectRedirectAttempt, fixAbsoluteUrl } from './urlRedirects';
+import { detectRedirectAttempt, fixAbsoluteUrl, sanitizeApiUrl } from './urlRedirects';
 
 /**
  * Adds CORS headers to all outgoing requests
@@ -63,22 +63,11 @@ export const setupFetchInterceptor = (): void => {
       typeof init.headers === 'object' &&
       ('X-ML-Operation' in init.headers);
       
-    // IMPROVED: Convert absolute URLs to relative
-    let url = originalUrl;
-    if ((url.startsWith('http://') || url.startsWith('https://')) && 
-        (url.includes('/api/') || url.includes('localhost'))) {
-      
-      // Log the original URL for debugging
-      console.log('⚠️ Intercepting absolute URL in fetch:', url);
-      
-      // Convert to relative URL
-      url = fixAbsoluteUrl(url);
-      console.log('✅ Converted to relative URL:', url);
-      
-      // Log specific information about redirects to gamepathai.com
-      if (typeof originalUrl === 'string' && originalUrl.includes('gamepathai.com')) {
-        console.log('🚨 Blocked potential redirect to gamepathai.com');
-      }
+    // IMPROVED: Sanitize URLs to ensure they're always relative
+    let url = sanitizeApiUrl(originalUrl);
+    
+    if (url !== originalUrl) {
+      console.log('✅ Sanitized URL in fetch:', originalUrl, '->', url);
     }
     
     if (isMLOperation) {
@@ -167,17 +156,24 @@ export const setupRedirectDetector = (): void => {
   XMLHttpRequest.prototype.open = function(method, url, ...args) {
     const urlStr = typeof url === 'string' ? url : url.toString();
     
-    if (urlStr.includes('/ml/') || urlStr.includes('gamepathai.com')) {
-      console.log('🔍 Monitoring ML XHR request:', urlStr);
+    // Sanitize the URL before proceeding
+    const sanitizedUrl = sanitizeApiUrl(urlStr);
+    
+    if (urlStr !== sanitizedUrl) {
+      console.log('✅ Sanitized XHR URL:', urlStr, '->', sanitizedUrl);
     }
     
-    return originalOpen.call(this, method, url, ...args);
+    if (sanitizedUrl.includes('/ml/') || sanitizedUrl.includes('gamepathai.com')) {
+      console.log('🔍 Monitoring ML XHR request:', sanitizedUrl);
+    }
+    
+    return originalOpen.call(this, method, sanitizedUrl, ...args);
   };
 };
 
 /**
  * ENHANCED: Setup stronger ML protection specifically for URLs
- * FIXED: Don't try to override native browser methods
+ * FIXED: Don't override native browser methods that are read-only
  */
 export const setupMLProtection = (): void => {
   if (typeof window === 'undefined') return;
@@ -201,7 +197,7 @@ export const setupMLProtection = (): void => {
           (url.includes('/api/') || url.includes('localhost'))) {
         
         console.log('⚠️ Found absolute URL in XHR:', url);
-        fixedUrl = fixAbsoluteUrl(url);
+        fixedUrl = sanitizeApiUrl(url);
         console.log('✅ Using fixed URL:', fixedUrl);
       }
       
@@ -229,8 +225,7 @@ export const setupMLProtection = (): void => {
     return originalSetItem.call(this, key, value);
   };
   
-  // Instead of trying to override Location API methods (which are read-only),
-  // we'll monitor navigation events
+  // Use event listeners to monitor navigation events without trying to override read-only properties
   window.addEventListener('click', function(event) {
     const target = event.target as HTMLElement;
     if (target.tagName === 'A') {
@@ -255,4 +250,3 @@ export const setupMLProtection = (): void => {
     }
   });
 };
-
