@@ -50,9 +50,3 @@ export const sanitizeApiUrl = (url: string): string => {
   
   return sanitized;
 };
-
-// Make sure that fixAbsoluteUrl is properly exported
-export { 
-  fixAbsoluteUrl,
-  sanitizeApiUrl 
-};
