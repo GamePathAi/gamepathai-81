@@ -9,7 +9,7 @@ const isDev = process.env.NODE_ENV === 'development';
 export const testBackendConnection = async () => {
   try {
     // IMPROVED: Always use relative URLs for API calls
-    const url = `/api/health`;
+    const url = `/health`;
     const sanitizedUrl = sanitizeApiUrl(url);
     
     if (isDev) {
@@ -80,7 +80,7 @@ export const testBackendConnection = async () => {
 export const testAWSConnection = async () => {
   try {
     // IMPROVED: Use relative URL for testing AWS connection
-    const awsHealthUrl = '/api/health';
+    const awsHealthUrl = '/health';
     
     console.log("Testando conexão AWS com:", awsHealthUrl);
     

@@ -7,7 +7,7 @@ import { getApiBaseUrl, sanitizeApiUrl } from "../utils/url";
 const apiBaseUrl = getApiBaseUrl();
 
 // URL do backend para verificação de saúde - always use relative paths
-const HEALTH_ENDPOINT = '/api/health';
+const HEALTH_ENDPOINT = '/health';
 
 // Função para verificar se o backend está disponível
 const checkBackendAvailability = async () => {

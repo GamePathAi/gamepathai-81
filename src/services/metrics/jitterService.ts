@@ -6,7 +6,7 @@ import { MetricData } from "@/types/metrics";
 export const jitterService = {
   async getJitter(): Promise<MetricData> {
     try {
-      return await metricsClient.fetch<MetricData>("/api/metrics/jitter");
+      return await metricsClient.fetch<MetricData>("/metrics/jitter");
     } catch (error) {
       console.log("Falling back to mock jitter data");
       return generateMetrics().jitter;

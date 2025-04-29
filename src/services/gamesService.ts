@@ -9,7 +9,7 @@ export const gamesService = {
     try {
       console.log("🎮 Buscando lista de jogos via API padrão");
       // First try standard API
-      return await apiClient.fetch<Game[]>("/api/games");
+      return await apiClient.fetch<Game[]>("/games");
     } catch (error) {
       console.log("⚠️ Standard API failed for games, trying ML service as fallback");
       
@@ -90,7 +90,7 @@ export const gamesService = {
   },
     
   getGameDetails: (gameId: string) => 
-    apiClient.fetch(`/api/games/${gameId}`),
+    apiClient.fetch(`/games/${gameId}`),
     
   optimizeGame: async (gameId: string) => {
     try {
@@ -113,7 +113,7 @@ export const gamesService = {
       try {
         console.log(`🔄 Tentando API padrão para otimização de ${gameId}`);
         // Fall back to standard API
-        return await apiClient.fetch(`/api/games/${gameId}/optimize`, {
+        return await apiClient.fetch(`/games/${gameId}/optimize`, {
           method: "POST"
         });
       } catch (apiError) {

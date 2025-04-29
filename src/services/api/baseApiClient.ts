@@ -18,21 +18,13 @@ export const baseApiClient = {
     // Ensure endpoint starts with / for proper URL joining
     const formattedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
     
-    // Clean endpoint: remove any duplicate /api/ patterns that might exist
+    // Clean endpoint: remove any '/api/' prefixes
     const cleanedEndpoint = formattedEndpoint
-      .replace(/\/api\/api\//g, '/api/')  // Replace "/api/api/" with "/api/"
-      .replace(/^\/api\/api$/, '/api');   // Handle edge case
+      .replace(/^\/api\//, '/') // Remove leading /api/
+      .replace(/\/api\//, '/'); // Remove any /api/ in the path
     
-    // IMPROVED: Always use relative URLs by using path joining
-    let url = '';
-    
-    // If the endpoint already includes the full path, don't add the API_BASE_URL
-    if (cleanedEndpoint.startsWith('/api')) {
-      url = cleanedEndpoint;
-    } else {
-      // Join API_BASE_URL with the cleaned endpoint
-      url = `${API_BASE_URL}${cleanedEndpoint}`;
-    }
+    // Join API_BASE_URL with the cleaned endpoint
+    let url = `${API_BASE_URL}${cleanedEndpoint}`;
     
     // FINAL CHECK: Ensure absolute URLs are converted to relative paths
     url = sanitizeApiUrl(url);
@@ -173,8 +165,8 @@ async function tryRenewToken() {
     const refreshToken = localStorage.getItem("refresh_token");
     if (!refreshToken) return false;
     
-    // IMPROVED: Always use relative URLs for API calls
-    const url = `${API_BASE_URL}/auth/refresh-token`.replace(/\/api\/api\//g, '/api/');
+    // IMPROVED: Remove /api/ from the path
+    const url = `${API_BASE_URL}/auth/refresh-token`.replace(/\/api\//g, '/');
     
     const response = await fetch(sanitizeApiUrl(url), {
       method: "POST",

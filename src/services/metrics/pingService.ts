@@ -6,7 +6,7 @@ import { MetricData } from "@/types/metrics";
 export const pingService = {
   async getPing(): Promise<MetricData> {
     try {
-      return await metricsClient.fetch<MetricData>("/api/metrics/ping");
+      return await metricsClient.fetch<MetricData>("/metrics/ping");
     } catch (error) {
       console.log("Falling back to mock ping data");
       return generateMetrics().ping;

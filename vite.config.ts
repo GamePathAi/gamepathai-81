@@ -1,4 +1,3 @@
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -29,11 +28,22 @@ export default defineConfig(({ mode }) => ({
     hmr: false,
     proxy: {
       // Enhanced proxy configuration to prevent redirects
-      '/api': {
+      '/': {
         target: 'http://localhost:8081', // Changed to use local port instead of AWS LB
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '/api'),
+        bypass: (req) => {
+          // Skip proxying for frontend assets
+          if (
+            req.url.startsWith('/assets/') || 
+            req.url.startsWith('/favicon.ico') || 
+            req.url.startsWith('/src/') || 
+            req.url.startsWith('/images/') ||
+            req.url === '/'
+          ) {
+            return req.url;
+          }
+        },
         configure: (proxy, _options) => {
           // Add detailed logging
           proxy.on('proxyReq', (proxyReq, req, _res) => {
@@ -103,11 +113,11 @@ export default defineConfig(({ mode }) => ({
         }
       },
       // Special proxy configuration for ML operations with enhanced logging and redirect prevention
-      '/api/ml': {
+      '/ml': {
         target: 'http://localhost:8081/ml', // Changed to use local port
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api\/ml/, ''),
+        rewrite: (path) => path.replace(/^\/ml/, ''),
         configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
             console.error('🔥 ML Proxy error:', err);
