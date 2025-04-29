@@ -1,6 +1,5 @@
-
 import { addCSPMetaTag, removeInjectedScripts } from "./cspHelper";
-import { isProduction } from "./urlRedirects";
+import { isProduction, detectRedirectScripts } from "./urlRedirects";
 import { setupFetchInterceptor, setupRedirectDetector, setupMLProtection } from "./middleware";
 
 /**
@@ -28,8 +27,46 @@ export const initializeApp = () => {
   // Check for any client-side security software that might be interfering
   detectSecuritySoftware();
   
+  // NEW: Check for redirect scripts in the DOM
+  detectRedirectScripts();
+  
   // Log environment information
   console.log(`🌐 Running in ${isProduction() ? 'PRODUCTION' : 'DEVELOPMENT'} environment`);
+  
+  // NEW: Add logging to detect any hardcoded localhost or AWS URLs
+  monitorConsoleForRedirectIssues();
+};
+
+/**
+ * NEW: Monitor console logs for redirect issues
+ */
+const monitorConsoleForRedirectIssues = () => {
+  if (typeof console === 'undefined') return;
+  
+  const originalConsoleLog = console.log;
+  console.log = function(...args) {
+    // Check for redirect indicators in logs
+    if (args.length > 0 && typeof args[0] === 'string') {
+      const logMessage = args[0].toLowerCase();
+      
+      // Check for redirect indicators
+      if ((logMessage.includes('http://') || logMessage.includes('https://')) && 
+          (logMessage.includes('gamepathai.com') || logMessage.includes('redirect'))) {
+        
+        // Add additional debugging info
+        originalConsoleLog.call(this, '⚠️ Redirecionamento de localhost:3000 e AWS ativado');
+      }
+      
+      // Look for localhost URLs
+      if (logMessage.includes('localhost:3000') && 
+          (logMessage.includes('api') || logMessage.includes('http'))) {
+        
+        originalConsoleLog.call(this, '⚠️ URL absoluta com localhost:3000 detectada, isso pode causar redirecionamentos');
+      }
+    }
+    
+    return originalConsoleLog.apply(this, args);
+  };
 };
 
 /**

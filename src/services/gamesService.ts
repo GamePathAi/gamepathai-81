@@ -2,6 +2,7 @@
 import { apiClient } from "./api";
 import { mlService } from "./mlApiClient";
 import { Game } from "@/hooks/useGames";
+import { fixAbsoluteUrl } from "@/utils/urlRedirects";
 
 export const gamesService = {
   getGames: async () => {

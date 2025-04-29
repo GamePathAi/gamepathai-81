@@ -1,4 +1,3 @@
-
 /**
  * URL redirector utility for handling different environments
  * ENHANCED: Additional protection for ML operations
@@ -7,7 +6,7 @@
 // Domain configurations
 export const DOMAINS = {
   PRODUCTION: 'gamepathai.com',
-  LOCAL_DEVELOPMENT: 'localhost:8080', // Port 8080 for Vite
+  LOCAL_DEVELOPMENT: 'localhost', // Removed specific port
   AWS_BACKEND: 'gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com'
 };
 
@@ -16,7 +15,7 @@ export const ML_DOMAINS = {
   ML_SERVICE: 'ml-api.gamepathai.com',
   ML_FALLBACK: 'ml-service-fallback.gamepathai.com',
   // Adicionar domínios de desenvolvimento como confiáveis
-  ML_DEV: 'localhost:8080'
+  ML_DEV: 'localhost'
 };
 
 /**
@@ -38,7 +37,7 @@ export const isElectron = (): boolean => {
 
 /**
  * Gets the appropriate base URL for API calls based on environment
- * ENHANCED: Special handling for ML operations
+ * ENHANCED: Always returns a relative URL to prevent redirects
  */
 export const getApiBaseUrl = (isMlOperation = false): string => {
   // Debug URL usage to detect potential redirect issues
@@ -48,7 +47,7 @@ export const getApiBaseUrl = (isMlOperation = false): string => {
     console.log('🔒 Using local API proxy: /api');
   }
   
-  // Force using the local proxy to prevent any redirections
+  // Always return a relative URL to prevent redirects
   return isMlOperation ? '/api/ml' : '/api';
 };
 
@@ -75,6 +74,13 @@ export const mapToProdUrl = (url: string, isMlOperation = false): string => {
 export const detectRedirectAttempt = (url: string, isMlOperation = false): boolean => {
   // Check if we're in development mode
   const isDevelopment = process.env.NODE_ENV === 'development';
+  
+  // Validate that the URL is relative for API calls
+  if ((url.startsWith('http://') || url.startsWith('https://')) && 
+      (url.includes('/api/') || url.includes('api.'))) {
+    console.warn('⚠️ Absolute URL detected for API call:', url);
+    return true; // Block absolute URLs for API calls
+  }
   
   // NOVO: Verificar se o URL já é um proxy local, que não precisa ser bloqueado
   if ((url.startsWith('/api') || url.startsWith('/api/ml')) && 
@@ -103,7 +109,7 @@ export const detectRedirectAttempt = (url: string, isMlOperation = false): boole
   
   if (suspicious || mlSuspicious) {
     if (isDevelopment && url.includes('localhost')) {
-      // Em desenvolvimento, permitir URLs de localhost mesmo que pareçam suspeitos
+      // Log but don't block absolute localhost URLs in development
       console.log('⚠️ Permitindo URL de desenvolvimento que seria bloqueado em produção:', url);
       return false;
     }
@@ -230,4 +236,96 @@ export const logRedirectAttempt = (originalUrl: string, redirectUrl: string, con
   
   // In a real implementation, you might want to send this information to your server
   // for tracking and troubleshooting purposes
+};
+
+/**
+ * NEW: Fix absolute URLs by converting them to relative
+ * This helps prevent unwanted redirects from hardcoded URLs
+ */
+export const fixAbsoluteUrl = (url: string): string => {
+  // Already a relative URL
+  if (url.startsWith('/')) {
+    return url;
+  }
+  
+  // Handle http:// or https:// URLs
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    try {
+      // Extract the path part of the URL
+      const urlObj = new URL(url);
+      
+      // Log the conversion for debugging
+      console.log(`🔄 Converting absolute URL to relative: ${url} -> ${urlObj.pathname}${urlObj.search}`);
+      
+      // Return just the path and query parameters
+      return `${urlObj.pathname}${urlObj.search}`;
+    } catch (e) {
+      console.error("❌ Failed to parse URL:", url, e);
+      // If parsing fails, try a simple regex approach
+      const pathMatch = url.match(/https?:\/\/[^\/]+(\/.*)/);
+      if (pathMatch && pathMatch[1]) {
+        return pathMatch[1];
+      }
+    }
+  }
+  
+  // If we can't process it, return as is
+  return url;
+};
+
+/**
+ * NEW: Function to detect and log redirection hints in the DOM
+ * This helps identify third-party scripts that might be causing redirects
+ */
+export const detectRedirectScripts = (): void => {
+  if (typeof document === 'undefined') return;
+  
+  console.log('🔍 Scanning for potential redirect scripts...');
+  
+  // Look for suspicious script tags
+  const scripts = document.querySelectorAll('script');
+  scripts.forEach(script => {
+    const src = script.getAttribute('src') || '';
+    const content = script.textContent || '';
+    
+    if (src.includes('redirect') || content.includes('redirect') ||
+        src.includes('forward') || content.includes('window.location') ||
+        content.includes('gamepathai.com')) {
+      console.warn('⚠️ Potential redirect script detected:', {
+        src,
+        contentSnippet: content.substring(0, 50) + (content.length > 50 ? '...' : '')
+      });
+    }
+  });
+  
+  // Check for meta refresh tags
+  const metas = document.querySelectorAll('meta');
+  metas.forEach(meta => {
+    if (meta.getAttribute('http-equiv') === 'refresh') {
+      console.warn('⚠️ Meta refresh redirect detected:', meta.getAttribute('content'));
+    }
+  });
+};
+
+/**
+ * NEW: Function to monitor and log navigation changes
+ */
+export const setupNavigationMonitor = (): void => {
+  if (typeof window === 'undefined') return;
+  
+  // Monitor history API
+  const originalPushState = window.history.pushState;
+  window.history.pushState = function(state, title, url) {
+    console.log('🔄 History pushState:', url);
+    return originalPushState.apply(this, [state, title, url]);
+  };
+  
+  // Monitor URL changes
+  let lastUrl = window.location.href;
+  setInterval(() => {
+    if (window.location.href !== lastUrl) {
+      console.log(`🔄 URL changed: ${lastUrl} -> ${window.location.href}`);
+      lastUrl = window.location.href;
+    }
+  }, 1000);
 };

@@ -1,6 +1,6 @@
 
 // Importing our URL redirection utilities
-import { getApiBaseUrl, isElectron, isTrustedDevelopmentEnvironment } from "../utils/urlRedirects";
+import { getApiBaseUrl, isElectron, isTrustedDevelopmentEnvironment, fixAbsoluteUrl } from "../utils/urlRedirects";
 
 // Configure API base URL - always use proxy
 const API_BASE_URL = getApiBaseUrl();
@@ -30,13 +30,11 @@ export const apiClient = {
       url += cleanedEndpoint;
     }
     
-    // MELHORADO: verificar e logar se o URL contém localhost absoluto
-    if (url.includes('http://localhost') || url.includes('https://localhost') || 
-        url.includes('127.0.0.1')) {
-      console.warn('⚠️ URL absoluto com localhost detectado:', url);
+    // MELHORADO: verificar e corrigir qualquer URL absoluto
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      console.warn('⚠️ URL absoluto detectado:', url);
       // Substituir por URL relativo para usar o proxy do Vite
-      url = url.replace(/https?:\/\/localhost(:\d+)?/g, '');
-      url = url.replace(/https?:\/\/127\.0\.0\.1(:\d+)?/g, '');
+      url = fixAbsoluteUrl(url);
       console.log('✅ URL corrigido para usar proxy:', url);
     }
     
@@ -70,6 +68,11 @@ export const apiClient = {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 seconds timeout
       
+      // NOVA: Debug log para detectar redirecionamentos
+      if (url.includes('http://') || url.includes('https://')) {
+        console.log(`⚠️ URL absoluto detectado na requisição: ${url}`);
+      }
+      
       // Conjunto avançado de opções para fetch
       const fetchOptions: RequestInit = {
         ...options,
@@ -89,6 +92,8 @@ export const apiClient = {
         // Verifique se há qualquer mudança de origem ou domínio
         const originalUrl = new URL(url, window.location.origin);
         const redirectedUrl = new URL(response.url, window.location.origin);
+        
+        console.log(`⚠️ URL redirecionada: ${url} -> ${response.url}`);
         
         if (originalUrl.host !== redirectedUrl.host || 
             redirectedUrl.href.includes('gamepathai.com')) {
@@ -204,6 +209,11 @@ export const testBackendConnection = async () => {
       console.log("Testando conexão com:", url);
     }
     
+    // Check if the URL is absolute (contains http:// or https://)
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      console.warn('⚠️ URL absoluto detectado no teste de conexão:', url);
+    }
+    
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 segundos timeout
     
@@ -230,6 +240,8 @@ export const testBackendConnection = async () => {
       const originalUrl = new URL(url, window.location.origin);
       const redirectedUrl = new URL(response.url, window.location.origin);
       
+      console.log(`⚠️ URL redirecionada: ${url} -> ${response.url}`);
+      
       if (originalUrl.host !== redirectedUrl.host || 
           redirectedUrl.href.includes('gamepathai.com')) {
         console.error('⚠️ Redirecionamento detectado no teste de conexão:', {
@@ -251,6 +263,43 @@ export const testBackendConnection = async () => {
     } else {
       console.error("Backend connection test failed:", error);
     }
+    return false;
+  }
+};
+
+/**
+ * NEW: Function to check for redirections by AWS load balancer
+ */
+export const testAWSConnection = async () => {
+  try {
+    const url = 'http://gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com/api/health';
+    
+    console.log("Testando conexão AWS com:", url);
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    
+    const response = await fetch(url, { 
+      mode: 'cors',
+      headers: {
+        "Accept": "application/json",
+        "X-No-Redirect": "1",
+        "X-Max-Redirects": "0"
+      },
+      signal: controller.signal,
+      redirect: 'manual' // Use manual to observe redirections
+    });
+    
+    clearTimeout(timeoutId);
+    
+    if (response.type === 'opaqueredirect') {
+      console.log("⚠️ URL AWS redirecionada:", url, "->", "Redireção detectada");
+      return false;
+    }
+    
+    return response.ok;
+  } catch (error) {
+    console.error("AWS connection test failed:", error);
     return false;
   }
 };

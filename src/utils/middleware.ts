@@ -1,9 +1,8 @@
-
 /**
  * Middleware utilities for handling CORS and preventing unwanted redirects
  */
 
-import { detectRedirectAttempt } from './urlRedirects';
+import { detectRedirectAttempt, fixAbsoluteUrl } from './urlRedirects';
 
 /**
  * Adds CORS headers to all outgoing requests
@@ -57,12 +56,30 @@ export const setupFetchInterceptor = (): void => {
   const originalFetch = window.fetch;
   
   window.fetch = async function(input: RequestInfo | URL, init?: RequestInit) {
-    // Log every fetch for debugging during development
-    const url = typeof input === 'string' ? input : input.toString();
+    // Get the URL as a string
+    const originalUrl = typeof input === 'string' ? input : input.toString();
     const isMLOperation = init?.headers && 
       typeof init.headers === 'object' &&
       ('X-ML-Operation' in init.headers);
       
+    // IMPROVED: Convert absolute URLs to relative
+    let url = originalUrl;
+    if ((url.startsWith('http://') || url.startsWith('https://')) && 
+        (url.includes('/api/') || url.includes('localhost'))) {
+      
+      // Log the original URL for debugging
+      console.log('⚠️ Intercepting absolute URL in fetch:', url);
+      
+      // Convert to relative URL
+      url = fixAbsoluteUrl(url);
+      console.log('✅ Converted to relative URL:', url);
+      
+      // Log specific information about redirects to gamepathai.com
+      if (originalUrl.includes('gamepathai.com')) {
+        console.log('🚨 Blocked potential redirect to gamepathai.com');
+      }
+    }
+    
     if (isMLOperation) {
       console.log('🧠 ML Fetch request to:', url);
     } else {
@@ -90,16 +107,8 @@ export const setupFetchInterceptor = (): void => {
       };
     }
     
-    // Remove any gamepathai.com URLs that might have been added
-    let cleanUrl = url;
-    if (url.includes('gamepathai.com')) {
-      console.warn('🚫 Intercepting potential redirect URL:', url);
-      cleanUrl = url.replace(/https?:\/\/gamepathai\.com/g, '');
-      console.log('✅ Cleaned URL:', cleanUrl);
-    }
-    
     try {
-      const response = await originalFetch(cleanUrl, enhancedInit);
+      const response = await originalFetch(url, enhancedInit);
       
       // Check response URL for potential redirect that slipped through
       if (response.url.includes('gamepathai.com')) {
@@ -166,13 +175,44 @@ export const setupRedirectDetector = (): void => {
 };
 
 /**
- * Special enhanced protection for ML operations
- * Should be called during app initialization
+ * ENHANCED: Setup stronger ML protection specifically for URLs
  */
 export const setupMLProtection = (): void => {
   if (typeof window === 'undefined') return;
   
   console.log('🛡️ Setting up enhanced ML protection');
+  
+  // Override XMLHttpRequest to prevent redirects
+  const originalXHROpen = XMLHttpRequest.prototype.open;
+  XMLHttpRequest.prototype.open = function(method, url, ...args) {
+    // Fix any absolute URLs
+    let fixedUrl = url;
+    
+    if (typeof url === 'string') {
+      // Log ML requests
+      if (url.toString().includes('/ml/')) {
+        console.log('🧠 XHR ML Request:', url);
+      }
+      
+      // Convert absolute URLs to relative for API requests
+      if ((url.startsWith('http://') || url.startsWith('https://')) && 
+          (url.includes('/api/') || url.includes('localhost'))) {
+        
+        console.log('⚠️ Found absolute URL in XHR:', url);
+        fixedUrl = fixAbsoluteUrl(url.toString());
+        console.log('✅ Using fixed URL:', fixedUrl);
+      }
+      
+      // Block suspicious URLs
+      if (detectRedirectAttempt(url.toString())) {
+        console.error('🚨 Blocked suspicious XHR URL:', url);
+        throw new Error('Blocked potential redirect in XHR: ' + url);
+      }
+    }
+    
+    // Continue with the fixed URL
+    return originalXHROpen.call(this, method, fixedUrl, ...args);
+  };
   
   // Monitor for suspicious redirects in localStorage
   const originalSetItem = localStorage.setItem;
@@ -187,29 +227,22 @@ export const setupMLProtection = (): void => {
     return originalSetItem.call(this, key, value);
   };
   
-  // Add special detector for redirect attempts via header manipulation
-  document.addEventListener('securitypolicyviolation', (e) => {
-    console.error('🚨 Content Security Policy violation:', e.blockedURI, 'violated', e.violatedDirective);
-  });
-  
-  // Detect browser extensions that might interfere with ML operations
-  const detectExtensions = () => {
-    const injectedStyles = Array.from(document.styleSheets).filter(
-      sheet => sheet.href && !sheet.href.startsWith(window.location.origin)
-    ).length;
-    
-    const hasExtensionElements = !!document.querySelector('div[extension-id]') || 
-                                 !!document.querySelector('[class*="extension"]');
-                                 
-    if (injectedStyles > 0 || hasExtensionElements) {
-      console.warn('⚠️ Detected browser extensions that might interfere with ML operations');
+  // Monitor Location API
+  const originalAssign = window.location.assign;
+  window.location.assign = function(url) {
+    if (url.includes('gamepathai.com')) {
+      console.error('🚨 Blocked navigation to gamepathai.com:', url);
+      return;
     }
+    return originalAssign.call(this, url);
   };
   
-  // Run detection after page load
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', detectExtensions);
-  } else {
-    detectExtensions();
-  }
+  const originalReplace = window.location.replace;
+  window.location.replace = function(url) {
+    if (url.includes('gamepathai.com')) {
+      console.error('🚨 Blocked navigation replacement to gamepathai.com:', url);
+      return;
+    }
+    return originalReplace.call(this, url);
+  };
 };

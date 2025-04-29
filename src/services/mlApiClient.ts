@@ -1,10 +1,9 @@
-
 /**
  * Specialized API client for Machine Learning operations
  * Includes specific configurations to prevent redirects and handle ML-specific requirements
  */
 import { toast } from "sonner";
-import { detectRedirectAttempt, isTrustedDevelopmentEnvironment } from "../utils/urlRedirects";
+import { detectRedirectAttempt, isTrustedDevelopmentEnvironment, fixAbsoluteUrl } from "../utils/urlRedirects";
 
 // Constants for ML operations
 export const ML_API_CONFIG = {
@@ -57,6 +56,12 @@ export const mlApiClient = {
       throw new MLApiError('Blocked potentially malicious URL', { endpoint, modelType });
     }
     
+    // NOVO: Verificar e corrigir qualquer URL absoluto
+    const finalUrl = fixAbsoluteUrl(url);
+    if (finalUrl !== url) {
+      console.log(`✅ Corrigido URL ML de ${url} para ${finalUrl}`);
+    }
+    
     // MELHORADO: ML-specific headers
     const headers = {
       "Content-Type": "application/json",
@@ -90,18 +95,7 @@ export const mlApiClient = {
     }, ML_API_CONFIG.TIMEOUT_MS);
     
     try {
-      // MELHORADO: Verificar redirecionamentos no URL de origem
-      if (url.includes('http://localhost') || url.includes('https://localhost') || 
-          url.includes('127.0.0.1')) {
-        console.warn('⚠️ ML URL absoluto com localhost detectado:', url);
-        // Substituir por URL relativo para usar o proxy do Vite
-        const cleanUrl = url
-          .replace(/https?:\/\/localhost(:\d+)?/g, '')
-          .replace(/https?:\/\/127\.0\.0\.1(:\d+)?/g, '');
-        console.log('✅ ML URL corrigido para usar proxy:', cleanUrl);
-      }
-      
-      const response = await fetch(url, {
+      const response = await fetch(finalUrl, {
         ...options,
         headers,
         signal: controller.signal,
@@ -115,15 +109,17 @@ export const mlApiClient = {
       clearTimeout(timeoutId);
       
       // Check response URL for evidence of redirect that slipped through
-      if (response.url && response.url !== url) {
+      if (response.url && response.url !== finalUrl) {
+        console.log(`⚠️ ML URL redirecionada: ${finalUrl} -> ${response.url}`);
+        
         // MELHORADO: Verificação mais rigorosa de redirecionamentos
-        const originalUrl = new URL(url, window.location.origin);
+        const originalUrl = new URL(finalUrl, window.location.origin);
         const redirectedUrl = new URL(response.url, window.location.origin);
         
         if (originalUrl.host !== redirectedUrl.host || 
             redirectedUrl.href.includes('gamepathai.com')) {
           console.error('⚠️ Detected redirect in ML response URL:', {
-            original: url,
+            original: finalUrl,
             redirected: response.url
           });
           
@@ -217,7 +213,7 @@ export const mlApiClient = {
       )) {
         console.error('🚨 ML API redirect blocked:', error.message);
         console.log('Detalhes do erro de redirecionamento:', {
-          url,
+          url: finalUrl,
           endpoint,
           modelType,
           message: error.message
@@ -582,5 +578,73 @@ export const mlDiagnostics = {
       detected: potentialIssues.length > 0,
       extensions: potentialIssues
     };
+  }
+};
+
+/**
+ * NEW: URL diagnostic utility specifically for ML endpoints
+ */
+export const mlUrlDiagnostics = {
+  testUrl: async (url: string): Promise<{
+    originalUrl: string;
+    finalUrl: string;
+    wasRedirected: boolean;
+    isGamePathAI: boolean;
+    responseStatus?: number;
+    contentType?: string;
+  }> => {
+    try {
+      // Use fetch with manual redirect to follow the chain
+      const response = await fetch(url, {
+        method: 'HEAD',
+        redirect: 'manual',
+        headers: {
+          'X-Diagnostic': '1'
+        }
+      });
+      
+      // If we get a redirect response
+      if (response.type === 'opaqueredirect') {
+        console.log(`⚠️ URL ${url} attempts to redirect`);
+        
+        // Try to follow the redirect manually
+        const location = response.headers.get('location');
+        if (location) {
+          console.log(`⚠️ Redirect location: ${location}`);
+          return {
+            originalUrl: url,
+            finalUrl: location,
+            wasRedirected: true,
+            isGamePathAI: location.includes('gamepathai.com')
+          };
+        }
+        
+        return {
+          originalUrl: url,
+          finalUrl: 'unknown-redirect',
+          wasRedirected: true,
+          isGamePathAI: false
+        };
+      }
+      
+      // If we get a successful response
+      return {
+        originalUrl: url,
+        finalUrl: response.url,
+        wasRedirected: url !== response.url,
+        isGamePathAI: response.url.includes('gamepathai.com'),
+        responseStatus: response.status,
+        contentType: response.headers.get('content-type') || undefined
+      };
+    } catch (error) {
+      console.error(`❌ URL diagnostic failed for ${url}:`, error);
+      
+      return {
+        originalUrl: url,
+        finalUrl: 'error',
+        wasRedirected: false,
+        isGamePathAI: false
+      };
+    }
   }
 };

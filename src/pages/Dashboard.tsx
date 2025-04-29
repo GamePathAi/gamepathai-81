@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Zap, Server, AlertTriangle, BarChart2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import ConnectionOptimizer from "@/components/ConnectionOptimizer";
 import RouteOptimizer from "@/components/RouteOptimizer";
 import { testBackendConnection } from "@/services/api";
 import { mlDiagnostics } from "@/services/mlApiClient";
+import { detectRedirectScripts, setupNavigationMonitor } from "@/utils/urlRedirects";
 
 // Import refactored dashboard components
 import DashboardMetrics from "@/components/dashboard/DashboardMetrics";
@@ -22,6 +22,7 @@ const Dashboard: React.FC = () => {
   const [backendStatus, setBackendStatus] = useState<'online' | 'offline' | 'checking'>('checking');
   const [showMlDiagnostics, setShowMlDiagnostics] = useState(false);
   const [interfereingExtensions, setInterfereingExtensions] = useState<string[]>([]);
+  const [redirectsDetected, setRedirectsDetected] = useState(false);
   
   useEffect(() => {
     const checkBackendStatus = async () => {
@@ -30,6 +31,12 @@ const Dashboard: React.FC = () => {
     };
     
     checkBackendStatus();
+    
+    // Check for redirect scripts in the page
+    detectRedirectScripts();
+    
+    // Setup navigation monitor to detect URL changes
+    setupNavigationMonitor();
     
     // Check periodically
     const interval = setInterval(checkBackendStatus, 60000); // every minute
@@ -49,6 +56,26 @@ const Dashboard: React.FC = () => {
         });
       }
     }
+    
+    // Check for redirect URLs
+    const checkForRedirects = () => {
+      const hasRedirect = document.querySelectorAll('script[src*="redirect"]').length > 0 || 
+                         document.querySelectorAll('script:contains("redirect")').length > 0;
+      
+      if (hasRedirect) {
+        setRedirectsDetected(true);
+        toast.warning("Redirecionamentos detectados", {
+          description: "Scripts de redirecionamento foram encontrados na página",
+          action: {
+            label: "Diagnósticos",
+            onClick: () => setShowMlDiagnostics(true)
+          }
+        });
+      }
+    };
+    
+    // Run the redirect check after a short delay to let page finish loading
+    setTimeout(checkForRedirects, 1000);
     
     return () => clearInterval(interval);
   }, []);
@@ -99,6 +126,27 @@ const Dashboard: React.FC = () => {
             </span>
             <Button variant="outline" size="sm" onClick={handleRetryConnection} className="border-amber-500/50 text-amber-500">
               Tentar Reconectar
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+      
+      {/* Show warning if redirects detected */}
+      {redirectsDetected && (
+        <Alert variant="destructive" className="mb-4 bg-red-900/20 border-red-500/50">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Scripts de redirecionamento detectados</AlertTitle>
+          <AlertDescription>
+            <p>
+              Foram detectados scripts que podem estar causando redirecionamentos.
+              Isso pode afetar o funcionamento das otimizações ML.
+            </p>
+            <Button 
+              variant="link" 
+              className="text-red-400 p-0 mt-1" 
+              onClick={() => setShowMlDiagnostics(true)}
+            >
+              Ver diagnósticos
             </Button>
           </AlertDescription>
         </Alert>
