@@ -1,4 +1,3 @@
-
 import { apiClient } from './api';
 import { toast } from "sonner";
 import { isWebAuthnSupported } from "../utils/webAuthnSupport";
@@ -8,7 +7,7 @@ import { getApiBaseUrl } from "../utils/urlRedirects";
 const apiBaseUrl = getApiBaseUrl();
 
 // URL do backend para verificação de saúde
-const HEALTH_ENDPOINT = `${apiBaseUrl}/health`;
+const HEALTH_ENDPOINT = `${apiBaseUrl}/health`.replace(/\/api\/api\//g, '/api/');
 
 // Função para verificar se o backend está disponível
 const checkBackendAvailability = async () => {
@@ -16,6 +15,10 @@ const checkBackendAvailability = async () => {
     const response = await fetch(HEALTH_ENDPOINT, { 
       mode: 'cors',
       method: 'HEAD',
+      headers: {
+        "Accept": "application/json",
+        "X-No-Redirect": "1"
+      },
       cache: 'no-cache'
     });
     return response.ok;
@@ -26,6 +29,12 @@ const checkBackendAvailability = async () => {
 };
 
 const handleApiError = (error: any, fallback: any, endpoint: string) => {
+  // Check for HTML responses (redirects)
+  if (error.isHtmlResponse) {
+    console.warn(`HTML response received from API endpoint ${endpoint} when JSON was expected. Using fallback data.`);
+    return fallback;
+  }
+  
   // Verificar se é erro CORS
   if (error.message && error.message.includes('Failed to fetch')) {
     console.warn(`Possível erro CORS no endpoint ${endpoint}`);
@@ -70,11 +79,17 @@ export const vpnService = {
         return getMockVpnStatus();
       }
       
-      const result = await apiClient.fetch('/vpn/status');
-      return result;
+      try {
+        const result = await apiClient.fetch('/vpn/status');
+        return result;
+      } catch (error: any) {
+        // If we get HTML response or other error, use mock data
+        console.error("Error fetching VPN status:", error);
+        return handleApiError(error, getMockVpnStatus(), '/vpn/status');
+      }
     } catch (error) {
-      console.error("Error fetching VPN status:", error);
-      return handleApiError(error, getMockVpnStatus(), '/vpn/status');
+      console.error("Error checking backend availability:", error);
+      return getMockVpnStatus();
     }
   },
     
@@ -111,19 +126,48 @@ export const vpnService = {
         return getMockVpnStatus();
       }
       
-      const response = await apiClient.fetch('/vpn/connect', {
-        method: 'POST',
-        body: JSON.stringify({ 
-          server_id: serverId,
-          auth_method: connectionMethod 
-        })
-      });
-      
-      toast.success("VPN conectada", {
-        description: `Conexão estabelecida com sucesso`
-      });
-      
-      return response;
+      try {
+        const response = await apiClient.fetch('/vpn/connect', {
+          method: 'POST',
+          body: JSON.stringify({ 
+            server_id: serverId,
+            auth_method: connectionMethod 
+          })
+        });
+        
+        toast.success("VPN conectada", {
+          description: `Conexão estabelecida com sucesso`
+        });
+        
+        return response;
+      } catch (error) {
+        // If backend returns HTML instead of JSON, use mock data
+        if (error.isHtmlResponse) {
+          console.warn("Received HTML response when connecting to VPN. Falling back to mock data.");
+          
+          // Simulate successful connection
+          mockVpnConnectionState = true;
+          mockConnectionTimestamp = Date.now();
+          
+          // Select server based on ID
+          const server = mockVpnServers.find(s => s.id === serverId);
+          mockServerLocation = server ? 
+            (server.id === "auto" ? "São Paulo, BR" : server.name) : 
+            "São Paulo, BR";
+            
+          toast.success("VPN conectada (modo simulado)", {
+            description: `Conectado a ${mockServerLocation} (simulado)`
+          });
+          
+          return getMockVpnStatus();
+        }
+        
+        // Otherwise, show error
+        toast.error("Falha ao conectar à VPN", {
+          description: "Verifique sua conexão e tente novamente"
+        });
+        throw error;
+      }
     } catch (error) {
       toast.error("Falha ao conectar à VPN", {
         description: "Verifique sua conexão e tente novamente"
@@ -150,15 +194,39 @@ export const vpnService = {
         return getMockVpnStatus();
       }
       
-      const response = await apiClient.fetch('/vpn/disconnect', {
-        method: 'POST'
-      });
-      
-      toast.success("VPN desconectada", {
-        description: "Desconexão realizada com sucesso"
-      });
-      
-      return response;
+      try {
+        const response = await apiClient.fetch('/vpn/disconnect', {
+          method: 'POST'
+        });
+        
+        toast.success("VPN desconectada", {
+          description: "Desconexão realizada com sucesso"
+        });
+        
+        return response;
+      } catch (error) {
+        // If backend returns HTML instead of JSON, use mock data
+        if (error.isHtmlResponse) {
+          console.warn("Received HTML response when disconnecting from VPN. Falling back to mock data.");
+          
+          // Simulate successful disconnection
+          mockVpnConnectionState = false;
+          mockConnectionTimestamp = null;
+          mockServerLocation = null;
+          
+          toast.success("VPN desconectada (modo simulado)", {
+            description: "Desconexão simulada realizada"
+          });
+          
+          return getMockVpnStatus();
+        }
+        
+        // Otherwise, show error
+        toast.error("Falha ao desconectar da VPN", {
+          description: "Verifique sua conexão e tente novamente"
+        });
+        throw error;
+      }
     } catch (error) {
       toast.error("Falha ao desconectar da VPN", {
         description: "Verifique sua conexão e tente novamente"
@@ -175,9 +243,14 @@ export const vpnService = {
         return mockVpnServers;
       }
       
-      return await apiClient.fetch('/vpn/available-servers');
+      try {
+        return await apiClient.fetch('/vpn/available-servers');
+      } catch (error) {
+        return handleApiError(error, mockVpnServers, '/vpn/available-servers');
+      }
     } catch (error) {
-      return handleApiError(error, mockVpnServers, '/vpn/available-servers');
+      console.error("Error checking backend availability:", error);
+      return mockVpnServers;
     }
   }
 };

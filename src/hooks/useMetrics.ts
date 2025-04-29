@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { metricsService } from "../services/metricsService";
 import { useState, useEffect } from "react";
@@ -12,12 +13,24 @@ export function useMetrics(gameId?: string) {
   useEffect(() => {
     const checkBackend = async () => {
       try {
-        const healthUrl = `${apiBaseUrl}/health`;
+        // Ensure we use a clean URL without duplicated /api/
+        const healthUrl = `${apiBaseUrl}/health`.replace(/\/api\/api\//g, '/api/');
+        
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+        
         const response = await fetch(healthUrl, { 
           mode: 'cors',
           method: 'HEAD',
-          cache: 'no-cache'
+          headers: {
+            "Accept": "application/json",
+            "X-No-Redirect": "1"
+          },
+          cache: 'no-cache',
+          signal: controller.signal
         });
+        
+        clearTimeout(timeoutId);
         setIsOfflineMode(!response.ok);
       } catch (error) {
         setIsOfflineMode(true);

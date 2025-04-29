@@ -12,7 +12,7 @@ const CSP_SOURCES = {
   STYLE: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
   SCRIPT: ["'self'", "https://js.stripe.com", "'unsafe-inline'", "'unsafe-eval'"],
   FONT: ["'self'", "https://fonts.gstatic.com"],
-  IMG: ["'self'", "data:", "https://*.stripe.com", "blob:"],
+  IMG: ["'self'", "data:", "https://*.stripe.com", "blob:", "https://images.unsplash.com"],
   CONNECT: [
     "'self'", 
     "https://*.stripe.com", 

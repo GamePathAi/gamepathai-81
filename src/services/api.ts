@@ -16,11 +16,19 @@ export const apiClient = {
     // Ensure endpoint starts with / for proper URL joining
     const formattedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
     
-    // Remove duplications of API path
-    const cleanedEndpoint = formattedEndpoint.replace(/\/api\/api\//g, '/api/');
+    // Clean endpoint: remove any duplicate /api/ patterns that might exist
+    const cleanedEndpoint = formattedEndpoint
+      .replace(/\/api\/api\//g, '/api/')  // Replace "/api/api/" with "/api/"
+      .replace(/^\/api\/api$/, '/api');   // Handle edge case
     
-    // Ensure we're using the proxy path
-    const url = API_BASE_URL + cleanedEndpoint;
+    // Build the final URL ensuring only one /api/ prefix
+    let url = API_BASE_URL;
+    if (cleanedEndpoint.startsWith('/api') && API_BASE_URL.endsWith('/api')) {
+      // If both have /api, use the path after /api from cleanedEndpoint
+      url += cleanedEndpoint.substring(4); // Skip the '/api' part
+    } else {
+      url += cleanedEndpoint;
+    }
     
     const headers = {
       "Content-Type": "application/json",
@@ -58,6 +66,16 @@ export const apiClient = {
           }
         }
         
+        // Check if response is HTML instead of JSON (likely a redirect or error page)
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('text/html')) {
+          throw {
+            status: response.status,
+            message: 'Received HTML response when expecting JSON. Possible redirect or server error.',
+            isHtmlResponse: true
+          };
+        }
+        
         const errorData = await response.json().catch(() => ({}));
         throw {
           status: response.status,
@@ -65,8 +83,20 @@ export const apiClient = {
         };
       }
       
+      // Check if response is HTML instead of expected JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        if (contentType && contentType.includes('text/html')) {
+          throw {
+            status: 'error',
+            message: 'Received HTML response when expecting JSON. Possible redirect or server error.',
+            isHtmlResponse: true
+          };
+        }
+      }
+      
       return response.json() as Promise<T>;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Falha na requisição para ${endpoint}:`, error);
       throw {
         status: 'error',
@@ -114,6 +144,7 @@ async function tryRenewToken() {
 // Função para testar a conexão com o backend
 export const testBackendConnection = async () => {
   try {
+    // Make sure we use a clean path without duplicated /api/
     const url = `${API_BASE_URL}/health`.replace(/\/api\/api\//g, '/api/');
     
     if (isDev) {
@@ -126,7 +157,7 @@ export const testBackendConnection = async () => {
     const response = await fetch(url, { 
       mode: 'cors',
       headers: {
-        "Content-Type": "application/json",
+        "Accept": "application/json",
         "X-No-Redirect": "1", // Prevent redirects
         "Cache-Control": "no-cache" // Prevent caching
       },
