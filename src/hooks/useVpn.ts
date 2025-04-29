@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { vpnService } from "../services/vpnService";
 import { useToast } from "@/components/ui/use-toast";
@@ -10,31 +11,40 @@ export function useVpn() {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const [vpnStatus, setVpnStatus] = useState<"connected" | "disconnected" | "connecting" | "disconnecting">("disconnected");
+  const [isBackendOnline, setIsBackendOnline] = useState<boolean | null>(null);
+  const [status, setStatus] = useState<any>(null);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [isDisconnecting, setIsDisconnecting] = useState(false);
   
   // Fetch VPN status using React Query
   const { data: initialVpnStatus, isLoading: isInitialLoading, refetch } = useQuery({
     queryKey: ["vpnStatus"],
-    queryFn: vpnService.getVpnStatus,
+    queryFn: vpnService.getStatus,
     retry: false, // Do not retry on error
     refetchInterval: 15000, // Refetch every 15 seconds
   });
   
   useEffect(() => {
     if (initialVpnStatus) {
-      setIsConnected(initialVpnStatus.isConnected);
-      setVpnStatus(initialVpnStatus.isConnected ? "connected" : "disconnected");
+      setIsConnected(initialVpnStatus.connected || false);
+      setVpnStatus(initialVpnStatus.connected ? "connected" : "disconnected");
+      setStatus(initialVpnStatus);
+      // Check if backend is online based on successful response
+      setIsBackendOnline(true);
     }
   }, [initialVpnStatus]);
   
-  const connectVpn = async () => {
+  const connect = async (serverId: string = "auto") => {
     setIsLoading(true);
+    setIsConnecting(true);
     setError(null);
     setVpnStatus("connecting");
     
     try {
-      const result = await vpnService.connectVpn();
-      setIsConnected(result.isConnected);
-      setVpnStatus(result.isConnected ? "connected" : "disconnected");
+      const result = await vpnService.connect(serverId);
+      setIsConnected(result?.connected || false);
+      setVpnStatus(result?.connected ? "connected" : "disconnected");
+      setStatus(result);
       
       toast({
         title: "VPN Connected",
@@ -50,18 +60,21 @@ export function useVpn() {
       setVpnStatus("disconnected");
     } finally {
       setIsLoading(false);
+      setIsConnecting(false);
     }
   };
   
-  const disconnectVpn = async () => {
+  const disconnect = async () => {
     setIsLoading(true);
+    setIsDisconnecting(true);
     setError(null);
     setVpnStatus("disconnecting");
     
     try {
-      const result = await vpnService.disconnectVpn();
-      setIsConnected(result.isConnected);
-      setVpnStatus(result.isConnected ? "connected" : "disconnected");
+      const result = await vpnService.disconnect();
+      setIsConnected(result?.connected || false);
+      setVpnStatus(result?.connected ? "connected" : "disconnected");
+      setStatus(result);
       
       toast({
         title: "VPN Disconnected",
@@ -77,17 +90,28 @@ export function useVpn() {
       setVpnStatus("connected");
     } finally {
       setIsLoading(false);
+      setIsDisconnecting(false);
     }
   };
+  
+  // Legacy method for backward compatibility
+  const connectVpn = connect;
+  const disconnectVpn = disconnect;
   
   return {
     isConnected,
     isLoading,
     error,
-    connectVpn,
-    disconnectVpn,
+    connectVpn,  // Legacy naming
+    disconnectVpn, // Legacy naming
+    connect,     // New naming
+    disconnect,  // New naming
     vpnStatus,
+    status,
     isInitialLoading,
-    refetch
+    refetch,
+    isConnecting,
+    isDisconnecting,
+    isBackendOnline
   };
 }
