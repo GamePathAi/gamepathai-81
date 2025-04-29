@@ -14,7 +14,9 @@ export const DOMAINS = {
 // ML-specific domains that should be trusted
 export const ML_DOMAINS = {
   ML_SERVICE: 'ml-api.gamepathai.com',
-  ML_FALLBACK: 'ml-service-fallback.gamepathai.com'
+  ML_FALLBACK: 'ml-service-fallback.gamepathai.com',
+  // Adicionar domínios de desenvolvimento como confiáveis
+  ML_DEV: 'localhost:8080'
 };
 
 /**
@@ -71,6 +73,9 @@ export const mapToProdUrl = (url: string, isMlOperation = false): string => {
  * ENHANCED: Special protection for ML endpoints
  */
 export const detectRedirectAttempt = (url: string, isMlOperation = false): boolean => {
+  // Check if we're in development mode
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  
   // Check for obvious patterns
   const suspicious = url.includes('gamepathai.com') || 
                     url.includes('redirect=') ||
@@ -83,9 +88,11 @@ export const detectRedirectAttempt = (url: string, isMlOperation = false): boole
                     url.includes('go=http');
   
   // Special extra checks for ML operations which are more sensitive
+  // Remove localhost:3000 from suspicious patterns in development
   const mlSuspicious = isMlOperation && (
-    url.includes('localhost:3000') || // Common redirect target in dev
-    url.includes('127.0.0.1:3000') ||
+    // Se estiver em desenvolvimento, não considere localhost como suspeito
+    (!isDevelopment && url.includes('localhost:3000')) ||
+    (!isDevelopment && url.includes('127.0.0.1:3000')) ||
     (!url.includes('/api/ml/') && url.includes('/ml/')) // ML operations should always go through /api/ml/
   );
   
@@ -177,6 +184,26 @@ export const detectBrowserInterference = (): {
 };
 
 /**
+ * NEW: Check if we're in a trusted development environment
+ */
+export const isTrustedDevelopmentEnvironment = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  
+  const hostname = window.location.hostname;
+  const port = window.location.port;
+  
+  // Check if we're in localhost with expected dev ports
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    // Common development ports (Vite, React, etc)
+    if (port === '8080' || port === '3000' || port === '5173' || port === '') {
+      return true;
+    }
+  }
+  
+  return false;
+};
+
+/**
  * NEW: Logs detailed information about a redirect attempt for diagnostics
  */
 export const logRedirectAttempt = (originalUrl: string, redirectUrl: string, context?: string): void => {
@@ -187,6 +214,7 @@ export const logRedirectAttempt = (originalUrl: string, redirectUrl: string, con
    - Context: ${context || 'unknown'}
    - Time: ${new Date().toISOString()}
    - User Agent: ${navigator.userAgent}
+   - Development: ${process.env.NODE_ENV === 'development' ? 'Yes' : 'No'}
   `);
   
   // In a real implementation, you might want to send this information to your server

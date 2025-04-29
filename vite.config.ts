@@ -42,19 +42,22 @@ export default defineConfig(({ mode }) => ({
           proxy.on('proxyReq', (proxyReq, req, _res) => {
             // Add robust anti-redirect headers
             proxyReq.setHeader('X-No-Redirect', '1');
+            proxyReq.setHeader('X-Development-Mode', '1');
             proxyReq.setHeader('X-Requested-With', 'XMLHttpRequest');
             proxyReq.setHeader('X-Forwarded-Host', req.headers.host || '');
             proxyReq.setHeader('Cache-Control', 'no-cache, no-store');
             proxyReq.setHeader('Pragma', 'no-cache');
+            proxyReq.setHeader('X-GamePath-Client', 'react-frontend-dev');
+            proxyReq.setHeader('X-Max-Redirects', '0');
             
             // Remove headers that might aid in redirect targeting
             proxyReq.removeHeader('referer');
             proxyReq.removeHeader('origin');
             
-            // Check for ML operations and add special handling
+            // Verificar se é uma operação ML e adicionar tratamento especial
             if (req.url?.includes('/ml/')) {
+              console.log('📤 Enviando requisição ML:', req.url);
               proxyReq.setHeader('X-ML-Operation', '1');
-              proxyReq.setHeader('X-Max-Redirects', '0');
             }
             
             if (mode === 'development') {
@@ -67,6 +70,10 @@ export default defineConfig(({ mode }) => ({
             if (proxyRes.headers.location) {
               console.log('⛔ BLOCKED REDIRECT in proxy response:', proxyRes.headers.location, 'from:', req.url);
               delete proxyRes.headers.location;
+              
+              // Adicionar cabeçalho personalizado para informar que um redirecionamento foi bloqueado
+              proxyRes.headers['x-redirect-blocked'] = 'true';
+              proxyRes.headers['x-original-location'] = proxyRes.headers.location || '';
             }
             
             // Ensure CORS headers are properly set
@@ -95,7 +102,7 @@ export default defineConfig(({ mode }) => ({
           });
         }
       },
-      // Special proxy configuration for ML operations
+      // Special proxy configuration for ML operations with enhanced logging and redirect prevention
       '/api/ml': {
         target: 'https://gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com',
         changeOrigin: true,
@@ -112,6 +119,8 @@ export default defineConfig(({ mode }) => ({
             proxyReq.setHeader('X-ML-Operation', '1');
             proxyReq.setHeader('X-Max-Redirects', '0');
             proxyReq.setHeader('X-Requested-With', 'XMLHttpRequest');
+            proxyReq.setHeader('X-GamePath-Client', 'react-frontend-dev-ml');
+            proxyReq.setHeader('X-Development-Mode', '1');
             proxyReq.setHeader('Cache-Control', 'no-cache, no-store');
             proxyReq.setHeader('Pragma', 'no-cache');
             
@@ -132,7 +141,15 @@ export default defineConfig(({ mode }) => ({
             if (proxyRes.headers.location) {
               console.log('⛔ BLOCKED ML REDIRECT in proxy response:', 
                 proxyRes.headers.location, 'from:', req.url);
+              
+              // Armazenar a localização original antes de removê-la
+              const originalLocation = proxyRes.headers.location;
               delete proxyRes.headers.location;
+              
+              // Adicionar informações de diagnóstico
+              proxyRes.headers['x-redirect-blocked'] = 'true';
+              proxyRes.headers['x-original-location'] = originalLocation || '';
+              proxyRes.headers['x-request-url'] = req.url || '';
             }
             
             // Add ML-specific response headers
@@ -152,6 +169,12 @@ export default defineConfig(({ mode }) => ({
             if (mode === 'development') {
               console.log('🧠 ML Proxy received response for:', req.url, 
                 'status:', proxyRes.statusCode);
+              
+              // Log more details for debug
+              const contentType = proxyRes.headers['content-type'];
+              if (contentType) {
+                console.log(`🧠 ML Response content-type: ${contentType}`);
+              }
             }
           });
         }

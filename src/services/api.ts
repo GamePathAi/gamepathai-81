@@ -1,6 +1,6 @@
 
 // Importing our URL redirection utilities
-import { getApiBaseUrl, isElectron } from "../utils/urlRedirects";
+import { getApiBaseUrl, isElectron, isTrustedDevelopmentEnvironment } from "../utils/urlRedirects";
 
 // Configure API base URL - always use proxy
 const API_BASE_URL = getApiBaseUrl();
@@ -30,13 +30,27 @@ export const apiClient = {
       url += cleanedEndpoint;
     }
     
+    // Importante: verificar e logar se o URL contém localhost absoluto
+    if (url.includes('http://localhost') || url.includes('https://localhost')) {
+      console.warn('⚠️ URL absoluto com localhost detectado:', url);
+      // Substituir por URL relativo para usar o proxy do Vite
+      url = url.replace(/https?:\/\/localhost(:\d+)?/g, '');
+      console.log('✅ URL corrigido para usar proxy:', url);
+    }
+    
     const headers = {
       "Content-Type": "application/json",
       "X-No-Redirect": "1", // Prevent redirects
+      "X-Client-Source": "react-frontend", // Identifica origem da requisição
       "Cache-Control": "no-cache, no-store", // Prevent caching
       "Pragma": "no-cache",
       ...(options.headers || {})
     };
+    
+    // Adicionar cabeçalho para ambiente de desenvolvimento
+    if (isDev || isTrustedDevelopmentEnvironment()) {
+      headers["X-Development-Mode"] = "1";
+    }
     
     const token = localStorage.getItem("auth_token");
     if (token) {
@@ -45,16 +59,34 @@ export const apiClient = {
     
     try {
       if (isDev) {
-        console.log(`Fazendo requisição para: ${url}`);
+        console.log(`📡 Fazendo requisição para: ${url}`);
       }
       
-      const response = await fetch(url, {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 seconds timeout
+      
+      // Conjunto avançado de opções para fetch
+      const fetchOptions: RequestInit = {
         ...options,
         headers,
         mode: 'cors',
         credentials: 'include',
-        cache: 'no-store' // Prevent browser caching
-      });
+        cache: 'no-store',
+        redirect: 'error', // CRITICAL: Treat redirects as errors
+        signal: controller.signal
+      };
+      
+      const response = await fetch(url, fetchOptions);
+      clearTimeout(timeoutId);
+      
+      // Verifique se a URL da resposta é diferente (indica redirecionamento)
+      if (response.url && response.url !== url && response.url.includes('gamepathai.com')) {
+        console.error('⚠️ Detectado redirecionamento na resposta:', {
+          original: url,
+          redirected: response.url
+        });
+        throw new Error(`Detected redirect to ${response.url}`);
+      }
       
       if (!response.ok) {
         if (response.status === 401) {
@@ -97,7 +129,16 @@ export const apiClient = {
       
       return response.json() as Promise<T>;
     } catch (error: any) {
-      console.error(`Falha na requisição para ${endpoint}:`, error);
+      console.error(`❌ Falha na requisição para ${endpoint}:`, error);
+      
+      // Verificar se o erro é relacionado a redirecionamento
+      if (error.message && 
+         (error.message.includes('redirect') || error.message.includes('gamepathai.com'))) {
+        console.error('🚨 REDIRECIONAMENTO DETECTADO E BLOQUEADO');
+        // Registre informações de diagnóstico
+        console.error('Detalhes da requisição:', { url, endpoint, headers: options.headers });
+      }
+      
       throw {
         status: 'error',
         message: 'Falha ao buscar dados do servidor',
@@ -159,13 +200,24 @@ export const testBackendConnection = async () => {
       headers: {
         "Accept": "application/json",
         "X-No-Redirect": "1", // Prevent redirects
-        "Cache-Control": "no-cache" // Prevent caching
+        "Cache-Control": "no-cache", // Prevent caching
+        "X-Development-Mode": isDev ? "1" : "0"
       },
       signal: controller.signal,
-      cache: 'no-store'
+      cache: 'no-store',
+      redirect: 'error' // Tratar redirecionamentos como erros
     });
     
     clearTimeout(timeoutId);
+    
+    // Verificar se ocorreu redirecionamento
+    if (response.url && response.url !== url && response.url.includes('gamepathai.com')) {
+      console.error('⚠️ Redirecionamento detectado no teste de conexão:', {
+        original: url,
+        redirected: response.url
+      });
+      return false;
+    }
     
     if (isDev) {
       console.log(`Backend connection ${response.ok ? 'successful' : 'failed'} with status: ${response.status}`);

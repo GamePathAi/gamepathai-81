@@ -4,7 +4,7 @@
  * Includes specific configurations to prevent redirects and handle ML-specific requirements
  */
 import { toast } from "sonner";
-import { detectRedirectAttempt } from "../utils/urlRedirects";
+import { detectRedirectAttempt, isTrustedDevelopmentEnvironment } from "../utils/urlRedirects";
 
 // Constants for ML operations
 export const ML_API_CONFIG = {
@@ -15,7 +15,8 @@ export const ML_API_CONFIG = {
     ROUTE_OPTIMIZER: 'route-optimizer',
     PERFORMANCE_PREDICTOR: 'performance-predictor',
     GAME_DETECTION: 'game-detection'
-  }
+  },
+  DEV_MODE: process.env.NODE_ENV === 'development'
 };
 
 // Custom error for ML operations
@@ -51,7 +52,7 @@ export const mlApiClient = {
     console.log(`🧠 ML API Request [${modelType}]: ${url}`);
     
     // Check for suspicious URLs that might be redirects
-    if (detectRedirectAttempt(url)) {
+    if (detectRedirectAttempt(url, true)) {
       console.error(`🚨 Blocked suspicious ML API URL: ${url}`);
       throw new MLApiError('Blocked potentially malicious URL', { endpoint, modelType });
     }
@@ -61,11 +62,18 @@ export const mlApiClient = {
       "Content-Type": "application/json",
       "X-No-Redirect": "1", // Prevent redirects
       "X-ML-Operation": "1", // Mark as ML operation
+      "X-Max-Redirects": "0", // Explicitly prevent redirects
       "X-ML-Model": modelType,
       "Cache-Control": "no-cache, no-store", 
       "Pragma": "no-cache",
+      "X-GamePath-Client": "react-frontend", // Identify client
       ...(options.headers || {})
     };
+    
+    // Add development mode header in dev environment
+    if (ML_API_CONFIG.DEV_MODE || isTrustedDevelopmentEnvironment()) {
+      headers["X-Development-Mode"] = "1";
+    }
     
     // Add authentication if available
     const token = localStorage.getItem("auth_token");
@@ -88,7 +96,7 @@ export const mlApiClient = {
         mode: 'cors',
         credentials: 'include',
         cache: 'no-store',
-        redirect: 'error', // Crucial: treat redirects as errors to prevent them
+        redirect: 'error', // CRUCIAL: treat redirects as errors to prevent them
       });
       
       // Clear timeout
@@ -100,6 +108,9 @@ export const mlApiClient = {
           (response.url !== url && !response.url.endsWith(url))
       )) {
         console.error('⚠️ Detected redirect in ML response URL:', response.url);
+        toast.error('Detecção de redirecionamento', {
+          description: 'Um redirecionamento ML foi detectado e bloqueado'
+        });
         throw new MLApiError('Detected redirect in response', { 
           endpoint, 
           modelType,
@@ -147,6 +158,17 @@ export const mlApiClient = {
       // Parse and return JSON data
       const data = await response.json();
       console.log(`✅ ML API ${modelType} operation successful:`, endpoint);
+      
+      // Log resumo dos dados recebidos (sem informações sensíveis)
+      if (ML_API_CONFIG.DEV_MODE) {
+        console.log(`ML ${modelType} resposta:`, {
+          success: data.success,
+          dataType: typeof data,
+          hasOptimizations: data.optimizations ? 'sim' : 'não',
+          responseKeys: Object.keys(data)
+        });
+      }
+      
       return data as T;
     } catch (error: any) {
       // Clear timeout if still active
@@ -168,6 +190,9 @@ export const mlApiClient = {
       // Handle fetch errors caused by redirects
       if (error.message && error.message.includes('redirect')) {
         console.error('🚨 ML API redirect blocked:', error.message);
+        toast.error('Redirecionamento bloqueado', {
+          description: 'Uma tentativa de redirecionamento foi detectada e bloqueada'
+        });
         throw new MLApiError('ML request was redirected and blocked for security', {
           endpoint,
           modelType
@@ -314,6 +339,8 @@ export const mlService = {
       ...options
     };
     
+    console.log(`🔧 Iniciando otimização para jogo ID: ${gameId}`);
+    
     return mlApiClient.withRetry(
       () => mlApiClient.fetch<{
         success: boolean,
@@ -400,8 +427,62 @@ export const mlDiagnostics = {
       };
     }
     
+    // Test de otimização de jogo específico
+    try {
+      // Usar ID de teste genérico apenas para verificar conectividade
+      await mlApiClient.fetch('/ml/health/game-optimization',
+        { method: 'GET' },
+        'game-optimization'
+      );
+      results['gameOptimization'] = { success: true };
+    } catch (error: any) {
+      success = false;
+      results['gameOptimization'] = { 
+        success: false, 
+        error: error.message || 'Unknown error'
+      };
+    }
+    
     console.log('🧪 ML diagnostics results:', results);
     return { success, results };
+  },
+  
+  /**
+   * NEW: Check if redirect protection is working
+   */
+  testRedirectProtection: async (): Promise<{
+    protected: boolean,
+    details: string
+  }> => {
+    try {
+      // Tentativa deliberada de usar uma URL que deveria redirecionar
+      const testUrl = '/ml/test-redirect';
+      
+      await mlApiClient.fetch(testUrl, 
+        { method: 'GET' }, 
+        'redirect-test'
+      );
+      
+      // Se chegou aqui, não detectou o redirecionamento corretamente
+      return { 
+        protected: false, 
+        details: 'Redirect protection may not be working correctly' 
+      };
+    } catch (error: any) {
+      // Esperamos que lance um erro devido à proteção de redirecionamento
+      if (error instanceof MLApiError && 
+          (error.message.includes('redirect') || error.message.includes('blocked'))) {
+        return { 
+          protected: true, 
+          details: 'Redirect protection is working correctly' 
+        };
+      }
+      
+      return { 
+        protected: false, 
+        details: `Unexpected error: ${error.message}` 
+      };
+    }
   },
   
   /**

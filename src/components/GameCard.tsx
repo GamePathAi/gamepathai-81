@@ -75,12 +75,17 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
     try {
       console.log(`🎮 Starting ML optimization for game: ${game.id}`);
       
-      // Call the ML service to optimize the game
-      const result = await mlService.optimizeGame(game.id, {
+      // CORREÇÃO: Enviar explicitamente configurações adicionais
+      const optimizationOptions = {
         optimizeRoutes: true,
         optimizeSettings: true,
-        optimizeSystem: true
-      });
+        optimizeSystem: true,
+        // Enviar informações do sistema se disponíveis
+        systemInfo: systemInfo || undefined
+      };
+      
+      // Call the ML service to optimize the game with options
+      const result = await mlService.optimizeGame(game.id, optimizationOptions);
       
       setIsOptimizing(false);
       
@@ -92,6 +97,11 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
         });
         
         console.log(`✅ Game optimization successful:`, result);
+        
+        // Atualizar visualmente o status de otimização do jogo
+        // Nota: Isso é temporário até que a lista de jogos seja atualizada pelo hook useGames
+        game.isOptimized = true;
+        game.optimizationType = result.optimizationType;
       } else {
         throw new Error("Optimization did not complete successfully");
       }
@@ -100,10 +110,21 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
       setIsOptimizing(false);
       setOptimizationError(error.message || "Erro na otimização");
       
-      toast.error(`Erro ao otimizar ${game.name}`, {
-        id: toastId,
-        description: error.message || "Não foi possível completar a otimização"
-      });
+      // Verificar se o erro é relacionado a redirecionamento
+      if (error.message && (
+        error.message.includes('redirect') || 
+        error.message.includes('gamepathai.com')
+      )) {
+        toast.error(`Erro de redirecionamento ao otimizar ${game.name}`, {
+          id: toastId,
+          description: "Detecção de tentativa de redirecionamento. Consulte o console para mais detalhes."
+        });
+      } else {
+        toast.error(`Erro ao otimizar ${game.name}`, {
+          id: toastId,
+          description: error.message || "Não foi possível completar a otimização"
+        });
+      }
     }
   };
   
@@ -114,19 +135,21 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
   ) => {
     const messages = [];
     
-    if (improvements.latency) {
-      messages.push(`${improvements.latency}% menos latência`);
+    if (improvements) {
+      if (improvements.latency) {
+        messages.push(`${improvements.latency}% menos latência`);
+      }
+      
+      if (improvements.fps) {
+        messages.push(`${improvements.fps}% mais FPS`);
+      }
+      
+      if (improvements.stability) {
+        messages.push(`${improvements.stability}% mais estabilidade`);
+      }
     }
     
-    if (improvements.fps) {
-      messages.push(`${improvements.fps}% mais FPS`);
-    }
-    
-    if (improvements.stability) {
-      messages.push(`${improvements.stability}% mais estabilidade`);
-    }
-    
-    return messages.join(", ");
+    return messages.length > 0 ? messages.join(", ") : "Jogo otimizado com sucesso";
   };
 
   const getOptimizationLabel = () => {
@@ -206,7 +229,7 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
             onClick={handleOptimize}
             className="flex-1 bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/50 hover:bg-cyber-blue/30"
             variant="outline"
-            disabled={isOptimizing}
+            disabled={isOptimizing || (game.isOptimized && game.optimizationType === 'both')}
           >
             {isOptimizing ? (
               <span className="animate-pulse mr-1">⚡</span>
