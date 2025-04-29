@@ -17,9 +17,17 @@ import "./lib/i18n.ts";
 import { CheckoutProvider } from "./contexts/CheckoutContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { initializeApp } from "./utils/appInitializer";
+import { periodicCleanup } from "./utils/cspHelper";
 
-// Initialize application configurations 
+// Initialize application configurations - ENHANCED PROTECTION
 initializeApp();
+
+// Periodic cleanup to remove any dynamically injected scripts
+setInterval(periodicCleanup, 5000);
+
+// Create a console message to warn about redirect issues
+console.log('%c⚠️ ANTI-REDIRECT PROTECTION ACTIVE', 'color: red; font-size: 16px; font-weight: bold;');
+console.log('%cIf experiencing issues, try disabling browser extensions', 'color: orange; font-size: 14px;');
 
 // Criar cliente de consulta para React Query
 const queryClient = new QueryClient({
@@ -45,3 +53,12 @@ createRoot(document.getElementById("root")!).render(
     </I18nextProvider>
   </BrowserRouter>
 );
+
+// Add a final protection measure
+window.addEventListener('error', (event) => {
+  if (event.message && 
+     (event.message.includes('redirect') || 
+      event.message.includes('gamepathai.com'))) {
+    console.error('🚨 Detected error related to redirects:', event.message);
+  }
+});
