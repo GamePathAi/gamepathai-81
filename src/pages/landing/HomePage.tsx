@@ -1,11 +1,13 @@
 
 import React from "react";
-import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import LandingLayout from "@/components/landing/LandingLayout";
+import LandingLayout from "@/components/Layout/LandingLayout";
 import HeroSection from "@/components/landing/HeroSection";
 import FeaturesSection from "@/components/landing/FeaturesSection";
+import DownloadSection from "@/components/landing/DownloadSection";
+import SupportedGamesSection from "@/components/landing/SupportedGamesSection";
 import TechnologySection from "@/components/landing/TechnologySection";
+import SystemRequirementsSection from "@/components/landing/SystemRequirementsSection";
 import TestimonialsSection from "@/components/landing/TestimonialsSection";
 import FaqSection from "@/components/landing/FaqSection";
 import { Button } from "@/components/ui/button";
@@ -17,13 +19,16 @@ const HomePage: React.FC = () => {
         <title>GamePath AI - Optimize Your Gaming Experience</title>
         <meta
           name="description"
-          content="GamePath AI optimizes your gaming experience by reducing latency, improving FPS, and providing a secure connection. Try our 3-day free trial today!"
+          content="GamePath AI optimizes your gaming experience by reducing latency, improving FPS, and providing a secure connection. Download now and start gaming better!"
         />
       </Helmet>
 
       <HeroSection />
       <FeaturesSection />
+      <DownloadSection />
+      <SupportedGamesSection />
       <TechnologySection />
+      <SystemRequirementsSection />
       <TestimonialsSection />
       <FaqSection />
       
@@ -34,13 +39,12 @@ const HomePage: React.FC = () => {
               Ready To <span className="bg-gradient-to-r from-cyber-blue to-cyber-purple text-transparent bg-clip-text">Optimize</span> Your Gaming?
             </h2>
             <p className="text-gray-300 mb-10 leading-relaxed">
-              Join thousands of gamers who have boosted their performance with GamePath AI. Start your 3-Day Free Trial today, no credit card required.
+              Join thousands of gamers who have boosted their performance with GamePath AI. 
+              Download now and experience the difference.
             </p>
-            <Link to="/pricing">
-              <Button variant="cyberAction" size="lg" className="shadow-xl">
-                Start 3-Day Free Trial
-              </Button>
-            </Link>
+            <Button variant="cyberAction" size="lg" className="shadow-xl" onClick={() => window.location.href = '/download'}>
+              Download GamePath AI
+            </Button>
           </div>
         </div>
       </section>

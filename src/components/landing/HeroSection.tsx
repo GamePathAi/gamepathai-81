@@ -2,7 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowDown, ArrowRight } from "lucide-react";
 
 const HeroSection: React.FC = () => {
   return (
@@ -22,15 +22,15 @@ const HeroSection: React.FC = () => {
               improve FPS, and provide a secure, optimized connection for all your games.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/pricing">
+              <Link to="/download">
                 <Button variant="cyberAction" size="lg" className="shadow-lg">
-                  Start 3-Day Free Trial
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  Download GamePath AI
+                  <ArrowDown className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Link to="/technology">
+              <Link to="/dashboard">
                 <Button variant="cyberOutline" size="lg">
-                  Learn How It Works
+                  Access Dashboard
                 </Button>
               </Link>
             </div>

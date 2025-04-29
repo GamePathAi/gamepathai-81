@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -37,6 +38,7 @@ import CheckoutPaymentPage from "./pages/checkout/CheckoutPaymentPage";
 import CheckoutProcessingPage from "./pages/checkout/CheckoutProcessingPage";
 import CheckoutSuccessPage from "./pages/checkout/CheckoutSuccessPage";
 import HomePage from "./pages/landing/HomePage";
+import DownloadPage from "./pages/landing/DownloadPage";
 import FeaturesPage from "./pages/landing/FeaturesPage";
 import PricingPage from "./pages/landing/PricingPage";
 import TechnologyPage from "./pages/landing/TechnologyPage";
@@ -74,9 +76,13 @@ const App = () => (
               <Route path="/signup" element={<Signup />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               
-              <Route path="/" element={<Index />} />
+              {/* Homepage is now the root route */}
+              <Route path="/" element={<HomePage />} />
+              <Route path="/download" element={<DownloadPage />} />
+              
+              {/* Dashboard routes */}
               <Route path="/dashboard" element={<Index />} />
-              <Route path="/index" element={<Index />} />
+              <Route path="/index" element={<Navigate to="/dashboard" replace />} />
               <Route path="/network-metrics" element={<NetworkMetrics />} />
               <Route path="/system-optimization" element={<SystemOptimization />} />
               <Route path="/route-optimizer" element={<RouteOptimizerPage />} />
@@ -99,7 +105,8 @@ const App = () => (
               <Route path="/checkout/processing" element={<CheckoutProcessingPage />} />
               <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
               
-              <Route path="/landing" element={<HomePage />} />
+              {/* Landing pages */}
+              <Route path="/landing" element={<Navigate to="/" replace />} />
               <Route path="/features" element={<FeaturesPage />} />
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/technology" element={<TechnologyPage />} />
