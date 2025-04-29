@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,7 @@ import { AlertCircle, CheckCircle, Network, ShieldAlert } from "lucide-react";
 import { mlUrlDiagnostics } from '@/services/mlApiClient';
 import { testAWSConnection } from '@/services/api';
 import { testBackendConnection } from '@/services/api';
-import { detectRedirectScripts, setupNavigationMonitor } from '@/utils/urlRedirects';
+import { detectRedirectScripts, setupNavigationMonitor } from '@/utils/url';
 
 interface RedirectTest {
   url: string;

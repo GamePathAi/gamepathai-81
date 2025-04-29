@@ -1,8 +1,7 @@
-
 import { apiClient } from './api';
 import { toast } from "sonner";
 import { isWebAuthnSupported } from "../utils/webAuthnSupport";
-import { getApiBaseUrl, sanitizeApiUrl } from "../utils/urlRedirects";
+import { getApiBaseUrl, sanitizeApiUrl } from "../utils/url";
 
 // Get the correct API base URL for the current environment
 const apiBaseUrl = getApiBaseUrl();

@@ -1,6 +1,11 @@
-
 // Importing our URL redirection utilities
-import { getApiBaseUrl, isElectron, isTrustedDevelopmentEnvironment, fixAbsoluteUrl, sanitizeApiUrl } from "../utils/urlRedirects";
+import { 
+  getApiBaseUrl, 
+  isElectron, 
+  isTrustedDevelopmentEnvironment, 
+  fixAbsoluteUrl, 
+  sanitizeApiUrl 
+} from "../utils/url";
 
 // Configure API base URL - always use relative URLs
 const API_BASE_URL = getApiBaseUrl();

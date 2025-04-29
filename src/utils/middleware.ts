@@ -1,9 +1,14 @@
-
 /**
  * Middleware utilities for handling CORS and preventing unwanted redirects
  */
 
-import { detectRedirectAttempt, fixAbsoluteUrl, sanitizeApiUrl } from './urlRedirects';
+import { 
+  detectRedirectAttempt, 
+  fixAbsoluteUrl, 
+  sanitizeApiUrl,
+  setupNavigationMonitor,
+  detectRedirectScripts
+} from './url';
 
 /**
  * Adds CORS headers to all outgoing requests
