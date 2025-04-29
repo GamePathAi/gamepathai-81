@@ -30,11 +30,13 @@ export const apiClient = {
       url += cleanedEndpoint;
     }
     
-    // Importante: verificar e logar se o URL contém localhost absoluto
-    if (url.includes('http://localhost') || url.includes('https://localhost')) {
+    // MELHORADO: verificar e logar se o URL contém localhost absoluto
+    if (url.includes('http://localhost') || url.includes('https://localhost') || 
+        url.includes('127.0.0.1')) {
       console.warn('⚠️ URL absoluto com localhost detectado:', url);
       // Substituir por URL relativo para usar o proxy do Vite
       url = url.replace(/https?:\/\/localhost(:\d+)?/g, '');
+      url = url.replace(/https?:\/\/127\.0\.0\.1(:\d+)?/g, '');
       console.log('✅ URL corrigido para usar proxy:', url);
     }
     
@@ -44,6 +46,9 @@ export const apiClient = {
       "X-Client-Source": "react-frontend", // Identifica origem da requisição
       "Cache-Control": "no-cache, no-store", // Prevent caching
       "Pragma": "no-cache",
+      // NOVO: Adicionar cabeçalhos anti-redirecionamento
+      "X-Max-Redirects": "0",
+      "X-Requested-With": "XMLHttpRequest",
       ...(options.headers || {})
     };
     
@@ -79,13 +84,20 @@ export const apiClient = {
       const response = await fetch(url, fetchOptions);
       clearTimeout(timeoutId);
       
-      // Verifique se a URL da resposta é diferente (indica redirecionamento)
-      if (response.url && response.url !== url && response.url.includes('gamepathai.com')) {
-        console.error('⚠️ Detectado redirecionamento na resposta:', {
-          original: url,
-          redirected: response.url
-        });
-        throw new Error(`Detected redirect to ${response.url}`);
+      // MELHORADO: Verificação mais rigorosa de redirecionamentos
+      if (response.url && response.url !== url) {
+        // Verifique se há qualquer mudança de origem ou domínio
+        const originalUrl = new URL(url, window.location.origin);
+        const redirectedUrl = new URL(response.url, window.location.origin);
+        
+        if (originalUrl.host !== redirectedUrl.host || 
+            redirectedUrl.href.includes('gamepathai.com')) {
+          console.error('⚠️ Detectado redirecionamento na resposta:', {
+            original: url,
+            redirected: response.url
+          });
+          throw new Error(`Detected redirect to ${response.url}`);
+        }
       }
       
       if (!response.ok) {
@@ -201,7 +213,10 @@ export const testBackendConnection = async () => {
         "Accept": "application/json",
         "X-No-Redirect": "1", // Prevent redirects
         "Cache-Control": "no-cache", // Prevent caching
-        "X-Development-Mode": isDev ? "1" : "0"
+        "X-Development-Mode": isDev ? "1" : "0",
+        // NOVO: Adicionar cabeçalhos anti-redirecionamento
+        "X-Max-Redirects": "0",
+        "X-Requested-With": "XMLHttpRequest"
       },
       signal: controller.signal,
       cache: 'no-store',
@@ -210,13 +225,19 @@ export const testBackendConnection = async () => {
     
     clearTimeout(timeoutId);
     
-    // Verificar se ocorreu redirecionamento
-    if (response.url && response.url !== url && response.url.includes('gamepathai.com')) {
-      console.error('⚠️ Redirecionamento detectado no teste de conexão:', {
-        original: url,
-        redirected: response.url
-      });
-      return false;
+    // MELHORADO: Verificação mais rigorosa de redirecionamentos
+    if (response.url && response.url !== url) {
+      const originalUrl = new URL(url, window.location.origin);
+      const redirectedUrl = new URL(response.url, window.location.origin);
+      
+      if (originalUrl.host !== redirectedUrl.host || 
+          redirectedUrl.href.includes('gamepathai.com')) {
+        console.error('⚠️ Redirecionamento detectado no teste de conexão:', {
+          original: url,
+          redirected: response.url
+        });
+        return false;
+      }
     }
     
     if (isDev) {

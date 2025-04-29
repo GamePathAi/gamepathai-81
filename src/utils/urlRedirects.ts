@@ -70,11 +70,17 @@ export const mapToProdUrl = (url: string, isMlOperation = false): string => {
 
 /**
  * Detect potential redirect attempts in URLs
- * ENHANCED: Special protection for ML endpoints
+ * ENHANCED: Special protection for ML endpoints and development exclusions
  */
 export const detectRedirectAttempt = (url: string, isMlOperation = false): boolean => {
   // Check if we're in development mode
   const isDevelopment = process.env.NODE_ENV === 'development';
+  
+  // NOVO: Verificar se o URL já é um proxy local, que não precisa ser bloqueado
+  if ((url.startsWith('/api') || url.startsWith('/api/ml')) && 
+      !url.includes('http:') && !url.includes('https:')) {
+    return false; // Proxy local é seguro, não bloquear
+  }
   
   // Check for obvious patterns
   const suspicious = url.includes('gamepathai.com') || 
@@ -87,16 +93,21 @@ export const detectRedirectAttempt = (url: string, isMlOperation = false): boole
                     url.includes('forward=') ||
                     url.includes('go=http');
   
-  // Special extra checks for ML operations which are more sensitive
-  // Remove localhost:3000 from suspicious patterns in development
+  // MODIFICADO: Special extra checks for ML operations which are more sensitive
+  // Em desenvolvimento, não considere localhost como suspeito
   const mlSuspicious = isMlOperation && (
-    // Se estiver em desenvolvimento, não considere localhost como suspeito
-    (!isDevelopment && url.includes('localhost:3000')) ||
-    (!isDevelopment && url.includes('127.0.0.1:3000')) ||
+    // Se estiver em desenvolvimento, NÃO considere localhost como suspeito
+    (!isDevelopment && url.includes('localhost')) ||
     (!url.includes('/api/ml/') && url.includes('/ml/')) // ML operations should always go through /api/ml/
   );
   
   if (suspicious || mlSuspicious) {
+    if (isDevelopment && url.includes('localhost')) {
+      // Em desenvolvimento, permitir URLs de localhost mesmo que pareçam suspeitos
+      console.log('⚠️ Permitindo URL de desenvolvimento que seria bloqueado em produção:', url);
+      return false;
+    }
+    
     if (isMlOperation) {
       console.error('🚨 POTENTIAL ML REDIRECT DETECTED:', url);
     } else {
@@ -109,7 +120,7 @@ export const detectRedirectAttempt = (url: string, isMlOperation = false): boole
 };
 
 /**
- * NEW: Special function to validate ML endpoint URLs
+ * Special function to validate ML endpoint URLs
  * Ensures they follow the expected pattern
  */
 export const validateMlEndpoint = (endpoint: string): boolean => {
@@ -129,7 +140,7 @@ export const validateMlEndpoint = (endpoint: string): boolean => {
 };
 
 /**
- * NEW: Check if the current browser environment might be causing redirect issues
+ * Check if the current browser environment might be causing redirect issues
  */
 export const detectBrowserInterference = (): { 
   hasInterference: boolean; 
@@ -184,7 +195,7 @@ export const detectBrowserInterference = (): {
 };
 
 /**
- * NEW: Check if we're in a trusted development environment
+ * Check if we're in a trusted development environment
  */
 export const isTrustedDevelopmentEnvironment = (): boolean => {
   if (typeof window === 'undefined') return false;
@@ -204,7 +215,7 @@ export const isTrustedDevelopmentEnvironment = (): boolean => {
 };
 
 /**
- * NEW: Logs detailed information about a redirect attempt for diagnostics
+ * Logs detailed information about a redirect attempt for diagnostics
  */
 export const logRedirectAttempt = (originalUrl: string, redirectUrl: string, context?: string): void => {
   console.warn(`

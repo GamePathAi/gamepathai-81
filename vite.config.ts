@@ -40,7 +40,7 @@ export default defineConfig(({ mode }) => ({
           });
           
           proxy.on('proxyReq', (proxyReq, req, _res) => {
-            // Add robust anti-redirect headers
+            // MELHORADO: Adicionar cabeçalhos robustos anti-redirecionamento
             proxyReq.setHeader('X-No-Redirect', '1');
             proxyReq.setHeader('X-Development-Mode', '1');
             proxyReq.setHeader('X-Requested-With', 'XMLHttpRequest');
@@ -49,6 +49,9 @@ export default defineConfig(({ mode }) => ({
             proxyReq.setHeader('Pragma', 'no-cache');
             proxyReq.setHeader('X-GamePath-Client', 'react-frontend-dev');
             proxyReq.setHeader('X-Max-Redirects', '0');
+            
+            // NOVO: Adicionar cabeçalho para impedir redirecionamentos na origem
+            proxyReq.setHeader('Proxy-Used', 'vite-dev-server');
             
             // Remove headers that might aid in redirect targeting
             proxyReq.removeHeader('referer');
@@ -66,14 +69,24 @@ export default defineConfig(({ mode }) => ({
           });
           
           proxy.on('proxyRes', (proxyRes, req, _res) => {
-            // Detect and log redirects (this is post-response so we can't cancel)
+            // MELHORADO: Detecção e log mais detalhados de redirecionamentos
             if (proxyRes.headers.location) {
-              console.log('⛔ BLOCKED REDIRECT in proxy response:', proxyRes.headers.location, 'from:', req.url);
+              console.log('⛔ BLOCKED REDIRECT in proxy response:', {
+                location: proxyRes.headers.location,
+                from: req.url,
+                statusCode: proxyRes.statusCode
+              });
+              
+              // NOVO: Registrar detalhes completos do redirecionamento antes de bloqueá-lo
+              const originalLocation = proxyRes.headers.location;
+              
+              // Bloquear o redirecionamento removendo o cabeçalho
               delete proxyRes.headers.location;
               
-              // Adicionar cabeçalho personalizado para informar que um redirecionamento foi bloqueado
+              // Adicionar cabeçalhos personalizados para informar que um redirecionamento foi bloqueado
               proxyRes.headers['x-redirect-blocked'] = 'true';
-              proxyRes.headers['x-original-location'] = proxyRes.headers.location || '';
+              proxyRes.headers['x-original-location'] = originalLocation || '';
+              proxyRes.headers['x-request-path'] = req.url || '';
             }
             
             // Ensure CORS headers are properly set
@@ -98,6 +111,13 @@ export default defineConfig(({ mode }) => ({
             
             if (mode === 'development') {
               console.log('📥 Proxy received response for:', req.url, 'status:', proxyRes.statusCode);
+              
+              // NOVO: Log detalhado para diagnóstico
+              console.log('Response headers:', {
+                contentType: proxyRes.headers['content-type'],
+                redirectBlocked: proxyRes.headers['x-redirect-blocked'] || 'no',
+                cors: proxyRes.headers['access-control-allow-origin'] || 'not set'
+              });
             }
           });
         }
@@ -114,7 +134,7 @@ export default defineConfig(({ mode }) => ({
           });
           
           proxy.on('proxyReq', (proxyReq, req, _res) => {
-            // Add ML-specific headers
+            // MELHORADO: Cabeçalhos ML específicos mais robustos
             proxyReq.setHeader('X-No-Redirect', '1');
             proxyReq.setHeader('X-ML-Operation', '1');
             proxyReq.setHeader('X-Max-Redirects', '0');
@@ -123,6 +143,10 @@ export default defineConfig(({ mode }) => ({
             proxyReq.setHeader('X-Development-Mode', '1');
             proxyReq.setHeader('Cache-Control', 'no-cache, no-store');
             proxyReq.setHeader('Pragma', 'no-cache');
+            
+            // NOVO: Cabeçalhos adicionais para prevenção de redirecionamento
+            proxyReq.setHeader('Proxy-Used', 'vite-dev-server-ml');
+            proxyReq.setHeader('X-Disable-Redirect', '1');
             
             // ML requests need longer timeouts
             proxyReq.setHeader('X-ML-Timeout', '30000');
@@ -133,14 +157,26 @@ export default defineConfig(({ mode }) => ({
             
             if (mode === 'development') {
               console.log('🧠 ML Proxy sending request to:', req.url);
+              // NOVO: Log mais detalhado
+              console.log('ML Request headers:', {
+                'X-ML-Operation': '1',
+                'X-No-Redirect': '1',
+                'X-Max-Redirects': '0',
+                url: req.url,
+                method: req.method
+              });
             }
           });
           
           proxy.on('proxyRes', (proxyRes, req, _res) => {
-            // Block any redirects in ML responses
+            // MELHORADO: Detecção mais detalhada de redirecionamentos em ML
             if (proxyRes.headers.location) {
-              console.log('⛔ BLOCKED ML REDIRECT in proxy response:', 
-                proxyRes.headers.location, 'from:', req.url);
+              console.log('⛔ BLOCKED ML REDIRECT in proxy response:', {
+                location: proxyRes.headers.location,
+                from: req.url,
+                statusCode: proxyRes.statusCode,
+                contentType: proxyRes.headers['content-type'] || 'none'
+              });
               
               // Armazenar a localização original antes de removê-la
               const originalLocation = proxyRes.headers.location;
@@ -150,6 +186,7 @@ export default defineConfig(({ mode }) => ({
               proxyRes.headers['x-redirect-blocked'] = 'true';
               proxyRes.headers['x-original-location'] = originalLocation || '';
               proxyRes.headers['x-request-url'] = req.url || '';
+              proxyRes.headers['x-block-reason'] = 'ML redirects not allowed';
             }
             
             // Add ML-specific response headers
@@ -175,6 +212,14 @@ export default defineConfig(({ mode }) => ({
               if (contentType) {
                 console.log(`🧠 ML Response content-type: ${contentType}`);
               }
+              
+              // NOVO: Log mais detalhado para diagnóstico de ML
+              console.log('ML Response headers:', {
+                contentType: proxyRes.headers['content-type'],
+                redirectBlocked: proxyRes.headers['x-redirect-blocked'] || 'no',
+                cors: proxyRes.headers['access-control-allow-origin'] || 'not set',
+                mlProxy: proxyRes.headers['x-ml-proxy'] || 'not set'
+              });
             }
           });
         }

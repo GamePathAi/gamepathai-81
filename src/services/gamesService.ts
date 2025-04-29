@@ -33,6 +33,11 @@ export const gamesService = {
         }
       } catch (mlError) {
         console.error("❌ Both API and ML service failed for games:", mlError);
+        
+        // MELHORADO: Log mais detalhado para erros de ML
+        if (mlError?.message?.includes('redirect')) {
+          console.error("🚨 Detected redirect in ML game detection - this should be blocked!");
+        }
       }
       
       // Gerar alguns jogos mockados para desenvolvimento
@@ -61,6 +66,23 @@ export const gamesService = {
           isOptimized: false,
           genre: "FPS Tático",
           optimizationType: "none"
+        },
+        // NOVO: Mais jogos mockados para melhor visualização
+        {
+          id: "fortnite",
+          name: "Fortnite",
+          image: "https://placehold.co/600x400/1A2033/ffffff?text=Fortnite",
+          isOptimized: false,
+          genre: "Battle Royale",
+          optimizationType: "none"
+        },
+        {
+          id: "league-of-legends",
+          name: "League of Legends",
+          image: "https://placehold.co/600x400/1A2033/ffffff?text=League%20of%20Legends",
+          isOptimized: false,
+          genre: "MOBA",
+          optimizationType: "none"
         }
       ];
     }
@@ -72,10 +94,20 @@ export const gamesService = {
   optimizeGame: async (gameId: string) => {
     try {
       console.log(`🧠 Tentando otimizar jogo ${gameId} via serviço ML`);
-      // First attempt with ML service
-      return await mlService.optimizeGame(gameId);
+      // MELHORADO: Usar diretamente o serviço ML com opções avançadas
+      return await mlService.optimizeGame(gameId, {
+        optimizeRoutes: true,
+        optimizeSettings: true,
+        optimizeSystem: true,
+        aggressiveness: 'medium'
+      });
     } catch (mlError) {
       console.log("⚠️ ML service failed for game optimization, falling back to standard API");
+      
+      // Log detalhado para diagnosticar problemas
+      if (mlError?.message?.includes('redirect')) {
+        console.error("🚨 Detected redirect in ML optimization - this should be blocked!");
+      }
       
       try {
         console.log(`🔄 Tentando API padrão para otimização de ${gameId}`);

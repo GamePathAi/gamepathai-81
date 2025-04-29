@@ -75,7 +75,7 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
     try {
       console.log(`🎮 Starting ML optimization for game: ${game.id}`);
       
-      // CORREÇÃO: Enviar explicitamente configurações adicionais
+      // MELHORADO: Enviar explicitamente configurações adicionais
       const optimizationOptions = {
         optimizeRoutes: true,
         optimizeSettings: true,
@@ -84,7 +84,7 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
         systemInfo: systemInfo || undefined
       };
       
-      // Call the ML service to optimize the game with options
+      // MODIFICADO: Call the ML service directly, not through gamesService
       const result = await mlService.optimizeGame(game.id, optimizationOptions);
       
       setIsOptimizing(false);
@@ -110,7 +110,7 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
       setIsOptimizing(false);
       setOptimizationError(error.message || "Erro na otimização");
       
-      // Verificar se o erro é relacionado a redirecionamento
+      // MELHORADO: Verificar se o erro é relacionado a redirecionamento
       if (error.message && (
         error.message.includes('redirect') || 
         error.message.includes('gamepathai.com')
@@ -118,6 +118,13 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
         toast.error(`Erro de redirecionamento ao otimizar ${game.name}`, {
           id: toastId,
           description: "Detecção de tentativa de redirecionamento. Consulte o console para mais detalhes."
+        });
+        
+        // Adicionar logs detalhados para diagnóstico
+        console.error("🚨 Detalhes do erro de redirecionamento:", {
+          gameId: game.id,
+          gameName: game.name,
+          errorMessage: error.message
         });
       } else {
         toast.error(`Erro ao otimizar ${game.name}`, {

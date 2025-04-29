@@ -59,7 +59,7 @@ const GameListItem: React.FC<GameListItemProps> = ({
 
   const optimizationStatus = getOptimizationStatus(game);
   
-  // Direct ML service call with progress simulation
+  // MELHORADO: Direct ML service call with progress simulation
   const handleOptimizeWithProgress = async () => {
     if (localOptimizing || isOptimizing) return;
     
@@ -87,14 +87,13 @@ const GameListItem: React.FC<GameListItemProps> = ({
       // Registro detalhado da solicitação ML para diagnóstico
       console.log(`🎮 Iniciando otimização para ${game.name} (ID: ${game.id})`);
       
-      // Call ML service directly with enhanced options
+      // MELHORADO: Call ML service directly with enhanced options
       const result = await mlService.optimizeGame(game.id, {
         optimizeRoutes: true,
         optimizeSettings: true,
         optimizeSystem: true,
-        // Enviar dados adicionais para melhorar resultados ML
-        aggressiveness: 'medium',
-        // Todo: Adicionar detecção de hardware aqui se disponível
+        // NOVO: Enviar dados adicionais para melhorar resultados ML
+        aggressiveness: 'medium'
       });
       
       // Complete progress
@@ -143,7 +142,7 @@ const GameListItem: React.FC<GameListItemProps> = ({
       }, 1000);
       
     } catch (error: any) {
-      // Handle errors
+      // MELHORADO: Tratamento de erros mais detalhado
       clearInterval(progressInterval);
       setOptimizationError(error.message || "Falha na otimização");
       setOptimizationProgress(0);
@@ -151,7 +150,7 @@ const GameListItem: React.FC<GameListItemProps> = ({
       
       console.error("Game optimization error:", error);
       
-      // Verificar se o erro está relacionado a redirecionamentos
+      // NOVO: Verificar se o erro está relacionado a redirecionamentos
       if (error.message && (
         error.message.includes('redirect') || 
         error.message.includes('gamepathai.com')
