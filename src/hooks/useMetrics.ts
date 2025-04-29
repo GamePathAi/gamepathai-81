@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { metricsService } from "../services/metricsService";
 import { useState, useEffect } from "react";
 import { MetricData, SystemData } from "../types/metrics";
-import { getApiBaseUrl } from "../utils/url"; // Updated import path
+import { getApiBaseUrl } from "../utils/url"; // Now correctly imported
 
 export function useMetrics(gameId?: string) {
   const [isOfflineMode, setIsOfflineMode] = useState<boolean>(false);
