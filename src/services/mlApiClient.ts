@@ -167,7 +167,7 @@ export const mlApiClient = {
   /**
    * Create a retry wrapper for ML operations that may sometimes fail
    */
-  withRetry: async function<T>(
+  async withRetry<T>(
     endpoint: string, 
     options: RequestInit = {}, 
     retries: number = MAX_RETRIES
