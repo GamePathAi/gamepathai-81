@@ -1,9 +1,10 @@
+
 import React, { useState } from "react";
 import { Check, Shield, Zap, Settings, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Game } from "@/hooks/useGames";
 import { Progress } from "@/components/ui/progress";
-import { mlService, MLOptimizeGameResponse } from "@/services/mlApiClient";
+import { mlService, MLOptimizeGameResponse } from "@/services/ml";
 import { toast } from "sonner";
 
 interface GameOptimizationStatus {

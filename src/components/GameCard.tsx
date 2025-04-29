@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import EnhancedGameSettingsModal from "./GameSpecificSettings/EnhancedGameSettingsModal";
-import { mlService, MLOptimizeGameResponse } from "@/services/mlApiClient";
+import { mlService, MLOptimizeGameResponse } from "@/services/ml";
 import { useSystemInfo } from "@/hooks/useSystemInfo";
 
 interface GameCardProps {

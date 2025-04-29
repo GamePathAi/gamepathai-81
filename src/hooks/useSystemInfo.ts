@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { mlApiClient } from '@/services/mlApiClient';
+import { mlApiClient, MLSystemInfoResponse } from '@/services/ml';
 
 interface SystemInfo {
   cpu: {
@@ -37,7 +37,7 @@ export const useSystemInfo = () => {
     
     try {
       // Try to fetch from ML API first
-      const result = await mlApiClient.fetch<{ systemInfo: SystemInfo }>(
+      const result = await mlApiClient.fetch<MLSystemInfoResponse>(
         '/ml/system-info'
       );
       

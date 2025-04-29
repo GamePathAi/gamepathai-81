@@ -1,6 +1,6 @@
 
 import { apiClient } from "./api";
-import { mlService, MLDetectedGamesResponse, MLOptimizeGameResponse } from "./mlApiClient";
+import { mlService, MLDetectedGamesResponse, MLOptimizeGameResponse } from "./ml";
 import { Game } from "@/hooks/useGames";
 import { fixAbsoluteUrl } from "@/utils/url"; // Updated import path
 

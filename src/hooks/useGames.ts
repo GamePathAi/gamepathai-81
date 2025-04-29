@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { gamesService } from "../services/gamesService";
 import { toast } from "sonner";
 import { generateGames } from "@/utils/mockData/gameData";
-import { mlService, MLDetectedGamesResponse, MLOptimizeGameResponse } from "@/services/mlApiClient";
+import { mlService, MLDetectedGamesResponse, MLOptimizeGameResponse } from "@/services/ml";
 
 export interface Game {
   id: string;
