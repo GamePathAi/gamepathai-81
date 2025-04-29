@@ -14,6 +14,17 @@ export interface Game {
   optimizationType?: "both" | "network" | "system" | "none";
 }
 
+// Define the return type for the ML optimization result
+interface OptimizationResult {
+  success: boolean;
+  optimizationType?: "both" | "network" | "system" | "none";
+  improvements?: {
+    latency?: number;
+    fps?: number;
+    stability?: number;
+  };
+}
+
 export function useGames() {
   const queryClient = useQueryClient();
 
@@ -57,16 +68,16 @@ export function useGames() {
       try {
         // First try the ML service
         const result = await mlService.optimizeGame(gameId);
-        return result;
+        return result as OptimizationResult;
       } catch (mlError: any) {
         console.error("🚨 ML optimization failed:", mlError.message);
         console.log("⚠️ Falling back to standard API for optimization");
         
         // Fall back to standard API if ML fails
-        return await gamesService.optimizeGame(gameId);
+        return await gamesService.optimizeGame(gameId) as OptimizationResult;
       }
     },
-    onSuccess: (result, gameId) => {
+    onSuccess: (result: OptimizationResult, gameId) => {
       // Invalidate games queries to refresh the list with optimized status
       queryClient.invalidateQueries({ queryKey: ["games"] });
       
