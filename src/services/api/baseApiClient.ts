@@ -66,21 +66,22 @@ export const baseApiClient = {
         console.log(`✅ URL convertido para: ${url}`);
       }
       
-      // Advanced fetch options
+      // Advanced fetch options - MODIFIED: Allow redirects in development
       const fetchOptions: RequestInit = {
         ...options,
         headers,
         mode: 'cors',
         credentials: 'include',
         cache: 'no-store',
-        redirect: 'error', // CRITICAL: Treat redirects as errors
+        // MODIFIED: Allow redirects in development, but monitor them
+        redirect: isDev ? 'follow' : 'error',
         signal: controller.signal
       };
       
       const response = await fetch(url, fetchOptions);
       clearTimeout(timeoutId);
       
-      // Enhanced redirect verification
+      // Enhanced redirect verification - MODIFIED: In development, log but allow
       if (response.url && response.url !== url) {
         // Check for origin or domain changes
         const originalUrl = new URL(url, window.location.origin);
@@ -88,8 +89,8 @@ export const baseApiClient = {
         
         console.log(`⚠️ URL redirecionada: ${url} -> ${response.url}`);
         
-        if (originalUrl.host !== redirectedUrl.host || 
-            redirectedUrl.href.includes('gamepathai.com')) {
+        if (!isDev && (originalUrl.host !== redirectedUrl.host || 
+            redirectedUrl.href.includes('gamepathai.com'))) {
           console.error('⚠️ Detectado redirecionamento na resposta:', {
             original: url,
             redirected: response.url

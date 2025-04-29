@@ -2,15 +2,14 @@
  * Specialized API client for Machine Learning operations
  * Includes specific configurations to prevent redirects and handle ML-specific requirements
  */
-import { toast } from "sonner";
-import { 
-  isProduction, 
-  isTrustedDevelopmentEnvironment, 
-  getApiBaseUrl, 
-  detectRedirectAttempt, 
-  validateMlEndpoint, 
-  fixAbsoluteUrl 
-} from '../utils/url';
+import { sanitizeApiUrl } from "../utils/url";
+import { reportMLIssue } from "../utils/appInitializer";
+
+// Constants
+const ML_BASE_URL = ""; // Empty string means relative URLs
+const isDev = process.env.NODE_ENV === 'development';
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 2000; // 2 seconds
 
 // Constants for ML operations
 export const ML_API_CONFIG = {
@@ -48,231 +47,130 @@ export const mlApiClient = {
    * Make a fetch request specifically configured for ML operations
    * Blocks redirects and handles ML-specific errors
    */
-  async fetch<T>(endpoint: string, options: RequestInit = {}, modelType: string): Promise<T> {
-    // Ensure endpoint starts with / for proper URL joining
-    const formattedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  async fetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    const isAbsoluteUrl = endpoint.startsWith('http://') || endpoint.startsWith('https://');
+    let url = isAbsoluteUrl ? endpoint : `${ML_BASE_URL}${endpoint}`;
     
-    // MELHORADO: Garantir que sempre use o proxy local
-    const url = formattedEndpoint.startsWith('/api') ? formattedEndpoint : `/api${formattedEndpoint}`;
-    
-    console.log(`🧠 ML API Request [${modelType}]: ${url}`);
-    
-    // Check for suspicious URLs that might be redirects
-    if (detectRedirectAttempt(url, true)) {
-      console.error(`🚨 Blocked suspicious ML API URL: ${url}`);
-      throw new MLApiError('Blocked potentially malicious URL', { endpoint, modelType });
+    // RELAXED: Don't aggressively sanitize if we're in development mode
+    if (isDev) {
+      // Keep the original URL in development to help diagnose issues
+      console.log(`🧠 ML API Request: ${url}`);
+    } else {
+      // In production, sanitize to prevent redirects
+      url = sanitizeApiUrl(url);
+      console.log(`🧠 ML API Request: ${endpoint} -> ${url}`);
     }
     
-    // NOVO: Verificar e corrigir qualquer URL absoluto
-    const finalUrl = fixAbsoluteUrl(url);
-    if (finalUrl !== url) {
-      console.log(`✅ Corrigido URL ML de ${url} para ${finalUrl}`);
-    }
-    
-    // MELHORADO: ML-specific headers
     const headers = {
       "Content-Type": "application/json",
-      "X-No-Redirect": "1", // Prevent redirects
-      "X-ML-Operation": "1", // Mark as ML operation
-      "X-Max-Redirects": "0", // Explicitly prevent redirects
-      "X-ML-Model": modelType,
-      "Cache-Control": "no-cache, no-store", 
-      "Pragma": "no-cache",
-      "X-GamePath-Client": "react-frontend", // Identify client
-      "X-Requested-With": "XMLHttpRequest", // NOVO: Identificar como AJAX
+      "X-ML-Operation": "1",
+      "X-No-Redirect": "1",
+      "Cache-Control": "no-cache, no-store",
+      "X-ML-Client": "react-web-client",
       ...(options.headers || {})
     };
     
-    // Add development mode header in dev environment
-    if (ML_API_CONFIG.DEV_MODE || isTrustedDevelopmentEnvironment()) {
-      headers["X-Development-Mode"] = "1";
-    }
-    
-    // Add authentication if available
     const token = localStorage.getItem("auth_token");
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
     
-    // Create abort controller for timeout
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => {
-      controller.abort();
-      console.log(`⏱️ ML operation timeout for ${modelType}`);
-    }, ML_API_CONFIG.TIMEOUT_MS);
-    
     try {
-      const response = await fetch(finalUrl, {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 seconds timeout for ML
+      
+      const response = await fetch(url, {
         ...options,
         headers,
-        signal: controller.signal,
         mode: 'cors',
         credentials: 'include',
         cache: 'no-store',
-        redirect: 'error', // CRUCIAL: treat redirects as errors to prevent them
+        // MODIFIED: Allow redirects in development
+        redirect: isDev ? 'follow' : 'error', 
+        signal: controller.signal
       });
       
-      // Clear timeout
       clearTimeout(timeoutId);
       
-      // Check response URL for evidence of redirect that slipped through
-      if (response.url && response.url !== finalUrl) {
-        console.log(`⚠️ ML URL redirecionada: ${finalUrl} -> ${response.url}`);
+      if (response.status === 204) {
+        // No content response
+        return {} as T;
+      }
+      
+      // MODIFIED: Log but allow redirects in development
+      if (response.redirected) {
+        console.log(`⚠️ ML API redirect followed: ${url} -> ${response.url}`);
         
-        // MELHORADO: Verificação mais rigorosa de redirecionamentos
-        const originalUrl = new URL(finalUrl, window.location.origin);
-        const redirectedUrl = new URL(response.url, window.location.origin);
-        
-        if (originalUrl.host !== redirectedUrl.host || 
-            redirectedUrl.href.includes('gamepathai.com')) {
-          console.error('⚠️ Detected redirect in ML response URL:', {
-            original: finalUrl,
-            redirected: response.url
-          });
-          
-          toast.error('Detecção de redirecionamento', {
-            description: 'Um redirecionamento ML foi detectado e bloqueado'
-          });
-          
-          throw new MLApiError('Detected redirect in response', { 
-            endpoint, 
-            modelType,
-            status: 302 
-          });
+        // Only block in production
+        if (!isDev && response.url.includes('gamepathai.com')) {
+          console.error('🚨 ML API redirect to gamepathai.com blocked');
+          throw new Error(`Blocked redirect to ${response.url}`);
         }
       }
       
       if (!response.ok) {
-        // Handle specific error statuses
-        if (response.status === 429) {
-          throw new MLApiError('ML system is currently overloaded, please try again later', { 
-            status: response.status,
-            endpoint,
-            modelType
-          });
-        }
-        
         const contentType = response.headers.get('content-type');
-        // Check if response is HTML instead of JSON (likely a redirect page)
         if (contentType && contentType.includes('text/html')) {
-          console.error('🚨 Received HTML response when expecting JSON in ML operation');
-          throw new MLApiError('Received HTML instead of JSON data, possible redirect', {
-            status: response.status,
-            endpoint,
-            modelType
-          });
+          throw new Error(`ML API returned HTML instead of JSON (status ${response.status})`);
         }
         
-        // Try to parse error message from response
-        const errorData = await response.json().catch(() => ({}));
-        throw new MLApiError(errorData.message || 'Error in ML operation', {
-          status: response.status,
-          endpoint,
-          modelType,
-        });
+        try {
+          const errorData = await response.json();
+          throw {...errorData, status: response.status};
+        } catch (e) {
+          throw new Error(`ML API error (status ${response.status})`);
+        }
       }
       
-      // Verify that the content type is JSON
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        console.error('⚠️ ML API response is not JSON:', contentType);
-        throw new MLApiError('Invalid response format from ML service', { endpoint, modelType });
-      }
-      
-      // Parse and return JSON data
-      const data = await response.json();
-      console.log(`✅ ML API ${modelType} operation successful:`, endpoint);
-      
-      // Log resumo dos dados recebidos (sem informações sensíveis)
-      if (ML_API_CONFIG.DEV_MODE) {
-        console.log(`ML ${modelType} resposta:`, {
-          success: data.success,
-          dataType: typeof data,
-          hasOptimizations: data.optimizations ? 'sim' : 'não',
-          responseKeys: Object.keys(data)
-        });
-      }
-      
-      return data as T;
+      return await response.json() as T;
     } catch (error: any) {
-      // Clear timeout if still active
-      clearTimeout(timeoutId);
-      
-      // Special handling for abort (timeout)
-      if (error.name === 'AbortError') {
-        throw new MLApiError(`ML operation timed out after ${ML_API_CONFIG.TIMEOUT_MS / 1000}s`, { 
-          endpoint,
-          modelType
-        });
-      }
-      
-      // If the error is already an MLApiError, just rethrow it
-      if (error instanceof MLApiError) {
-        throw error;
-      }
-      
-      // MELHORADO: Detecção mais detalhada de erros de redirecionamento
-      if (error.message && (
-        error.message.includes('redirect') || 
-        error.message.includes('gamepathai.com') ||
-        error.message.includes('Failed to fetch') ||
-        error.message.includes('Network request failed')
-      )) {
-        console.error('🚨 ML API redirect blocked:', error.message);
-        console.log('Detalhes do erro de redirecionamento:', {
-          url: finalUrl,
-          endpoint,
-          modelType,
-          message: error.message
-        });
-        
-        toast.error('Redirecionamento bloqueado', {
-          description: 'Uma tentativa de redirecionamento foi detectada e bloqueada'
-        });
-        
-        throw new MLApiError('ML request was redirected and blocked for security', {
-          endpoint,
-          modelType
-        });
-      }
-      
-      // Generic network error
-      console.error(`❌ ML API ${modelType} request failed:`, error);
-      throw new MLApiError(error.message || 'Failed to connect to ML service', {
-        endpoint,
-        modelType
-      });
+      // Log ML API errors for debugging
+      console.error('🚨 ML API error:', error);
+      throw error;
     }
   },
   
   /**
    * Create a retry wrapper for ML operations that may sometimes fail
    */
-  async withRetry<T>(operation: () => Promise<T>, options: {
-    retries?: number,
-    delayMs?: number,
-    modelType: string,
-    endpoint: string
-  }): Promise<T> {
-    const retries = options.retries || ML_API_CONFIG.RETRY_ATTEMPTS;
-    const delayMs = options.delayMs || ML_API_CONFIG.RETRY_DELAY_MS;
-    
+  withRetry: async function<T>(endpoint: string, options: RequestInit = {}, 
+                             retries: number = MAX_RETRIES, modelType: string = 'generic'): Promise<T> {
     try {
-      return await operation();
-    } catch (error) {
-      if (retries <= 0) {
-        throw error;
+      return await this.fetch<T>(endpoint, options);
+    } catch (error: any) {
+      // Check if we have retries left
+      if (retries > 0) {
+        // Log retry
+        console.log(`🔄 Retrying ML operation [${modelType}] after ${RETRY_DELAY}ms...`);
+        
+        // Wait before retry
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+        
+        // Retry with one less retry count
+        return this.withRetry(endpoint, options, retries - 1, modelType);
       }
       
-      console.log(`🔄 Retrying ML operation [${options.modelType}] after ${delayMs}ms...`);
-      // Wait for specified delay
-      await new Promise(resolve => setTimeout(resolve, delayMs));
+      // If no retries left or it's a redirect issue, throw as ML error
+      if (error.message && error.message.includes('redirect')) {
+        // Enhanced logging for redirect-related errors
+        console.info('Detalhes do erro de redirecionamento:', {
+          url: endpoint,
+          endpoint,
+          modelType,
+          message: error.message
+        });
+        
+        throw {
+          status: 'redirect_error',
+          message: 'ML API redirect blocked - please use the diagnostic panel',
+          originalError: error
+        };
+      }
       
-      // Try again with one less retry
-      return this.withRetry(operation, {
-        ...options,
-        retries: retries - 1
-      });
+      // Report ML issue for analytics
+      reportMLIssue(error, endpoint, modelType);
+      
+      throw error;
     }
   }
 };
@@ -528,10 +426,10 @@ export const mlDiagnostics = {
   /**
    * Check for browser extensions that might interfere with ML requests
    */
-  checkForInterfereingExtensions: (): { 
+  checkForInterfereingExtensions(): { 
     detected: boolean, 
     extensions: string[]
-  } => {
+  } {
     console.log('🔍 Checking for browser extensions that may interfere with ML operations');
     
     const potentialIssues: string[] = [];
@@ -601,56 +499,32 @@ export const mlUrlDiagnostics = {
     contentType?: string;
   }> => {
     try {
-      // Use fetch with manual redirect to follow the chain
+      // MODIFIED: Always follow redirects for diagnostic purposes
       const response = await fetch(url, {
         method: 'HEAD',
-        redirect: 'manual',
+        mode: 'cors',
+        redirect: 'follow',
         headers: {
-          'X-Diagnostic': '1'
+          "X-Diagnostic": "1"
         }
       });
       
-      // If we get a redirect response
-      if (response.type === 'opaqueredirect') {
-        console.log(`⚠️ URL ${url} attempts to redirect`);
-        
-        // Try to follow the redirect manually
-        const location = response.headers.get('location');
-        if (location) {
-          console.log(`⚠️ Redirect location: ${location}`);
-          return {
-            originalUrl: url,
-            finalUrl: location,
-            wasRedirected: true,
-            isGamePathAI: location.includes('gamepathai.com')
-          };
-        }
-        
-        return {
-          originalUrl: url,
-          finalUrl: 'unknown-redirect',
-          wasRedirected: true,
-          isGamePathAI: false
-        };
-      }
-      
-      // If we get a successful response
       return {
         originalUrl: url,
         finalUrl: response.url,
-        wasRedirected: url !== response.url,
+        wasRedirected: response.redirected,
         isGamePathAI: response.url.includes('gamepathai.com'),
         responseStatus: response.status,
         contentType: response.headers.get('content-type') || undefined
       };
     } catch (error) {
-      console.error(`❌ URL diagnostic failed for ${url}:`, error);
-      
+      console.error("URL test failed:", error);
       return {
         originalUrl: url,
-        finalUrl: 'error',
-        wasRedirected: false,
-        isGamePathAI: false
+        finalUrl: "Error testing URL",
+        wasRedirected: true,
+        isGamePathAI: false,
+        responseStatus: 0
       };
     }
   }
