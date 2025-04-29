@@ -1,10 +1,5 @@
 
-/**
- * URL utilities index file
- * Re-exports all functionality from the individual files
- */
-
-// Re-export all from the individual files
+// Export URL utilities
 export * from './constants';
 export * from './environmentDetection';
 export * from './urlSanitization';

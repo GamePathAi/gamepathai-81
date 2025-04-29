@@ -5,6 +5,16 @@ import { useToast } from "@/components/ui/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { getApiBaseUrl } from "../utils/url";
 
+// Define the interface for VPN status response
+interface VpnStatusResponse {
+  connected: boolean;
+  serverIp?: string | null;
+  serverLocation?: string | null;
+  recommendedServer?: string;
+  connectionTime?: number | null;
+  lastError?: string | null;
+}
+
 export function useVpn() {
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -12,7 +22,7 @@ export function useVpn() {
   const { toast } = useToast();
   const [vpnStatus, setVpnStatus] = useState<"connected" | "disconnected" | "connecting" | "disconnecting">("disconnected");
   const [isBackendOnline, setIsBackendOnline] = useState<boolean | null>(null);
-  const [status, setStatus] = useState<any>(null);
+  const [status, setStatus] = useState<VpnStatusResponse | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
   
@@ -41,7 +51,7 @@ export function useVpn() {
     setVpnStatus("connecting");
     
     try {
-      const result = await vpnService.connect(serverId);
+      const result = await vpnService.connect(serverId) as VpnStatusResponse;
       setIsConnected(result?.connected || false);
       setVpnStatus(result?.connected ? "connected" : "disconnected");
       setStatus(result);
@@ -71,7 +81,7 @@ export function useVpn() {
     setVpnStatus("disconnecting");
     
     try {
-      const result = await vpnService.disconnect();
+      const result = await vpnService.disconnect() as VpnStatusResponse;
       setIsConnected(result?.connected || false);
       setVpnStatus(result?.connected ? "connected" : "disconnected");
       setStatus(result);
