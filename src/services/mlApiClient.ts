@@ -3,7 +3,7 @@
  * Includes specific configurations to prevent redirects and handle ML-specific requirements
  */
 import { toast } from "sonner";
-import { detectRedirectAttempt, isTrustedDevelopmentEnvironment, fixAbsoluteUrl } from "../utils/urlRedirects";
+import { isProduction, isTrustedDevelopmentEnvironment, getApiBaseUrl, detectRedirectAttempt, validateMlEndpoint } from '../utils/url';
 
 // Constants for ML operations
 export const ML_API_CONFIG = {

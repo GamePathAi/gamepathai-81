@@ -6,7 +6,7 @@ import ConnectionOptimizer from "@/components/ConnectionOptimizer";
 import RouteOptimizer from "@/components/RouteOptimizer";
 import { testBackendConnection } from "@/services/api";
 import { mlDiagnostics } from "@/services/mlApiClient";
-import { detectRedirectScripts, setupNavigationMonitor } from "@/utils/urlRedirects";
+import { detectRedirectScripts, setupNavigationMonitor } from "@/utils/url";
 
 // Import refactored dashboard components
 import DashboardMetrics from "@/components/dashboard/DashboardMetrics";
