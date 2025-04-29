@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect } from "react";
-import { Zap, Server, AlertTriangle } from "lucide-react";
+import { Zap, Server, AlertTriangle, BarChart2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import ConnectionOptimizer from "@/components/ConnectionOptimizer";
 import RouteOptimizer from "@/components/RouteOptimizer";
 import { testBackendConnection } from "@/services/api";
+import { mlDiagnostics } from "@/services/mlApiClient";
 
 // Import refactored dashboard components
 import DashboardMetrics from "@/components/dashboard/DashboardMetrics";
@@ -14,10 +15,13 @@ import SystemMetrics from "@/components/dashboard/SystemMetrics";
 import PremiumFeatures from "@/components/dashboard/PremiumFeatures";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
+import MLDiagnosticsPanel from "@/components/diagnostics/MLDiagnosticsPanel";
 
 const Dashboard: React.FC = () => {
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [backendStatus, setBackendStatus] = useState<'online' | 'offline' | 'checking'>('checking');
+  const [showMlDiagnostics, setShowMlDiagnostics] = useState(false);
+  const [interfereingExtensions, setInterfereingExtensions] = useState<string[]>([]);
   
   useEffect(() => {
     const checkBackendStatus = async () => {
@@ -27,8 +31,25 @@ const Dashboard: React.FC = () => {
     
     checkBackendStatus();
     
-    // Verificar periodicamente
-    const interval = setInterval(checkBackendStatus, 60000); // a cada minuto
+    // Check periodically
+    const interval = setInterval(checkBackendStatus, 60000); // every minute
+    
+    // Check for interfering extensions
+    const extensionsCheck = mlDiagnostics.checkForInterfereingExtensions();
+    if (extensionsCheck.detected) {
+      setInterfereingExtensions(extensionsCheck.extensions);
+      // If extensions that might interfere are detected, show a notification
+      if (extensionsCheck.extensions.length > 0) {
+        toast.warning("Browser extensions detected", {
+          description: "Some browser extensions might interfere with GamePath AI operations",
+          action: {
+            label: "Diagnostics",
+            onClick: () => setShowMlDiagnostics(true)
+          }
+        });
+      }
+    }
+    
     return () => clearInterval(interval);
   }, []);
   
@@ -67,7 +88,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="container mx-auto">
-      {/* Status do Backend */}
+      {/* Backend Status */}
       {backendStatus === 'offline' && (
         <Alert variant="default" className="mb-4 alert-offline">
           <AlertTriangle className="h-4 w-4 alert-offline-text" />
@@ -78,6 +99,27 @@ const Dashboard: React.FC = () => {
             </span>
             <Button variant="outline" size="sm" onClick={handleRetryConnection} className="border-amber-500/50 text-amber-500">
               Tentar Reconectar
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+      
+      {/* Show warning if interfering extensions detected */}
+      {interfereingExtensions.length > 0 && (
+        <Alert variant="destructive" className="mb-4 bg-red-900/20 border-red-500/50">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Possível interferência detectada</AlertTitle>
+          <AlertDescription>
+            <p>
+              Algumas extensões do navegador podem estar interferindo com o GamePath AI.
+              Considere desativá-las temporariamente para melhor desempenho.
+            </p>
+            <Button 
+              variant="link" 
+              className="text-red-400 p-0 mt-1" 
+              onClick={() => setShowMlDiagnostics(!showMlDiagnostics)}
+            >
+              Ver diagnósticos
             </Button>
           </AlertDescription>
         </Alert>
@@ -99,10 +141,9 @@ const Dashboard: React.FC = () => {
           )}
           
           <Button
-            className="cyber-btn"
+            variant="cyberAction"
             onClick={handleOptimizeAll}
             disabled={isOptimizing}
-            variant="cyberAction"
           >
             {isOptimizing ? (
               <>
@@ -119,6 +160,13 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
       
+      {/* Show ML diagnostics panel if requested */}
+      {showMlDiagnostics && (
+        <div className="mb-6">
+          <MLDiagnosticsPanel />
+        </div>
+      )}
+      
       {/* Main Metrics Section */}
       <DashboardMetrics />
       
@@ -133,6 +181,21 @@ const Dashboard: React.FC = () => {
         <ConnectionOptimizer />
         <RouteOptimizer />
       </div>
+      
+      {/* Toggle ML Diagnostics Button */}
+      {!showMlDiagnostics && (
+        <div className="flex justify-end mb-4">
+          <Button 
+            variant="outline"
+            size="sm"
+            onClick={() => setShowMlDiagnostics(true)}
+            className="text-xs flex items-center"
+          >
+            <BarChart2 className="h-3 w-3 mr-1" />
+            Show ML Diagnostics
+          </Button>
+        </div>
+      )}
       
       {/* Premium Features Banner */}
       <PremiumFeatures />

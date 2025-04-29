@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => ({
   },
   base: process.env.IS_ELECTRON === 'true' ? './' : '/',
   define: {
-    // Definir variáveis globais
+    // Define global variables
     'process.env.IS_ELECTRON': process.env.IS_ELECTRON || 'false',
     'process.env.NODE_ENV': JSON.stringify(mode),
   },
@@ -51,6 +51,12 @@ export default defineConfig(({ mode }) => ({
             proxyReq.removeHeader('referer');
             proxyReq.removeHeader('origin');
             
+            // Check for ML operations and add special handling
+            if (req.url?.includes('/ml/')) {
+              proxyReq.setHeader('X-ML-Operation', '1');
+              proxyReq.setHeader('X-Max-Redirects', '0');
+            }
+            
             if (mode === 'development') {
               console.log('📤 Proxy sending request to:', req.url);
             }
@@ -66,7 +72,7 @@ export default defineConfig(({ mode }) => ({
             // Ensure CORS headers are properly set
             proxyRes.headers['access-control-allow-origin'] = '*';
             proxyRes.headers['access-control-allow-methods'] = 'GET,HEAD,PUT,PATCH,POST,DELETE';
-            proxyRes.headers['access-control-allow-headers'] = 'Content-Type, Authorization, X-No-Redirect';
+            proxyRes.headers['access-control-allow-headers'] = 'Content-Type, Authorization, X-No-Redirect, X-ML-Operation';
             
             // Add anti-redirect headers to responses
             proxyRes.headers['x-content-type-options'] = 'nosniff';
@@ -85,6 +91,67 @@ export default defineConfig(({ mode }) => ({
             
             if (mode === 'development') {
               console.log('📥 Proxy received response for:', req.url, 'status:', proxyRes.statusCode);
+            }
+          });
+        }
+      },
+      // Special proxy configuration for ML operations
+      '/api/ml': {
+        target: 'https://gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api\/ml/, '/api/ml'),
+        configure: (proxy, _options) => {
+          proxy.on('error', (err, _req, _res) => {
+            console.error('🔥 ML Proxy error:', err);
+          });
+          
+          proxy.on('proxyReq', (proxyReq, req, _res) => {
+            // Add ML-specific headers
+            proxyReq.setHeader('X-No-Redirect', '1');
+            proxyReq.setHeader('X-ML-Operation', '1');
+            proxyReq.setHeader('X-Max-Redirects', '0');
+            proxyReq.setHeader('X-Requested-With', 'XMLHttpRequest');
+            proxyReq.setHeader('Cache-Control', 'no-cache, no-store');
+            proxyReq.setHeader('Pragma', 'no-cache');
+            
+            // ML requests need longer timeouts
+            proxyReq.setHeader('X-ML-Timeout', '30000');
+            
+            // Remove potentially problematic headers
+            proxyReq.removeHeader('referer');
+            proxyReq.removeHeader('origin');
+            
+            if (mode === 'development') {
+              console.log('🧠 ML Proxy sending request to:', req.url);
+            }
+          });
+          
+          proxy.on('proxyRes', (proxyRes, req, _res) => {
+            // Block any redirects in ML responses
+            if (proxyRes.headers.location) {
+              console.log('⛔ BLOCKED ML REDIRECT in proxy response:', 
+                proxyRes.headers.location, 'from:', req.url);
+              delete proxyRes.headers.location;
+            }
+            
+            // Add ML-specific response headers
+            proxyRes.headers['x-ml-proxy'] = 'true';
+            
+            // Standard security headers
+            proxyRes.headers['x-content-type-options'] = 'nosniff';
+            proxyRes.headers['x-frame-options'] = 'DENY';
+            
+            // CORS headers for ML operations
+            proxyRes.headers['access-control-allow-origin'] = '*';
+            proxyRes.headers['access-control-allow-methods'] = 'GET,POST,OPTIONS';
+            proxyRes.headers['access-control-allow-headers'] = 
+              'Content-Type, Authorization, X-No-Redirect, X-ML-Operation, X-ML-Timeout';
+            proxyRes.headers['access-control-max-age'] = '86400';
+            
+            if (mode === 'development') {
+              console.log('🧠 ML Proxy received response for:', req.url, 
+                'status:', proxyRes.statusCode);
             }
           });
         }

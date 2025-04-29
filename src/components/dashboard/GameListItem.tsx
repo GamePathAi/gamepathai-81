@@ -1,7 +1,11 @@
-import React from "react";
-import { Check, Shield, Zap, Settings, Loader2 } from "lucide-react";
+
+import React, { useState } from "react";
+import { Check, Shield, Zap, Settings, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Game } from "@/hooks/useGames";
+import { Progress } from "@/components/ui/progress";
+import { mlService } from "@/services/mlApiClient";
+import { toast } from "sonner";
 
 interface GameOptimizationStatus {
   text: string;
@@ -22,6 +26,10 @@ const GameListItem: React.FC<GameListItemProps> = ({
   onOpenSettings,
   isOptimizing
 }) => {
+  const [localOptimizing, setLocalOptimizing] = useState(false);
+  const [optimizationProgress, setOptimizationProgress] = useState(0);
+  const [optimizationError, setOptimizationError] = useState<string | null>(null);
+  
   const getOptimizationStatus = (game: Game): GameOptimizationStatus => {
     if (!game.isOptimized) return { text: "NOT OPTIMIZED", color: "text-gray-400" };
     
@@ -50,6 +58,84 @@ const GameListItem: React.FC<GameListItemProps> = ({
   };
 
   const optimizationStatus = getOptimizationStatus(game);
+  
+  // Direct ML service call with progress simulation
+  const handleOptimizeWithProgress = async () => {
+    if (localOptimizing || isOptimizing) return;
+    
+    setOptimizationError(null);
+    setLocalOptimizing(true);
+    setOptimizationProgress(10);
+    
+    // Simulate progress
+    const progressInterval = setInterval(() => {
+      setOptimizationProgress(prev => {
+        if (prev >= 90) {
+          clearInterval(progressInterval);
+          return 90;
+        }
+        return prev + 5;
+      });
+    }, 300);
+    
+    try {
+      // Show toast notification
+      const toastId = toast.loading(`Otimizando ${game.name}...`, {
+        description: "Aplicando configurações otimizadas por IA"
+      });
+      
+      // Call ML service directly
+      const result = await mlService.optimizeGame(game.id);
+      
+      // Complete progress
+      clearInterval(progressInterval);
+      setOptimizationProgress(100);
+      
+      // Show success message
+      if (result.success) {
+        // Create descriptive message based on improvements
+        const improvements = result.improvements || {};
+        const messages = [];
+        
+        if (improvements.latency) {
+          messages.push(`${improvements.latency}% menos latência`);
+        }
+        
+        if (improvements.fps) {
+          messages.push(`${improvements.fps}% mais FPS`);
+        }
+        
+        toast.success(`${game.name} otimizado com sucesso!`, {
+          id: toastId,
+          description: messages.join(", ") || "Jogo otimizado com sucesso"
+        });
+      } else {
+        throw new Error("Optimization did not complete successfully");
+      }
+      
+      // Call the parent handler to update global state
+      onOptimize(game.id);
+      
+      // Reset local state after a delay to show the completed progress
+      setTimeout(() => {
+        setLocalOptimizing(false);
+        setOptimizationProgress(0);
+      }, 1000);
+      
+    } catch (error: any) {
+      // Handle errors
+      clearInterval(progressInterval);
+      setOptimizationError(error.message || "Falha na otimização");
+      setOptimizationProgress(0);
+      setLocalOptimizing(false);
+      
+      toast.error(`Erro ao otimizar ${game.name}`, {
+        description: error.message || "Não foi possível completar a otimização"
+      });
+      
+      console.error("Game optimization error:", error);
+    }
+  };
 
   return (
     <div 
@@ -66,6 +152,24 @@ const GameListItem: React.FC<GameListItemProps> = ({
         <div className="p-3">
           <h3 className="text-white font-cyber text-lg">{game.name}</h3>
           <div className="text-gray-400 text-xs font-tech">{game.genre}</div>
+          
+          {/* Show optimization progress */}
+          {optimizationProgress > 0 && (
+            <div className="mt-1 w-48">
+              <Progress value={optimizationProgress} className="h-1" />
+              {localOptimizing && (
+                <span className="text-xs text-cyber-blue mt-1">Aplicando otimização...</span>
+              )}
+            </div>
+          )}
+          
+          {/* Show error message if any */}
+          {optimizationError && (
+            <div className="flex items-center text-xs text-red-400 mt-1">
+              <AlertCircle size={12} className="mr-1" />
+              {optimizationError}
+            </div>
+          )}
         </div>
       </div>
       
@@ -78,18 +182,18 @@ const GameListItem: React.FC<GameListItemProps> = ({
         <div className="flex space-x-2">
           {(!game.isOptimized || game.optimizationType !== "both") && (
             <Button 
-              onClick={() => onOptimize(game.id)} 
+              onClick={handleOptimizeWithProgress}
               variant="cyber"
               size="sm"
-              disabled={isOptimizing}
+              disabled={isOptimizing || localOptimizing}
               className="bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/50 hover:bg-cyber-blue/30 text-xs px-3 py-1 transition-colors"
             >
-              {isOptimizing ? (
+              {isOptimizing || localOptimizing ? (
                 <Loader2 size={14} className="mr-1 animate-spin" />
               ) : (
                 <Zap size={14} className="mr-1" />
               )}
-              {isOptimizing ? "Optimizing..." : "Optimize"}
+              {isOptimizing || localOptimizing ? "Otimizando..." : "Otimizar"}
             </Button>
           )}
           <Button
