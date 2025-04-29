@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { gamesService } from "../services/gamesService";
 import { toast } from "sonner";
 import { generateGames } from "@/utils/mockData/gameData";
-import { mlService } from "@/services/mlApiClient";
+import { mlService, MLDetectedGamesResponse, MLOptimizeGameResponse } from "@/services/mlApiClient";
 
 export interface Game {
   id: string;
@@ -12,17 +12,6 @@ export interface Game {
   isOptimized: boolean;
   genre: string;
   optimizationType?: "both" | "network" | "system" | "none";
-}
-
-// Define the return type for the ML optimization result
-interface OptimizationResult {
-  success: boolean;
-  optimizationType?: "both" | "network" | "system" | "none";
-  improvements?: {
-    latency?: number;
-    fps?: number;
-    stability?: number;
-  };
 }
 
 export function useGames() {
@@ -67,17 +56,16 @@ export function useGames() {
       
       try {
         // First try the ML service
-        const result = await mlService.optimizeGame(gameId);
-        return result as OptimizationResult;
+        return await mlService.optimizeGame(gameId);
       } catch (mlError: any) {
         console.error("🚨 ML optimization failed:", mlError.message);
         console.log("⚠️ Falling back to standard API for optimization");
         
         // Fall back to standard API if ML fails
-        return await gamesService.optimizeGame(gameId) as OptimizationResult;
+        return await gamesService.optimizeGame(gameId) as MLOptimizeGameResponse;
       }
     },
-    onSuccess: (result: OptimizationResult, gameId) => {
+    onSuccess: (result, gameId) => {
       // Invalidate games queries to refresh the list with optimized status
       queryClient.invalidateQueries({ queryKey: ["games"] });
       

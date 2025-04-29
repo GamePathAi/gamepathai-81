@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import EnhancedGameSettingsModal from "./GameSpecificSettings/EnhancedGameSettingsModal";
-import { mlService } from "@/services/mlApiClient";
+import { mlService, MLOptimizeGameResponse } from "@/services/mlApiClient";
 import { useSystemInfo } from "@/hooks/useSystemInfo";
 
 interface GameCardProps {
@@ -264,6 +264,32 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
       />
     </>
   );
+  
+  function getOptimizationLabel() {
+    switch (game.optimizationType) {
+      case "network":
+        return "REDE OTIMIZADA";
+      case "system":
+        return "SISTEMA OTIMIZADO";
+      case "both":
+        return "TOTALMENTE OTIMIZADO";
+      default:
+        return "NÃO OTIMIZADO";
+    }
+  }
+
+  function getOptimizationColor() {
+    switch (game.optimizationType) {
+      case "network":
+        return "text-cyber-blue border-cyber-blue";
+      case "system":
+        return "text-cyber-purple border-cyber-purple";
+      case "both":
+        return "text-green-400 border-green-400";
+      default:
+        return "text-gray-400 border-gray-400";
+    }
+  }
 };
 
 export default GameCard;

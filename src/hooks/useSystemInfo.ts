@@ -38,9 +38,7 @@ export const useSystemInfo = () => {
     try {
       // Try to fetch from ML API first
       const result = await mlApiClient.fetch<{ systemInfo: SystemInfo }>(
-        '/ml/system-info',
-        { method: 'GET' },
-        'system-info'
+        '/ml/system-info'
       );
       
       setSystemInfo(result.systemInfo);

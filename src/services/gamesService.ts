@@ -1,6 +1,6 @@
 
 import { apiClient } from "./api";
-import { mlService } from "./mlApiClient";
+import { mlService, MLDetectedGamesResponse, MLOptimizeGameResponse } from "./mlApiClient";
 import { Game } from "@/hooks/useGames";
 import { fixAbsoluteUrl } from "@/utils/url"; // Updated import path
 
@@ -92,7 +92,7 @@ export const gamesService = {
   getGameDetails: (gameId: string) => 
     apiClient.fetch(`/games/${gameId}`),
     
-  optimizeGame: async (gameId: string) => {
+  optimizeGame: async (gameId: string): Promise<MLOptimizeGameResponse> => {
     try {
       console.log(`🧠 Tentando otimizar jogo ${gameId} via serviço ML`);
       // MELHORADO: Usar diretamente o serviço ML com opções avançadas

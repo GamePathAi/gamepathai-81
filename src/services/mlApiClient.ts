@@ -39,6 +39,40 @@ export class MLApiError extends Error {
   }
 }
 
+// Type definitions for ML API responses
+export interface MLOptimizeGameResponse {
+  success: boolean;
+  optimizationType: 'network' | 'system' | 'both' | 'none';
+  improvements: {
+    latency?: number;
+    fps?: number;
+    stability?: number;
+  };
+}
+
+export interface MLDetectedGamesResponse {
+  detectedGames: Array<{
+    id: string;
+    name: string;
+    path: string;
+    lastPlayed?: Date;
+    version?: string;
+  }>;
+}
+
+export interface MLRouteOptimizerResponse {
+  success: boolean;
+  optimizedRoutes: number;
+  latencyReduction: number;
+  settings: Record<string, any>;
+}
+
+export interface MLPerformancePredictorResponse {
+  recommendedSettings: Record<string, any>;
+  expectedFps: number;
+  confidence: number;
+}
+
 /**
  * ML API client with specialized configuration for machine learning operations
  */
@@ -133,21 +167,24 @@ export const mlApiClient = {
   /**
    * Create a retry wrapper for ML operations that may sometimes fail
    */
-  withRetry: async function<T>(endpoint: string, options: RequestInit = {}, 
-                             retries: number = MAX_RETRIES, modelType: string = 'generic'): Promise<T> {
+  withRetry: async function<T>(
+    endpoint: string, 
+    options: RequestInit = {}, 
+    retries: number = MAX_RETRIES
+  ): Promise<T> {
     try {
       return await this.fetch<T>(endpoint, options);
     } catch (error: any) {
       // Check if we have retries left
       if (retries > 0) {
         // Log retry
-        console.log(`🔄 Retrying ML operation [${modelType}] after ${RETRY_DELAY}ms...`);
+        console.log(`🔄 Retrying ML operation after ${RETRY_DELAY}ms...`);
         
         // Wait before retry
         await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
         
         // Retry with one less retry count
-        return this.withRetry(endpoint, options, retries - 1, modelType);
+        return this.withRetry<T>(endpoint, options, retries - 1);
       }
       
       // If no retries left or it's a redirect issue, throw as ML error
@@ -156,7 +193,6 @@ export const mlApiClient = {
         console.info('Detalhes do erro de redirecionamento:', {
           url: endpoint,
           endpoint,
-          modelType,
           message: error.message
         });
         
@@ -168,7 +204,7 @@ export const mlApiClient = {
       }
       
       // Report ML issue for analytics
-      reportMLIssue(error, endpoint, modelType);
+      reportMLIssue(error, endpoint, '');
       
       throw error;
     }
@@ -185,24 +221,12 @@ export const mlService = {
   optimizeRoutes: async (gameId: string, params: {
     region?: string,
     aggressiveness?: 'low' | 'medium' | 'high'
-  } = {}) => {
-    return mlApiClient.withRetry(
-      () => mlApiClient.fetch<{
-        success: boolean,
-        optimizedRoutes: number,
-        latencyReduction: number,
-        settings: Record<string, any>
-      }>(
-        `/ml/route-optimizer/${gameId}`,
-        {
-          method: 'POST',
-          body: JSON.stringify(params),
-        },
-        ML_API_CONFIG.MODELS.ROUTE_OPTIMIZER
-      ),
+  } = {}): Promise<MLRouteOptimizerResponse> => {
+    return mlApiClient.withRetry<MLRouteOptimizerResponse>(
+      `/ml/route-optimizer/${gameId}`,
       {
-        modelType: ML_API_CONFIG.MODELS.ROUTE_OPTIMIZER,
-        endpoint: `/ml/route-optimizer/${gameId}`
+        method: 'POST',
+        body: JSON.stringify(params),
       }
     );
   },
@@ -210,23 +234,12 @@ export const mlService = {
   /**
    * Performance predictor model: Predicts optimal settings for games
    */
-  predictPerformance: async (gameId: string, systemSpecs: any) => {
-    return mlApiClient.withRetry(
-      () => mlApiClient.fetch<{
-        recommendedSettings: Record<string, any>,
-        expectedFps: number,
-        confidence: number
-      }>(
-        `/ml/performance-predictor/${gameId}`,
-        {
-          method: 'POST',
-          body: JSON.stringify({ systemSpecs }),
-        },
-        ML_API_CONFIG.MODELS.PERFORMANCE_PREDICTOR
-      ),
+  predictPerformance: async (gameId: string, systemSpecs: any): Promise<MLPerformancePredictorResponse> => {
+    return mlApiClient.withRetry<MLPerformancePredictorResponse>(
+      `/ml/performance-predictor/${gameId}`,
       {
-        modelType: ML_API_CONFIG.MODELS.PERFORMANCE_PREDICTOR,
-        endpoint: `/ml/performance-predictor/${gameId}`
+        method: 'POST',
+        body: JSON.stringify({ systemSpecs }),
       }
     );
   },
@@ -234,25 +247,10 @@ export const mlService = {
   /**
    * Game detection model: Detects installed games and their state
    */
-  detectGames: async () => {
-    return mlApiClient.withRetry(
-      () => mlApiClient.fetch<{
-        detectedGames: Array<{
-          id: string,
-          name: string,
-          path: string,
-          lastPlayed?: Date,
-          version?: string
-        }>
-      }>(
-        '/ml/game-detection',
-        { method: 'GET' },
-        ML_API_CONFIG.MODELS.GAME_DETECTION
-      ),
-      {
-        modelType: ML_API_CONFIG.MODELS.GAME_DETECTION,
-        endpoint: '/ml/game-detection'
-      }
+  detectGames: async (): Promise<MLDetectedGamesResponse> => {
+    return mlApiClient.withRetry<MLDetectedGamesResponse>(
+      '/ml/game-detection',
+      { method: 'GET' }
     );
   },
   
@@ -265,7 +263,7 @@ export const mlService = {
     optimizeSystem?: boolean,
     aggressiveness?: 'low' | 'medium' | 'high',
     systemInfo?: any // NOVO: Permitir envio de informações do sistema
-  } = {}) => {
+  } = {}): Promise<MLOptimizeGameResponse> => {
     // Default all options to true if not specified
     const finalOptions = {
       optimizeRoutes: true,
@@ -279,26 +277,11 @@ export const mlService = {
       options: finalOptions
     });
     
-    return mlApiClient.withRetry(
-      () => mlApiClient.fetch<{
-        success: boolean,
-        optimizationType: 'network' | 'system' | 'both' | 'none',
-        improvements: {
-          latency?: number,
-          fps?: number,
-          stability?: number
-        }
-      }>(
-        `/ml/optimize-game/${gameId}`,
-        {
-          method: 'POST',
-          body: JSON.stringify(finalOptions),
-        },
-        ML_API_CONFIG.MODELS.ROUTE_OPTIMIZER
-      ),
+    return mlApiClient.withRetry<MLOptimizeGameResponse>(
+      `/ml/optimize-game/${gameId}`,
       {
-        modelType: ML_API_CONFIG.MODELS.ROUTE_OPTIMIZER,
-        endpoint: `/ml/optimize-game/${gameId}`
+        method: 'POST',
+        body: JSON.stringify(finalOptions),
       }
     );
   }
@@ -322,10 +305,7 @@ export const mlDiagnostics = {
     
     // Test route optimizer
     try {
-      await mlApiClient.fetch('/ml/health/route-optimizer', 
-        { method: 'GET' }, 
-        ML_API_CONFIG.MODELS.ROUTE_OPTIMIZER
-      );
+      await mlApiClient.fetch('/ml/health/route-optimizer', { method: 'GET' });
       results['routeOptimizer'] = { success: true };
     } catch (error: any) {
       success = false;
@@ -337,10 +317,7 @@ export const mlDiagnostics = {
     
     // Test performance predictor
     try {
-      await mlApiClient.fetch('/ml/health/performance-predictor',
-        { method: 'GET' },
-        ML_API_CONFIG.MODELS.PERFORMANCE_PREDICTOR
-      );
+      await mlApiClient.fetch('/ml/health/performance-predictor', { method: 'GET' });
       results['performancePredictor'] = { success: true };
     } catch (error: any) {
       success = false;
@@ -352,10 +329,7 @@ export const mlDiagnostics = {
     
     // Test game detection
     try {
-      await mlApiClient.fetch('/ml/health/game-detection',
-        { method: 'GET' },
-        ML_API_CONFIG.MODELS.GAME_DETECTION
-      );
+      await mlApiClient.fetch('/ml/health/game-detection', { method: 'GET' });
       results['gameDetection'] = { success: true };
     } catch (error: any) {
       success = false;
@@ -368,10 +342,7 @@ export const mlDiagnostics = {
     // Test de otimização de jogo específico
     try {
       // Usar ID de teste genérico apenas para verificar conectividade
-      await mlApiClient.fetch('/ml/health/game-optimization',
-        { method: 'GET' },
-        'game-optimization'
-      );
+      await mlApiClient.fetch('/ml/health/game-optimization', { method: 'GET' });
       results['gameOptimization'] = { success: true };
     } catch (error: any) {
       success = false;
@@ -396,10 +367,7 @@ export const mlDiagnostics = {
       // Tentativa deliberada de usar uma URL que deveria redirecionar
       const testUrl = '/ml/test-redirect';
       
-      await mlApiClient.fetch(testUrl, 
-        { method: 'GET' }, 
-        'redirect-test'
-      );
+      await mlApiClient.fetch(testUrl, { method: 'GET' });
       
       // Se chegou aqui, não detectou o redirecionamento corretamente
       return { 
