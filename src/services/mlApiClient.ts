@@ -1,3 +1,4 @@
+
 /**
  * Specialized API client for Machine Learning operations
  * Includes specific configurations to prevent redirects and handle ML-specific requirements
@@ -167,13 +168,15 @@ export const mlApiClient = {
   /**
    * Create a retry wrapper for ML operations that may sometimes fail
    */
+  // FIXED: Correct the type annotation for the withRetry function
   async withRetry<T>(
     endpoint: string, 
     options: RequestInit = {}, 
     retries: number = MAX_RETRIES
   ): Promise<T> {
     try {
-      return await this.fetch<T>(endpoint, options);
+      // FIXED: Remove explicit type argument to fix the TypeScript error
+      return await this.fetch(endpoint, options);
     } catch (error: any) {
       // Check if we have retries left
       if (retries > 0) {
@@ -184,7 +187,8 @@ export const mlApiClient = {
         await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
         
         // Retry with one less retry count
-        return this.withRetry<T>(endpoint, options, retries - 1);
+        // FIXED: Remove explicit type argument to fix the TypeScript error
+        return this.withRetry(endpoint, options, retries - 1);
       }
       
       // If no retries left or it's a redirect issue, throw as ML error
