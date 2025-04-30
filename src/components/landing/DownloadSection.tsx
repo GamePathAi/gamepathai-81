@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Download, Windows, Monitor, Apple } from "lucide-react";
+import { Download, Monitor, Apple } from "lucide-react";
 import { toast } from "sonner";
 
 interface DownloadInfo {
@@ -57,7 +57,7 @@ const DownloadSection: React.FC = () => {
 
   const getOSIcon = (os: 'windows' | 'mac' | 'linux' | 'unknown') => {
     switch(os) {
-      case 'windows': return <Windows className="mr-2" />;
+      case 'windows': return <Monitor className="mr-2" />;
       case 'mac': return <Apple className="mr-2" />;
       case 'linux': return <Monitor className="mr-2" />;
       default: return <Download className="mr-2" />;
