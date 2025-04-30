@@ -1,9 +1,10 @@
 
-import React from "react";
-import { Power, AlertTriangle, Wifi, WifiOff } from "lucide-react";
+import React, { useEffect } from "react";
+import { Power, AlertTriangle, Wifi, WifiOff, Globe, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useVpn } from "@/hooks/useVpn";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { formatDistanceToNow } from "date-fns";
 
 const ConnectionToggle: React.FC = () => {
   const { 
@@ -16,6 +17,13 @@ const ConnectionToggle: React.FC = () => {
     refetch,
     isConnected
   } = useVpn();
+
+  // Immediate status check when component mounts
+  useEffect(() => {
+    console.log("ConnectionToggle mounted - checking VPN status");
+    refetch();
+    // Only checking once on mount is sufficient since useVpn has its own polling
+  }, [refetch]);
 
   const toggleConnection = async () => {
     if (isConnecting || isDisconnecting) return;
@@ -37,6 +45,19 @@ const ConnectionToggle: React.FC = () => {
     return "status-disconnected hover:bg-cyber-darkblue hover:text-white";
   };
 
+  const getConnectionTime = () => {
+    if (!status?.connectionTime) return null;
+    
+    try {
+      return formatDistanceToNow(new Date(status.connectionTime), { addSuffix: false });
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const connectionTime = getConnectionTime();
+  const serverLocation = status?.serverLocation;
+
   return (
     <div className="flex items-center gap-2">
       {isBackendOnline === false && (
@@ -57,30 +78,64 @@ const ConnectionToggle: React.FC = () => {
         </TooltipProvider>
       )}
       
-      {isBackendOnline === true && (
-        <div className="text-xs text-cyber-green flex items-center">
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              onClick={toggleConnection}
+              disabled={isConnecting || isDisconnecting}
+              className={cn(
+                "font-tech text-xs px-3 py-1.5 rounded flex items-center gap-1.5 transition-all duration-300",
+                getButtonStatusClass()
+              )}
+              aria-label={isConnected ? "Desconectar" : "Conectar"}
+            >
+              <span className={cn(
+                "status-indicator",
+                isConnected ? "active" : "inactive"
+              )} />
+              {isConnecting ? "CONECTANDO..." : 
+               isDisconnecting ? "DESCONECTANDO..." : 
+               isConnected ? "CONECTADO" : "DESCONECTADO"}
+              <Power size={14} className={cn(isConnected ? "text-cyber-green" : "text-gray-400")} />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent className="flex flex-col space-y-1 w-48">
+            <div className="text-sm font-semibold">
+              {isConnected ? "VPN Conectada" : "VPN Desconectada"}
+            </div>
+            {isConnected && serverLocation && (
+              <div className="flex items-center gap-1 text-xs text-cyber-blue">
+                <Globe size={12} />
+                <span>{serverLocation}</span>
+              </div>
+            )}
+            {isConnected && connectionTime && (
+              <div className="flex items-center gap-1 text-xs text-gray-400">
+                <Clock size={12} />
+                <span>Tempo conectado: {connectionTime}</span>
+              </div>
+            )}
+            {!isConnected && (
+              <div className="text-xs text-gray-400">
+                Clique para conectar e otimizar sua conexão.
+              </div>
+            )}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      
+      {isConnected && isBackendOnline === true && (
+        <div className="hidden md:flex text-xs text-cyber-green items-center">
           <Wifi size={14} className="mr-1" />
         </div>
       )}
       
-      <button
-        onClick={toggleConnection}
-        disabled={isConnecting || isDisconnecting}
-        className={cn(
-          "font-tech text-xs px-3 py-1.5 rounded flex items-center gap-1.5 transition-all duration-300",
-          getButtonStatusClass()
-        )}
-        aria-label={isConnected ? "Desconectar" : "Conectar"}
-      >
-        <span className={cn(
-          "status-indicator",
-          isConnected ? "active" : "inactive"
-        )} />
-        {isConnecting ? "CONECTANDO..." : 
-         isDisconnecting ? "DESCONECTANDO..." : 
-         isConnected ? "CONECTADO" : "DESCONECTADO"}
-        <Power size={14} className={cn(isConnected ? "text-cyber-green" : "text-gray-400")} />
-      </button>
+      {!isConnected && isBackendOnline === true && (
+        <div className="hidden md:flex text-xs text-gray-500 items-center">
+          <WifiOff size={14} className="mr-1" />
+        </div>
+      )}
     </div>
   );
 };

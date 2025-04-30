@@ -26,16 +26,20 @@ export function useVpn() {
   const [isConnecting, setIsConnecting] = useState(false);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
   
-  // Fetch VPN status using React Query
+  // Fetch VPN status using React Query with more frequent updates
   const { data: initialVpnStatus, isLoading: isInitialLoading, refetch } = useQuery({
     queryKey: ["vpnStatus"],
     queryFn: vpnService.getStatus,
-    retry: false, // Do not retry on error
-    refetchInterval: 15000, // Refetch every 15 seconds
+    retry: 2, // Retry twice on error
+    refetchInterval: 10000, // Refetch every 10 seconds
+    refetchOnWindowFocus: true, // Refetch when window regains focus
   });
   
   useEffect(() => {
     if (initialVpnStatus) {
+      // Log data for debugging
+      console.log("VPN status updated:", initialVpnStatus);
+      
       setIsConnected(initialVpnStatus.connected || false);
       setVpnStatus(initialVpnStatus.connected ? "connected" : "disconnected");
       setStatus(initialVpnStatus);
@@ -71,6 +75,8 @@ export function useVpn() {
     } finally {
       setIsLoading(false);
       setIsConnecting(false);
+      // Force a status refresh after connecting
+      refetch();
     }
   };
   
@@ -101,6 +107,8 @@ export function useVpn() {
     } finally {
       setIsLoading(false);
       setIsDisconnecting(false);
+      // Force a status refresh after disconnecting
+      refetch();
     }
   };
   
