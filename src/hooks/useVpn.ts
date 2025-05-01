@@ -26,13 +26,22 @@ export function useVpn() {
   const [isConnecting, setIsConnecting] = useState(false);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
   
-  // Fetch VPN status using React Query with more frequent updates
+  // Fetch VPN status using React Query with more frequent updates and improved error handling
   const { data: initialVpnStatus, isLoading: isInitialLoading, refetch } = useQuery({
     queryKey: ["vpnStatus"],
     queryFn: vpnService.getStatus,
     retry: 2, // Retry twice on error
     refetchInterval: 10000, // Refetch every 10 seconds
     refetchOnWindowFocus: true, // Refetch when window regains focus
+    onError: (error) => {
+      // Log detailed error information
+      console.error("Failed to fetch VPN status:", error);
+      setIsBackendOnline(false);
+    },
+    onSuccess: () => {
+      // Backend is definitely online if we get a successful response
+      setIsBackendOnline(true);
+    }
   });
   
   useEffect(() => {
@@ -47,6 +56,22 @@ export function useVpn() {
       setIsBackendOnline(true);
     }
   }, [initialVpnStatus]);
+  
+  // Verificar explicitamente o status de conexão do backend ao montar o componente
+  useEffect(() => {
+    const checkBackendStatus = async () => {
+      try {
+        const isOnline = await vpnService.checkBackendConnection();
+        setIsBackendOnline(isOnline);
+        console.log(`Backend connection status checked: ${isOnline ? "online" : "offline"}`);
+      } catch (error) {
+        console.error("Backend connection check failed:", error);
+        setIsBackendOnline(false);
+      }
+    };
+    
+    checkBackendStatus();
+  }, []);
   
   const connect = async (serverId: string = "auto") => {
     setIsLoading(true);

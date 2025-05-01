@@ -26,6 +26,7 @@ export const testBackendConnection = async () => {
     
     const response = await fetch(sanitizedUrl, { 
       mode: 'cors',
+      method: 'GET', // Usando GET em vez de HEAD para compatibilidade
       headers: {
         "Accept": "application/json",
         "X-No-Redirect": "1", // Prevent redirects
@@ -36,8 +37,7 @@ export const testBackendConnection = async () => {
         "X-Requested-With": "XMLHttpRequest"
       },
       signal: controller.signal,
-      cache: 'no-store',
-      redirect: 'error' // Treat redirects as errors
+      cache: 'no-store'
     });
     
     clearTimeout(timeoutId);
@@ -55,7 +55,6 @@ export const testBackendConnection = async () => {
           original: sanitizedUrl,
           redirected: response.url
         });
-        return false;
       }
     }
     
@@ -89,13 +88,13 @@ export const testAWSConnection = async () => {
     
     const response = await fetch(awsHealthUrl, { 
       mode: 'cors',
+      method: 'GET', // Usando GET em vez de HEAD para compatibilidade
       headers: {
         "Accept": "application/json",
         "X-No-Redirect": "1",
         "X-Max-Redirects": "0"
       },
-      signal: controller.signal,
-      redirect: 'manual' // Use manual to observe redirections
+      signal: controller.signal
     });
     
     clearTimeout(timeoutId);
