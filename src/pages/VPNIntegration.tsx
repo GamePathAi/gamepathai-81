@@ -16,8 +16,18 @@ import { useVpn } from "@/hooks/useVpn";
 
 const VPNIntegration = () => {
   const [premiumStatus, setPremiumStatus] = useState<"trial" | "active" | "expired">("trial");
-  const { isConnected, connect, disconnect, status } = useVpn();
+  const { isConnected, connect, disconnect, status, refetch } = useVpn();
   const [selectedServer, setSelectedServer] = useState("auto");
+  
+  // When component mounts, update selectedServer if VPN is already connected
+  useEffect(() => {
+    if (isConnected && status?.serverId) {
+      setSelectedServer(status.serverId);
+    }
+    
+    // Refresh VPN status
+    refetch();
+  }, [isConnected, status?.serverId, refetch]);
 
   const handleToggleVPN = () => {
     if (premiumStatus === "expired") {
@@ -30,12 +40,15 @@ const VPNIntegration = () => {
     if (isConnected) {
       disconnect();
     } else {
+      console.log(`Connecting to selected server: ${selectedServer}`);
       connect(selectedServer);
     }
   };
 
   const handleServerSelect = (serverId: string) => {
+    console.log(`Server selected: ${serverId}`);
     setSelectedServer(serverId);
+    
     // If VPN is already connected, reconnect with new server
     if (isConnected) {
       disconnect().then(() => {
@@ -46,8 +59,6 @@ const VPNIntegration = () => {
           });
         }, 500);
       });
-    } else {
-      setSelectedServer(serverId);
     }
   };
 

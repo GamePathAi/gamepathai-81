@@ -7,6 +7,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useVpn } from "@/hooks/useVpn";
 import { formatDistanceToNow } from "date-fns";
+import { SERVER_LOCATIONS } from "@/services/vpn/mockData";
 
 interface VPNStatusProps {
   isActive: boolean;
@@ -27,8 +28,24 @@ export const VPNStatus: React.FC<VPNStatusProps> = ({ isActive, onToggle, select
     }
   };
   
+  // Get the server location from status or from the selected server
+  const getServerLocation = () => {
+    // If connected, use the status.serverLocation which should be accurate
+    if (status?.serverLocation) {
+      return status.serverLocation;
+    }
+    
+    // If not connected but selectedServer is provided, show the selected server
+    if (selectedServer && selectedServer !== "auto") {
+      return SERVER_LOCATIONS[selectedServer] || "Unknown Location";
+    }
+    
+    // Default fallback
+    return "Automatic (Best Server)";
+  };
+  
+  const serverLocation = getServerLocation();
   const connectionTime = getConnectionTime();
-  const serverLocation = status?.serverLocation || "Connecting...";
   
   return (
     <Card className={`cyber-card border-${isActive ? 'cyber-green' : 'cyber-red'}/30 transition-all duration-300`}>

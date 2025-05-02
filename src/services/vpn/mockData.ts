@@ -26,7 +26,7 @@ export const getMockVpnStatus = () => {
   return {
     connected: mockVpnConnectionState,
     serverIp: mockVpnConnectionState ? "192.168.1.1" : null,
-    serverLocation: mockVpnConnectionState ? (mockServerLocation || "São Paulo, BR") : null,
+    serverLocation: mockVpnConnectionState ? mockServerLocation : null,
     recommendedServer: "auto",
     connectionTime: mockConnectionTimestamp,
     lastError: null,
@@ -59,14 +59,28 @@ export const updateMockConnectionState = (
   mockServerId = serverId || null;
   
   if (isConnected && serverId) {
-    // Get server location based on serverId
-    const server = mockVpnServers.find(s => s.id === serverId);
-    if (server) {
-      mockServerLocation = serverId === "auto" ? "São Paulo, BR" : SERVER_LOCATIONS[serverId] || server.name;
-    } else {
+    // Get server location from SERVER_LOCATIONS mapping
+    if (serverId === "auto") {
+      // For auto, use São Paulo as the default "best server"
       mockServerLocation = "São Paulo, BR";
+    } else {
+      // Use the defined location from SERVER_LOCATIONS or fallback to server name
+      mockServerLocation = SERVER_LOCATIONS[serverId] || null;
+      
+      // If location not found in mapping, try to find it from mockVpnServers
+      if (!mockServerLocation) {
+        const server = mockVpnServers.find(s => s.id === serverId);
+        if (server) {
+          mockServerLocation = server.name;
+        } else {
+          mockServerLocation = "Unknown Location";
+        }
+      }
     }
   } else {
     mockServerLocation = null;
   }
+  
+  // Log for debugging
+  console.log(`Mock VPN state updated: connected=${isConnected}, server=${mockServerLocation}, id=${serverId}`);
 };

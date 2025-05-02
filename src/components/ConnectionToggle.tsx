@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { useVpn } from "@/hooks/useVpn";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatDistanceToNow } from "date-fns";
+import { SERVER_LOCATIONS } from "@/services/vpn/mockData";
 
 interface ConnectionToggleProps {
   selectedServer?: string;
@@ -36,6 +37,7 @@ const ConnectionToggle: React.FC<ConnectionToggleProps> = ({ selectedServer = "a
       if (isConnected) {
         await disconnect();
       } else {
+        console.log(`ConnectionToggle: connecting to ${selectedServer}`);
         await connect(selectedServer);
       }
     } catch (error) {
@@ -58,9 +60,29 @@ const ConnectionToggle: React.FC<ConnectionToggleProps> = ({ selectedServer = "a
       return null;
     }
   };
+  
+  const getServerLocation = () => {
+    // First try to get from status
+    if (status?.serverLocation) {
+      return status.serverLocation;
+    }
+    
+    // Then try to get from serverId
+    if (status?.serverId && SERVER_LOCATIONS[status.serverId]) {
+      return SERVER_LOCATIONS[status.serverId];
+    }
+    
+    // Then try selected server
+    if (selectedServer && SERVER_LOCATIONS[selectedServer]) {
+      return SERVER_LOCATIONS[selectedServer];
+    }
+    
+    // Fallback
+    return "Automatic Server";
+  };
 
   const connectionTime = getConnectionTime();
-  const serverLocation = status?.serverLocation;
+  const serverLocation = getServerLocation();
 
   return (
     <div className="flex items-center gap-2">

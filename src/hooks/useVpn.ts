@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { vpnService } from "../services/vpn"; // Updated import
 import { useToast } from "@/components/ui/use-toast";
 import { useQuery } from "@tanstack/react-query";
-import { getApiBaseUrl } from "../utils/url";
 
 // Define the interface for VPN status response
 interface VpnStatusResponse {
@@ -13,6 +12,7 @@ interface VpnStatusResponse {
   recommendedServer?: string;
   connectionTime?: number | null;
   lastError?: string | null;
+  serverId?: string | null;
 }
 
 export function useVpn() {
@@ -87,14 +87,17 @@ export function useVpn() {
     setVpnStatus("connecting");
     
     try {
+      console.log(`Connecting to VPN with server ID: ${serverId}`);
       const result = await vpnService.connect(serverId) as VpnStatusResponse;
+      
+      console.log("VPN connection result:", result);
       setIsConnected(result?.connected || false);
       setVpnStatus(result?.connected ? "connected" : "disconnected");
       setStatus(result);
       
       toast({
         title: "VPN Connected",
-        description: "You are now connected to the VPN.",
+        description: `You are now connected to ${result?.serverLocation || 'the VPN'}.`,
       });
     } catch (err: any) {
       setError(err.message || "Failed to connect to VPN");

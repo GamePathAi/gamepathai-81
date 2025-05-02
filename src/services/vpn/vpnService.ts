@@ -1,3 +1,4 @@
+
 import { toast } from "sonner";
 import { isWebAuthnSupported } from "../../utils/webAuthnSupport";
 import { 
@@ -50,15 +51,18 @@ export const vpnService = {
         console.warn("WebAuthn check failed:", error);
       }
       
+      // Log the server ID being connected to
+      console.log(`Connecting to VPN server: ${serverId}`);
+      
       const isBackendAvailable = await checkBackendConnection();
       if (!isBackendAvailable) {
         console.log("Backend indisponível, simulando conexão VPN");
         
-        // Atualizar estado mockado
+        // Atualizar estado mockado com o ID do servidor selecionado
         updateMockConnectionState(true, serverId);
         
-        // Get server location based on serverId for display
-        const serverLocation = getMockVpnStatus().serverLocation;
+        // Get server location for display
+        const serverLocation = getMockVpnStatus().serverLocation || SERVER_LOCATIONS[serverId] || "Unknown Server";
         
         toast.success("VPN conectada (modo simulado)", {
           description: `Conectado a ${serverLocation} (simulado)`
@@ -84,7 +88,7 @@ export const vpnService = {
         if (error.isHtmlResponse) {
           console.warn("Received HTML response when connecting to VPN. Falling back to mock data.");
           
-          // Simulate successful connection
+          // Simulate successful connection with the selected server ID
           updateMockConnectionState(true, serverId);
           
           // Get server location for display
