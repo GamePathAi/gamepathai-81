@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { vpnService } from "../services/vpnService";
+import { vpnService } from "../services/vpn"; // Updated import
 import { useToast } from "@/components/ui/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { getApiBaseUrl } from "../utils/url";
