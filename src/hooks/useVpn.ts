@@ -33,14 +33,15 @@ export function useVpn() {
     retry: 2, // Retry twice on error
     refetchInterval: 10000, // Refetch every 10 seconds
     refetchOnWindowFocus: true, // Refetch when window regains focus
-    onError: (error) => {
-      // Log detailed error information
-      console.error("Failed to fetch VPN status:", error);
-      setIsBackendOnline(false);
-    },
-    onSuccess: () => {
-      // Backend is definitely online if we get a successful response
-      setIsBackendOnline(true);
+    onSettled: (data, error) => {
+      if (error) {
+        // Log detailed error information
+        console.error("Failed to fetch VPN status:", error);
+        setIsBackendOnline(false);
+      } else if (data) {
+        // Backend is definitely online if we get a successful response
+        setIsBackendOnline(true);
+      }
     }
   });
   
