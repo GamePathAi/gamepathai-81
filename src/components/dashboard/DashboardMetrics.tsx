@@ -11,7 +11,8 @@ const DashboardMetrics: React.FC = () => {
     ping,
     fps,
     jitter,
-    isLoading: { ping: isPingLoading, fps: isFpsLoading, jitter: isJitterLoading }
+    isLoading: { ping: isPingLoading, fps: isFpsLoading, jitter: isJitterLoading },
+    isOfflineMode
   } = useMetrics();
 
   if (isPingLoading || isFpsLoading || isJitterLoading) {

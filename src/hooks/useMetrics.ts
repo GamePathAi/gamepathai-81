@@ -3,50 +3,21 @@ import { useQuery } from "@tanstack/react-query";
 import { metricsService } from "../services/metricsService";
 import { useState, useEffect } from "react";
 import { MetricData, SystemData } from "../types/metrics";
-import { getApiBaseUrl } from "../utils/url"; // Now correctly imported
+import { useAwsIntegration } from "./useAwsIntegration";
 
 export function useMetrics(gameId?: string) {
-  const [isOfflineMode, setIsOfflineMode] = useState<boolean>(false);
-  const apiBaseUrl = getApiBaseUrl();
+  const { isConnected, lastChecked } = useAwsIntegration();
+  const [isOfflineMode, setIsOfflineMode] = useState<boolean>(!isConnected);
   
-  // Verificar se estamos em modo offline (backend indisponível)
+  // Update offline mode when connection status changes
   useEffect(() => {
-    const checkBackend = async () => {
-      try {
-        // Ensure we use a clean URL without duplicated /api/
-        const healthUrl = `${apiBaseUrl}/health`.replace(/\/api\/api\//g, '/api/');
-        
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3000);
-        
-        const response = await fetch(healthUrl, { 
-          mode: 'cors',
-          method: 'HEAD',
-          headers: {
-            "Accept": "application/json",
-            "X-No-Redirect": "1"
-          },
-          cache: 'no-cache',
-          signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-        setIsOfflineMode(!response.ok);
-      } catch (error) {
-        setIsOfflineMode(true);
-      }
-    };
-    
-    checkBackend();
-    const interval = setInterval(checkBackend, 60000); // Verificar a cada minuto
-    
-    return () => clearInterval(interval);
-  }, [apiBaseUrl]);
+    setIsOfflineMode(!isConnected);
+  }, [isConnected, lastChecked]);
   
   const pingQuery = useQuery({
     queryKey: ["metrics", "ping"],
     queryFn: metricsService.getPing,
-    refetchInterval: isOfflineMode ? false : 10000, // Atualizar a cada 10 segundos se estiver online
+    refetchInterval: isOfflineMode ? false : 10000, // Refresh every 10 seconds if online
     retry: isOfflineMode ? false : 1,
     staleTime: 5000
   });
@@ -63,7 +34,7 @@ export function useMetrics(gameId?: string) {
     queryKey: ["metrics", "fps", gameId],
     queryFn: () => metricsService.getFps(gameId),
     refetchInterval: isOfflineMode ? false : 5000,
-    enabled: !!gameId, // Só buscar FPS se tiver um jogo
+    enabled: !!gameId, // Only fetch FPS if gameId is provided
     retry: isOfflineMode ? false : 1,
     staleTime: 5000
   });
@@ -71,7 +42,7 @@ export function useMetrics(gameId?: string) {
   const systemQuery = useQuery({
     queryKey: ["metrics", "system"],
     queryFn: metricsService.getSystem,
-    refetchInterval: isOfflineMode ? false : 15000, // Atualizar a cada 15 segundos se estiver online
+    refetchInterval: isOfflineMode ? false : 15000, // Less frequent updates for system metrics
     retry: isOfflineMode ? false : 1,
     staleTime: 5000
   });
