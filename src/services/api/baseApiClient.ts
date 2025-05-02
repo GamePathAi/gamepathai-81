@@ -5,12 +5,12 @@ import {
 } from "../../utils/url";
 
 // Configure API base URL - always use relative URLs
-const API_BASE_URL = getApiBaseUrl();
+const API_BASE_URL = '';  // Changed to use empty string for relative URLs
 
 // Remove noisy logging and only log in development
 const isDev = process.env.NODE_ENV === 'development';
 if (isDev) {
-  console.log("API_BASE_URL being used:", API_BASE_URL);
+  console.log("API_BASE_URL being used:", getApiBaseUrl());
 }
 
 export const baseApiClient = {
@@ -23,8 +23,8 @@ export const baseApiClient = {
       .replace(/^\/api\//, '/') // Remove leading /api/
       .replace(/\/api\//, '/'); // Remove any /api/ in the path
     
-    // Join API_BASE_URL with the cleaned endpoint
-    let url = `${API_BASE_URL}${cleanedEndpoint}`;
+    // Use empty base URL for relative paths
+    let url = cleanedEndpoint;
     
     // FINAL CHECK: Ensure absolute URLs are converted to relative paths
     url = sanitizeApiUrl(url);
@@ -66,22 +66,22 @@ export const baseApiClient = {
         console.log(`✅ URL convertido para: ${url}`);
       }
       
-      // Advanced fetch options - MODIFIED: Allow redirects in development
+      // Advanced fetch options
       const fetchOptions: RequestInit = {
         ...options,
         headers,
         mode: 'cors',
         credentials: 'include',
         cache: 'no-store',
-        // MODIFIED: Allow redirects in development, but monitor them
-        redirect: isDev ? 'follow' : 'error',
+        // CHANGED: Error on redirect, don't follow
+        redirect: 'error',
         signal: controller.signal
       };
       
       const response = await fetch(url, fetchOptions);
       clearTimeout(timeoutId);
       
-      // Enhanced redirect verification - MODIFIED: In development, log but allow
+      // Enhanced redirect verification
       if (response.url && response.url !== url) {
         // Check for origin or domain changes
         const originalUrl = new URL(url, window.location.origin);
@@ -166,8 +166,8 @@ async function tryRenewToken() {
     const refreshToken = localStorage.getItem("refresh_token");
     if (!refreshToken) return false;
     
-    // IMPROVED: Remove /api/ from the path
-    const url = `${API_BASE_URL}/auth/refresh-token`.replace(/\/api\//g, '/');
+    // IMPROVED: Use relative path
+    const url = `/auth/refresh-token`;
     
     const response = await fetch(sanitizeApiUrl(url), {
       method: "POST",

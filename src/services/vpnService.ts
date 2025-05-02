@@ -1,4 +1,3 @@
-
 import { apiClient } from './api';
 import { toast } from "sonner";
 import { isWebAuthnSupported } from "../utils/webAuthnSupport";
@@ -13,13 +12,13 @@ const HEALTH_ENDPOINT = '/health';
 // Array de possíveis prefixos de API para tentar, em caso de alteração da estrutura
 const API_PREFIXES = ['', '/api', '/api/v1'];
 
-// Função para verificar se o backend está disponível usando GET em vez de HEAD
+// UPDATED: Use GET instead of HEAD for health checks
 const checkBackendConnection = async () => {
   try {
     console.log("Testando conexão com backend usando GET...");
     const response = await fetch(HEALTH_ENDPOINT, { 
       mode: 'cors',
-      method: 'GET', // Usar GET em vez de HEAD, que pode não ser suportado
+      method: 'GET',
       headers: {
         "Accept": "application/json",
         "X-No-Redirect": "1"

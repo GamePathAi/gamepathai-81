@@ -17,9 +17,17 @@ export const metricsClient = {
           await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
         }
         
-        return await apiClient.fetch<T>(endpoint);
+        // Add debug logging for this attempt
+        console.log(`Attempting to fetch from endpoint: ${endpoint}`);
+        
+        const result = await apiClient.fetch<T>(endpoint);
+        console.log(`Successfully fetched data from ${endpoint}`);
+        return result;
       } catch (error: any) {
         lastError = error;
+        
+        // Enhanced error logging
+        console.log(`Detalhes do erro:`, JSON.stringify(error, null, 2));
         
         // If we got HTML instead of JSON, don't retry
         if (error.isHtmlResponse) {
