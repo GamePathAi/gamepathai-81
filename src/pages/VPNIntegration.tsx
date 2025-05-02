@@ -16,7 +16,8 @@ import { useVpn } from "@/hooks/useVpn";
 
 const VPNIntegration = () => {
   const [premiumStatus, setPremiumStatus] = useState<"trial" | "active" | "expired">("trial");
-  const { isConnected, connect, disconnect } = useVpn();
+  const { isConnected, connect, disconnect, status } = useVpn();
+  const [selectedServer, setSelectedServer] = useState("auto");
 
   const handleToggleVPN = () => {
     if (premiumStatus === "expired") {
@@ -29,7 +30,24 @@ const VPNIntegration = () => {
     if (isConnected) {
       disconnect();
     } else {
-      connect("auto");
+      connect(selectedServer);
+    }
+  };
+
+  const handleServerSelect = (serverId: string) => {
+    setSelectedServer(serverId);
+    // If VPN is already connected, reconnect with new server
+    if (isConnected) {
+      disconnect().then(() => {
+        setTimeout(() => {
+          connect(serverId);
+          toast.success(`Changing server to ${serverId}`, {
+            description: "Reconnecting to the selected server"
+          });
+        }, 500);
+      });
+    } else {
+      setSelectedServer(serverId);
     }
   };
 
@@ -71,7 +89,7 @@ const VPNIntegration = () => {
         </div>
 
         {/* VPN Status Bar */}
-        <VPNStatus isActive={isConnected} onToggle={handleToggleVPN} />
+        <VPNStatus isActive={isConnected} onToggle={handleToggleVPN} selectedServer={selectedServer} />
         
         <Tabs defaultValue="servers" className="w-full">
           <TabsList className="bg-cyber-darkblue border border-cyber-blue/20 mb-6">
@@ -98,7 +116,11 @@ const VPNIntegration = () => {
           </TabsList>
 
           <TabsContent value="servers" className="mt-0">
-            <GameServerAccess isVPNActive={isConnected} />
+            <GameServerAccess 
+              isVPNActive={isConnected} 
+              onServerSelect={handleServerSelect}
+              selectedServer={selectedServer}
+            />
           </TabsContent>
 
           <TabsContent value="network" className="mt-0">

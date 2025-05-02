@@ -6,7 +6,11 @@ import { useVpn } from "@/hooks/useVpn";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatDistanceToNow } from "date-fns";
 
-const ConnectionToggle: React.FC = () => {
+interface ConnectionToggleProps {
+  selectedServer?: string;
+}
+
+const ConnectionToggle: React.FC<ConnectionToggleProps> = ({ selectedServer = "auto" }) => {
   const { 
     status, 
     connect, 
@@ -32,7 +36,7 @@ const ConnectionToggle: React.FC = () => {
       if (isConnected) {
         await disconnect();
       } else {
-        await connect(status?.recommendedServer || "auto");
+        await connect(selectedServer);
       }
     } catch (error) {
       console.error("Connection toggle error:", error);

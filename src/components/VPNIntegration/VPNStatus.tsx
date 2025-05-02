@@ -11,9 +11,10 @@ import { formatDistanceToNow } from "date-fns";
 interface VPNStatusProps {
   isActive: boolean;
   onToggle: () => void;
+  selectedServer?: string;
 }
 
-export const VPNStatus: React.FC<VPNStatusProps> = ({ isActive, onToggle }) => {
+export const VPNStatus: React.FC<VPNStatusProps> = ({ isActive, onToggle, selectedServer = "auto" }) => {
   const { isBackendOnline, status } = useVpn();
   
   const getConnectionTime = () => {
@@ -27,7 +28,7 @@ export const VPNStatus: React.FC<VPNStatusProps> = ({ isActive, onToggle }) => {
   };
   
   const connectionTime = getConnectionTime();
-  const serverLocation = status?.serverLocation || "Frankfurt, DE";
+  const serverLocation = status?.serverLocation || "Connecting...";
   
   return (
     <Card className={`cyber-card border-${isActive ? 'cyber-green' : 'cyber-red'}/30 transition-all duration-300`}>
