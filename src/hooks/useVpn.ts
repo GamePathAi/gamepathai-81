@@ -33,18 +33,9 @@ export function useVpn() {
     retry: 2, // Retry twice on error
     refetchInterval: 10000, // Refetch every 10 seconds
     refetchOnWindowFocus: true, // Refetch when window regains focus
-    onSettled: (data, error) => {
-      if (error) {
-        // Log detailed error information
-        console.error("Failed to fetch VPN status:", error);
-        setIsBackendOnline(false);
-      } else if (data) {
-        // Backend is definitely online if we get a successful response
-        setIsBackendOnline(true);
-      }
-    }
   });
   
+  // Handle success and error cases separately using useEffect
   useEffect(() => {
     if (initialVpnStatus) {
       // Log data for debugging
@@ -57,6 +48,21 @@ export function useVpn() {
       setIsBackendOnline(true);
     }
   }, [initialVpnStatus]);
+  
+  // Add an error effect for the query
+  const { error: queryError } = useQuery({
+    queryKey: ["vpnStatus"],
+    queryFn: vpnService.getStatus,
+    enabled: false, // Don't actually run this query, we just want access to the error state
+  });
+  
+  // React to query errors
+  useEffect(() => {
+    if (queryError) {
+      console.error("Failed to fetch VPN status:", queryError);
+      setIsBackendOnline(false);
+    }
+  }, [queryError]);
   
   // Verificar explicitamente o status de conexão do backend ao montar o componente
   useEffect(() => {
