@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -60,95 +59,100 @@ import NetworkOptimization from "./pages/resources/docs/NetworkOptimization";
 import CustomConfigurations from "./pages/resources/docs/CustomConfigurations";
 import SupportInstallationPage from "./pages/support/InstallationPage";
 import Dashboard from "./pages/Dashboard";
+import MonitoringDashboard from './pages/MonitoringDashboard';
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <HelmetProvider>
-      <TooltipProvider>
-        <NotificationProvider>
-          <SubscriptionProvider>
-            <Toaster />
-            <Sonner />
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              
-              {/* Homepage is now the root route */}
-              <Route path="/" element={<HomePage />} />
-              <Route path="/download" element={<DownloadPage />} />
-              
-              {/* Dashboard routes */}
-              <Route path="/dashboard" element={<Index />} />
-              <Route path="/index" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/network-metrics" element={<NetworkMetrics />} />
-              <Route path="/system-optimization" element={<SystemOptimization />} />
-              <Route path="/route-optimizer" element={<RouteOptimizerPage />} />
-              <Route path="/performance" element={<Performance />} />
-              <Route path="/advanced-optimizer" element={<AdvancedOptimizer />} />
-              <Route path="/vpn-integration" element={<VPNIntegration />} />
-              <Route path="/power-manager" element={<PowerManager />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/subscription" element={<SubscriptionManagement />} />
-              <Route path="/account/subscription" element={<AccountSubscription />} />
-              
-              <Route path="/account" element={<Account />} />
-              <Route path="/account/payment-methods" element={<PaymentMethods />} />
-              <Route path="/account/billing-history" element={<BillingHistory />} />
-              <Route path="/account/change-plan" element={<ChangePlan />} />
-              <Route path="/account/cancel-subscription" element={<CancelSubscription />} />
-              
-              <Route path="/checkout/plan" element={<CheckoutPlanPage />} />
-              <Route path="/checkout/payment" element={<CheckoutPaymentPage />} />
-              <Route path="/checkout/processing" element={<CheckoutProcessingPage />} />
-              <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
-              
-              {/* Landing pages */}
-              <Route path="/landing" element={<Navigate to="/" replace />} />
-              <Route path="/features" element={<FeaturesPage />} />
-              <Route path="/pricing" element={<PricingPage />} />
-              <Route path="/technology" element={<TechnologyPage />} />
-              
-              <Route path="/games/:gameName" element={<GamePage />} />
-              
-              <Route path="/privacy" element={<PrivacyPolicy />} />
-              <Route path="/terms" element={<TermsOfService />} />
-              <Route path="/cookies" element={<CookiePolicy />} />
-              <Route path="/gdpr" element={<GDPRCompliance />} />
-              
-              <Route path="/games" element={<Games />} />
-              
-              <Route path="*" element={<NotFound />} />
-              
-              {/* Company Pages */}
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/blog" element={<BlogPage />} />
-              <Route path="/blog/:slug" element={<BlogArticlePage />} />
-              <Route path="/careers" element={<CareersPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              
-              {/* Resources Pages */}
-              <Route path="/docs" element={<DocumentationPage />} />
-              <Route path="/support" element={<SupportPage />} />
-              <Route path="/support/installation" element={<SupportInstallationPage />} />
-              <Route path="/status" element={<StatusPage />} />
-              <Route path="/faq" element={<FaqPage />} />
-              
-              {/* Documentation Routes */}
-              <Route path="/docs/quick-start" element={<QuickStartGuide />} />
-              <Route path="/docs/installation" element={<InstallationPage />} />
-              <Route path="/docs/basic-configuration" element={<BasicConfiguration />} />
-              <Route path="/docs/performance-tuning" element={<PerformanceTuning />} />
-              <Route path="/docs/network-optimization" element={<NetworkOptimization />} />
-              <Route path="/docs/custom-configurations" element={<CustomConfigurations />} />
-            </Routes>
-          </SubscriptionProvider>
-        </NotificationProvider>
-      </TooltipProvider>
-    </HelmetProvider>
-  </QueryClientProvider>
-);
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <HelmetProvider>
+        <TooltipProvider>
+          <NotificationProvider>
+            <SubscriptionProvider>
+              <Toaster />
+              <Sonner />
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                
+                {/* Homepage is now the root route */}
+                <Route path="/" element={<HomePage />} />
+                <Route path="/download" element={<DownloadPage />} />
+                
+                {/* Dashboard routes */}
+                <Route path="/dashboard" element={<Index />} />
+                <Route path="/index" element={<Navigate to="/dashboard" replace />} />
+                <Route path="/network-metrics" element={<NetworkMetrics />} />
+                <Route path="/system-optimization" element={<SystemOptimization />} />
+                <Route path="/route-optimizer" element={<RouteOptimizerPage />} />
+                <Route path="/performance" element={<Performance />} />
+                <Route path="/advanced-optimizer" element={<AdvancedOptimizer />} />
+                <Route path="/vpn-integration" element={<VPNIntegration />} />
+                <Route path="/power-manager" element={<PowerManager />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/subscription" element={<SubscriptionManagement />} />
+                <Route path="/account/subscription" element={<AccountSubscription />} />
+                
+                <Route path="/account" element={<Account />} />
+                <Route path="/account/payment-methods" element={<PaymentMethods />} />
+                <Route path="/account/billing-history" element={<BillingHistory />} />
+                <Route path="/account/change-plan" element={<ChangePlan />} />
+                <Route path="/account/cancel-subscription" element={<CancelSubscription />} />
+                
+                <Route path="/checkout/plan" element={<CheckoutPlanPage />} />
+                <Route path="/checkout/payment" element={<CheckoutPaymentPage />} />
+                <Route path="/checkout/processing" element={<CheckoutProcessingPage />} />
+                <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
+                
+                {/* Landing pages */}
+                <Route path="/landing" element={<Navigate to="/" replace />} />
+                <Route path="/features" element={<FeaturesPage />} />
+                <Route path="/pricing" element={<PricingPage />} />
+                <Route path="/technology" element={<TechnologyPage />} />
+                
+                <Route path="/games/:gameName" element={<GamePage />} />
+                
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<TermsOfService />} />
+                <Route path="/cookies" element={<CookiePolicy />} />
+                <Route path="/gdpr" element={<GDPRCompliance />} />
+                
+                <Route path="/games" element={<Games />} />
+                
+                <Route path="/monitoring-dashboard" element={<MonitoringDashboard />} />
+                
+                <Route path="*" element={<NotFound />} />
+                
+                {/* Company Pages */}
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/blog" element={<BlogPage />} />
+                <Route path="/blog/:slug" element={<BlogArticlePage />} />
+                <Route path="/careers" element={<CareersPage />} />
+                <Route path="/contact" element={<ContactPage />} />
+                
+                {/* Resources Pages */}
+                <Route path="/docs" element={<DocumentationPage />} />
+                <Route path="/support" element={<SupportPage />} />
+                <Route path="/support/installation" element={<SupportInstallationPage />} />
+                <Route path="/status" element={<StatusPage />} />
+                <Route path="/faq" element={<FaqPage />} />
+                
+                {/* Documentation Routes */}
+                <Route path="/docs/quick-start" element={<QuickStartGuide />} />
+                <Route path="/docs/installation" element={<InstallationPage />} />
+                <Route path="/docs/basic-configuration" element={<BasicConfiguration />} />
+                <Route path="/docs/performance-tuning" element={<PerformanceTuning />} />
+                <Route path="/docs/network-optimization" element={<NetworkOptimization />} />
+                <Route path="/docs/custom-configurations" element={<CustomConfigurations />} />
+              </Routes>
+            </SubscriptionProvider>
+          </NotificationProvider>
+        </TooltipProvider>
+      </HelmetProvider>
+    </QueryClientProvider>
+  );
+}
 
 export default App;
