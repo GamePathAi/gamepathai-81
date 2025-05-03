@@ -29,11 +29,22 @@ export default defineConfig(({ mode }) => ({
     hmr: false,
     proxy: {
       // Enhanced proxy configuration to prevent redirects
-      '/api': {
+      '/': {
         target: 'http://localhost:8081', // Changed to use local port instead of AWS LB
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '/api'),
+        bypass: (req) => {
+          // Skip proxying for frontend assets
+          if (
+            req.url && req.url.startsWith('/assets/') || 
+            req.url && req.url.startsWith('/favicon.ico') || 
+            req.url && req.url.startsWith('/src/') || 
+            req.url && req.url.startsWith('/images/') ||
+            req.url === '/'
+          ) {
+            return req.url;
+          }
+        },
         configure: (proxy, _options) => {
           // Add detailed logging
           proxy.on('proxyReq', (proxyReq, req, _res) => {
@@ -55,7 +66,7 @@ export default defineConfig(({ mode }) => ({
             proxyReq.removeHeader('origin');
             
             if (mode === 'development') {
-              console.log('📤 Proxy sending request to:', req.url);
+              console.log('📤 Proxy sending request to:', req.url || 'unknown URL');
             }
           });
           
@@ -64,7 +75,7 @@ export default defineConfig(({ mode }) => ({
             if (proxyRes.headers.location) {
               console.log('⛔ BLOCKED REDIRECT in proxy response:', {
                 location: proxyRes.headers.location,
-                from: req.url,
+                from: req.url || 'unknown URL',
                 statusCode: proxyRes.statusCode
               });
               
@@ -90,7 +101,7 @@ export default defineConfig(({ mode }) => ({
             proxyRes.headers['x-frame-options'] = 'DENY';
             
             if (mode === 'development') {
-              console.log('📥 Proxy received response for:', req.url, 'status:', proxyRes.statusCode);
+              console.log('📥 Proxy received response for:', req.url || 'unknown URL', 'status:', proxyRes.statusCode);
             }
           });
           
@@ -103,11 +114,11 @@ export default defineConfig(({ mode }) => ({
         }
       },
       // Special proxy configuration for ML operations with enhanced logging and redirect prevention
-      '/api/ml': {
+      '/ml': {
         target: 'http://localhost:8081/ml', // Changed to use local port
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api\/ml/, ''),
+        rewrite: (path) => path.replace(/^\/ml/, ''),
         configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
             console.error('🔥 ML Proxy error:', err);
@@ -136,7 +147,7 @@ export default defineConfig(({ mode }) => ({
             proxyReq.removeHeader('origin');
             
             if (mode === 'development') {
-              console.log('🧠 ML Proxy sending request to:', req.url);
+              console.log('🧠 ML Proxy sending request to:', req.url || 'unknown URL');
             }
           });
           
@@ -145,7 +156,7 @@ export default defineConfig(({ mode }) => ({
             if (proxyRes.headers.location) {
               console.log('⛔ BLOCKED ML REDIRECT in proxy response:', {
                 location: proxyRes.headers.location,
-                from: req.url,
+                from: req.url || 'unknown URL',
                 statusCode: proxyRes.statusCode,
                 contentType: proxyRes.headers['content-type'] || 'none'
               });
@@ -176,7 +187,7 @@ export default defineConfig(({ mode }) => ({
             proxyRes.headers['access-control-max-age'] = '86400';
             
             if (mode === 'development') {
-              console.log('🧠 ML Proxy received response for:', req.url, 
+              console.log('🧠 ML Proxy received response for:', req.url || 'unknown URL', 
                 'status:', proxyRes.statusCode);
             }
           });

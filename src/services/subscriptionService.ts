@@ -3,13 +3,13 @@ import { apiClient } from "./api";
 
 export const subscriptionService = {
   getPlans: () => 
-    apiClient.fetch("/api/subscriptions/plans"),
+    apiClient.fetch("/subscriptions/plans"),
     
   getCurrentSubscription: () => 
-    apiClient.fetch("/api/subscriptions/current"),
+    apiClient.fetch("/subscriptions/current"),
     
   checkout: (planId: string, interval: "month" | "year") => 
-    apiClient.fetch("/api/subscriptions/checkout", {
+    apiClient.fetch("/subscriptions/checkout", {
       method: "POST",
       body: JSON.stringify({ planId, interval })
     })

@@ -27,7 +27,7 @@ export const addCorsHeaders = (request: RequestInit): RequestInit => {
     mode: 'cors',
     credentials: 'include',
     cache: 'no-store', // Prevent cache at fetch level
-    redirect: 'error' // IMPORTANT: Treating redirects as errors
+    redirect: 'follow' // MODIFIED: Allow redirects but follow them
   };
 };
 
@@ -48,18 +48,20 @@ export const addMLHeaders = (request: RequestInit): RequestInit => {
     mode: 'cors',
     credentials: 'include',
     cache: 'no-store',
-    redirect: 'error', // CRITICAL: Prevent any redirects in ML operations
+    redirect: 'follow', // MODIFIED: Allow ML redirects but follow them
   };
 };
 
 /**
  * Intercepts fetch to prevent unwanted redirects
  * Call this function at app initialization to patch global fetch
+ * MODIFIED: Less aggressive redirect blocking
  */
 export const setupFetchInterceptor = (): void => {
   if (typeof window === 'undefined') return;
 
   const originalFetch = window.fetch;
+  const isDevelopment = process.env.NODE_ENV === 'development';
   
   window.fetch = async function(input: RequestInfo | URL, init?: RequestInit) {
     // Get the URL as a string
@@ -68,7 +70,7 @@ export const setupFetchInterceptor = (): void => {
       typeof init.headers === 'object' &&
       ('X-ML-Operation' in init.headers);
       
-    // IMPROVED: Sanitize URLs to ensure they're always relative
+    // Sanitize URLs to ensure they're handled properly
     let url = sanitizeApiUrl(originalUrl);
     
     if (url !== originalUrl) {
@@ -82,7 +84,8 @@ export const setupFetchInterceptor = (): void => {
     }
     
     // Check for suspicious URLs that might be redirects
-    if (detectRedirectAttempt(url)) {
+    // MODIFIED: In development, be less restrictive
+    if (!isDevelopment && detectRedirectAttempt(url)) {
       console.error('🚨 Blocked suspicious URL:', url);
       throw new Error('Blocked potential redirect URL: ' + url);
     }
@@ -92,22 +95,27 @@ export const setupFetchInterceptor = (): void => {
     
     // Add ML-specific configuration for ML requests
     if (isMLOperation) {
-      enhancedInit.redirect = 'error'; // Most important for ML operations
+      // MODIFIED: Allow redirects but log them
+      enhancedInit.redirect = 'follow';
       
       // Add extra headers for ML operations
       enhancedInit.headers = {
         ...enhancedInit.headers,
         'X-ML-Operation': '1',
-        'X-Max-Redirects': '0'
       };
     }
     
     try {
       const response = await originalFetch(url, enhancedInit);
       
-      // Check response URL for potential redirect that slipped through
-      if (typeof response.url === 'string' && response.url.includes('gamepathai.com')) {
-        console.error('⚠️ Response URL indicates redirect happened:', response.url);
+      // MODIFIED: Log redirects but allow them in development
+      if (isDevelopment && typeof response.url === 'string' && response.url !== url) {
+        console.log('⚠️ Followed redirect:', url, '->', response.url);
+      }
+      
+      // Only block gamepathai.com redirects in production
+      if (!isDevelopment && typeof response.url === 'string' && response.url.includes('gamepathai.com')) {
+        console.error('⚠️ Response URL indicates redirect to gamepathai.com:', response.url);
         throw new Error('Detected redirect in response: ' + response.url);
       }
       
@@ -177,13 +185,14 @@ export const setupRedirectDetector = (): void => {
 };
 
 /**
- * ENHANCED: Setup stronger ML protection specifically for URLs
- * FIXED: Don't override native browser methods that are read-only
+ * ENHANCED: Setup ML protection specifically for URLs
+ * MODIFIED: Less aggressive protection in development
  */
 export const setupMLProtection = (): void => {
   if (typeof window === 'undefined') return;
   
   console.log('🛡️ Setting up enhanced ML protection');
+  const isDevelopment = process.env.NODE_ENV === 'development';
   
   // Override XMLHttpRequest to prevent redirects
   const originalXHROpen = XMLHttpRequest.prototype.open;
@@ -206,8 +215,8 @@ export const setupMLProtection = (): void => {
         console.log('✅ Using fixed URL:', fixedUrl);
       }
       
-      // Block suspicious URLs
-      if (detectRedirectAttempt(url)) {
+      // MODIFIED: Only block suspicious URLs in production
+      if (!isDevelopment && detectRedirectAttempt(url)) {
         console.error('🚨 Blocked suspicious XHR URL:', url);
         throw new Error('Blocked potential redirect in XHR: ' + url);
       }
@@ -237,7 +246,8 @@ export const setupMLProtection = (): void => {
       const link = target as HTMLAnchorElement;
       const href = link.href;
       
-      if (href && href.includes('gamepathai.com')) {
+      // MODIFIED: Only block gamepathai.com links in production
+      if (!isDevelopment && href && href.includes('gamepathai.com')) {
         console.error('🚨 Blocked navigation to gamepathai.com:', href);
         event.preventDefault();
       }
@@ -247,7 +257,8 @@ export const setupMLProtection = (): void => {
   // Add a more robust navigation watcher
   window.addEventListener('beforeunload', function(event) {
     const currentLocation = window.location.href;
-    if (currentLocation.includes('gamepathai.com') && 
+    // MODIFIED: Only block gamepathai.com navigation in production
+    if (!isDevelopment && currentLocation.includes('gamepathai.com') && 
         !currentLocation.includes(window.location.hostname)) {
       console.error('🚨 Detected potential redirect to gamepathai.com');
       event.preventDefault();

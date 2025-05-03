@@ -1,4 +1,3 @@
-
 /**
  * Redirect detection utilities
  */
@@ -33,43 +32,46 @@ export const detectRedirectAttempt = (url: string, isMlOperation = false): boole
   // Check if we're in development mode
   const isDevelopment = process.env.NODE_ENV === 'development';
   
-  // Validate that the URL is relative for API calls
-  if ((url.startsWith('http://') || url.startsWith('https://')) && 
-      (url.includes('/api/') || url.includes('api.'))) {
-    console.warn('⚠️ Absolute URL detected for API call:', url);
-    return true; // Block absolute URLs for API calls
+  // MODIFICADO: Permitir URLs absolutas dentro do mesmo domínio em desenvolvimento
+  if (isDevelopment) {
+    // In development, allow absolute URLs that point to the current domain
+    if (typeof window !== 'undefined') {
+      const currentDomain = window.location.hostname;
+      if (url.includes(currentDomain)) {
+        return false;  // Allow URLs from current domain
+      }
+    }
+    
+    // Also allow localhost URLs in development
+    if (url.includes('localhost')) {
+      return false;
+    }
   }
   
   // NOVO: Verificar se o URL já é um proxy local, que não precisa ser bloqueado
-  if ((url.startsWith('/api') || url.startsWith('/api/ml')) && 
+  if ((url.startsWith('/api') || url.startsWith('/ml')) && 
       !url.includes('http:') && !url.includes('https:')) {
-    return false; // Proxy local é seguro, não bloquear
+    return false; // Local API calls are safe
   }
   
-  // Check for obvious patterns
-  const suspicious = url.includes('gamepathai.com') || 
+  // Check for obvious malicious patterns - keep these for security
+  const suspicious = url.includes('gamepathai.com') && !isDevelopment || 
                     url.includes('redirect=') ||
                     url.includes('php?url=') ||
                     url.includes('?url=') ||
-                    url.includes('&url=') ||
-                    // Additional patterns for more aggressive detection
-                    url.includes('redir') ||
-                    url.includes('forward=') ||
-                    url.includes('go=http');
+                    url.includes('&url=');
   
   // MODIFICADO: Special extra checks for ML operations which are more sensitive
-  // Em desenvolvimento, não considere localhost como suspeito
   const mlSuspicious = isMlOperation && (
-    // Se estiver em desenvolvimento, NÃO considere localhost como suspeito
     (!isDevelopment && url.includes('localhost')) ||
-    (!url.includes('/api/ml/') && url.includes('/ml/')) // ML operations should always go through /api/ml/
+    (!url.includes('/api/ml/') && !url.includes('/ml/') && url.includes('/ml'))
   );
   
   if (suspicious || mlSuspicious) {
-    if (isDevelopment && url.includes('localhost')) {
-      // Log but don't block absolute localhost URLs in development
-      console.log('⚠️ Permitindo URL de desenvolvimento que seria bloqueado em produção:', url);
-      return false;
+    if (isDevelopment) {
+      // In development, log but allow more URLs
+      console.log('⚠️ Permitindo URL que seria bloqueado em produção:', url);
+      return false; // Allow in development for easier testing
     }
     
     if (isMlOperation) {

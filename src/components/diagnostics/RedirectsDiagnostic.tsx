@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,7 @@ interface RedirectTest {
 }
 
 const RedirectsDiagnostic: React.FC = () => {
-  const [urlToTest, setUrlToTest] = useState<string>('/api/health');
+  const [urlToTest, setUrlToTest] = useState<string>('/health');
   const [isRunningTests, setIsRunningTests] = useState(false);
   const [testResults, setTestResults] = useState<RedirectTest[]>([]);
   const [connectionStatus, setConnectionStatus] = useState<'unknown' | 'online' | 'offline'>('unknown');
@@ -40,9 +41,9 @@ const RedirectsDiagnostic: React.FC = () => {
     
     // Test standard API endpoint
     try {
-      const healthResult = await mlUrlDiagnostics.testUrl('/api/health');
+      const healthResult = await mlUrlDiagnostics.testUrl('/health');
       results.push({
-        url: '/api/health',
+        url: '/health',
         redirected: healthResult.wasRedirected,
         target: healthResult.finalUrl,
         isGamePathAI: healthResult.isGamePathAI,
@@ -50,7 +51,7 @@ const RedirectsDiagnostic: React.FC = () => {
       });
     } catch (error) {
       results.push({
-        url: '/api/health',
+        url: '/health',
         redirected: true,
         target: 'Error testing URL',
         isGamePathAI: false
@@ -60,9 +61,9 @@ const RedirectsDiagnostic: React.FC = () => {
     // Test API endpoint directly
     try {
       // Use relative path instead of absolute URL
-      const apiResult = await mlUrlDiagnostics.testUrl('/api/health');
+      const apiResult = await mlUrlDiagnostics.testUrl('/health');
       results.push({
-        url: 'API Direct (/api/health)',
+        url: 'API Direct (/health)',
         redirected: apiResult.wasRedirected,
         target: apiResult.finalUrl,
         isGamePathAI: apiResult.isGamePathAI,
@@ -70,7 +71,7 @@ const RedirectsDiagnostic: React.FC = () => {
       });
     } catch (error) {
       results.push({
-        url: 'API Direct (/api/health)',
+        url: 'API Direct (/health)',
         redirected: true,
         target: 'Error testing URL',
         isGamePathAI: false
@@ -80,7 +81,7 @@ const RedirectsDiagnostic: React.FC = () => {
     // Test localhost directly (common issue source) - only for diagnostic purposes
     try {
       // Using relative path instead of hardcoded URL
-      const localhostResult = await mlUrlDiagnostics.testUrl('/api/health');
+      const localhostResult = await mlUrlDiagnostics.testUrl('/health');
       results.push({
         url: 'Local API Test',
         redirected: localhostResult.wasRedirected,
@@ -99,9 +100,9 @@ const RedirectsDiagnostic: React.FC = () => {
     
     // Test ML endpoint
     try {
-      const mlResult = await mlUrlDiagnostics.testUrl('/api/ml/health');
+      const mlResult = await mlUrlDiagnostics.testUrl('/ml/health');
       results.push({
-        url: '/api/ml/health',
+        url: '/ml/health',
         redirected: mlResult.wasRedirected,
         target: mlResult.finalUrl,
         isGamePathAI: mlResult.isGamePathAI,
@@ -109,7 +110,7 @@ const RedirectsDiagnostic: React.FC = () => {
       });
     } catch (error) {
       results.push({
-        url: '/api/ml/health',
+        url: '/ml/health',
         redirected: true,
         target: 'Error testing URL',
         isGamePathAI: false
@@ -117,7 +118,7 @@ const RedirectsDiagnostic: React.FC = () => {
     }
     
     // Custom URL test if provided
-    if (urlToTest && urlToTest !== '/api/health' && urlToTest !== '/api/ml/health') {
+    if (urlToTest && urlToTest !== '/health' && urlToTest !== '/ml/health') {
       try {
         const customResult = await mlUrlDiagnostics.testUrl(urlToTest);
         results.push({

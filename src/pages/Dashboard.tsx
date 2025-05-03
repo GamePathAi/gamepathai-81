@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Zap, Server, AlertTriangle, BarChart2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -59,8 +60,11 @@ const Dashboard: React.FC = () => {
     
     // Check for redirect URLs
     const checkForRedirects = () => {
+      // Fix the selector to use proper DOM methods
       const hasRedirect = document.querySelectorAll('script[src*="redirect"]').length > 0 || 
-                         document.querySelectorAll('script:contains("redirect")').length > 0;
+                          Array.from(document.querySelectorAll('script')).some(script => 
+                            script.textContent && script.textContent.includes('redirect')
+                          );
       
       if (hasRedirect) {
         setRedirectsDetected(true);

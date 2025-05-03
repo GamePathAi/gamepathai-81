@@ -5,12 +5,12 @@ import {
 } from "../../utils/url";
 
 // Configure API base URL - always use relative URLs
-const API_BASE_URL = getApiBaseUrl();
+const API_BASE_URL = '';  // Changed to use empty string for relative URLs
 
 // Remove noisy logging and only log in development
 const isDev = process.env.NODE_ENV === 'development';
 if (isDev) {
-  console.log("API_BASE_URL being used:", API_BASE_URL);
+  console.log("API_BASE_URL being used:", getApiBaseUrl());
 }
 
 export const baseApiClient = {
@@ -18,21 +18,13 @@ export const baseApiClient = {
     // Ensure endpoint starts with / for proper URL joining
     const formattedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
     
-    // Clean endpoint: remove any duplicate /api/ patterns that might exist
+    // Clean endpoint: remove any '/api/' prefixes
     const cleanedEndpoint = formattedEndpoint
-      .replace(/\/api\/api\//g, '/api/')  // Replace "/api/api/" with "/api/"
-      .replace(/^\/api\/api$/, '/api');   // Handle edge case
+      .replace(/^\/api\//, '/') // Remove leading /api/
+      .replace(/\/api\//, '/'); // Remove any /api/ in the path
     
-    // IMPROVED: Always use relative URLs by using path joining
-    let url = '';
-    
-    // If the endpoint already includes the full path, don't add the API_BASE_URL
-    if (cleanedEndpoint.startsWith('/api')) {
-      url = cleanedEndpoint;
-    } else {
-      // Join API_BASE_URL with the cleaned endpoint
-      url = `${API_BASE_URL}${cleanedEndpoint}`;
-    }
+    // Use empty base URL for relative paths
+    let url = cleanedEndpoint;
     
     // FINAL CHECK: Ensure absolute URLs are converted to relative paths
     url = sanitizeApiUrl(url);
@@ -81,7 +73,8 @@ export const baseApiClient = {
         mode: 'cors',
         credentials: 'include',
         cache: 'no-store',
-        redirect: 'error', // CRITICAL: Treat redirects as errors
+        // CHANGED: Error on redirect, don't follow
+        redirect: 'error',
         signal: controller.signal
       };
       
@@ -96,8 +89,8 @@ export const baseApiClient = {
         
         console.log(`⚠️ URL redirecionada: ${url} -> ${response.url}`);
         
-        if (originalUrl.host !== redirectedUrl.host || 
-            redirectedUrl.href.includes('gamepathai.com')) {
+        if (!isDev && (originalUrl.host !== redirectedUrl.host || 
+            redirectedUrl.href.includes('gamepathai.com'))) {
           console.error('⚠️ Detectado redirecionamento na resposta:', {
             original: url,
             redirected: response.url
@@ -173,8 +166,8 @@ async function tryRenewToken() {
     const refreshToken = localStorage.getItem("refresh_token");
     if (!refreshToken) return false;
     
-    // IMPROVED: Always use relative URLs for API calls
-    const url = `${API_BASE_URL}/auth/refresh-token`.replace(/\/api\/api\//g, '/api/');
+    // IMPROVED: Use relative path
+    const url = `/auth/refresh-token`;
     
     const response = await fetch(sanitizeApiUrl(url), {
       method: "POST",

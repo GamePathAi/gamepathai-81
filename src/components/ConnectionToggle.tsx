@@ -1,11 +1,17 @@
 
-import React from "react";
-import { Power, AlertTriangle, Wifi, WifiOff } from "lucide-react";
+import React, { useEffect } from "react";
+import { Power, AlertTriangle, Wifi, WifiOff, Globe, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useVpn } from "@/hooks/useVpn";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { formatDistanceToNow } from "date-fns";
+import { SERVER_LOCATIONS } from "@/services/vpn/mockData";
 
-const ConnectionToggle: React.FC = () => {
+interface ConnectionToggleProps {
+  selectedServer?: string;
+}
+
+const ConnectionToggle: React.FC<ConnectionToggleProps> = ({ selectedServer = "auto" }) => {
   const { 
     status, 
     connect, 
@@ -17,6 +23,13 @@ const ConnectionToggle: React.FC = () => {
     isConnected
   } = useVpn();
 
+  // Immediate status check when component mounts
+  useEffect(() => {
+    console.log("ConnectionToggle mounted - checking VPN status");
+    refetch();
+    // Only checking once on mount is sufficient since useVpn has its own polling
+  }, [refetch]);
+
   const toggleConnection = async () => {
     if (isConnecting || isDisconnecting) return;
     
@@ -24,7 +37,8 @@ const ConnectionToggle: React.FC = () => {
       if (isConnected) {
         await disconnect();
       } else {
-        await connect(status?.recommendedServer || "auto");
+        console.log(`ConnectionToggle: connecting to ${selectedServer}`);
+        await connect(selectedServer);
       }
     } catch (error) {
       console.error("Connection toggle error:", error);
@@ -36,6 +50,39 @@ const ConnectionToggle: React.FC = () => {
     if (isConnected) return "status-connected hover:bg-cyber-green/30";
     return "status-disconnected hover:bg-cyber-darkblue hover:text-white";
   };
+
+  const getConnectionTime = () => {
+    if (!status?.connectionTime) return null;
+    
+    try {
+      return formatDistanceToNow(new Date(status.connectionTime), { addSuffix: false });
+    } catch (error) {
+      return null;
+    }
+  };
+  
+  const getServerLocation = () => {
+    // First try to get from status
+    if (status?.serverLocation) {
+      return status.serverLocation;
+    }
+    
+    // Then try to get from serverId
+    if (status?.serverId && SERVER_LOCATIONS[status.serverId]) {
+      return SERVER_LOCATIONS[status.serverId];
+    }
+    
+    // Then try selected server
+    if (selectedServer && SERVER_LOCATIONS[selectedServer]) {
+      return SERVER_LOCATIONS[selectedServer];
+    }
+    
+    // Fallback
+    return "Automatic Server";
+  };
+
+  const connectionTime = getConnectionTime();
+  const serverLocation = getServerLocation();
 
   return (
     <div className="flex items-center gap-2">
@@ -57,30 +104,64 @@ const ConnectionToggle: React.FC = () => {
         </TooltipProvider>
       )}
       
-      {isBackendOnline === true && (
-        <div className="text-xs text-cyber-green flex items-center">
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              onClick={toggleConnection}
+              disabled={isConnecting || isDisconnecting}
+              className={cn(
+                "font-tech text-xs px-3 py-1.5 rounded flex items-center gap-1.5 transition-all duration-300",
+                getButtonStatusClass()
+              )}
+              aria-label={isConnected ? "Desconectar" : "Conectar"}
+            >
+              <span className={cn(
+                "status-indicator",
+                isConnected ? "active" : "inactive"
+              )} />
+              {isConnecting ? "CONECTANDO..." : 
+               isDisconnecting ? "DESCONECTANDO..." : 
+               isConnected ? "CONECTADO" : "DESCONECTADO"}
+              <Power size={14} className={cn(isConnected ? "text-cyber-green" : "text-gray-400")} />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent className="flex flex-col space-y-1 w-48">
+            <div className="text-sm font-semibold">
+              {isConnected ? "VPN Conectada" : "VPN Desconectada"}
+            </div>
+            {isConnected && serverLocation && (
+              <div className="flex items-center gap-1 text-xs text-cyber-blue">
+                <Globe size={12} />
+                <span>{serverLocation}</span>
+              </div>
+            )}
+            {isConnected && connectionTime && (
+              <div className="flex items-center gap-1 text-xs text-gray-400">
+                <Clock size={12} />
+                <span>Tempo conectado: {connectionTime}</span>
+              </div>
+            )}
+            {!isConnected && (
+              <div className="text-xs text-gray-400">
+                Clique para conectar e otimizar sua conexão.
+              </div>
+            )}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      
+      {isConnected && isBackendOnline === true && (
+        <div className="hidden md:flex text-xs text-cyber-green items-center">
           <Wifi size={14} className="mr-1" />
         </div>
       )}
       
-      <button
-        onClick={toggleConnection}
-        disabled={isConnecting || isDisconnecting}
-        className={cn(
-          "font-tech text-xs px-3 py-1.5 rounded flex items-center gap-1.5 transition-all duration-300",
-          getButtonStatusClass()
-        )}
-        aria-label={isConnected ? "Desconectar" : "Conectar"}
-      >
-        <span className={cn(
-          "status-indicator",
-          isConnected ? "active" : "inactive"
-        )} />
-        {isConnecting ? "CONECTANDO..." : 
-         isDisconnecting ? "DESCONECTANDO..." : 
-         isConnected ? "CONECTADO" : "DESCONECTADO"}
-        <Power size={14} className={cn(isConnected ? "text-cyber-green" : "text-gray-400")} />
-      </button>
+      {!isConnected && isBackendOnline === true && (
+        <div className="hidden md:flex text-xs text-gray-500 items-center">
+          <WifiOff size={14} className="mr-1" />
+        </div>
+      )}
     </div>
   );
 };

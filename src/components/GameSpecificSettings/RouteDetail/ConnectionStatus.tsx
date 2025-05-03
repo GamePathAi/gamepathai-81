@@ -3,13 +3,26 @@ import React from "react";
 import { useVpn } from "@/hooks/useVpn";
 import { useMetrics } from "@/hooks/useMetrics";
 import { cn } from "@/lib/utils";
+import { SERVER_LOCATIONS } from "@/services/vpn/mockData";
 
 const ConnectionStatus: React.FC = () => {
   const { status, isConnected } = useVpn();
   const { ping, jitter } = useMetrics();
   
   // Dados seguros para exibição
-  const serverLocation = status?.serverLocation || "São Paulo, BR";
+  const getServerLocation = () => {
+    if (status?.serverLocation) {
+      return status.serverLocation;
+    }
+    
+    if (status?.serverId && SERVER_LOCATIONS[status.serverId]) {
+      return SERVER_LOCATIONS[status.serverId];
+    }
+    
+    return "São Paulo, BR";
+  };
+  
+  const serverLocation = getServerLocation();
   const pingValue = ping?.current?.toString() || "15";
   const packetLoss = jitter?.current?.toString() || "0.01";
   

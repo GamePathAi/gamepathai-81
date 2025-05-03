@@ -6,7 +6,7 @@ import { SystemData } from "@/types/metrics";
 export const systemService = {
   async getSystem(): Promise<SystemData> {
     try {
-      return await metricsClient.fetch<SystemData>("/api/metrics/system");
+      return await metricsClient.fetch<SystemData>("/metrics/system");
     } catch (error) {
       console.log("Falling back to mock system data");
       const mockData = generateMetrics();
@@ -31,4 +31,3 @@ export const systemService = {
     }
   }
 };
-

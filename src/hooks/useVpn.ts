@@ -1,9 +1,19 @@
 
 import { useState, useEffect } from "react";
-import { vpnService } from "../services/vpnService";
+import { vpnService } from "../services/vpn"; // Updated import
 import { useToast } from "@/components/ui/use-toast";
 import { useQuery } from "@tanstack/react-query";
-import { getApiBaseUrl } from "../utils/url";
+
+// Define the interface for VPN status response
+interface VpnStatusResponse {
+  connected: boolean;
+  serverIp?: string | null;
+  serverLocation?: string | null;
+  recommendedServer?: string;
+  connectionTime?: number | null;
+  lastError?: string | null;
+  serverId?: string | null;
+}
 
 export function useVpn() {
   const [isConnected, setIsConnected] = useState(false);
@@ -12,20 +22,25 @@ export function useVpn() {
   const { toast } = useToast();
   const [vpnStatus, setVpnStatus] = useState<"connected" | "disconnected" | "connecting" | "disconnecting">("disconnected");
   const [isBackendOnline, setIsBackendOnline] = useState<boolean | null>(null);
-  const [status, setStatus] = useState<any>(null);
+  const [status, setStatus] = useState<VpnStatusResponse | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
   
-  // Fetch VPN status using React Query
+  // Fetch VPN status using React Query with more frequent updates and improved error handling
   const { data: initialVpnStatus, isLoading: isInitialLoading, refetch } = useQuery({
     queryKey: ["vpnStatus"],
     queryFn: vpnService.getStatus,
-    retry: false, // Do not retry on error
-    refetchInterval: 15000, // Refetch every 15 seconds
+    retry: 2, // Retry twice on error
+    refetchInterval: 10000, // Refetch every 10 seconds
+    refetchOnWindowFocus: true, // Refetch when window regains focus
   });
   
+  // Handle success and error cases separately using useEffect
   useEffect(() => {
     if (initialVpnStatus) {
+      // Log data for debugging
+      console.log("VPN status updated:", initialVpnStatus);
+      
       setIsConnected(initialVpnStatus.connected || false);
       setVpnStatus(initialVpnStatus.connected ? "connected" : "disconnected");
       setStatus(initialVpnStatus);
@@ -34,6 +49,37 @@ export function useVpn() {
     }
   }, [initialVpnStatus]);
   
+  // Add an error effect for the query
+  const { error: queryError } = useQuery({
+    queryKey: ["vpnStatus"],
+    queryFn: vpnService.getStatus,
+    enabled: false, // Don't actually run this query, we just want access to the error state
+  });
+  
+  // React to query errors
+  useEffect(() => {
+    if (queryError) {
+      console.error("Failed to fetch VPN status:", queryError);
+      setIsBackendOnline(false);
+    }
+  }, [queryError]);
+  
+  // Verificar explicitamente o status de conexão do backend ao montar o componente
+  useEffect(() => {
+    const checkBackendStatus = async () => {
+      try {
+        const isOnline = await vpnService.checkBackendConnection();
+        setIsBackendOnline(isOnline);
+        console.log(`Backend connection status checked: ${isOnline ? "online" : "offline"}`);
+      } catch (error) {
+        console.error("Backend connection check failed:", error);
+        setIsBackendOnline(false);
+      }
+    };
+    
+    checkBackendStatus();
+  }, []);
+  
   const connect = async (serverId: string = "auto") => {
     setIsLoading(true);
     setIsConnecting(true);
@@ -41,14 +87,17 @@ export function useVpn() {
     setVpnStatus("connecting");
     
     try {
-      const result = await vpnService.connect(serverId);
+      console.log(`Connecting to VPN with server ID: ${serverId}`);
+      const result = await vpnService.connect(serverId) as VpnStatusResponse;
+      
+      console.log("VPN connection result:", result);
       setIsConnected(result?.connected || false);
       setVpnStatus(result?.connected ? "connected" : "disconnected");
       setStatus(result);
       
       toast({
         title: "VPN Connected",
-        description: "You are now connected to the VPN.",
+        description: `You are now connected to ${result?.serverLocation || 'the VPN'}.`,
       });
     } catch (err: any) {
       setError(err.message || "Failed to connect to VPN");
@@ -61,6 +110,8 @@ export function useVpn() {
     } finally {
       setIsLoading(false);
       setIsConnecting(false);
+      // Force a status refresh after connecting
+      refetch();
     }
   };
   
@@ -71,7 +122,7 @@ export function useVpn() {
     setVpnStatus("disconnecting");
     
     try {
-      const result = await vpnService.disconnect();
+      const result = await vpnService.disconnect() as VpnStatusResponse;
       setIsConnected(result?.connected || false);
       setVpnStatus(result?.connected ? "connected" : "disconnected");
       setStatus(result);
@@ -91,6 +142,8 @@ export function useVpn() {
     } finally {
       setIsLoading(false);
       setIsDisconnecting(false);
+      // Force a status refresh after disconnecting
+      refetch();
     }
   };
   

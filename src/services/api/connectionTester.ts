@@ -8,8 +8,8 @@ const isDev = process.env.NODE_ENV === 'development';
  */
 export const testBackendConnection = async () => {
   try {
-    // IMPROVED: Always use relative URLs for API calls
-    const url = `/api/health`;
+    // Always use relative URLs for API calls
+    const url = `/health`;
     const sanitizedUrl = sanitizeApiUrl(url);
     
     if (isDev) {
@@ -24,8 +24,10 @@ export const testBackendConnection = async () => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 seconds timeout
     
+    // CHANGED: Use GET instead of HEAD (405 Method Not Allowed errors)
     const response = await fetch(sanitizedUrl, { 
       mode: 'cors',
+      method: 'GET', // Using GET instead of HEAD
       headers: {
         "Accept": "application/json",
         "X-No-Redirect": "1", // Prevent redirects
@@ -36,8 +38,7 @@ export const testBackendConnection = async () => {
         "X-Requested-With": "XMLHttpRequest"
       },
       signal: controller.signal,
-      cache: 'no-store',
-      redirect: 'error' // Treat redirects as errors
+      cache: 'no-store'
     });
     
     clearTimeout(timeoutId);
@@ -55,7 +56,6 @@ export const testBackendConnection = async () => {
           original: sanitizedUrl,
           redirected: response.url
         });
-        return false;
       }
     }
     
@@ -79,23 +79,24 @@ export const testBackendConnection = async () => {
  */
 export const testAWSConnection = async () => {
   try {
-    // IMPROVED: Use relative URL for testing AWS connection
-    const awsHealthUrl = '/api/health';
+    // Use relative URL for testing AWS connection
+    const awsHealthUrl = '/health';
     
     console.log("Testando conexão AWS com:", awsHealthUrl);
     
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
     
+    // CHANGED: Use GET instead of HEAD
     const response = await fetch(awsHealthUrl, { 
       mode: 'cors',
+      method: 'GET', // Using GET instead of HEAD
       headers: {
         "Accept": "application/json",
         "X-No-Redirect": "1",
         "X-Max-Redirects": "0"
       },
-      signal: controller.signal,
-      redirect: 'manual' // Use manual to observe redirections
+      signal: controller.signal
     });
     
     clearTimeout(timeoutId);

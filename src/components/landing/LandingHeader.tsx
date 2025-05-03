@@ -8,7 +8,7 @@ import {
   NavigationMenuList,
   NavigationMenuItem,
 } from "@/components/ui/navigation-menu";
-import { LayoutDashboard, Zap, ArrowUp, Menu, X } from "lucide-react";
+import { LayoutDashboard, Download, ChevronDown, Menu, X } from "lucide-react";
 
 const LandingHeader: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -27,7 +27,7 @@ const LandingHeader: React.FC = () => {
     <header className="sticky top-0 z-50 w-full border-b border-cyber-blue/20 bg-cyber-black/80 backdrop-blur-lg">
       <div className="container mx-auto px-4 flex h-16 items-center justify-between">
         {/* Logo */}
-        <Link to="/landing" className="flex items-center">
+        <Link to="/" className="flex items-center">
           <div className="flex items-center gap-1.5">
             <GamePathLogo className="h-6 w-6" size={20} />
             <span className="font-tech text-xl font-bold text-white">
@@ -41,7 +41,7 @@ const LandingHeader: React.FC = () => {
         <div className="hidden md:flex items-center space-x-4">
           <NavigationMenu>
             <NavigationMenuList className="flex items-center space-x-2">
-              {['Features', 'Pricing', 'Technology'].map((item) => (
+              {['Features', 'Download', 'Technology'].map((item) => (
                 <NavigationMenuItem key={item}>
                   <Link 
                     to={`/${item.toLowerCase()}`}
@@ -66,22 +66,13 @@ const LandingHeader: React.FC = () => {
               Dashboard
             </Button>
             <Button 
-              variant="cyber" 
-              size="sm" 
-              onClick={() => handleNavigation('/signup')} 
-              className="flex items-center"
-            >
-              <Zap size={16} className="mr-1" />
-              Try Free
-            </Button>
-            <Button 
               variant="cyberAction" 
               size="sm" 
-              onClick={() => handleNavigation('/subscription')} 
+              onClick={() => handleNavigation('/download')} 
               className="flex items-center"
             >
-              <ArrowUp size={16} className="mr-1" />
-              Upgrade to Pro
+              <Download size={16} className="mr-1" />
+              Download
             </Button>
           </div>
         </div>
@@ -114,11 +105,11 @@ const LandingHeader: React.FC = () => {
                     Features
                   </Link>
                   <Link
-                    to="/pricing"
-                    className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/pricing') ? 'bg-cyber-blue/10 text-white' : 'text-white hover:bg-cyber-blue/10'}`}
+                    to="/download"
+                    className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/download') ? 'bg-cyber-blue/10 text-white' : 'text-white hover:bg-cyber-blue/10'}`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Pricing
+                    Download
                   </Link>
                   <Link
                     to="/technology"
@@ -131,24 +122,15 @@ const LandingHeader: React.FC = () => {
                 <div className="mt-4 pt-4 pb-3 border-t border-cyber-blue/20">
                   <div className="px-2 space-y-2">
                     <Button
-                      variant="cyber"
-                      className="w-full justify-center"
-                      onClick={() => {
-                        setMobileMenuOpen(false);
-                        handleNavigation('/signup');
-                      }}
-                    >
-                      Try Free
-                    </Button>
-                    <Button
                       variant="cyberAction"
                       className="w-full justify-center"
                       onClick={() => {
                         setMobileMenuOpen(false);
-                        handleNavigation('/subscription');
+                        handleNavigation('/download');
                       }}
                     >
-                      Upgrade to Pro
+                      <Download size={16} className="mr-1" />
+                      Download
                     </Button>
                     <Button
                       variant="outline"

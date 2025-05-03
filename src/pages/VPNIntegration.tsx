@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import Layout from "@/components/Layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,10 +12,22 @@ import { VPNStatus } from "@/components/VPNIntegration/VPNStatus";
 import { Globe, Shield, Lock, Activity, Server, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useVpn } from "@/hooks/useVpn";
 
 const VPNIntegration = () => {
   const [premiumStatus, setPremiumStatus] = useState<"trial" | "active" | "expired">("trial");
-  const [isVPNActive, setIsVPNActive] = useState(false);
+  const { isConnected, connect, disconnect, status, refetch } = useVpn();
+  const [selectedServer, setSelectedServer] = useState("auto");
+  
+  // When component mounts, update selectedServer if VPN is already connected
+  useEffect(() => {
+    if (isConnected && status?.serverId) {
+      setSelectedServer(status.serverId);
+    }
+    
+    // Refresh VPN status
+    refetch();
+  }, [isConnected, status?.serverId, refetch]);
 
   const handleToggleVPN = () => {
     if (premiumStatus === "expired") {
@@ -25,12 +37,29 @@ const VPNIntegration = () => {
       return;
     }
     
-    setIsVPNActive(!isVPNActive);
-    toast.success(isVPNActive ? "VPN disconnected" : "VPN connected", {
-      description: isVPNActive 
-        ? "Your connection is now direct" 
-        : "Your connection is now secure and optimized for gaming",
-    });
+    if (isConnected) {
+      disconnect();
+    } else {
+      console.log(`Connecting to selected server: ${selectedServer}`);
+      connect(selectedServer);
+    }
+  };
+
+  const handleServerSelect = (serverId: string) => {
+    console.log(`Server selected: ${serverId}`);
+    setSelectedServer(serverId);
+    
+    // If VPN is already connected, reconnect with new server
+    if (isConnected) {
+      disconnect().then(() => {
+        setTimeout(() => {
+          connect(serverId);
+          toast.success(`Changing server to ${serverId}`, {
+            description: "Reconnecting to the selected server"
+          });
+        }, 500);
+      });
+    }
   };
 
   return (
@@ -71,7 +100,7 @@ const VPNIntegration = () => {
         </div>
 
         {/* VPN Status Bar */}
-        <VPNStatus isActive={isVPNActive} onToggle={handleToggleVPN} />
+        <VPNStatus isActive={isConnected} onToggle={handleToggleVPN} selectedServer={selectedServer} />
         
         <Tabs defaultValue="servers" className="w-full">
           <TabsList className="bg-cyber-darkblue border border-cyber-blue/20 mb-6">
@@ -98,23 +127,27 @@ const VPNIntegration = () => {
           </TabsList>
 
           <TabsContent value="servers" className="mt-0">
-            <GameServerAccess isVPNActive={isVPNActive} />
+            <GameServerAccess 
+              isVPNActive={isConnected} 
+              onServerSelect={handleServerSelect}
+              selectedServer={selectedServer}
+            />
           </TabsContent>
 
           <TabsContent value="network" className="mt-0">
-            <GamingVPNNetwork isVPNActive={isVPNActive} />
+            <GamingVPNNetwork isVPNActive={isConnected} />
           </TabsContent>
 
           <TabsContent value="protection" className="mt-0">
-            <AntiDDoSProtection isVPNActive={isVPNActive} />
+            <AntiDDoSProtection isVPNActive={isConnected} />
           </TabsContent>
 
           <TabsContent value="security" className="mt-0">
-            <SecuritySettings isVPNActive={isVPNActive} />
+            <SecuritySettings isVPNActive={isConnected} />
           </TabsContent>
 
           <TabsContent value="analytics" className="mt-0">
-            <ConnectionAnalytics isVPNActive={isVPNActive} />
+            <ConnectionAnalytics isVPNActive={isConnected} />
           </TabsContent>
         </Tabs>
       </div>

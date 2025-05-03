@@ -1,45 +1,54 @@
 
 /**
- * Navigation monitoring utilities
+ * Navigation monitor utilities to detect and prevent unwanted redirects
  */
 
 /**
- * Function to monitor and log navigation changes
+ * Setup navigation monitoring to watch for external redirects
  */
-export const setupNavigationMonitor = (): void => {
+export const setupNavigationMonitor = () => {
   if (typeof window === 'undefined') return;
   
-  // Monitor history API
-  const originalPushState = window.history.pushState;
-  window.history.pushState = function(state, title, url) {
-    console.log('🔄 History pushState:', url);
-    return originalPushState.apply(this, [state, title, url]);
-  };
+  const isDevelopment = process.env.NODE_ENV === 'development';
   
-  // Monitor URL changes
+  // Monitor navigation changes
   let lastUrl = window.location.href;
-  setInterval(() => {
-    if (window.location.href !== lastUrl) {
-      console.log(`🔄 URL changed: ${lastUrl} -> ${window.location.href}`);
+  
+  // Set up the history observer
+  const originalPushState = history.pushState;
+  history.pushState = function(state, title, url) {
+    if (url) {
+      // In development, log all navigation
+      if (isDevelopment) {
+        console.log('📍 Navigation change:', lastUrl, '->', url);
+      }
+      
+      // Only block suspicious URLs in production
+      const urlStr = url.toString();
+      if (!isDevelopment && urlStr.includes('gamepathai.com')) {
+        console.error('⛔ Blocked potentially dangerous navigation to:', urlStr);
+        return; // Block navigation
+      }
+      
       lastUrl = window.location.href;
     }
-  }, 1000);
-};
-
-/**
- * Logs detailed information about a redirect attempt for diagnostics
- */
-export const logRedirectAttempt = (originalUrl: string, redirectUrl: string, context?: string): void => {
-  console.warn(`
-⚠️ REDIRECT ATTEMPT DETECTED:
-   - Original URL: ${originalUrl}
-   - Redirect URL: ${redirectUrl}
-   - Context: ${context || 'unknown'}
-   - Time: ${new Date().toISOString()}
-   - User Agent: ${navigator.userAgent}
-   - Development: ${process.env.NODE_ENV === 'development' ? 'Yes' : 'No'}
-  `);
+    
+    return originalPushState.call(this, state, title, url);
+  };
   
-  // In a real implementation, you might want to send this information to your server
-  // for tracking and troubleshooting purposes
+  // Monitor the popstate event
+  window.addEventListener('popstate', () => {
+    const currentUrl = window.location.href;
+    
+    if (isDevelopment) {
+      console.log('📍 Navigation (popstate):', lastUrl, '->', currentUrl);
+    }
+    
+    lastUrl = currentUrl;
+  });
+  
+  // DISABLED: Only monitor in production, not in development
+  if (!isDevelopment) {
+    console.log('🛡️ Navigation protection active');
+  }
 };

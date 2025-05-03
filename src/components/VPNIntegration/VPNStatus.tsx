@@ -6,14 +6,46 @@ import { Shield, Globe, Clock, Bolt, AlertTriangle, Wifi, WifiOff } from "lucide
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useVpn } from "@/hooks/useVpn";
+import { formatDistanceToNow } from "date-fns";
+import { SERVER_LOCATIONS } from "@/services/vpn/mockData";
 
 interface VPNStatusProps {
   isActive: boolean;
   onToggle: () => void;
+  selectedServer?: string;
 }
 
-export const VPNStatus: React.FC<VPNStatusProps> = ({ isActive, onToggle }) => {
-  const { isBackendOnline } = useVpn();
+export const VPNStatus: React.FC<VPNStatusProps> = ({ isActive, onToggle, selectedServer = "auto" }) => {
+  const { isBackendOnline, status } = useVpn();
+  
+  const getConnectionTime = () => {
+    if (!status?.connectionTime) return "00:00:00";
+    
+    try {
+      return formatDistanceToNow(new Date(status.connectionTime), { addSuffix: false });
+    } catch (error) {
+      return "00:00:00";
+    }
+  };
+  
+  // Get the server location from status or from the selected server
+  const getServerLocation = () => {
+    // If connected, use the status.serverLocation which should be accurate
+    if (status?.serverLocation) {
+      return status.serverLocation;
+    }
+    
+    // If not connected but selectedServer is provided, show the selected server
+    if (selectedServer && selectedServer !== "auto") {
+      return SERVER_LOCATIONS[selectedServer] || "Unknown Location";
+    }
+    
+    // Default fallback
+    return "Automatic (Best Server)";
+  };
+  
+  const serverLocation = getServerLocation();
+  const connectionTime = getConnectionTime();
   
   return (
     <Card className={`cyber-card border-${isActive ? 'cyber-green' : 'cyber-red'}/30 transition-all duration-300`}>
@@ -57,14 +89,18 @@ export const VPNStatus: React.FC<VPNStatusProps> = ({ isActive, onToggle }) => {
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <div className="flex gap-3 items-center">
               <div className="hidden md:flex flex-col items-end">
-                <div className="flex items-center gap-1">
-                  <Globe size={14} className="text-gray-400" />
-                  <span className="text-xs text-gray-400">Frankfurt, DE</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Clock size={14} className="text-gray-400" />
-                  <span className="text-xs text-gray-400">Connected: 01:23:45</span>
-                </div>
+                {isActive && (
+                  <>
+                    <div className="flex items-center gap-1">
+                      <Globe size={14} className="text-gray-400" />
+                      <span className="text-xs text-gray-400">{serverLocation}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock size={14} className="text-gray-400" />
+                      <span className="text-xs text-gray-400">Connected: {connectionTime}</span>
+                    </div>
+                  </>
+                )}
               </div>
               
               <div className={`w-14 h-14 rounded-full flex items-center justify-center 

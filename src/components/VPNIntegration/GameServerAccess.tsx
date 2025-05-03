@@ -26,7 +26,17 @@ interface GameRegion {
   ping: number;
 }
 
-export const GameServerAccess: React.FC<{ isVPNActive: boolean }> = ({ isVPNActive }) => {
+interface GameServerAccessProps {
+  isVPNActive: boolean;
+  onServerSelect: (serverId: string) => void;
+  selectedServer: string;
+}
+
+export const GameServerAccess: React.FC<GameServerAccessProps> = ({ 
+  isVPNActive, 
+  onServerSelect,
+  selectedServer
+}) => {
   const [selectedGame, setSelectedGame] = useState<string>("valorant");
   const [selectedRegion, setSelectedRegion] = useState<string>("all");
   const [regionUnlockEnabled, setRegionUnlockEnabled] = useState<boolean>(true);
@@ -43,15 +53,15 @@ export const GameServerAccess: React.FC<{ isVPNActive: boolean }> = ({ isVPNActi
   ];
   
   const servers: GameServer[] = [
-    { id: "1", name: "Frankfurt 01", region: "eu", ping: 42, players: "24,567", status: "open" },
-    { id: "2", name: "Paris 04", region: "eu", ping: 47, players: "18,234", status: "open" },
-    { id: "3", name: "London 02", region: "eu", ping: 53, players: "15,678", status: "open" },
-    { id: "4", name: "Tokyo 01", region: "japan", ping: 260, players: "32,145", status: "locked" },
-    { id: "5", name: "Seoul 03", region: "asia", ping: 220, players: "27,890", status: "restricted" },
-    { id: "6", name: "Sydney 02", region: "oce", ping: 290, players: "8,456", status: "locked" },
-    { id: "7", name: "New York 01", region: "na", ping: 130, players: "29,123", status: "open" },
-    { id: "8", name: "São Paulo 01", region: "sa", ping: 180, players: "14,789", status: "open" },
-    { id: "9", name: "Berlin 02", region: "eu", ping: 49, players: "16,543", status: "open", early_access: true },
+    { id: "eu-frankfurt", name: "Frankfurt 01", region: "eu", ping: 42, players: "24,567", status: "open" },
+    { id: "eu-paris", name: "Paris 04", region: "eu", ping: 47, players: "18,234", status: "open" },
+    { id: "eu-london", name: "London 02", region: "eu", ping: 53, players: "15,678", status: "open" },
+    { id: "asia-tokyo", name: "Tokyo 01", region: "japan", ping: 260, players: "32,145", status: "locked" },
+    { id: "asia-seoul", name: "Seoul 03", region: "asia", ping: 220, players: "27,890", status: "restricted" },
+    { id: "oce-sydney", name: "Sydney 02", region: "oce", ping: 290, players: "8,456", status: "locked" },
+    { id: "na-newyork", name: "New York 01", region: "na", ping: 130, players: "29,123", status: "open" },
+    { id: "sa-saopaulo", name: "São Paulo 01", region: "sa", ping: 180, players: "14,789", status: "open" },
+    { id: "eu-berlin", name: "Berlin 02", region: "eu", ping: 49, players: "16,543", status: "open", early_access: true },
   ];
   
   const filteredServers = servers.filter(server => {
@@ -71,6 +81,9 @@ export const GameServerAccess: React.FC<{ isVPNActive: boolean }> = ({ isVPNActi
       return;
     }
     
+    // Call parent's onServerSelect
+    onServerSelect(serverId);
+    
     toast.success(`Connecting to ${server.name}`, {
       description: `Optimizing connection to ${server.region.toUpperCase()} server`
     });
@@ -89,6 +102,17 @@ export const GameServerAccess: React.FC<{ isVPNActive: boolean }> = ({ isVPNActi
       case "open": return <LockOpen size={16} className="text-cyber-green" />;
       case "restricted": return <Lock size={16} className="text-cyber-orange" />;
       default: return null;
+    }
+  };
+
+  const handleQuickConnect = () => {
+    // Find best server based on ping
+    const bestServer = servers
+      .filter(s => s.status === "open" || isVPNActive)
+      .sort((a, b) => a.ping - b.ping)[0];
+    
+    if (bestServer) {
+      handleConnectToServer(bestServer.id);
     }
   };
 
@@ -151,7 +175,12 @@ export const GameServerAccess: React.FC<{ isVPNActive: boolean }> = ({ isVPNActi
                 </TableHeader>
                 <TableBody>
                   {filteredServers.map(server => (
-                    <TableRow key={server.id} className="hover:bg-cyber-darkblue/30 border-b border-cyber-darkblue">
+                    <TableRow 
+                      key={server.id} 
+                      className={`hover:bg-cyber-darkblue/30 border-b border-cyber-darkblue ${
+                        selectedServer === server.id ? 'bg-cyber-blue/20' : ''
+                      }`}
+                    >
                       <TableCell className="py-2 text-sm font-tech">
                         <div className="flex items-center">
                           {server.early_access && (
@@ -183,10 +212,13 @@ export const GameServerAccess: React.FC<{ isVPNActive: boolean }> = ({ isVPNActi
                           className={`h-7 text-xs ${
                             server.status !== "open" && !isVPNActive
                               ? "bg-cyber-red/20 text-cyber-red hover:bg-cyber-red/30 border border-cyber-red/30"
-                              : "bg-cyber-blue/20 text-cyber-blue hover:bg-cyber-blue/30 border border-cyber-blue/30"
+                              : selectedServer === server.id && isVPNActive
+                                ? "bg-cyber-green/20 text-cyber-green hover:bg-cyber-green/30 border border-cyber-green/30"
+                                : "bg-cyber-blue/20 text-cyber-blue hover:bg-cyber-blue/30 border border-cyber-blue/30"
                           }`}
                         >
-                          {server.status !== "open" && !isVPNActive ? "Locked" : "Connect"}
+                          {server.status !== "open" && !isVPNActive ? "Locked" : 
+                           selectedServer === server.id && isVPNActive ? "Connected" : "Connect"}
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -290,6 +322,7 @@ export const GameServerAccess: React.FC<{ isVPNActive: boolean }> = ({ isVPNActi
                 <Button 
                   className="w-full bg-cyber-orange/20 text-cyber-orange hover:bg-cyber-orange/30 border border-cyber-orange/30"
                   disabled={!isVPNActive}
+                  onClick={handleQuickConnect}
                 >
                   <Zap size={16} className="mr-2" />
                   <span className="text-sm">Quick Connect Best Server</span>
