@@ -5,6 +5,7 @@ import { Helmet } from "react-helmet-async";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge"; // Add this import for Badge
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { Download, RefreshCw, Clock, Settings, Bell, CloudLightning } from "lucide-react";
 import { useAdvancedMetrics } from "@/hooks/useAdvancedMetrics";

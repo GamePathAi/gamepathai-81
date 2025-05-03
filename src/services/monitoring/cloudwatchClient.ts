@@ -1,5 +1,5 @@
 
-import { CloudWatchClient, PutMetricDataCommand } from "@aws-sdk/client-cloudwatch";
+import { CloudWatchClient, PutMetricDataCommand, StandardUnit } from "@aws-sdk/client-cloudwatch";
 import { toast } from "sonner";
 
 // Configuration
@@ -33,6 +33,26 @@ export const isCloudWatchAvailable = (): boolean => {
   return cloudWatchClient !== null;
 };
 
+// Map string units to AWS StandardUnit enum values
+const mapToStandardUnit = (unit: string): StandardUnit => {
+  switch (unit.toLowerCase()) {
+    case "milliseconds":
+      return StandardUnit.Milliseconds;
+    case "percent":
+      return StandardUnit.Percent;
+    case "count":
+      return StandardUnit.Count;
+    case "bytes":
+      return StandardUnit.Bytes;
+    case "bits":
+      return StandardUnit.Bits;
+    case "seconds":
+      return StandardUnit.Seconds;
+    default:
+      return StandardUnit.None;
+  }
+};
+
 // Function to publish a metric data point to CloudWatch
 export const publishMetric = async (
   metricName: string,
@@ -52,14 +72,14 @@ export const publishMetric = async (
       Value
     }));
 
-    // Create the command
+    // Create the command with proper StandardUnit conversion
     const command = new PutMetricDataCommand({
       Namespace: NAMESPACE,
       MetricData: [
         {
           MetricName: metricName,
           Value: value,
-          Unit: unit,
+          Unit: mapToStandardUnit(unit), // Convert string to StandardUnit enum
           Dimensions: dimensionsList,
           Timestamp: new Date()
         }
