@@ -149,7 +149,7 @@ const MonitoringDashboard: React.FC = () => {
                       <p className="mb-1 text-sm">Status atual:</p>
                       <div className="flex items-center">
                         {backendStatus.status === "connected" && (
-                          <Badge variant="success">Conectado</Badge>
+                          <Badge variant="cyberGreen">Conectado</Badge>
                         )}
                         {backendStatus.status === "disconnected" && (
                           <Badge variant="destructive">Desconectado</Badge>
@@ -204,7 +204,7 @@ const MonitoringDashboard: React.FC = () => {
                       <p className="mb-1 text-sm">Status do CloudWatch:</p>
                       <div className="flex items-center">
                         {isCloudWatchAvailable ? (
-                          <Badge variant="success">Disponível</Badge>
+                          <Badge variant="cyberGreen">Disponível</Badge>
                         ) : (
                           <Badge variant="destructive">Indisponível</Badge>
                         )}
