@@ -1,5 +1,5 @@
 
-import { getApiBaseUrl, sanitizeApiUrl } from "../../utils/url";
+import { sanitizeApiUrl } from "../../utils/url/urlSanitization";
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -56,6 +56,9 @@ export const testBackendConnection = async () => {
           original: sanitizedUrl,
           redirected: response.url
         });
+        
+        // Throw error to trigger fallback
+        throw new Error(`Detected redirect in response: ${response.url}`);
       }
     }
     
@@ -96,13 +99,20 @@ export const testAWSConnection = async () => {
         "X-No-Redirect": "1",
         "X-Max-Redirects": "0"
       },
-      signal: controller.signal
+      signal: controller.signal,
+      cache: 'no-store'
     });
     
     clearTimeout(timeoutId);
     
     if (response.type === 'opaqueredirect') {
       console.log("⚠️ URL AWS redirecionada:", awsHealthUrl, "->", "Redireção detectada");
+      return false;
+    }
+    
+    // Check if URL was redirected
+    if (response.url && !response.url.endsWith(awsHealthUrl)) {
+      console.log("⚠️ Redirecionamento AWS detectado:", awsHealthUrl, "->", response.url);
       return false;
     }
     

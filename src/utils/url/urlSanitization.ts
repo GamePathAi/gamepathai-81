@@ -1,79 +1,78 @@
+
 /**
- * URL sanitization utilities
+ * URL Sanitization utilities
+ * Prevent redirect attacks by sanitizing URLs
  */
 
-import { isProduction } from './environmentDetection';
-
 /**
- * Sanitizes an API URL to ensure it's properly formatted
- * This helps prevent redirects by making sure we use relative URLs
+ * Ensures that a URL doesn't contain absolute references
+ * @param url The URL to sanitize
+ * @returns A sanitized URL
  */
 export const sanitizeApiUrl = (url: string): string => {
-  // If the URL is already relative (doesn't start with http), return as is
+  // Se já for uma URL relativa, retornar como está
   if (!url.startsWith('http')) {
     return url;
   }
-
+  
+  // Converter URLs absolutas para relativas
   try {
-    // Parse the URL to extract just the pathname and search params
-    const parsedUrl = new URL(url);
+    console.log(`🔄 Convertendo URL absoluta para relativa: ${url}`);
     
-    // Log what we're doing
-    console.log(`🔄 Convertendo URL absoluta para relativa: ${url} -> ${parsedUrl.pathname}${parsedUrl.search}`);
+    // Extrair o caminho da URL
+    const urlObj = new URL(url);
+    const path = urlObj.pathname + urlObj.search;
     
-    // Return just the path and query string
-    return `${parsedUrl.pathname}${parsedUrl.search}`;
+    console.log(`✅ Using fixed URL: ${path}`);
+    return path;
   } catch (error) {
-    console.warn('Failed to sanitize URL, returning original:', url);
+    console.error(`❌ Erro ao sanitizar URL: ${url}`, error);
     return url;
   }
 };
 
 /**
- * Fix an absolute URL to use the correct domain/protocol
- * Primarily used for dealing with localhost references in production
+ * Verifica se uma URL contém redirecionamento
+ * @param originalUrl URL original
+ * @param responseUrl URL da resposta
+ * @returns True se detectar redirecionamento
  */
-export const fixAbsoluteUrl = (url: string): string => {
-  // Already a relative URL
-  if (!url.startsWith('http')) {
-    return url;
-  }
+export const hasRedirect = (originalUrl: string, responseUrl?: string): boolean => {
+  if (!responseUrl) return false;
   
   try {
-    const currentOrigin = window.location.origin;
-    const urlObj = new URL(url);
+    // Normalizar URLs para comparação
+    const normalizedOriginal = originalUrl.includes('://') 
+      ? new URL(originalUrl).href 
+      : new URL(originalUrl, window.location.origin).href;
     
-    // If it's a localhost URL or AWS URL and we're in production
-    if ((urlObj.hostname.includes('localhost') || 
-         urlObj.hostname.includes('gamepathai-dev')) && 
-        isProduction()) {
-      // Replace with relative URL
-      return sanitizeApiUrl(url);
+    const normalizedResponse = responseUrl.includes('://') 
+      ? new URL(responseUrl).href 
+      : new URL(responseUrl, window.location.origin).href;
+    
+    // Se as URLs são diferentes, temos um redirecionamento
+    const isRedirect = normalizedOriginal !== normalizedResponse;
+    
+    if (isRedirect) {
+      console.log(`⚠️ URL redirecionada: ${originalUrl} -> ${responseUrl}`);
     }
     
-    return url;
+    return isRedirect;
   } catch (error) {
-    console.warn('Failed to fix absolute URL:', url);
-    return url;
+    console.error(`❌ Erro ao verificar redirecionamento: ${originalUrl} -> ${responseUrl}`, error);
+    return false;
   }
 };
 
 /**
- * Convert any absolute URLs to relative ones for API calls
- * This is important to prevent redirects
+ * Bloqueia redirecionamentos detectados em respostas fetch
+ * @param response Resposta do fetch
+ * @param originalUrl URL original
+ * @returns Resposta ou erro se detectar redirecionamento
  */
-export const ensureRelativeApiUrl = (endpoint: string): string => {
-  // If it's already a relative URL, make sure it has a leading slash
-  if (!endpoint.startsWith('http')) {
-    return endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+export const blockRedirects = (response: Response, originalUrl: string): Response => {
+  if (hasRedirect(originalUrl, response.url)) {
+    throw new Error(`Detected redirect in response: ${response.url}`);
   }
-  
-  // Otherwise, try to extract just the path from the URL
-  try {
-    const urlObj = new URL(endpoint);
-    return urlObj.pathname + urlObj.search;
-  } catch (error) {
-    console.warn('Failed to convert to relative URL:', endpoint);
-    return endpoint;
-  }
+  return response;
 };
