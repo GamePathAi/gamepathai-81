@@ -1,5 +1,5 @@
 
-import { sanitizeApiUrl } from "../../utils/url/urlSanitization";
+import { sanitizeApiUrl, createSecureHeaders, blockRedirects, secureFetch } from "../../utils/url/urlSanitization";
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -10,56 +10,26 @@ export const testBackendConnection = async () => {
   try {
     // Always use relative URLs for API calls
     const url = `/health`;
-    const sanitizedUrl = sanitizeApiUrl(url);
     
     if (isDev) {
-      console.log("Testando conexão com:", sanitizedUrl);
-    }
-    
-    // Check if the URL is absolute (contains http:// or https://)
-    if (sanitizedUrl.startsWith('http://') || sanitizedUrl.startsWith('https://')) {
-      console.warn('⚠️ URL absoluto detectado no teste de conexão:', sanitizedUrl);
+      console.log("Testing connection with:", url);
     }
     
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 seconds timeout
     
-    // CHANGED: Use GET instead of HEAD (405 Method Not Allowed errors)
-    const response = await fetch(sanitizedUrl, { 
-      mode: 'cors',
-      method: 'GET', // Using GET instead of HEAD
-      headers: {
-        "Accept": "application/json",
-        "X-No-Redirect": "1", // Prevent redirects
-        "Cache-Control": "no-cache", // Prevent caching
-        "X-Development-Mode": isDev ? "1" : "0",
-        // Anti-redirect headers
-        "X-Max-Redirects": "0",
-        "X-Requested-With": "XMLHttpRequest"
-      },
-      signal: controller.signal,
-      cache: 'no-store'
+    // Use our enhanced secure fetch
+    const response = await secureFetch(url, { 
+      method: 'GET',
+      signal: controller.signal
     });
     
     clearTimeout(timeoutId);
     
-    // Enhanced redirect verification
-    if (response.url && response.url !== sanitizedUrl) {
-      const originalUrl = new URL(sanitizedUrl, window.location.origin);
-      const redirectedUrl = new URL(response.url, window.location.origin);
-      
-      console.log(`⚠️ URL redirecionada: ${sanitizedUrl} -> ${response.url}`);
-      
-      if (originalUrl.host !== redirectedUrl.host || 
-          redirectedUrl.href.includes('gamepathai.com')) {
-        console.error('⚠️ Redirecionamento detectado no teste de conexão:', {
-          original: sanitizedUrl,
-          redirected: response.url
-        });
-        
-        // Throw error to trigger fallback
-        throw new Error(`Detected redirect in response: ${response.url}`);
-      }
+    // Enhanced security checks
+    if (response.type === 'opaqueredirect') {
+      console.error('⚠️ Opaque redirect detected in connection test');
+      return false;
     }
     
     if (isDev) {
@@ -85,34 +55,28 @@ export const testAWSConnection = async () => {
     // Use relative URL for testing AWS connection
     const awsHealthUrl = '/health';
     
-    console.log("Testando conexão AWS com:", awsHealthUrl);
+    console.log("Testing AWS connection with:", awsHealthUrl);
     
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
     
-    // CHANGED: Use GET instead of HEAD
-    const response = await fetch(awsHealthUrl, { 
-      mode: 'cors',
-      method: 'GET', // Using GET instead of HEAD
-      headers: {
-        "Accept": "application/json",
-        "X-No-Redirect": "1",
-        "X-Max-Redirects": "0"
-      },
-      signal: controller.signal,
-      cache: 'no-store'
+    // Use our enhanced secure fetch
+    const response = await secureFetch(awsHealthUrl, { 
+      method: 'GET',
+      signal: controller.signal
     });
     
     clearTimeout(timeoutId);
     
+    // Enhanced security checks
     if (response.type === 'opaqueredirect') {
-      console.log("⚠️ URL AWS redirecionada:", awsHealthUrl, "->", "Redireção detectada");
+      console.log("⚠️ AWS URL opaque redirect detected:", awsHealthUrl);
       return false;
     }
     
     // Check if URL was redirected
     if (response.url && !response.url.endsWith(awsHealthUrl)) {
-      console.log("⚠️ Redirecionamento AWS detectado:", awsHealthUrl, "->", response.url);
+      console.log("⚠️ AWS redirect detected:", awsHealthUrl, "->", response.url);
       return false;
     }
     
