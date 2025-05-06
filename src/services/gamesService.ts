@@ -2,7 +2,7 @@
 import { apiClient } from "./api";
 import { mlService, MLDetectedGamesResponse, MLOptimizeGameResponse } from "./ml";
 import { Game } from "@/hooks/useGames";
-import { fixAbsoluteUrl } from "@/utils/url"; // Updated import path
+import { fixAbsoluteUrl } from "@/utils/url"; // Mantido o mesmo nome de importação
 
 export const gamesService = {
   getGames: async () => {

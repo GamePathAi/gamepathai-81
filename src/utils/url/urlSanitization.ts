@@ -32,6 +32,13 @@ export const sanitizeApiUrl = (url: string): string => {
 };
 
 /**
+ * Alias para sanitizeApiUrl para compatibilidade com código existente
+ * @param url The URL to fix
+ * @returns A sanitized URL
+ */
+export const fixAbsoluteUrl = sanitizeApiUrl;
+
+/**
  * Verifies if a URL contains redirection
  * @param originalUrl Original URL
  * @param responseUrl Response URL
