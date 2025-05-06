@@ -37,7 +37,7 @@ export default defineConfig(({ mode }) => ({
     proxy: {
       // Enhanced proxy configuration to prevent redirects
       '/': {
-        target: 'http://localhost:8000', // Changed to port 8000 to match backend port
+        target: 'http://localhost:8000', // Alterado para porta 8000 para corresponder à porta do backend
         changeOrigin: true,
         secure: false,
         bypass: (req) => {
@@ -122,7 +122,7 @@ export default defineConfig(({ mode }) => ({
       },
       // Special proxy configuration for ML operations with enhanced logging and redirect prevention
       '/ml': {
-        target: 'http://localhost:8000/ml', // Changed to port 8000 to match backend port
+        target: 'http://localhost:8000/ml', // Alterado para porta 8000 para corresponder ao backend
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/ml/, ''),
