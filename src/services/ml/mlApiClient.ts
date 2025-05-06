@@ -115,7 +115,9 @@ export const mlApiClient = {
           await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
         }
         
-        return await this.fetch<T>(endpoint, options);
+        // Fix: Changed from await this.fetch<T> to await this.fetch
+        // as the generic is already defined in the function signature
+        return await this.fetch(endpoint, options);
       } catch (error: any) {
         lastError = error;
         console.log(`❌ ML attempt ${attempt + 1} failed:`, error.message || error);
