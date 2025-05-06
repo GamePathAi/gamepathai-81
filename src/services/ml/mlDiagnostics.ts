@@ -1,163 +1,155 @@
 
 /**
- * Diagnostic utilities for ML API
+ * ML Diagnostics utilities
+ * Provides tools for diagnosing ML-related issues
  */
-import { mlApiClient } from './mlApiClient';
-import { MLConnectivityTestResult, MLRedirectProtectionResult, MLExtensionCheckResult, MLUrlTestResult } from './types';
+import { toast } from "sonner";
 
-/**
- * Diagnostic utility to test ML API connectivity
- */
 export const mlDiagnostics = {
   /**
-   * Test connectivity to all ML endpoints
+   * Check for browser extensions that might interfere with ML operations
    */
-  testConnectivity: async (): Promise<MLConnectivityTestResult> => {
-    console.log('🧪 Running ML connectivity diagnostics');
+  checkForInterfereingExtensions: () => {
+    // Check for common extensions that might redirect or modify requests
+    const detectedExtensions: string[] = [];
     
-    const results: Record<string, { success: boolean, error?: string }> = {};
-    let success = true;
-    
-    // Test route optimizer
-    try {
-      await mlApiClient.fetch('/ml/health/route-optimizer', { method: 'GET' });
-      results['routeOptimizer'] = { success: true };
-    } catch (error: any) {
-      success = false;
-      results['routeOptimizer'] = { 
-        success: false, 
-        error: error.message || 'Unknown error' 
-      };
+    // Check for VPNs and proxy extensions (simplified detection)
+    if (navigator.userAgent.includes('CyberGhost') || 
+        document.documentElement.innerHTML.includes('cyberghost')) {
+      detectedExtensions.push('CyberGhost VPN');
     }
     
-    // Test performance predictor
-    try {
-      await mlApiClient.fetch('/ml/health/performance-predictor', { method: 'GET' });
-      results['performancePredictor'] = { success: true };
-    } catch (error: any) {
-      success = false;
-      results['performancePredictor'] = { 
-        success: false, 
-        error: error.message || 'Unknown error'
-      };
+    if (navigator.userAgent.includes('NordVPN') || 
+        document.documentElement.innerHTML.includes('nordvpn')) {
+      detectedExtensions.push('NordVPN');
     }
     
-    // Test game detection
-    try {
-      await mlApiClient.fetch('/ml/health/game-detection', { method: 'GET' });
-      results['gameDetection'] = { success: true };
-    } catch (error: any) {
-      success = false;
-      results['gameDetection'] = { 
-        success: false, 
-        error: error.message || 'Unknown error'
-      };
-    }
-    
-    // Test de otimização de jogo específico
-    try {
-      // Usar ID de teste genérico apenas para verificar conectividade
-      await mlApiClient.fetch('/ml/health/game-optimization', { method: 'GET' });
-      results['gameOptimization'] = { success: true };
-    } catch (error: any) {
-      success = false;
-      results['gameOptimization'] = { 
-        success: false, 
-        error: error.message || 'Unknown error'
-      };
-    }
-    
-    console.log('🧪 ML diagnostics results:', results);
-    return { success, results };
-  },
-  
-  /**
-   * Check if redirect protection is working
-   */
-  testRedirectProtection: async (): Promise<MLRedirectProtectionResult> => {
-    try {
-      // Tentativa deliberada de usar uma URL que deveria redirecionar
-      const testUrl = '/ml/test-redirect';
-      
-      await mlApiClient.fetch(testUrl, { method: 'GET' });
-      
-      // Se chegou aqui, não detectou o redirecionamento corretamente
-      return { 
-        protected: false, 
-        details: 'Redirect protection may not be working correctly' 
-      };
-    } catch (error: any) {
-      // Esperamos que lance um erro devido à proteção de redirecionamento
-      if (error.message?.includes('redirect') || error.message?.includes('blocked')) {
-        return { 
-          protected: true, 
-          details: 'Redirect protection is working correctly' 
-        };
-      }
-      
-      return { 
-        protected: false, 
-        details: `Unexpected error: ${error.message}` 
-      };
-    }
-  },
-  
-  /**
-   * Check for browser extensions that might interfere with ML requests
-   */
-  checkForInterfereingExtensions(): MLExtensionCheckResult {
-    console.log('🔍 Checking for browser extensions that may interfere with ML operations');
-    
-    const potentialIssues: string[] = [];
-    
-    // Check for signs of security software in global objects
-    if (typeof window !== 'undefined') {
-      // Kaspersky check
-      if ('KasperskyLabs' in window) {
-        potentialIssues.push('Kaspersky Security Suite');
-      }
-      
-      // Check for ESET
-      if ('ESETS_ID' in window || document.querySelector('script[src*="eset"]')) {
-        potentialIssues.push('ESET Security');
-      }
-      
-      // Check for Avast/AVG
-      if (document.querySelector('script[src*="avast"]') || 
-          document.querySelector('script[src*="avg"]')) {
-        potentialIssues.push('Avast/AVG Antivirus');
-      }
-      
-      // Check for browser extensions that modify content
-      const injectedStyles = Array.from(document.styleSheets).filter(
-        sheet => sheet.href && !sheet.href.startsWith(window.location.origin)
-      ).length;
-      
-      if (injectedStyles > 0) {
-        potentialIssues.push('Content-modifying browser extensions');
-      }
-      
-      // Check for ad blockers
-      const testAdElement = document.createElement('div');
-      testAdElement.className = 'adsbox';
-      testAdElement.style.height = '1px';
-      testAdElement.style.width = '1px';
-      testAdElement.style.position = 'absolute';
-      testAdElement.style.top = '-1000px';
-      document.body.appendChild(testAdElement);
-      
-      setTimeout(() => {
-        const isAdBlockActive = testAdElement.offsetHeight === 0;
-        if (isAdBlockActive) {
-          potentialIssues.push('Ad blocker extension');
-        }
-        testAdElement.remove();
-      }, 100);
+    // Check for ad blockers (simplified detection)
+    if (window.adBlockDetected || 
+        document.getElementById('ad-blocker-detector') || 
+        document.documentElement.innerHTML.includes('adblock')) {
+      detectedExtensions.push('Ad Blocker');
     }
     
     return {
-      detected: potentialIssues.length > 0,
-      extensions: potentialIssues
+      detected: detectedExtensions.length > 0,
+      extensions: detectedExtensions
     };
+  },
+  
+  /**
+   * Run diagnostics on ML service and report issues
+   */
+  runFullDiagnostics: async () => {
+    console.log("🔍 Running ML service diagnostics...");
+    
+    try {
+      // Check basic connectivity to backend
+      const healthResponse = await fetch('/health');
+      const healthOk = healthResponse.ok;
+      
+      // Check ML API connectivity
+      const mlResponse = await fetch('/ml/game-detection');
+      const mlOk = mlResponse.ok;
+      
+      // Analyze results
+      const results = {
+        backendConnected: healthOk,
+        mlEndpointAvailable: mlOk,
+        backendStatus: healthResponse.status,
+        mlStatus: mlResponse.status,
+        interfereingExtensions: mlDiagnostics.checkForInterfereingExtensions().extensions
+      };
+      
+      console.log("📊 ML Diagnostics results:", results);
+      
+      if (!healthOk) {
+        console.error("❌ Backend health check failed:", healthResponse.status);
+        toast.error("Backend unavailable", {
+          description: "Cannot connect to GamePath AI backend"
+        });
+      }
+      
+      if (!mlOk) {
+        console.error("❌ ML endpoint check failed:", mlResponse.status);
+        toast.error("ML service unavailable", {
+          description: "Cannot access ML detection services"
+        });
+      }
+      
+      return results;
+    } catch (error) {
+      console.error("❌ ML diagnostics error:", error);
+      toast.error("Diagnostics failed", {
+        description: "Error running ML service diagnostics"
+      });
+      
+      return {
+        backendConnected: false,
+        mlEndpointAvailable: false,
+        error: String(error),
+        interfereingExtensions: mlDiagnostics.checkForInterfereingExtensions().extensions
+      };
+    }
+  },
+  
+  /**
+   * Test game detection specifically
+   */
+  testGameDetection: async () => {
+    console.log("🎮 Testing game detection...");
+    try {
+      const startTime = performance.now();
+      const response = await fetch('/ml/game-detection');
+      const endTime = performance.now();
+      
+      console.log(`✅ Game detection response received in ${(endTime - startTime).toFixed(0)}ms`);
+      console.log("Response status:", response.status);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Game detection data:", data);
+        
+        const gamesCount = data?.detectedGames?.length || 0;
+        console.log(`Detected ${gamesCount} games`);
+        
+        toast.success(`Game detection successful`, {
+          description: `Found ${gamesCount} games`
+        });
+        
+        return {
+          success: true,
+          responseTime: endTime - startTime,
+          gamesDetected: gamesCount,
+          data
+        };
+      } else {
+        console.error(`❌ Game detection failed with status ${response.status}`);
+        toast.error("Game detection failed", {
+          description: `Server returned status ${response.status}`
+        });
+        
+        return {
+          success: false,
+          status: response.status,
+          responseTime: endTime - startTime,
+        };
+      }
+    } catch (error) {
+      console.error("❌ Game detection test error:", error);
+      toast.error("Game detection error", {
+        description: String(error)
+      });
+      
+      return {
+        success: false,
+        error: String(error)
+      };
+    }
   }
 };
+
+// Add a function to the global window object for easy testing from the console
+(window as any).testGameDetection = mlDiagnostics.testGameDetection;
+(window as any).runMlDiagnostics = mlDiagnostics.runFullDiagnostics;
+

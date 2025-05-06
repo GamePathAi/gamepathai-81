@@ -6,6 +6,9 @@ import uvicorn
 import os
 from dotenv import load_dotenv
 
+# Importar o serviço de detecção de jogos
+from utils.game_detection import GameDetectionService
+
 # Carregar variáveis de ambiente
 load_dotenv()
 
@@ -13,6 +16,9 @@ load_dotenv()
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
 JWT_SECRET = os.getenv("JWT_SECRET", "dev-secret-key-for-gamepathai")
 API_KEYS = os.getenv("API_KEYS", "dev-api-key").split(",")
+
+# Inicializar serviços
+game_detection_service = GameDetectionService()
 
 # Iniciar aplicação FastAPI
 app = FastAPI(
@@ -52,32 +58,23 @@ async def games():
         {"id": "fortnite", "name": "Fortnite", "isOptimized": False}
     ]
 
-# MODIFICADO: Endpoint ML de detecção de jogos retornando o formato esperado pelo frontend
+# MELHORADO: Endpoint ML de detecção de jogos usando o serviço de detecção
 @app.get("/ml/game-detection")
 async def ml_game_detection():
-    # Retornando no formato esperado pelo frontend: um objeto com a propriedade detectedGames
-    return {
-        "detectedGames": [
-            {
-                "id": "valorant",
-                "name": "Valorant", 
-                "path": "C:/Games/Riot Games/VALORANT",
-                "lastPlayed": "2025-05-05T12:00:00Z"
-            },
-            {
-                "id": "csgo",
-                "name": "Counter-Strike 2", 
-                "path": "C:/Program Files/Steam/steamapps/common/Counter-Strike Global Offensive",
-                "lastPlayed": "2025-05-04T18:30:00Z"
-            },
-            {
-                "id": "fortnite",
-                "name": "Fortnite",
-                "path": "C:/Program Files/Epic Games/Fortnite",
-                "lastPlayed": "2025-05-03T20:15:00Z"
-            }
-        ]
-    }
+    try:
+        print("Detectando jogos via GameDetectionService...")
+        detected_games = game_detection_service.detect_all_games()
+        print(f"Detectados {len(detected_games)} jogos")
+        
+        return {
+            "detectedGames": detected_games
+        }
+    except Exception as e:
+        print(f"Erro ao detectar jogos: {str(e)}")
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Falha ao detectar jogos: {str(e)}"}
+        )
 
 # Endpoint para métricas de ping
 @app.get("/api/metrics/ping")
@@ -134,7 +131,7 @@ async def global_exception_handler(request: Request, exc: Exception):
     print(f"Erro ao processar {request.url.path}: {str(exc)}")
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content={"message": f"Erro interno: {str(exc)}"}
+        content={"message": f"Erro interno: {str(e)}"}
     )
 
 # Rota principal para servir o frontend
