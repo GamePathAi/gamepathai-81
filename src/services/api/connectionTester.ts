@@ -38,11 +38,9 @@ export const testBackendConnection = async () => {
     
     return response.ok;
   } catch (error) {
-    if (error.name === 'AbortError') {
-      console.error("Backend connection test timed out");
-    } else {
-      console.error("Backend connection test failed:", error);
-    }
+    // Log the error but handle gracefully - important for offline mode
+    console.warn("Backend connection test caught exception:", error);
+    console.log("Continuing with mock data due to backend connection issue");
     return false;
   }
 };
@@ -82,7 +80,8 @@ export const testAWSConnection = async () => {
     
     return response.ok;
   } catch (error) {
-    console.error("AWS connection test failed:", error);
+    console.log("AWS connection test failed (expected in local environment):", error);
+    console.log("Continuing with mock data due to AWS connection issue");
     return false;
   }
 };
