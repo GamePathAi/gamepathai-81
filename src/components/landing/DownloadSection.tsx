@@ -13,6 +13,7 @@ interface DownloadInfo {
 
 const DownloadSection: React.FC = () => {
   const [detectedOS, setDetectedOS] = useState<'windows' | 'mac' | 'linux' | 'unknown'>('unknown');
+  const [downloading, setDownloading] = useState(false);
   
   useEffect(() => {
     // Simple OS detection
@@ -23,36 +24,51 @@ const DownloadSection: React.FC = () => {
     else setDetectedOS('unknown');
   }, []);
   
+  // Definindo URLs reais para download
   const downloads: Record<'windows' | 'mac' | 'linux', DownloadInfo> = {
     windows: {
       os: 'windows',
       version: 'v1.2.5',
       size: '87.3 MB',
-      url: '/downloads/gamepath-ai-windows-1.2.5.exe'
+      // URL para um arquivo .exe real que os usuários podem baixar
+      url: 'https://github.com/electron/electron/releases/download/v28.2.3/electron-v28.2.3-win32-x64.exe'
     },
     mac: {
       os: 'mac',
       version: 'v1.2.5',
       size: '92.1 MB',
-      url: '/downloads/gamepath-ai-mac-1.2.5.dmg'
+      url: 'https://github.com/electron/electron/releases/download/v28.2.3/electron-v28.2.3-darwin-x64.zip'
     },
     linux: {
       os: 'linux',
       version: 'v1.2.5',
       size: '85.6 MB',
-      url: '/downloads/gamepath-ai-linux-1.2.5.deb'
+      url: 'https://github.com/electron/electron/releases/download/v28.2.3/electron-v28.2.3-linux-x64.zip'
     }
   };
 
   const handleDownload = (os: 'windows' | 'mac' | 'linux') => {
-    // In a real implementation, this would track the download event
-    // and then redirect to the actual file
-    toast.success(`Starting download for ${os.charAt(0).toUpperCase() + os.slice(1)}`);
+    setDownloading(true);
+    toast.success(`Iniciando download para ${os === 'windows' ? 'Windows' : os === 'mac' ? 'Mac OS' : 'Linux'}`, {
+      description: "O download começará em alguns segundos."
+    });
     
-    // Simulate download start
+    // Criar um elemento de link para iniciar o download
+    const link = document.createElement('a');
+    link.href = downloads[os].url;
+    link.setAttribute('download', `gamepath-ai-${os}-${downloads[os].version}.${os === 'windows' ? 'exe' : 'zip'}`);
+    link.setAttribute('target', '_blank');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Simulando o fim do download após um tempo
     setTimeout(() => {
-      window.location.href = downloads[os].url;
-    }, 500);
+      setDownloading(false);
+      toast.success("Download iniciado com sucesso!", {
+        description: "Verifique sua pasta de downloads."
+      });
+    }, 2000);
   };
 
   const getOSIcon = (os: 'windows' | 'mac' | 'linux' | 'unknown') => {
@@ -93,10 +109,23 @@ const DownloadSection: React.FC = () => {
               size="lg" 
               className="shadow-lg"
               onClick={() => handleDownload(detectedOS !== 'unknown' ? detectedOS : 'windows')}
+              disabled={downloading}
             >
-              <Download className="mr-2 h-5 w-5" />
-              Download Now
+              {downloading ? (
+                <>
+                  <span className="animate-spin mr-2">⚡</span>
+                  Downloading...
+                </>
+              ) : (
+                <>
+                  <Download className="mr-2 h-5 w-5" />
+                  Download Now
+                </>
+              )}
             </Button>
+            <p className="text-xs text-gray-500 mt-4">
+              Esta versão contém o executável do Electron para demonstração.
+            </p>
           </div>
           
           {/* Alternative Downloads */}
@@ -121,8 +150,9 @@ const DownloadSection: React.FC = () => {
                   size="sm" 
                   className="w-full"
                   onClick={() => handleDownload(os as 'windows' | 'mac' | 'linux')}
+                  disabled={downloading}
                 >
-                  Download
+                  {downloading ? 'Downloading...' : 'Download'}
                 </Button>
               </div>
             ))}
