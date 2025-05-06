@@ -29,7 +29,7 @@ export default defineConfig(({ mode }) => ({
   define: getDefineConfig(mode),
   server: {
     host: "::",
-    port: 8080,
+    port: 8080, // Explicitly set to 8080
     hmr: false, // Force disable HMR to prevent redirects
     allowedHosts: getHostConfig(),
     proxy: getProxyConfig(mode)

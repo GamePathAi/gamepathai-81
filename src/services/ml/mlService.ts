@@ -21,6 +21,7 @@ export const mlService = {
     region?: string,
     aggressiveness?: 'low' | 'medium' | 'high'
   } = {}): Promise<MLRouteOptimizerResponse> => {
+    console.log(`🔄 Otimizando rotas para jogo: ${gameId}`, params);
     return mlApiClient.withRetry<MLRouteOptimizerResponse>(
       `/ml/route-optimizer/${gameId}`,
       {
@@ -45,12 +46,20 @@ export const mlService = {
   
   /**
    * Game detection model: Detects installed games and their state
+   * IMPORTANTE: Atualizado para esperar o formato { detectedGames: [...] } do backend
    */
   detectGames: async (): Promise<MLDetectedGamesResponse> => {
-    return mlApiClient.withRetry<MLDetectedGamesResponse>(
-      '/ml/game-detection',
-      { method: 'GET' }
-    );
+    console.log('🎮 Detectando jogos via ML service');
+    try {
+      return await mlApiClient.withRetry<MLDetectedGamesResponse>(
+        '/ml/game-detection',
+        { method: 'GET' }
+      );
+    } catch (error) {
+      console.error('❌ Erro ao detectar jogos:', error);
+      // Fallback para formato compatível em caso de erro
+      return { detectedGames: [] };
+    }
   },
   
   /**

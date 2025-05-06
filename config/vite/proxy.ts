@@ -91,10 +91,10 @@ export const getProxyConfig = (mode: string) => ({
 
   // Special proxy configuration for ML operations with enhanced logging and redirect prevention
   '/ml': {
-    target: 'http://localhost:8000/ml',
+    target: 'http://localhost:8000',  // Changed: removed /ml from target
     changeOrigin: true,
     secure: false,
-    rewrite: (path: string) => path.replace(/^\/ml/, ''),
+    rewrite: (path: string) => path.replace(/^\/ml/, '/ml'), // Changed: maintain /ml in the path
     configure: (proxy: any, _options: any) => {
       proxy.on('error', (err: any, _req: any, _res: any) => {
         console.error('🔥 ML Proxy error:', err);

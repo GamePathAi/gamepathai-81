@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { gamesService } from "../services/gamesService";
 import { toast } from "sonner";
 import { generateGames } from "@/utils/mockData/gameData";
-import { mlService, MLDetectedGamesResponse, MLOptimizeGameResponse } from "@/services/ml";
+import { mlService } from "@/services/ml";
 
 export interface Game {
   id: string;
@@ -24,11 +24,14 @@ export function useGames() {
         console.log("🎮 Fetching games list");
         return await gamesService.getGames() as Game[];
       } catch (error) {
-        console.log("⚠️ Falling back to mock games data due to API error");
+        console.log("⚠️ Falling back to mock games data due to API error", error);
         try {
           // Try to use ML client for game detection as fallback
+          console.log("🧠 Attempting ML fallback for game detection");
           const mlDetectedGames = await mlService.detectGames();
-          if (mlDetectedGames?.detectedGames?.length > 0) {
+          console.log("ML detection response:", mlDetectedGames);
+          
+          if (mlDetectedGames?.detectedGames && mlDetectedGames.detectedGames.length > 0) {
             console.log("✅ Successfully detected games using ML service");
             // Transform the ML detected games to match our Game interface
             return mlDetectedGames.detectedGames.map(game => ({
@@ -39,9 +42,11 @@ export function useGames() {
               genre: "Detected",
               optimizationType: "none"
             }));
+          } else {
+            console.log("⚠️ ML detection returned no games");
           }
         } catch (mlError) {
-          console.log("⚠️ ML game detection also failed, using local mock data");
+          console.log("⚠️ ML game detection also failed, using local mock data", mlError);
         }
         
         // If both API and ML detection fail, use generated mock data

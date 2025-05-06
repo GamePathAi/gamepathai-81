@@ -1,3 +1,4 @@
+
 /**
  * Core ML API client implementation
  * Handles basic fetch operations with ML-specific configurations
@@ -52,6 +53,11 @@ export const mlApiClient = {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 seconds timeout for ML
       
+      console.log(`🔍 Fazendo requisição ML para: ${url}`, { 
+        method: options.method || 'GET',
+        headers: headers
+      });
+      
       const response = await fetch(url, {
         ...options,
         headers,
@@ -64,6 +70,8 @@ export const mlApiClient = {
       });
       
       clearTimeout(timeoutId);
+      
+      console.log(`✅ ML API resposta recebida para ${url}, status: ${response.status}, tipo: ${response.headers.get('content-type')}`);
       
       if (response.status === 204) {
         // No content response
@@ -84,18 +92,35 @@ export const mlApiClient = {
       if (!response.ok) {
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('text/html')) {
+          console.error(`🚨 ML API returned HTML instead of JSON (status ${response.status})`);
           throw new Error(`ML API returned HTML instead of JSON (status ${response.status})`);
         }
         
         try {
           const errorData = await response.json();
+          console.error(`🚨 ML API error response:`, errorData);
           throw {...errorData, status: response.status};
         } catch (e) {
+          console.error(`🚨 ML API error (status ${response.status})`);
           throw new Error(`ML API error (status ${response.status})`);
         }
       }
       
-      return await response.json() as T;
+      // ADDED: Check content type before parsing
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        console.error(`🚨 ML API response is not JSON: ${contentType}`);
+        
+        // Attempt to get the text to see what was returned
+        const text = await response.text();
+        console.error('Response text:', text.substring(0, 200) + (text.length > 200 ? '...' : ''));
+        
+        throw new Error(`ML API did not return JSON content (got ${contentType || 'unknown type'})`);
+      }
+      
+      const data = await response.json();
+      console.log(`📊 ML API dados recebidos:`, data);
+      return data as T;
     } catch (error: any) {
       // Log ML API errors for debugging
       console.error('🚨 ML API error:', error);
