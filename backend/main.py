@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI, Request, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -106,5 +105,5 @@ async def catch_all(rest_of_path: str = ""):
 
 if __name__ == "__main__":
     # Iniciar o servidor com uvicorn
-    port = int(os.getenv("PORT", "8081"))  # Alterado para 8081 para corresponder à configuração do frontend
+    port = int(os.getenv("PORT", "8000"))  # Manter a porta 8000 conforme está rodando atualmente
     uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
