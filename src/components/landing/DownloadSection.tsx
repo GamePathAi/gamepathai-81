@@ -24,26 +24,25 @@ const DownloadSection: React.FC = () => {
     else setDetectedOS('unknown');
   }, []);
   
-  // Definindo URLs reais para download
+  // URLs atualizadas para arquivos reais que podem ser baixados
   const downloads: Record<'windows' | 'mac' | 'linux', DownloadInfo> = {
     windows: {
       os: 'windows',
       version: 'v1.2.5',
       size: '87.3 MB',
-      // URL para um arquivo .exe real que os usuários podem baixar
-      url: 'https://github.com/electron/electron/releases/download/v28.2.3/electron-v28.2.3-win32-x64.exe'
+      url: 'https://github.com/electron/electron/releases/download/v25.9.8/electron-v25.9.8-win32-x64.zip'
     },
     mac: {
       os: 'mac',
       version: 'v1.2.5',
       size: '92.1 MB',
-      url: 'https://github.com/electron/electron/releases/download/v28.2.3/electron-v28.2.3-darwin-x64.zip'
+      url: 'https://github.com/electron/electron/releases/download/v25.9.8/electron-v25.9.8-darwin-x64.zip'
     },
     linux: {
       os: 'linux',
       version: 'v1.2.5',
       size: '85.6 MB',
-      url: 'https://github.com/electron/electron/releases/download/v28.2.3/electron-v28.2.3-linux-x64.zip'
+      url: 'https://github.com/electron/electron/releases/download/v25.9.8/electron-v25.9.8-linux-x64.zip'
     }
   };
 
@@ -53,14 +52,8 @@ const DownloadSection: React.FC = () => {
       description: "O download começará em alguns segundos."
     });
     
-    // Criar um elemento de link para iniciar o download
-    const link = document.createElement('a');
-    link.href = downloads[os].url;
-    link.setAttribute('download', `gamepath-ai-${os}-${downloads[os].version}.${os === 'windows' ? 'exe' : 'zip'}`);
-    link.setAttribute('target', '_blank');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Abrir a URL em uma nova aba em vez de usar o elemento de link
+    window.open(downloads[os].url, '_blank');
     
     // Simulando o fim do download após um tempo
     setTimeout(() => {
