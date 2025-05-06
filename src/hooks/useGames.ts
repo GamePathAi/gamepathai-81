@@ -4,6 +4,7 @@ import { gamesService } from "../services/gamesService";
 import { toast } from "sonner";
 import { generateGames } from "@/utils/mockData/gameData";
 import { mlService } from "@/services/ml";
+import { MLOptimizeGameResponse } from "@/services/ml/types";
 
 export interface Game {
   id: string;
