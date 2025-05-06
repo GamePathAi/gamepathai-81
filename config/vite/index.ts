@@ -28,7 +28,7 @@ export default defineConfig(({ mode }) => ({
   // Use modularized configurations
   define: getDefineConfig(mode),
   server: {
-    host: "::",
+    host: true, // Listen on all addresses
     port: 8080, // Explicitly set to 8080
     hmr: false, // Force disable HMR to prevent redirects
     allowedHosts: getHostConfig(),

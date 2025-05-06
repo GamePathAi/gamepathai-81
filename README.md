@@ -1,79 +1,61 @@
+
 # GamePath AI
 
-## Sobre o Projeto
+GamePath AI is an application for optimizing games and network performance.
 
-GamePath AI é uma aplicação avançada de otimização de conexão para jogos online, utilizando inteligência artificial para melhorar a performance de rede e sistema.
+## Development Setup
 
-## Recursos Principais
+### Prerequisites
+- Node.js 18+ for frontend
+- Python 3.9+ for backend
+- npm or yarn
 
-- Roteamento inteligente de rede
-- Métricas de desempenho em tempo real
-- Otimização automática baseada em IA
+### Start the Backend (FastAPI)
 
-## Como Começar
+```bash
+# Navigate to the backend directory
+cd backend
 
-There are several ways of editing your application.
+# Set up Python virtual environment (if not already done)
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-**Use Lovable**
+# Install dependencies
+pip install -r requirements.txt
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/db6489aa-54d3-41db-9507-31b855d86e89) and start prompting.
+# Start the backend server (runs on port 8000)
+python main.py
+```
 
-Changes made via Lovable will be committed automatically to this repo.
+### Start the Frontend (Vite + React)
 
-**Use your preferred IDE**
+```bash
+# In another terminal, install frontend dependencies
+npm install
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start the Vite dev server (runs on port 8080)
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Test the Connection
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. Ensure both servers are running
+2. Open browser console and run `runGamePathDiagnostics()` to check connectivity
+3. Visit http://localhost:8080 to see the app
 
-**Use GitHub Codespaces**
+## Troubleshooting
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Backend Issues
+- Ensure Python 3.9+ is installed
+- Check that all requirements are installed
+- Verify port 8000 is not in use
 
-## What technologies are used for this project?
+### Frontend Issues
+- Clear browser cache
+- Check console for errors
+- Ensure proxy settings in vite.config.ts are correct
 
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/db6489aa-54d3-41db-9507-31b855d86e89) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### Connection Issues
+- Verify the backend is running on port 8000
+- Check CORS settings in the backend
+- Test endpoints directly using curl or Postman

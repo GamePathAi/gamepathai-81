@@ -3,14 +3,12 @@
  * Core ML API client implementation
  * Handles basic fetch operations with ML-specific configurations
  */
-import { sanitizeApiUrl } from "../../utils/url";
-import { reportMLIssue } from "../../utils/appInitializer";
-import { MLApiError } from "./types";
+import { toast } from "sonner";
 
 // Constants
-const ML_BASE_URL = ""; // Empty string means relative URLs
+const ML_BASE_URL = "/ml"; // Use /ml prefix for all ML requests
 const isDev = process.env.NODE_ENV === 'development';
-const MAX_RETRIES = 3;
+const MAX_RETRIES = 2;
 const RETRY_DELAY = 2000; // 2 seconds
 
 /**
@@ -19,20 +17,14 @@ const RETRY_DELAY = 2000; // 2 seconds
 export const mlApiClient = {
   /**
    * Make a fetch request specifically configured for ML operations
-   * Blocks redirects and handles ML-specific errors
    */
   async fetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const isAbsoluteUrl = endpoint.startsWith('http://') || endpoint.startsWith('https://');
-    let url = isAbsoluteUrl ? endpoint : `${ML_BASE_URL}${endpoint}`;
+    // Ensure endpoint starts with / for proper URL joining
+    const formattedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const url = `${ML_BASE_URL}${formattedEndpoint.replace(/^\/ml/, '')}`;
     
-    // RELAXED: Don't aggressively sanitize if we're in development mode
     if (isDev) {
-      // Keep the original URL in development to help diagnose issues
       console.log(`🧠 ML API Request: ${url}`);
-    } else {
-      // In production, sanitize to prevent redirects
-      url = sanitizeApiUrl(url);
-      console.log(`🧠 ML API Request: ${endpoint} -> ${url}`);
     }
     
     const headers = {
@@ -55,7 +47,6 @@ export const mlApiClient = {
       
       console.log(`🔍 Fazendo requisição ML para: ${url}`, { 
         method: options.method || 'GET',
-        headers: headers
       });
       
       const response = await fetch(url, {
@@ -64,29 +55,16 @@ export const mlApiClient = {
         mode: 'cors',
         credentials: 'include',
         cache: 'no-store',
-        // MODIFIED: Allow redirects in development
-        redirect: isDev ? 'follow' : 'error', 
         signal: controller.signal
       });
       
       clearTimeout(timeoutId);
       
-      console.log(`✅ ML API resposta recebida para ${url}, status: ${response.status}, tipo: ${response.headers.get('content-type')}`);
+      console.log(`✅ ML API resposta recebida para ${url}, status: ${response.status}`);
       
       if (response.status === 204) {
         // No content response
         return {} as T;
-      }
-      
-      // MODIFIED: Log but allow redirects in development
-      if (response.redirected) {
-        console.log(`⚠️ ML API redirect followed: ${url} -> ${response.url}`);
-        
-        // Only block in production
-        if (!isDev && response.url.includes('gamepathai.com')) {
-          console.error('🚨 ML API redirect to gamepathai.com blocked');
-          throw new Error(`Blocked redirect to ${response.url}`);
-        }
       }
       
       if (!response.ok) {
@@ -100,77 +78,68 @@ export const mlApiClient = {
           const errorData = await response.json();
           console.error(`🚨 ML API error response:`, errorData);
           throw {...errorData, status: response.status};
-        } catch (e) {
-          console.error(`🚨 ML API error (status ${response.status})`);
-          throw new Error(`ML API error (status ${response.status})`);
+        } catch (parseError) {
+          throw {
+            status: response.status,
+            message: `ML API error (status ${response.status})`
+          };
         }
       }
       
-      // ADDED: Check content type before parsing
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        console.error(`🚨 ML API response is not JSON: ${contentType}`);
-        
-        // Attempt to get the text to see what was returned
-        const text = await response.text();
-        console.error('Response text:', text.substring(0, 200) + (text.length > 200 ? '...' : ''));
-        
-        throw new Error(`ML API did not return JSON content (got ${contentType || 'unknown type'})`);
+      return await response.json() as T;
+    } catch (error: any) {
+      // Handle abort errors gracefully
+      if (error.name === 'AbortError') {
+        console.log(`⏱️ ML request timeout for ${url}`);
+        throw {
+          status: 'timeout',
+          message: 'ML API request timed out'
+        };
       }
       
-      const data = await response.json();
-      console.log(`📊 ML API dados recebidos:`, data);
-      return data as T;
-    } catch (error: any) {
-      // Log ML API errors for debugging
-      console.error('🚨 ML API error:', error);
+      console.error(`❌ ML API error for ${url}:`, error);
       throw error;
     }
   },
   
   /**
-   * Create a retry wrapper for ML operations that may sometimes fail
+   * Enhanced fetch method with retry capability for ML operations
    */
-  async withRetry<T>(
-    endpoint: string, 
-    options: RequestInit = {}, 
-    retries: number = MAX_RETRIES
-  ): Promise<T> {
-    try {
-      return await this.fetch(endpoint, options);
-    } catch (error: any) {
-      // Check if we have retries left
-      if (retries > 0) {
-        // Log retry
-        console.log(`🔄 Retrying ML operation after ${RETRY_DELAY}ms...`);
+  async withRetry<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    let lastError;
+    
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+      try {
+        if (attempt > 0) {
+          console.log(`🔄 ML retry attempt ${attempt + 1}/${MAX_RETRIES} for ${endpoint}`);
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+        }
         
-        // Wait before retry
-        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+        return await this.fetch<T>(endpoint, options);
+      } catch (error: any) {
+        lastError = error;
+        console.log(`❌ ML attempt ${attempt + 1} failed:`, error.message || error);
         
-        // Retry with one less retry count
-        return this.withRetry(endpoint, options, retries - 1);
+        // Don't retry server errors (except 502, 503, 504)
+        if (error.status && 
+            typeof error.status === 'number' && 
+            error.status !== 502 && 
+            error.status !== 503 && 
+            error.status !== 504 && 
+            error.status < 500) {
+          break;
+        }
       }
-      
-      // If no retries left or it's a redirect issue, throw as ML error
-      if (error.message && error.message.includes('redirect')) {
-        // Enhanced logging for redirect-related errors
-        console.info('Detalhes do erro de redirecionamento:', {
-          url: endpoint,
-          endpoint,
-          message: error.message
-        });
-        
-        throw {
-          status: 'redirect_error',
-          message: 'ML API redirect blocked - please use the diagnostic panel',
-          originalError: error
-        };
-      }
-      
-      // Report ML issue for analytics
-      reportMLIssue(error, endpoint, '');
-      
-      throw error;
     }
+    
+    // If we're here, all retries failed
+    console.error(`⛔ All ML retries failed for ${endpoint}`);
+    
+    // Show a toast notification for user feedback
+    toast.error("ML Service Unavailable", {
+      description: "The ML service is currently unavailable. Try again later."
+    });
+    
+    throw lastError;
   }
 };

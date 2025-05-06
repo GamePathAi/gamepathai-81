@@ -5,12 +5,12 @@ import {
 } from "../../utils/url";
 
 // Configure API base URL - always use relative URLs
-const API_BASE_URL = '';  // Changed to use empty string for relative URLs
+const API_BASE_URL = '/api';  // Changed to use /api prefix for all requests
 
 // Remove noisy logging and only log in development
 const isDev = process.env.NODE_ENV === 'development';
 if (isDev) {
-  console.log("API_BASE_URL being used:", getApiBaseUrl());
+  console.log("API_BASE_URL being used:", API_BASE_URL);
 }
 
 export const baseApiClient = {
@@ -18,16 +18,13 @@ export const baseApiClient = {
     // Ensure endpoint starts with / for proper URL joining
     const formattedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
     
-    // Clean endpoint: remove any '/api/' prefixes
-    const cleanedEndpoint = formattedEndpoint
-      .replace(/^\/api\//, '/') // Remove leading /api/
-      .replace(/\/api\//, '/'); // Remove any /api/ in the path
+    // Combine API base URL with endpoint
+    let url = `${API_BASE_URL}${formattedEndpoint}`;
     
-    // Use empty base URL for relative paths
-    let url = cleanedEndpoint;
-    
-    // FINAL CHECK: Ensure absolute URLs are converted to relative paths
-    url = sanitizeApiUrl(url);
+    // Log the URL in development
+    if (isDev) {
+      console.log(`📡 Fazendo requisição para: ${url}`);
+    }
     
     const headers = {
       "Content-Type": "application/json",
@@ -35,9 +32,6 @@ export const baseApiClient = {
       "X-Client-Source": "react-frontend", // Identifica origem da requisição
       "Cache-Control": "no-cache, no-store", // Prevent caching
       "Pragma": "no-cache",
-      // NOVO: Adicionar cabeçalhos anti-redirecionamento
-      "X-Max-Redirects": "0",
-      "X-Requested-With": "XMLHttpRequest",
       ...(options.headers || {})
     };
     
@@ -52,52 +46,21 @@ export const baseApiClient = {
     }
     
     try {
-      if (isDev) {
-        console.log(`📡 Fazendo requisição para: ${url}`);
-      }
-      
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 seconds timeout
       
-      // FINAL CHECK: Log and sanitize any absolute URLs
-      if (url.includes('http://') || url.includes('https://')) {
-        console.log(`⚠️ URL absoluto detectado na requisição: ${url}`);
-        url = sanitizeApiUrl(url);
-        console.log(`✅ URL convertido para: ${url}`);
-      }
-      
-      // Advanced fetch options
+      // Request with improved options
       const fetchOptions: RequestInit = {
         ...options,
         headers,
         mode: 'cors',
         credentials: 'include',
         cache: 'no-store',
-        // CHANGED: Error on redirect, don't follow
-        redirect: 'error',
         signal: controller.signal
       };
       
       const response = await fetch(url, fetchOptions);
       clearTimeout(timeoutId);
-      
-      // Enhanced redirect verification
-      if (response.url && response.url !== url) {
-        // Check for origin or domain changes
-        const originalUrl = new URL(url, window.location.origin);
-        const redirectedUrl = new URL(response.url, window.location.origin);
-        
-        console.log(`⚠️ URL redirecionada: ${url} -> ${response.url}`);
-        
-        if (!isDev && (originalUrl.host !== redirectedUrl.host || 
-            redirectedUrl.href.includes('gamepathai.com'))) {
-          console.error('⚠️ Detectado redirecionamento na resposta:', {
-            original: url,
-            redirected: response.url
-          });
-          throw new Error(`Detected redirect to ${response.url}`);
-        }
-      }
       
       if (!response.ok) {
         // Handle authentication errors
@@ -110,12 +73,12 @@ export const baseApiClient = {
           }
         }
         
-        // Check if response is HTML instead of JSON (likely a redirect or error page)
+        // Check if response is HTML instead of JSON
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('text/html')) {
           throw {
             status: response.status,
-            message: 'Received HTML response when expecting JSON. Possible redirect or server error.',
+            message: 'Received HTML response when expecting JSON',
             isHtmlResponse: true
           };
         }
@@ -127,29 +90,13 @@ export const baseApiClient = {
         };
       }
       
-      // Check if response is HTML instead of expected JSON
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        if (contentType && contentType.includes('text/html')) {
-          throw {
-            status: 'error',
-            message: 'Received HTML response when expecting JSON. Possible redirect or server error.',
-            isHtmlResponse: true
-          };
-        }
+      if (isDev) {
+        console.log(`✅ Resposta bem-sucedida para ${url}`);
       }
       
       return response.json() as Promise<T>;
     } catch (error: any) {
       console.error(`❌ Falha na requisição para ${endpoint}:`, error);
-      
-      // Check if the error is redirect-related
-      if (error.message && 
-         (error.message.includes('redirect') || error.message.includes('gamepathai.com'))) {
-        console.error('🚨 REDIRECIONAMENTO DETECTADO E BLOQUEADO');
-        // Log diagnostic information
-        console.error('Detalhes da requisição:', { url, endpoint, headers: options.headers });
-      }
       
       throw {
         status: 'error',
@@ -166,15 +113,14 @@ async function tryRenewToken() {
     const refreshToken = localStorage.getItem("refresh_token");
     if (!refreshToken) return false;
     
-    // IMPROVED: Use relative path
-    const url = `/auth/refresh-token`;
+    const url = `/api/auth/refresh-token`;
     
-    const response = await fetch(sanitizeApiUrl(url), {
+    const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-No-Redirect": "1", // Prevent redirects
-        "Cache-Control": "no-cache" // Prevent caching
+        "X-No-Redirect": "1",
+        "Cache-Control": "no-cache"
       },
       body: JSON.stringify({ refresh_token: refreshToken }),
       mode: 'cors',
