@@ -1,3 +1,4 @@
+
 /**
  * Core ML API client implementation
  * Handles basic fetch operations with ML-specific configurations
@@ -171,7 +172,8 @@ export const mlApiClient = {
    */
   async isBackendRunning(): Promise<boolean> {
     try {
-      const response = await fetch('/health', {
+      // Using global fetch without a type parameter - this is crucial for fixing the TS error
+      const response = await window.fetch('/health', {
         method: 'GET',
         headers: {
           'Cache-Control': 'no-cache, no-store',
