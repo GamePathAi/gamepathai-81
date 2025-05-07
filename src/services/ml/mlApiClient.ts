@@ -171,25 +171,33 @@ export const mlApiClient = {
    * Check if the backend is running
    */
   async isBackendRunning(): Promise<boolean> {
-    try {
-      // Create a function that wraps the fetch API without using generic types
-      const checkHealth = async () => {
-        const healthUrl = `${ML_BASE_URL}/health`;
-        return await window.fetch(healthUrl, {
-          method: 'GET',
-          headers: {
-            'Cache-Control': 'no-cache, no-store',
-            'X-No-Redirect': '1'
-          },
-          cache: 'no-store'
-        });
-      };
-      
-      const response = await checkHealth();
-      return response.ok;
-    } catch (error) {
-      console.warn("Backend health check failed:", error);
-      return false;
-    }
+    return new Promise<boolean>((resolve) => {
+      try {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', `${ML_BASE_URL}/health`, true);
+        xhr.setRequestHeader('Cache-Control', 'no-cache, no-store');
+        xhr.setRequestHeader('X-No-Redirect', '1');
+        
+        xhr.onload = () => {
+          resolve(xhr.status >= 200 && xhr.status < 300);
+        };
+        
+        xhr.onerror = () => {
+          console.warn("Backend health check failed: network error");
+          resolve(false);
+        };
+        
+        xhr.timeout = 5000;
+        xhr.ontimeout = () => {
+          console.warn("Backend health check timed out");
+          resolve(false);
+        };
+        
+        xhr.send();
+      } catch (error) {
+        console.warn("Backend health check failed:", error);
+        resolve(false);
+      }
+    });
   }
 };
