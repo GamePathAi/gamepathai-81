@@ -172,17 +172,20 @@ export const mlApiClient = {
    */
   async isBackendRunning(): Promise<boolean> {
     try {
-      // Usando window.fetch explicitamente sem parâmetro de tipo genérico
-      // Também adicionando opções específicas para evitar redirecionamentos e cache
-      const response = await window.fetch('/health', {
-        method: 'GET',
-        headers: {
-          'Cache-Control': 'no-cache, no-store',
-          'X-No-Redirect': '1'
-        },
-        cache: 'no-store'
-      });
+      // Create a function that wraps the fetch API without using generic types
+      const checkHealth = async () => {
+        const healthUrl = `${ML_BASE_URL}/health`;
+        return await window.fetch(healthUrl, {
+          method: 'GET',
+          headers: {
+            'Cache-Control': 'no-cache, no-store',
+            'X-No-Redirect': '1'
+          },
+          cache: 'no-store'
+        });
+      };
       
+      const response = await checkHealth();
       return response.ok;
     } catch (error) {
       console.warn("Backend health check failed:", error);
