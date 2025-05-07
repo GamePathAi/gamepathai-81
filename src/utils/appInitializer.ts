@@ -1,6 +1,7 @@
 
 import { addCSPMetaTag, removeInjectedScripts } from "./cspHelper";
-import { isProduction, detectRedirectScripts } from "./url";
+import { detectRedirectScripts } from "./url/diagnostics";
+import { isProduction } from "./url/environmentDetection";
 import { setupFetchInterceptor, setupRedirectDetector, setupMLProtection } from "./middleware";
 
 /**

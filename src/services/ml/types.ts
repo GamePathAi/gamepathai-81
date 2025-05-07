@@ -69,3 +69,29 @@ export interface MLOptimizeGameResponse {
   message?: string;
 }
 
+// System info response type
+export interface MLSystemInfoResponse {
+  systemInfo: {
+    cpu: {
+      model: string;
+      cores: number;
+      threads: number;
+      speed: number;
+    };
+    ram: {
+      total: number;
+      free: number;
+      usage: number;
+    };
+    gpu: {
+      model: string;
+      vram: number;
+      driver: string;
+    };
+    network: {
+      bandwidth: number;
+      latency: number;
+      jitter: number;
+    };
+  };
+}

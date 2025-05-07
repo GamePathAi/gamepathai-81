@@ -1,6 +1,6 @@
-
 import { useState, useEffect } from 'react';
-import { mlApiClient, MLSystemInfoResponse } from '@/services/ml';
+import { mlApiClient } from '@/services/ml/mlApiClient';
+import { MLSystemInfoResponse } from '@/services/ml/types';
 
 interface SystemInfo {
   cpu: {

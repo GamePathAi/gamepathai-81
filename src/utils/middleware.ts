@@ -3,12 +3,13 @@
  */
 
 import { 
-  detectRedirectAttempt, 
   fixAbsoluteUrl, 
   sanitizeApiUrl,
   setupNavigationMonitor,
   detectRedirectScripts
 } from './url';
+
+import { detectRedirectAttempt } from './url/redirectDetection';
 
 /**
  * Adds CORS headers to all outgoing requests

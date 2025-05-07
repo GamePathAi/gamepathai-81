@@ -25,9 +25,25 @@ export const mlDiagnostics = {
     }
     
     // Check for ad blockers (simplified detection)
-    if (window.adBlockDetected || 
-        document.getElementById('ad-blocker-detector') || 
-        document.documentElement.innerHTML.includes('adblock')) {
+    // Modified: Use a safer way to check for ad blockers
+    const hasAdBlocker = (() => {
+      // Try to check if ad container is hidden or removed by ad blockers
+      const testAd = document.createElement('div');
+      testAd.className = 'adsbox';
+      testAd.innerHTML = '&nbsp;';
+      document.body.appendChild(testAd);
+      
+      // Wait briefly for ad blockers to act on the element
+      const isBlocked = testAd.offsetHeight === 0 || 
+                         testAd.style.display === 'none' || 
+                         testAd.clientHeight === 0;
+      
+      // Clean up
+      document.body.removeChild(testAd);
+      return isBlocked;
+    })();
+    
+    if (hasAdBlocker) {
       detectedExtensions.push('Ad Blocker');
     }
     
@@ -152,4 +168,3 @@ export const mlDiagnostics = {
 // Add a function to the global window object for easy testing from the console
 (window as any).testGameDetection = mlDiagnostics.testGameDetection;
 (window as any).runMlDiagnostics = mlDiagnostics.runFullDiagnostics;
-

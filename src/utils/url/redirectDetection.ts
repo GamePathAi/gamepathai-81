@@ -1,3 +1,4 @@
+
 /**
  * Redirect detection utilities
  */
@@ -32,7 +33,7 @@ export const detectRedirectAttempt = (url: string, isMlOperation = false): boole
   // Check if we're in development mode
   const isDevelopment = process.env.NODE_ENV === 'development';
   
-  // MODIFICADO: Permitir URLs absolutas dentro do mesmo domínio em desenvolvimento
+  // Modified: Allow absolute URLs within the same domain in development
   if (isDevelopment) {
     // In development, allow absolute URLs that point to the current domain
     if (typeof window !== 'undefined') {
@@ -48,7 +49,7 @@ export const detectRedirectAttempt = (url: string, isMlOperation = false): boole
     }
   }
   
-  // NOVO: Verificar se o URL já é um proxy local, que não precisa ser bloqueado
+  // New: Check if the URL is already a local proxy, which doesn't need to be blocked
   if ((url.startsWith('/api') || url.startsWith('/ml')) && 
       !url.includes('http:') && !url.includes('https:')) {
     return false; // Local API calls are safe
@@ -61,7 +62,7 @@ export const detectRedirectAttempt = (url: string, isMlOperation = false): boole
                     url.includes('?url=') ||
                     url.includes('&url=');
   
-  // MODIFICADO: Special extra checks for ML operations which are more sensitive
+  // Modified: Special extra checks for ML operations which are more sensitive
   const mlSuspicious = isMlOperation && (
     (!isDevelopment && url.includes('localhost')) ||
     (!url.includes('/api/ml/') && !url.includes('/ml/') && url.includes('/ml'))
@@ -70,7 +71,7 @@ export const detectRedirectAttempt = (url: string, isMlOperation = false): boole
   if (suspicious || mlSuspicious) {
     if (isDevelopment) {
       // In development, log but allow more URLs
-      console.log('⚠️ Permitindo URL que seria bloqueado em produção:', url);
+      console.log('⚠️ Allowing URL that would be blocked in production:', url);
       return false; // Allow in development for easier testing
     }
     

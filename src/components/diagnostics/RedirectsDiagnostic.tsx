@@ -15,7 +15,8 @@ interface RedirectTest {
   redirected: boolean;
   target?: string;
   isGamePathAI?: boolean;
-  status?: number;
+  status?: number | null;
+  error?: string;
 }
 
 const RedirectsDiagnostic: React.FC = () => {
@@ -47,14 +48,16 @@ const RedirectsDiagnostic: React.FC = () => {
         redirected: healthResult.wasRedirected,
         target: healthResult.finalUrl,
         isGamePathAI: healthResult.isGamePathAI,
-        status: healthResult.responseStatus
+        status: 'responseStatus' in healthResult ? healthResult.responseStatus : null,
+        error: 'error' in healthResult ? healthResult.error : undefined
       });
     } catch (error) {
       results.push({
         url: '/health',
         redirected: true,
         target: 'Error testing URL',
-        isGamePathAI: false
+        isGamePathAI: false,
+        error: error instanceof Error ? error.message : String(error)
       });
     }
     
@@ -67,14 +70,16 @@ const RedirectsDiagnostic: React.FC = () => {
         redirected: apiResult.wasRedirected,
         target: apiResult.finalUrl,
         isGamePathAI: apiResult.isGamePathAI,
-        status: apiResult.responseStatus
+        status: 'responseStatus' in apiResult ? apiResult.responseStatus : null,
+        error: 'error' in apiResult ? apiResult.error : undefined
       });
     } catch (error) {
       results.push({
         url: 'API Direct (/health)',
         redirected: true,
         target: 'Error testing URL',
-        isGamePathAI: false
+        isGamePathAI: false,
+        error: error instanceof Error ? error.message : String(error)
       });
     }
     
@@ -87,14 +92,16 @@ const RedirectsDiagnostic: React.FC = () => {
         redirected: localhostResult.wasRedirected,
         target: localhostResult.finalUrl,
         isGamePathAI: localhostResult.isGamePathAI,
-        status: localhostResult.responseStatus
+        status: 'responseStatus' in localhostResult ? localhostResult.responseStatus : null,
+        error: 'error' in localhostResult ? localhostResult.error : undefined
       });
     } catch (error) {
       results.push({
         url: 'Local API Test',
         redirected: true,
         target: 'Error testing URL',
-        isGamePathAI: false
+        isGamePathAI: false,
+        error: error instanceof Error ? error.message : String(error)
       });
     }
     
@@ -106,14 +113,16 @@ const RedirectsDiagnostic: React.FC = () => {
         redirected: mlResult.wasRedirected,
         target: mlResult.finalUrl,
         isGamePathAI: mlResult.isGamePathAI,
-        status: mlResult.responseStatus
+        status: 'responseStatus' in mlResult ? mlResult.responseStatus : null,
+        error: 'error' in mlResult ? mlResult.error : undefined
       });
     } catch (error) {
       results.push({
         url: '/ml/health',
         redirected: true,
         target: 'Error testing URL',
-        isGamePathAI: false
+        isGamePathAI: false,
+        error: error instanceof Error ? error.message : String(error)
       });
     }
     
@@ -126,14 +135,16 @@ const RedirectsDiagnostic: React.FC = () => {
           redirected: customResult.wasRedirected,
           target: customResult.finalUrl,
           isGamePathAI: customResult.isGamePathAI,
-          status: customResult.responseStatus
+          status: 'responseStatus' in customResult ? customResult.responseStatus : null,
+          error: 'error' in customResult ? customResult.error : undefined
         });
       } catch (error) {
         results.push({
           url: urlToTest,
           redirected: true,
           target: 'Error testing URL',
-          isGamePathAI: false
+          isGamePathAI: false,
+          error: error instanceof Error ? error.message : String(error)
         });
       }
     }
@@ -232,6 +243,11 @@ const RedirectsDiagnostic: React.FC = () => {
                   {result.status && (
                     <div className="text-gray-400">
                       Status: {result.status}
+                    </div>
+                  )}
+                  {result.error && (
+                    <div className="text-red-400">
+                      Erro: {result.error}
                     </div>
                   )}
                 </div>
