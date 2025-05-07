@@ -26,9 +26,14 @@ if [ -f "requirements.txt" ]; then
     pip install -r requirements.txt
 fi
 
+# Make sure utils directory exists
+if [ ! -d "utils" ]; then
+    echo "Creating utils directory..."
+    mkdir -p utils
+fi
+
 # Start the server
 echo "Starting FastAPI server on port 8000..."
 echo "API will be available at http://localhost:8000"
 echo "ML endpoints available at http://localhost:8000/ml/"
 python main.py
-

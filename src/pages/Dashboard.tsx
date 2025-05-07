@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import ConnectionOptimizer from "@/components/ConnectionOptimizer";
 import RouteOptimizer from "@/components/RouteOptimizer";
 import { testBackendConnection } from "@/services/api";
-import { mlDiagnostics } from "@/services/mlApiClient";
+import { mlDiagnostics } from "@/services/ml";
 import { detectRedirectScripts, setupNavigationMonitor } from "@/utils/url";
 
 // Import refactored dashboard components
@@ -17,6 +17,7 @@ import PremiumFeatures from "@/components/dashboard/PremiumFeatures";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import MLDiagnosticsPanel from "@/components/diagnostics/MLDiagnosticsPanel";
+import BackendStatusModal from "@/components/BackendStatusModal";
 
 const Dashboard: React.FC = () => {
   const [isOptimizing, setIsOptimizing] = useState(false);
@@ -24,11 +25,17 @@ const Dashboard: React.FC = () => {
   const [showMlDiagnostics, setShowMlDiagnostics] = useState(false);
   const [interfereingExtensions, setInterfereingExtensions] = useState<string[]>([]);
   const [redirectsDetected, setRedirectsDetected] = useState(false);
+  const [showBackendModal, setShowBackendModal] = useState(false);
   
   useEffect(() => {
     const checkBackendStatus = async () => {
       const isConnected = await testBackendConnection();
       setBackendStatus(isConnected ? 'online' : 'offline');
+      
+      // Show the backend status modal if backend is offline
+      if (!isConnected) {
+        setShowBackendModal(true);
+      }
     };
     
     checkBackendStatus();
@@ -87,6 +94,18 @@ const Dashboard: React.FC = () => {
   const handleOptimizeAll = () => {
     if (isOptimizing) return;
     
+    // Check if backend is online before attempting optimization
+    if (backendStatus !== 'online') {
+      toast.warning("Backend unavailable", {
+        description: "Cannot optimize games without backend connection",
+        action: {
+          label: "Connect Backend",
+          onClick: () => setShowBackendModal(true)
+        }
+      });
+      return;
+    }
+    
     setIsOptimizing(true);
     toast.success("Otimização global iniciada", {
       description: "Otimizando todos os jogos detectados e rotas de rede"
@@ -112,13 +131,23 @@ const Dashboard: React.FC = () => {
       });
     } else {
       toast.error("Servidor indisponível", {
-        description: "Continuando com dados simulados"
+        description: "Continuando com dados simulados",
+        action: {
+          label: "Conectar Backend",
+          onClick: () => setShowBackendModal(true)
+        }
       });
     }
   };
 
   return (
     <div className="container mx-auto">
+      {/* Backend Status Modal */}
+      <BackendStatusModal 
+        open={showBackendModal} 
+        onOpenChange={setShowBackendModal} 
+      />
+      
       {/* Backend Status */}
       {backendStatus === 'offline' && (
         <Alert variant="default" className="mb-4 alert-offline">
@@ -128,9 +157,14 @@ const Dashboard: React.FC = () => {
             <span>
               Não foi possível conectar ao servidor. Usando dados simulados temporariamente.
             </span>
-            <Button variant="outline" size="sm" onClick={handleRetryConnection} className="border-amber-500/50 text-amber-500">
-              Tentar Reconectar
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => setShowBackendModal(true)} className="border-amber-500/50 text-amber-500">
+                Conectar Backend
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleRetryConnection} className="border-amber-500/50 text-amber-500">
+                Tentar Reconectar
+              </Button>
+            </div>
           </AlertDescription>
         </Alert>
       )}

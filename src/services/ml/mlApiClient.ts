@@ -45,7 +45,7 @@ export const mlApiClient = {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 seconds timeout for ML
       
-      console.log(`🔍 Fazendo requisição ML para: ${url}`, { 
+      console.log(`🔍 Requesting from ML endpoint: ${url}`, { 
         method: options.method || 'GET',
       });
       
@@ -60,7 +60,7 @@ export const mlApiClient = {
       
       clearTimeout(timeoutId);
       
-      console.log(`✅ ML API resposta recebida para ${url}, status: ${response.status}`);
+      console.log(`✅ ML API response received for ${url}, status: ${response.status}`);
       
       if (response.status === 204) {
         // No content response
@@ -68,6 +68,18 @@ export const mlApiClient = {
       }
       
       if (!response.ok) {
+        // Check if we need to handle 404 specially in development
+        if (response.status === 404 && isDev) {
+          console.warn(`⚠️ ML endpoint ${url} not found. Is the backend running?`);
+          toast.warning("Backend not detected", {
+            description: "Ensure the Python backend is running on port 8000"
+          });
+          throw {
+            status: 404,
+            message: "Backend not running - start with backend/start.sh" 
+          };
+        }
+        
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('text/html')) {
           console.error(`🚨 ML API returned HTML instead of JSON (status ${response.status})`);
@@ -115,12 +127,16 @@ export const mlApiClient = {
           await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
         }
         
-        // Fix: Changed from await this.fetch<T> to await this.fetch
-        // as the generic is already defined in the function signature
-        return await this.fetch(endpoint, options);
+        return await this.fetch<T>(endpoint, options);
       } catch (error: any) {
         lastError = error;
         console.log(`❌ ML attempt ${attempt + 1} failed:`, error.message || error);
+        
+        // Don't retry if backend is explicitly not running
+        if (error.status === 404 && error.message && error.message.includes("Backend not running")) {
+          console.warn("⚠️ Backend not running, not retrying");
+          break;
+        }
         
         // Don't retry server errors (except 502, 503, 504)
         if (error.status && 
@@ -138,10 +154,37 @@ export const mlApiClient = {
     console.error(`⛔ All ML retries failed for ${endpoint}`);
     
     // Show a toast notification for user feedback
-    toast.error("ML Service Unavailable", {
-      description: "The ML service is currently unavailable. Try again later."
-    });
+    if (lastError && lastError.status === 404 && lastError.message && lastError.message.includes("Backend not running")) {
+      toast.error("Backend Not Running", {
+        description: "Start the Python backend with backend/start.sh"
+      });
+    } else {
+      toast.error("ML Service Unavailable", {
+        description: "The ML service is currently unavailable. Try again later."
+      });
+    }
     
     throw lastError;
+  },
+  
+  /**
+   * Check if the backend is running
+   */
+  async isBackendRunning(): Promise<boolean> {
+    try {
+      const response = await fetch('/health', {
+        method: 'GET',
+        headers: {
+          'Cache-Control': 'no-cache, no-store',
+          'X-No-Redirect': '1'
+        },
+        cache: 'no-store'
+      });
+      
+      return response.ok;
+    } catch (error) {
+      console.warn("Backend health check failed:", error);
+      return false;
+    }
   }
 };

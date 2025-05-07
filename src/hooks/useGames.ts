@@ -1,8 +1,6 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { gamesService } from "../services/gamesService";
 import { toast } from "sonner";
-import { generateGames } from "@/utils/mockData/gameData";
 import { mlService } from "@/services/ml";
 import { MLOptimizeGameResponse } from "@/services/ml/types";
 
@@ -15,6 +13,32 @@ export interface Game {
   optimizationType?: "both" | "network" | "system" | "none";
 }
 
+// Helper to get image path - either from public/images/games or fallback to placeholder
+const getGameImagePath = (gameId: string): string => {
+  const publicGameImages = [
+    'valorant', 'cs2', 'fortnite', 'apex-legends', 'league-of-legends', 'warzone'
+  ];
+  
+  // Map some common IDs to filenames
+  const idToFilename: Record<string, string> = {
+    'apex-legends': 'apex',
+    'league-of-legends': 'lol',
+  };
+  
+  const filename = idToFilename[gameId] || gameId;
+  
+  // Check if this is a development environment
+  const isDev = process.env.NODE_ENV === 'development';
+  
+  // In development, assume image might not exist and use placeholder instead
+  if (isDev && !publicGameImages.includes(gameId)) {
+    return `https://placehold.co/600x400/1A2033/ffffff?text=${encodeURIComponent(gameId)}`;
+  }
+  
+  // Otherwise try to use the public image
+  return `/images/games/${filename}.webp`;
+};
+
 export function useGames() {
   const queryClient = useQueryClient();
 
@@ -23,7 +47,13 @@ export function useGames() {
     queryFn: async () => {
       try {
         console.log("🎮 Fetching games list");
-        return await gamesService.getGames() as Game[];
+        const games = await gamesService.getGames() as Game[];
+        
+        // Process games to ensure images are properly set
+        return games.map(game => ({
+          ...game,
+          image: getGameImagePath(game.id) // Use helper to get appropriate image path
+        }));
       } catch (error) {
         console.log("⚠️ Falling back to mock games data due to API error", error);
         try {
@@ -38,9 +68,9 @@ export function useGames() {
             return mlDetectedGames.detectedGames.map(game => ({
               id: game.id,
               name: game.name,
-              image: `https://placehold.co/600x400/1A2033/ffffff?text=${encodeURIComponent(game.name)}`,
+              image: getGameImagePath(game.id),
               isOptimized: false,
-              genre: "Detected",
+              genre: game.genre || "Detected",
               optimizationType: "none"
             }));
           } else {
@@ -51,7 +81,56 @@ export function useGames() {
         }
         
         // If both API and ML detection fail, use generated mock data
-        return generateGames();
+        return [
+          {
+            id: "valorant",
+            name: "Valorant",
+            image: getGameImagePath("valorant"),
+            isOptimized: false,
+            genre: "FPS Tático",
+            optimizationType: "none"
+          },
+          {
+            id: "cs2",
+            name: "Counter-Strike 2",
+            image: getGameImagePath("cs2"),
+            isOptimized: false,
+            genre: "FPS",
+            optimizationType: "none"
+          },
+          {
+            id: "fortnite",
+            name: "Fortnite",
+            image: getGameImagePath("fortnite"),
+            isOptimized: false,
+            genre: "Battle Royale",
+            optimizationType: "none"
+          },
+          {
+            id: "apex-legends",
+            name: "Apex Legends",
+            image: getGameImagePath("apex-legends"),
+            isOptimized: false,
+            genre: "Battle Royale",
+            optimizationType: "none"
+          },
+          {
+            id: "league-of-legends",
+            name: "League of Legends",
+            image: getGameImagePath("league-of-legends"),
+            isOptimized: false,
+            genre: "MOBA",
+            optimizationType: "none"
+          },
+          {
+            id: "warzone",
+            name: "Call of Duty: Warzone",
+            image: getGameImagePath("warzone"),
+            isOptimized: false,
+            genre: "Battle Royale",
+            optimizationType: "none"
+          }
+        ];
       }
     }
   });

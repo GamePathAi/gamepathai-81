@@ -1,61 +1,95 @@
 
 # GamePath AI
 
-GamePath AI is an application for optimizing games and network performance.
+A gaming optimization and analytics platform.
 
-## Development Setup
+## Project Structure
+
+- `src/`: Frontend React application
+- `backend/`: Python FastAPI backend for ML operations and game detection
+- `public/`: Static assets like images and fonts
+
+## Setup Instructions
 
 ### Prerequisites
-- Node.js 18+ for frontend
-- Python 3.9+ for backend
+
+- Node.js 16+ for the frontend
+- Python 3.8+ for the backend
 - npm or yarn
 
-### Start the Backend (FastAPI)
+### Frontend Setup
 
+1. Install dependencies:
 ```bash
-# Navigate to the backend directory
-cd backend
-
-# Set up Python virtual environment (if not already done)
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Start the backend server (runs on port 8000)
-python main.py
-```
-
-### Start the Frontend (Vite + React)
-
-```bash
-# In another terminal, install frontend dependencies
 npm install
-
-# Start the Vite dev server (runs on port 8080)
-npm run dev
+# or
+yarn install
 ```
 
-### Test the Connection
+2. Start the development server:
+```bash
+npm run dev
+# or
+yarn dev
+```
 
-1. Ensure both servers are running
-2. Open browser console and run `runGamePathDiagnostics()` to check connectivity
-3. Visit http://localhost:8080 to see the app
+The frontend will run on port 8080 by default: http://localhost:8080
+
+### Backend Setup
+
+1. Navigate to the backend directory:
+```bash
+cd backend
+```
+
+2. Run the start script:
+
+For Linux/Mac:
+```bash
+chmod +x start.sh  # Make the script executable if needed
+./start.sh
+```
+
+For Windows:
+```bash
+start.bat
+```
+
+The backend will run on port 8000: http://localhost:8000
+
+## Development Notes
+
+- The application will automatically use mock data if the backend is not running
+- Game detection requires the Python backend to be running
+- API requests are proxied from the frontend to the backend
 
 ## Troubleshooting
 
-### Backend Issues
-- Ensure Python 3.9+ is installed
-- Check that all requirements are installed
-- Verify port 8000 is not in use
+If you encounter issues with game detection:
 
-### Frontend Issues
-- Clear browser cache
-- Check console for errors
-- Ensure proxy settings in vite.config.ts are correct
+1. Ensure the backend is running (check console output)
+2. Open the browser console and run the diagnostic functions:
+   - `runGamePathDiagnostics()` - Test backend connectivity
+   - `runMlDiagnostics()` - Test ML functionality
+   - `testGameDetection()` - Test game detection specifically
 
-### Connection Issues
-- Verify the backend is running on port 8000
-- Check CORS settings in the backend
-- Test endpoints directly using curl or Postman
+## Available Commands
+
+In the browser console:
+
+- `runGamePathDiagnostics()` - Run basic backend connectivity tests
+- `runMlDiagnostics()` - Run comprehensive ML diagnostics
+- `testGameDetection()` - Test game detection functionality
+
+## Game Images
+
+The application looks for game images in the `public/images/games` directory.
+If images are not found, it will fallback to placeholder images.
+
+Expected image filenames:
+- valorant.webp
+- cs2.webp
+- fortnite.webp
+- apex.webp (for Apex Legends)
+- lol.webp (for League of Legends)
+- warzone.webp (for Call of Duty: Warzone)
