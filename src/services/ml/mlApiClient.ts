@@ -172,7 +172,7 @@ export const mlApiClient = {
    */
   async isBackendRunning(): Promise<boolean> {
     try {
-      // Fix: Remove the generic type parameter from fetch() as it's not properly typed
+      // Fixed: Don't use generic type parameter with standard fetch API
       const response = await fetch('/health', {
         method: 'GET',
         headers: {
