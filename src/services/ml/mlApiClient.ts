@@ -172,7 +172,8 @@ export const mlApiClient = {
    */
   async isBackendRunning(): Promise<boolean> {
     try {
-      // Using global fetch without a type parameter - this is crucial for fixing the TS error
+      // Usando window.fetch explicitamente sem parâmetro de tipo genérico
+      // Também adicionando opções específicas para evitar redirecionamentos e cache
       const response = await window.fetch('/health', {
         method: 'GET',
         headers: {
