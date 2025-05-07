@@ -1,4 +1,3 @@
-
 /**
  * Core ML API client implementation
  * Handles basic fetch operations with ML-specific configurations
@@ -172,7 +171,6 @@ export const mlApiClient = {
    */
   async isBackendRunning(): Promise<boolean> {
     try {
-      // Fixed: Don't use generic type parameter with standard fetch API
       const response = await fetch('/health', {
         method: 'GET',
         headers: {
