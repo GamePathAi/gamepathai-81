@@ -10,27 +10,27 @@ import { ML_BASE_URL } from "./config";
 export async function isBackendRunning(): Promise<boolean> {
   return new Promise<boolean>((resolve) => {
     try {
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', `${ML_BASE_URL}/health`, true);
-      xhr.setRequestHeader('Cache-Control', 'no-cache, no-store');
-      xhr.setRequestHeader('X-No-Redirect', '1');
-      
-      xhr.onload = () => {
-        resolve(xhr.status >= 200 && xhr.status < 300);
-      };
-      
-      xhr.onerror = () => {
+      fetch(`${ML_BASE_URL}/health`, {
+        method: 'GET',
+        headers: {
+          'Cache-Control': 'no-cache, no-store',
+          'X-No-Redirect': '1'
+        },
+        cache: 'no-store'
+      })
+      .then(response => {
+        resolve(response.status >= 200 && response.status < 300);
+      })
+      .catch(() => {
         console.warn("Backend health check failed: network error");
         resolve(false);
-      };
+      });
       
-      xhr.timeout = 5000;
-      xhr.ontimeout = () => {
+      // Add timeout handling
+      setTimeout(() => {
         console.warn("Backend health check timed out");
         resolve(false);
-      };
-      
-      xhr.send();
+      }, 5000);
     } catch (error) {
       console.warn("Backend health check failed:", error);
       resolve(false);
