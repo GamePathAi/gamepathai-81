@@ -1,10 +1,11 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
-import { ArrowLeft, ArrowRight, CreditCard, Lock } from "lucide-react";
+import { ArrowLeft, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -80,7 +81,19 @@ const CheckoutPaymentPage: React.FC = () => {
           <Card className="bg-cyber-darkblue border border-cyber-blue/30">
             <CardHeader>
               <CardTitle className="text-lg">
-                <CreditCard className="mr-2 h-4 w-4 inline-block align-middle" />
+                <svg 
+                  className="mr-2 h-4 w-4 inline-block align-middle" 
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
                 Payment Information
               </CardTitle>
               <CardDescription className="text-gray-400">

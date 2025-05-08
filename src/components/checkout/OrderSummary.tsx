@@ -1,96 +1,106 @@
 
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React from "react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { X } from "lucide-react";
 
+// Define AddOn type for clarity
+interface AddOn {
+  name: string;
+  price: number;
+}
+
+// Update props interface to match what's expected
 export interface OrderSummaryProps {
   plan: string;
   price: number;
   interval: string;
-  currency: string;
-  addOns: Array<{
-    name: string;
-    price: number;
-  }>;
+  currency?: string;
+  addOns: AddOn[];
   total: number;
-  onCancel: () => void;
+  onCancel?: () => void;
 }
 
 export const OrderSummary: React.FC<OrderSummaryProps> = ({
   plan,
   price,
   interval,
-  currency,
-  addOns,
+  currency = "USD",
+  addOns = [],
   total,
-  onCancel
+  onCancel,
 }) => {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'usd'
+  const formatPrice = (amount: number): string => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency,
+      minimumFractionDigits: 2,
     }).format(amount);
   };
 
-  const formatInterval = (intervalStr: string) => {
-    switch(intervalStr) {
-      case 'month': return 'monthly';
-      case 'year': return 'yearly';
-      case 'quarter': return 'quarterly';
-      default: return intervalStr;
-    }
-  };
-
   return (
-    <Card className="bg-cyber-darkblue border-cyber-blue/30">
-      <CardHeader className="border-b border-cyber-blue/30">
-        <div className="flex justify-between items-center">
-          <CardTitle>Order Summary</CardTitle>
-          <Button variant="ghost" size="icon" onClick={onCancel} className="h-8 w-8">
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
+    <Card className="bg-cyber-darkblue border border-cyber-blue/30 sticky top-8">
+      <CardHeader>
+        <CardTitle className="text-lg">Order Summary</CardTitle>
       </CardHeader>
-      <CardContent className="pt-6">
-        <div className="space-y-4">
-          <div className="flex justify-between">
-            <span className="text-gray-400">{plan}</span>
-            <span className="font-medium">
-              {formatCurrency(price)}/{interval}
-            </span>
-          </div>
-
-          {addOns && addOns.length > 0 && (
-            <>
-              <Separator className="my-2 bg-gray-800" />
-              <div className="space-y-2">
-                <p className="text-sm text-gray-400">Add-ons</p>
-                {addOns.map((addon, index) => (
-                  <div key={index} className="flex justify-between text-sm">
-                    <span className="text-gray-400">{addon.name}</span>
-                    <span>{formatCurrency(addon.price)}</span>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-
-          <Separator className="my-2 bg-gray-800" />
-          
-          <div className="flex justify-between font-medium text-white">
-            <span>Total ({formatInterval(interval)})</span>
-            <span>{formatCurrency(total)}</span>
-          </div>
-          
-          <div className="text-xs text-gray-400 mt-2">
-            You will be charged {formatCurrency(total)} {interval === 'month' ? 'every month' : 
-              interval === 'year' ? 'every year' : 'every quarter'}. 
-            Cancel anytime.
-          </div>
+      <CardContent className="space-y-4">
+        {/* Selected Plan */}
+        <div className="flex justify-between">
+          <span className="text-gray-300">
+            {plan} ({interval}ly)
+          </span>
+          <span className="text-white font-semibold">{formatPrice(price)}</span>
         </div>
+
+        {/* Add-ons, if any */}
+        {addOns && addOns.length > 0 && (
+          <>
+            <Separator className="my-2" />
+            {addOns.map((addon, index) => (
+              <div key={index} className="flex justify-between">
+                <span className="text-gray-300">{addon.name}</span>
+                <span className="text-white font-semibold">
+                  {formatPrice(addon.price)}
+                </span>
+              </div>
+            ))}
+          </>
+        )}
+
+        {/* Total */}
+        <Separator className="my-2" />
+        <div className="flex justify-between font-bold">
+          <span className="text-white">Total</span>
+          <span className="text-cyber-blue text-xl">{formatPrice(total)}</span>
+        </div>
+
+        {/* Billing frequency note */}
+        <p className="text-sm text-gray-400 mt-2">
+          You will be billed{" "}
+          {interval === "month"
+            ? "monthly"
+            : interval === "quarter"
+            ? "quarterly"
+            : "annually"}{" "}
+          until you cancel your subscription
+        </p>
       </CardContent>
+
+      {onCancel && (
+        <CardFooter>
+          <Button
+            variant="link"
+            onClick={onCancel}
+            className="text-gray-400 hover:text-white w-full"
+          >
+            <X className="h-4 w-4 mr-1" />
+            Cancel
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 };
+
+export default OrderSummary;

@@ -18,11 +18,13 @@ import AccountBillingHistory from './pages/AccountBillingHistory';
 import PaymentMethods from './pages/PaymentMethods';
 import ChangePlan from './pages/ChangePlan';
 import CancelSubscription from './pages/CancelSubscription';
+import HomePage from './pages/HomePage';
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Games />} />
+      <Route path="/" element={<HomePage />} />
+      <Route path="/games" element={<Games />} />
       <Route path="/settings" element={<AdvancedOptimizer />} />
       <Route path="/account/subscription" element={<AccountSubscription />} />
       <Route path="/account/subscription/manage" element={<SubscriptionManagement />} />
@@ -39,7 +41,7 @@ function App() {
       <Route path="/checkout/plan" element={<CheckoutPlanPage />} />
       
       {/* Auth routes */}
-      <Route element={<Layout>Auth pages content</Layout>}>
+      <Route element={<Layout><div>Auth pages content</div></Layout>}>
         <Route path="/login" element={<ForgotPassword />} />
         <Route path="/register" element={<ForgotPassword />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -48,8 +50,8 @@ function App() {
       </Route>
       
       {/* Protected account routes */}
-      <Route element={<Layout>Account pages content</Layout>}>
-        <Route element={<AccountLayout children={<div />} />}>
+      <Route element={<Layout><div>Account pages content</div></Layout>}>
+        <Route element={<AccountLayout><div /></AccountLayout>}>
           <Route path="/account" element={<Dashboard />} />
           <Route path="/account/billing-history" element={<AccountBillingHistory />} />
           <Route path="/account/payment-methods" element={<PaymentMethods />} />
