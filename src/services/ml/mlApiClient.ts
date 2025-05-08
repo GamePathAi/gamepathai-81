@@ -86,7 +86,9 @@ export const mlApiClient = {
           await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
         }
         
-        return await this.fetch<T>(endpoint, options);
+        // Fix: Remove type argument from this.fetch as it's not needed here
+        // TypeScript will infer it from the function return type
+        return await this.fetch(endpoint, options);
       } catch (error: any) {
         lastError = error;
         console.log(`❌ ML attempt ${attempt + 1} failed:`, error.message || error);

@@ -1,8 +1,15 @@
 
+/**
+ * Application initialization utilities
+ */
 import { addCSPMetaTag, removeInjectedScripts } from "./cspHelper";
 import { detectRedirectScripts } from "./url/diagnostics";
 import { isProduction } from "./url/environmentDetection";
-import { setupFetchInterceptor, setupRedirectDetector, setupMLProtection } from "./middleware";
+import { 
+  setupFetchInterceptor, 
+  setupRedirectDetector, 
+  setupMLProtection 
+} from "./middleware";
 
 /**
  * Initializes application-wide configurations and utilities
