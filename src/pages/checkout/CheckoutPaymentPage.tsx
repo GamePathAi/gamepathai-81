@@ -10,7 +10,7 @@ import { StripeProvider } from "@/components/checkout/StripeProvider";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { LockClosedIcon } from "lucide-react";
+import { Lock } from "lucide-react";
 
 // Mock checkout data
 const checkoutData = {
@@ -101,7 +101,7 @@ const CheckoutForm = () => {
       </div>
       
       <div className="flex items-center gap-2 text-sm text-gray-400">
-        <LockClosedIcon size={14} />
+        <Lock size={14} />
         <span>All payments are secure and encrypted</span>
       </div>
       
@@ -163,7 +163,7 @@ const CheckoutPaymentPage = () => {
         
         <div>
           <OrderSummary
-            planName={checkoutData.planName}
+            plan={checkoutData.planName}
             price={checkoutData.price}
             interval={checkoutData.interval}
             currency={checkoutData.currency}
@@ -177,7 +177,7 @@ const CheckoutPaymentPage = () => {
           <div className="space-y-4">
             <div className="flex items-start gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-cyber-blue/20 text-cyber-blue">
-                <LockClosedIcon className="h-5 w-5" />
+                <Lock className="h-5 w-5" />
               </div>
               <div>
                 <h3 className="text-sm font-medium text-white">Secure Payment</h3>

@@ -1,130 +1,96 @@
 
 import React from 'react';
-import { useCheckout } from '@/contexts/CheckoutContext';
-import { Separator } from '@/components/ui/separator';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { X } from "lucide-react";
 
-interface OrderSummaryProps {
-  showDetails?: boolean;
-  planInfo?: {
-    plan: string;
-    planId: string;
+export interface OrderSummaryProps {
+  plan: string;
+  price: number;
+  interval: string;
+  currency: string;
+  addOns: Array<{
+    name: string;
     price: number;
-    interval: string;
-    userCount: number;
-    addOns?: string[];
-    discount?: number;
-    originalPrice?: number;
-  };
+  }>;
+  total: number;
+  onCancel: () => void;
 }
 
-export const OrderSummary: React.FC<OrderSummaryProps> = ({ showDetails = true, planInfo }) => {
-  const { selectedPlan, billingInterval } = useCheckout();
-  
-  // Use either the passed planInfo or the context data
-  const plan = planInfo || (selectedPlan ? {
-    plan: selectedPlan.name,
-    planId: selectedPlan.id,
-    price: selectedPlan.pricing[billingInterval],
-    interval: billingInterval,
-    userCount: selectedPlan.userCount,
-    addOns: [],
-    discount: 0,
-    originalPrice: selectedPlan.pricing[billingInterval]
-  } : null);
-  
-  if (!plan) return null;
-  
-  const formatPrice = (price: number): string => {
+export const OrderSummary: React.FC<OrderSummaryProps> = ({
+  plan,
+  price,
+  interval,
+  currency,
+  addOns,
+  total,
+  onCancel
+}) => {
+  const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2
-    }).format(price);
+      currency: currency || 'usd'
+    }).format(amount);
   };
-  
-  const billingCycleText = plan.interval === 'month' ? 'Monthly' : 
-                          plan.interval === 'quarter' ? 'Quarterly' : 'Annual';
-  
+
+  const formatInterval = (intervalStr: string) => {
+    switch(intervalStr) {
+      case 'month': return 'monthly';
+      case 'year': return 'yearly';
+      case 'quarter': return 'quarterly';
+      default: return intervalStr;
+    }
+  };
+
   return (
-    <div className="rounded-lg border border-cyber-blue/30 bg-cyber-black/50 backdrop-blur-sm overflow-hidden">
-      <div className="p-5 bg-gradient-to-r from-cyber-darkblue to-cyber-cardblue border-b border-cyber-blue/30">
-        <h3 className="text-lg font-semibold text-white">Order Summary</h3>
-      </div>
-      
-      <div className="p-5 space-y-4">
-        <div className="flex justify-between">
-          <div>
-            <h4 className="font-medium text-white">{plan.plan} Plan</h4>
-            <p className="text-sm text-gray-400">{billingCycleText} Subscription</p>
-          </div>
-          <div className="text-right">
-            <p className="font-medium text-white">{formatPrice(plan.price)}</p>
-            <p className="text-xs text-gray-400">
-              {plan.interval === 'month' ? '/month' : 
-               plan.interval === 'quarter' ? '/quarter' : 
-               '/year'}
-            </p>
-          </div>
+    <Card className="bg-cyber-darkblue border-cyber-blue/30">
+      <CardHeader className="border-b border-cyber-blue/30">
+        <div className="flex justify-between items-center">
+          <CardTitle>Order Summary</CardTitle>
+          <Button variant="ghost" size="icon" onClick={onCancel} className="h-8 w-8">
+            <X className="h-4 w-4" />
+          </Button>
         </div>
-        
-        {showDetails && (
-          <>
-            <div className="py-2 px-3 bg-cyber-blue/10 rounded text-sm flex justify-between items-center">
-              <span className="text-cyber-blue">Users</span>
-              <span className="text-white">{plan.userCount}</span>
-            </div>
-            
-            {plan.addOns && plan.addOns.length > 0 && (
+      </CardHeader>
+      <CardContent className="pt-6">
+        <div className="space-y-4">
+          <div className="flex justify-between">
+            <span className="text-gray-400">{plan}</span>
+            <span className="font-medium">
+              {formatCurrency(price)}/{interval}
+            </span>
+          </div>
+
+          {addOns && addOns.length > 0 && (
+            <>
+              <Separator className="my-2 bg-gray-800" />
               <div className="space-y-2">
-                <p className="text-sm font-medium text-white">Add-ons:</p>
-                {plan.addOns.map((addon, index) => (
-                  <div key={index} className="py-2 px-3 bg-cyber-purple/10 rounded text-sm flex justify-between items-center">
-                    <span className="text-cyber-purple">{addon}</span>
-                    <span className="text-white">Included</span>
+                <p className="text-sm text-gray-400">Add-ons</p>
+                {addOns.map((addon, index) => (
+                  <div key={index} className="flex justify-between text-sm">
+                    <span className="text-gray-400">{addon.name}</span>
+                    <span>{formatCurrency(addon.price)}</span>
                   </div>
                 ))}
               </div>
-            )}
-            
-            <Separator className="bg-cyber-blue/20" />
-            
-            <div>
-              <h4 className="text-sm font-medium text-white mb-2">Includes:</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li className="flex items-center">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyber-blue mr-2"></div>
-                  Route Optimization
-                </li>
-                <li className="flex items-center">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyber-blue mr-2"></div>
-                  Performance Enhancement
-                </li>
-                <li className="flex items-center">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyber-blue mr-2"></div>
-                  Global Server Access
-                </li>
-              </ul>
-            </div>
-          </>
-        )}
-        
-        <Separator className="bg-cyber-blue/20" />
-        
-        <div className="flex justify-between text-lg font-semibold">
-          <span className="text-white">Total</span>
-          <span className="text-cyber-blue">{formatPrice(plan.price)}</span>
-        </div>
-        
-        {plan.discount && plan.discount > 0 && (
-          <div className="text-xs text-cyber-green bg-cyber-green/10 py-1 px-2 rounded text-center">
-            You save {Math.round(plan.discount * 100)}% compared to monthly billing!
+            </>
+          )}
+
+          <Separator className="my-2 bg-gray-800" />
+          
+          <div className="flex justify-between font-medium text-white">
+            <span>Total ({formatInterval(interval)})</span>
+            <span>{formatCurrency(total)}</span>
           </div>
-        )}
-        
-        <div className="text-xs text-gray-400">
-          Your subscription will {plan.interval === 'month' ? 'automatically renew monthly' : plan.interval === 'quarter' ? 'automatically renew every 3 months' : 'automatically renew yearly'}.
+          
+          <div className="text-xs text-gray-400 mt-2">
+            You will be charged {formatCurrency(total)} {interval === 'month' ? 'every month' : 
+              interval === 'year' ? 'every year' : 'every quarter'}. 
+            Cancel anytime.
+          </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };

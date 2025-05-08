@@ -8,6 +8,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { FileText, RefreshCw } from "lucide-react";
 
+interface BillingHistoryItem {
+  id: string;
+  date: Date;
+  description: string;
+  amount: number;
+  status: 'paid' | 'pending' | 'failed';
+  invoiceUrl?: string;
+}
+
 const AccountBillingHistory = () => {
   const { billingHistory, isLoading, refetchBillingHistory } = useSubscription();
 
@@ -71,7 +80,7 @@ const AccountBillingHistory = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {billingHistory.map((item) => (
+                  {billingHistory.map((item: BillingHistoryItem) => (
                     <TableRow key={item.id}>
                       <TableCell>{formatDate(item.date)}</TableCell>
                       <TableCell>{item.description}</TableCell>

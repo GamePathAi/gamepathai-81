@@ -41,7 +41,7 @@ const CheckoutSuccessPage: React.FC = () => {
 
   return (
     <CheckoutLayout
-      currentStep="complete"
+      currentStep="success"
       title="Payment Successful"
       subtitle="Your subscription has been activated"
     >

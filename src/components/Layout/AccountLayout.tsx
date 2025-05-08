@@ -5,11 +5,12 @@ import Layout from '../Layout';
 
 interface AccountLayoutProps {
   children: React.ReactNode;
+  requireSubscription?: boolean;
 }
 
-const AccountLayout: React.FC<AccountLayoutProps> = ({ children }) => {
+const AccountLayout: React.FC<AccountLayoutProps> = ({ children, requireSubscription }) => {
   return (
-    <Layout>
+    <Layout requireSubscription={requireSubscription}>
       {children}
       <Outlet />
     </Layout>

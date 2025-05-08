@@ -1,227 +1,125 @@
 
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import { useSession } from '@supabase/auth-helpers-react';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { subscriptionService } from "@/services/subscriptionService";
 
-// Define subscription types
-interface Subscription {
-  id: any;
-  plan: any;
+export interface Subscription {
+  id: string;
+  plan: string;
   users: number;
-  amount: any;
-  interval: any;
+  amount: number;
+  interval: string;
   currentPeriodEnd: Date;
   status: string;
-  addOns: any;
+  addOns: string[];
 }
 
-interface BillingHistoryItem {
-  id: string;
-  date: Date;
-  amount: number;
-  description: string;
-  status: 'paid' | 'pending' | 'failed';
-}
-
-interface PaymentMethod {
-  id: string;
-  brand: string;
-  last4: string;
-  expiryMonth: number;
-  expiryYear: number;
-  isDefault: boolean;
-}
-
-// Mock data for development
-const MOCK_SUBSCRIPTION: Subscription = {
-  id: 'sub_123456',
-  plan: 'pro',
-  users: 1,
-  amount: 9.99,
-  interval: 'month',
-  currentPeriodEnd: new Date(new Date().setMonth(new Date().getMonth() + 1)),
-  status: 'active',
-  addOns: ['optimizer', 'vpn']
-};
-
-const MOCK_BILLING_HISTORY: BillingHistoryItem[] = [
-  {
-    id: 'inv_12345',
-    date: new Date(new Date().setDate(new Date().getDate() - 5)),
-    amount: 9.99,
-    description: 'Monthly subscription',
-    status: 'paid'
-  },
-  {
-    id: 'inv_12344',
-    date: new Date(new Date().setMonth(new Date().getMonth() - 1)),
-    amount: 9.99,
-    description: 'Monthly subscription',
-    status: 'paid'
-  }
-];
-
-const MOCK_PAYMENT_METHODS: PaymentMethod[] = [
-  {
-    id: 'pm_123456',
-    brand: 'visa',
-    last4: '4242',
-    expiryMonth: 12,
-    expiryYear: 2024,
-    isDefault: true
-  }
-];
-
-export const useSubscription = () => {
-  const session = useSession();
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isOpeningPortal, setIsOpeningPortal] = useState(false);
-
-  // Fetch subscription
-  const {
-    data: subscription,
-    isLoading,
-    error,
-    refetch
-  } = useQuery({
-    queryKey: ['subscription'],
-    queryFn: async () => {
-      if (!session?.access_token) return MOCK_SUBSCRIPTION;
-      try {
-        // In a real app, make an actual API call
-        // const res = await axios.get('/api/subscription');
-        // return res.data;
-        return MOCK_SUBSCRIPTION;
-      } catch (error) {
-        console.error('Error fetching subscription:', error);
-        throw error;
-      }
-    },
-    enabled: !!session
+export function useSubscription() {
+  const queryClient = useQueryClient();
+  
+  const plansQuery = useQuery({
+    queryKey: ["subscriptionPlans"],
+    queryFn: subscriptionService.getPlans
+  });
+  
+  const currentSubscriptionQuery = useQuery({
+    queryKey: ["currentSubscription"],
+    queryFn: subscriptionService.getCurrentSubscription
   });
 
-  // Billing history
-  const {
-    data: billingHistory = MOCK_BILLING_HISTORY,
-    refetch: refetchBillingHistory
-  } = useQuery({
-    queryKey: ['billingHistory'],
-    queryFn: async () => {
-      if (!session?.access_token) return MOCK_BILLING_HISTORY;
-      // In a real app, make an actual API call
-      return MOCK_BILLING_HISTORY;
-    },
-    enabled: !!session
+  const billingHistoryQuery = useQuery({
+    queryKey: ["billingHistory"],
+    queryFn: subscriptionService.getBillingHistory,
+    enabled: !!currentSubscriptionQuery.data
   });
 
-  // Payment methods
-  const {
-    data: paymentMethods = MOCK_PAYMENT_METHODS,
-    refetch: refetchPaymentMethods
-  } = useQuery({
-    queryKey: ['paymentMethods'],
-    queryFn: async () => {
-      if (!session?.access_token) return MOCK_PAYMENT_METHODS;
-      // In a real app, make an actual API call
-      return MOCK_PAYMENT_METHODS;
-    },
-    enabled: !!session
+  const paymentMethodsQuery = useQuery({
+    queryKey: ["paymentMethods"],
+    queryFn: subscriptionService.getPaymentMethods,
+    enabled: !!currentSubscriptionQuery.data
   });
-
-  // Customer portal
-  const openCustomerPortal = async () => {
-    if (!session?.access_token) {
-      console.error('No session found');
-      return;
+  
+  const checkoutMutation = useMutation({
+    mutationFn: ({ planId, interval, addOnIds }: { planId: string, interval: "month" | "year" | "quarter", addOnIds?: string[] }) =>
+      subscriptionService.checkout(planId, interval, addOnIds),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["currentSubscription"] });
     }
+  });
 
-    try {
-      setIsOpeningPortal(true);
-      // In a real application, make an API call to your backend
-      const response = await fetch('/api/create-portal-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
-
-      const data = await response.json();
-      
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch (error) {
-      console.error('Error opening customer portal:', error);
-    } finally {
-      setIsOpeningPortal(false);
+  const cancelSubscriptionMutation = useMutation({
+    mutationFn: subscriptionService.cancelSubscription,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["currentSubscription"] });
     }
-  };
+  });
 
-  // Refresh subscription
+  const updateSubscriptionPlanMutation = useMutation({
+    mutationFn: (planId: string) => subscriptionService.updateSubscriptionPlan(planId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["currentSubscription"] });
+    }
+  });
+
+  const addPaymentMethodMutation = useMutation({
+    mutationFn: subscriptionService.addPaymentMethod,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["paymentMethods"] });
+    }
+  });
+
+  const setDefaultPaymentMethodMutation = useMutation({
+    mutationFn: (paymentMethodId: string) => subscriptionService.setDefaultPaymentMethod(paymentMethodId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["paymentMethods"] });
+    }
+  });
+
+  const deletePaymentMethodMutation = useMutation({
+    mutationFn: (paymentMethodId: string) => subscriptionService.deletePaymentMethod(paymentMethodId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["paymentMethods"] });
+    }
+  });
+
+  const openCustomerPortalMutation = useMutation({
+    mutationFn: subscriptionService.openCustomerPortal
+  });
+  
   const refreshSubscription = async () => {
-    setIsRefreshing(true);
-    try {
-      await refetch();
-    } finally {
-      setIsRefreshing(false);
-    }
+    await queryClient.invalidateQueries({ queryKey: ["currentSubscription"] });
+  };
+  
+  const refetchBillingHistory = async () => {
+    await queryClient.invalidateQueries({ queryKey: ["billingHistory"] });
   };
 
-  // Cancel subscription
-  const cancelSubscription = async () => {
-    if (!session?.access_token) return;
-    
-    // In a real app, make an API call to cancel
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    await refreshSubscription();
-  };
-
-  // Update plan
-  const updateSubscriptionPlan = async (planId: string) => {
-    if (!session?.access_token) return;
-    
-    // In a real app, make an API call to update the plan
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    await refreshSubscription();
-  };
-
-  // Add payment method
-  const addPaymentMethod = async () => {
-    // This would typically open a Stripe form
-    await refetchPaymentMethods();
-  };
-
-  // Set default payment method
-  const setDefaultPaymentMethod = async (id: string) => {
-    // Make API call to update default payment method
-    await refetchPaymentMethods();
-  };
-
-  // Delete payment method
-  const deletePaymentMethod = async (id: string) => {
-    // Make API call to delete payment method
-    await refetchPaymentMethods();
-  };
-
+  const addOns = currentSubscriptionQuery.data?.addOns || [];
+  
   return {
-    subscription: subscription || MOCK_SUBSCRIPTION,
-    isLoading,
-    isRefreshing,
-    error,
+    plans: plansQuery.data,
+    isLoadingPlans: plansQuery.isLoading,
+    subscription: currentSubscriptionQuery.data,
+    isLoading: currentSubscriptionQuery.isLoading,
+    isRefreshing: currentSubscriptionQuery.isFetching,
+    error: currentSubscriptionQuery.error as Error,
     refreshSubscription,
-    cancelSubscription,
-    openCustomerPortal,
-    isOpeningPortal,
-    billingHistory,
+    cancelSubscription: cancelSubscriptionMutation.mutate,
+    isCancelling: cancelSubscriptionMutation.isPending,
+    checkout: checkoutMutation.mutate,
+    createCheckout: checkoutMutation.mutate,
+    isCheckingOut: checkoutMutation.isPending,
+    openCustomerPortal: openCustomerPortalMutation.mutate,
+    isOpeningPortal: openCustomerPortalMutation.isPending,
+    updateSubscriptionPlan: updateSubscriptionPlanMutation.mutate,
+    isUpdatingPlan: updateSubscriptionPlanMutation.isPending,
+    addOns,
+    billingHistory: billingHistoryQuery.data || [],
     refetchBillingHistory,
-    paymentMethods,
-    addPaymentMethod,
-    setDefaultPaymentMethod,
-    deletePaymentMethod,
-    updateSubscriptionPlan
+    paymentMethods: paymentMethodsQuery.data || [],
+    addPaymentMethod: addPaymentMethodMutation.mutate,
+    setDefaultPaymentMethod: setDefaultPaymentMethodMutation.mutate,
+    deletePaymentMethod: deletePaymentMethodMutation.mutate
   };
-};
+}
 
 export default useSubscription;

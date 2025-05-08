@@ -19,7 +19,7 @@ import DurationSelection from "./Subscription/DurationSelection";
 import AddOnSelection from "./Subscription/AddOnSelection";
 import SubscriptionSummary from "./Subscription/SubscriptionSummary";
 import PaymentInfo from "./Subscription/PaymentInfo";
-import { useSubscription } from "@/hooks/use-subscription";
+import useSubscription from "@/hooks/use-subscription";
 
 interface SubscriptionSettingsProps {
   onChange: () => void;
@@ -30,7 +30,7 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
     subscription, 
     isLoading, 
     refreshSubscription, 
-    createCheckout,
+    checkout,
     openCustomerPortal
   } = useSubscription();
 
@@ -86,7 +86,7 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
       description: "Preparing checkout..."
     });
     
-    createCheckout({
+    checkout({
       planId: selectedUserTier,
       interval,
       addOnIds: selectedAddOns
