@@ -1,161 +1,24 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, CheckCircle, Network, ShieldAlert } from "lucide-react";
-import { mlUrlDiagnostics } from '@/services/mlApiClient';
-import { testAWSConnection } from '@/services/api';
-import { testBackendConnection } from '@/services/api';
-import { detectRedirectScripts, setupNavigationMonitor } from '@/utils/url';
+import { Network } from "lucide-react";
 
-interface RedirectTest {
-  url: string;
-  redirected: boolean;
-  target?: string;
-  isGamePathAI?: boolean;
-  status?: number | null;
-  error?: string;
-}
+import { useRedirectDiagnostic } from './redirectDiagnostic/useRedirectDiagnostic';
+import StatusAlerts from './redirectDiagnostic/StatusAlerts';
+import TestResults from './redirectDiagnostic/TestResults';
 
 const RedirectsDiagnostic: React.FC = () => {
-  const [urlToTest, setUrlToTest] = useState<string>('/health');
-  const [isRunningTests, setIsRunningTests] = useState(false);
-  const [testResults, setTestResults] = useState<RedirectTest[]>([]);
-  const [connectionStatus, setConnectionStatus] = useState<'unknown' | 'online' | 'offline'>('unknown');
-  const [diagnoseComplete, setDiagnoseComplete] = useState(false);
-
-  const runDiagnostics = async () => {
-    setIsRunningTests(true);
-    setTestResults([]);
-    
-    // First detect any redirect scripts in the DOM
-    detectRedirectScripts();
-    
-    // Test API connection
-    const backendConnected = await testBackendConnection();
-    setConnectionStatus(backendConnected ? 'online' : 'offline');
-    
-    // Run URL tests
-    const results: RedirectTest[] = [];
-    
-    // Test standard API endpoint
-    try {
-      const healthResult = await mlUrlDiagnostics.testUrl('/health');
-      results.push({
-        url: '/health',
-        redirected: healthResult.wasRedirected,
-        target: healthResult.finalUrl,
-        isGamePathAI: healthResult.isGamePathAI,
-        status: 'responseStatus' in healthResult ? healthResult.responseStatus : null,
-        error: 'error' in healthResult ? healthResult.error : undefined
-      });
-    } catch (error) {
-      results.push({
-        url: '/health',
-        redirected: true,
-        target: 'Error testing URL',
-        isGamePathAI: false,
-        error: error instanceof Error ? error.message : String(error)
-      });
-    }
-    
-    // Test API endpoint directly
-    try {
-      // Use relative path instead of absolute URL
-      const apiResult = await mlUrlDiagnostics.testUrl('/health');
-      results.push({
-        url: 'API Direct (/health)',
-        redirected: apiResult.wasRedirected,
-        target: apiResult.finalUrl,
-        isGamePathAI: apiResult.isGamePathAI,
-        status: 'responseStatus' in apiResult ? apiResult.responseStatus : null,
-        error: 'error' in apiResult ? apiResult.error : undefined
-      });
-    } catch (error) {
-      results.push({
-        url: 'API Direct (/health)',
-        redirected: true,
-        target: 'Error testing URL',
-        isGamePathAI: false,
-        error: error instanceof Error ? error.message : String(error)
-      });
-    }
-    
-    // Test localhost directly (common issue source) - only for diagnostic purposes
-    try {
-      // Using relative path instead of hardcoded URL
-      const localhostResult = await mlUrlDiagnostics.testUrl('/health');
-      results.push({
-        url: 'Local API Test',
-        redirected: localhostResult.wasRedirected,
-        target: localhostResult.finalUrl,
-        isGamePathAI: localhostResult.isGamePathAI,
-        status: 'responseStatus' in localhostResult ? localhostResult.responseStatus : null,
-        error: 'error' in localhostResult ? localhostResult.error : undefined
-      });
-    } catch (error) {
-      results.push({
-        url: 'Local API Test',
-        redirected: true,
-        target: 'Error testing URL',
-        isGamePathAI: false,
-        error: error instanceof Error ? error.message : String(error)
-      });
-    }
-    
-    // Test ML endpoint
-    try {
-      const mlResult = await mlUrlDiagnostics.testUrl('/ml/health');
-      results.push({
-        url: '/ml/health',
-        redirected: mlResult.wasRedirected,
-        target: mlResult.finalUrl,
-        isGamePathAI: mlResult.isGamePathAI,
-        status: 'responseStatus' in mlResult ? mlResult.responseStatus : null,
-        error: 'error' in mlResult ? mlResult.error : undefined
-      });
-    } catch (error) {
-      results.push({
-        url: '/ml/health',
-        redirected: true,
-        target: 'Error testing URL',
-        isGamePathAI: false,
-        error: error instanceof Error ? error.message : String(error)
-      });
-    }
-    
-    // Custom URL test if provided
-    if (urlToTest && urlToTest !== '/health' && urlToTest !== '/ml/health') {
-      try {
-        const customResult = await mlUrlDiagnostics.testUrl(urlToTest);
-        results.push({
-          url: urlToTest,
-          redirected: customResult.wasRedirected,
-          target: customResult.finalUrl,
-          isGamePathAI: customResult.isGamePathAI,
-          status: 'responseStatus' in customResult ? customResult.responseStatus : null,
-          error: 'error' in customResult ? customResult.error : undefined
-        });
-      } catch (error) {
-        results.push({
-          url: urlToTest,
-          redirected: true,
-          target: 'Error testing URL',
-          isGamePathAI: false,
-          error: error instanceof Error ? error.message : String(error)
-        });
-      }
-    }
-    
-    setTestResults(results);
-    setIsRunningTests(false);
-    setDiagnoseComplete(true);
-    
-    // Setup navigation monitor
-    setupNavigationMonitor();
-  };
+  const {
+    urlToTest,
+    setUrlToTest,
+    isRunningTests,
+    testResults,
+    connectionStatus,
+    diagnoseComplete,
+    runDiagnostics
+  } = useRedirectDiagnostic();
 
   return (
     <Card className="w-full">
@@ -170,38 +33,11 @@ const RedirectsDiagnostic: React.FC = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {diagnoseComplete && testResults.some(r => r.redirected && r.isGamePathAI) && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Redirecionamentos Detectados</AlertTitle>
-              <AlertDescription>
-                Foram detectados redirecionamentos para gamepathai.com. 
-                Isso pode estar causando problemas nas requisições ML.
-              </AlertDescription>
-            </Alert>
-          )}
-          
-          {diagnoseComplete && connectionStatus === 'offline' && (
-            <Alert variant="destructive">
-              <ShieldAlert className="h-4 w-4" />
-              <AlertTitle>Conexão Backend Indisponível</AlertTitle>
-              <AlertDescription>
-                Não foi possível estabelecer conexão com o backend. 
-                O aplicativo está operando em modo offline com dados mockados.
-              </AlertDescription>
-            </Alert>
-          )}
-          
-          {diagnoseComplete && !testResults.some(r => r.redirected && r.isGamePathAI) && (
-            <Alert variant="default" className="bg-green-900/20 border-green-500">
-              <CheckCircle className="h-4 w-4 text-green-500" />
-              <AlertTitle className="text-green-500">Sem Redirecionamentos Problemáticos</AlertTitle>
-              <AlertDescription>
-                Não foram detectados redirecionamentos prejudiciais. 
-                As requisições ML devem funcionar corretamente.
-              </AlertDescription>
-            </Alert>
-          )}
+          <StatusAlerts 
+            diagnoseComplete={diagnoseComplete}
+            testResults={testResults}
+            connectionStatus={connectionStatus}
+          />
           
           <div className="flex space-x-2">
             <Input
@@ -221,50 +57,11 @@ const RedirectsDiagnostic: React.FC = () => {
           <div className="mt-4">
             <h3 className="text-sm font-medium mb-2">Resultados dos testes:</h3>
             
-            <div className="space-y-2">
-              {testResults.map((result, index) => (
-                <div key={index} className="text-xs border rounded-md p-2">
-                  <div className="flex justify-between mb-1">
-                    <span className="font-medium">{result.url}</span>
-                    <span className={result.redirected ? 
-                      (result.isGamePathAI ? "text-red-500" : "text-amber-500") : 
-                      "text-green-500"}
-                    >
-                      {result.redirected ? 
-                        (result.isGamePathAI ? "Redirecionado (gamepathai.com)" : "Redirecionado") : 
-                        "Sem redirecionamento"}
-                    </span>
-                  </div>
-                  {result.redirected && (
-                    <div className="text-gray-400">
-                      Destino: {result.target}
-                    </div>
-                  )}
-                  {result.status && (
-                    <div className="text-gray-400">
-                      Status: {result.status}
-                    </div>
-                  )}
-                  {result.error && (
-                    <div className="text-red-400">
-                      Erro: {result.error}
-                    </div>
-                  )}
-                </div>
-              ))}
-              
-              {testResults.length === 0 && !isRunningTests && diagnoseComplete && (
-                <div className="text-center py-2 text-gray-500 text-sm">
-                  Nenhum teste realizado
-                </div>
-              )}
-              
-              {isRunningTests && (
-                <div className="text-center py-2 text-gray-500 text-sm">
-                  Executando testes...
-                </div>
-              )}
-            </div>
+            <TestResults 
+              testResults={testResults}
+              isRunningTests={isRunningTests}
+              diagnoseComplete={diagnoseComplete}
+            />
           </div>
         </div>
       </CardContent>

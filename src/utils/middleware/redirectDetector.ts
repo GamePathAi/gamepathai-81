@@ -4,6 +4,7 @@
  * Setup DOM observers to detect and prevent redirect attempts
  */
 import { detectRedirectAttempt } from '../url/redirectDetection';
+import { sanitizeApiUrl } from '../url/urlSanitization';
 
 /**
  * Add a debug log to document to detect redirect attempts

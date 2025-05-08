@@ -6,13 +6,15 @@ import {
   setupFetchInterceptor,
   setupRedirectDetector,
   setupMLProtection,
-  setupNavigationMonitor
+  setupNavigationMonitor,
+  addCorsHeaders, 
+  addMLHeaders 
 } from './middleware/index';
 
 import { sanitizeApiUrl } from './url/urlSanitization';
 import { detectRedirectScripts } from './url/diagnostics';
 
-// Re-export all middleware functions for backward compatibility
+// Re-export all middleware functions 
 export { 
   setupFetchInterceptor,
   setupRedirectDetector,
@@ -20,10 +22,4 @@ export {
   setupNavigationMonitor,
   addCorsHeaders, 
   addMLHeaders 
-} from './middleware/index';
-
-// Update imports in the files using these utilities
-import { addCorsHeaders, addMLHeaders } from './middleware/corsHeaders';
-
-// Re-export for compatibility with existing code
-export { addCorsHeaders, addMLHeaders };
+};
