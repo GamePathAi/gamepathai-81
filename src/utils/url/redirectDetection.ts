@@ -85,3 +85,39 @@ export const detectRedirectAttempt = (url: string, isMlOperation = false): boole
   
   return false;
 };
+
+/**
+ * Detects if there are redirect scripts in the DOM that might interfere
+ * with our ML functionality
+ */
+export function detectRedirectScripts(): boolean {
+  console.log("🔍 Checking for redirect scripts...");
+  
+  // Look for script tags with redirect in src or content
+  const scripts = document.querySelectorAll('script');
+  
+  for (const script of scripts) {
+    const src = script.getAttribute('src') || '';
+    const content = script.textContent || '';
+    
+    if (
+      src.includes('redirect') || 
+      content.includes('redirect') || 
+      content.includes('window.location') ||
+      content.includes('document.location')
+    ) {
+      console.warn("⚠️ Detected potential redirect script:", script);
+      return true;
+    }
+  }
+  
+  // Check meta refreshes
+  const metaRefresh = document.querySelector('meta[http-equiv="refresh"]');
+  if (metaRefresh) {
+    console.warn("⚠️ Detected meta refresh:", metaRefresh);
+    return true;
+  }
+  
+  console.log("✅ No redirect scripts detected");
+  return false;
+}

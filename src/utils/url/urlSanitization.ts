@@ -12,6 +12,16 @@
 export const sanitizeApiUrl = (url: string): string => {
   // If it's already a relative URL, return as is
   if (!url.startsWith('http')) {
+    // Ensure path starts with a slash
+    if (!url.startsWith('/')) {
+      url = '/' + url;
+    }
+    
+    // Remove any trailing slashes for consistency
+    while (url.endsWith('/')) {
+      url = url.slice(0, -1);
+    }
+    
     return url;
   }
   
