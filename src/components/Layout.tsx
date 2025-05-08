@@ -3,7 +3,7 @@ import React from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import { Toaster } from "@/components/ui/sonner";
-import { useSubscription } from "@/hooks/use-subscription";
+import useSubscription from "@/hooks/use-subscription";
 
 interface LayoutProps {
   children: React.ReactNode;

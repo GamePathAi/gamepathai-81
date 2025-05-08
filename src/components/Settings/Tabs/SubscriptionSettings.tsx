@@ -29,9 +29,7 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
   const { 
     subscription, 
     isLoading, 
-    refreshSubscription, 
-    checkout,
-    openCustomerPortal
+    refreshSubscription
   } = useSubscription();
 
   // Default selected values
@@ -86,18 +84,13 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
       description: "Preparing checkout..."
     });
     
-    checkout({
-      planId: selectedUserTier,
-      interval,
-      addOnIds: selectedAddOns
-    });
-    
+    navigate('/checkout/plan');
     onChange();
   };
   
   const handleManageSubscription = () => {
     if (subscription) {
-      openCustomerPortal();
+      navigate('/account/subscription');
     } else {
       navigate("/checkout/plan");
     }

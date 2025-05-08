@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from 'react';
+import { subscriptionService } from '../services/subscriptionService';
 
 // Define the types used in the hook
 export interface Subscription {
@@ -7,7 +8,7 @@ export interface Subscription {
   plan: string;
   users: number;
   amount: number;
-  interval: 'monthly' | 'quarterly' | 'annual';
+  interval: 'month' | 'quarter' | 'year';
   currentPeriodEnd: Date;
   status: string;
   addOns: any[];
@@ -20,7 +21,7 @@ interface BillingHistoryItem {
   amount: number;
   status: string;
   invoiceUrl?: string;
-  items?: any[]; // Add items property
+  items?: any[]; // Added items property to match expected type
 }
 
 interface PaymentMethod {
@@ -32,55 +33,11 @@ interface PaymentMethod {
   isDefault: boolean;
 }
 
-// Mock data
-const mockSubscription: Subscription = {
-  id: 'sub_123456',
-  plan: 'pro',
-  users: 1,
-  amount: 1999,
-  interval: 'monthly',
-  currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days in the future
-  status: 'active',
-  addOns: []
-};
-
-const mockBillingHistory: BillingHistoryItem[] = [
-  {
-    id: 'inv_123456',
-    date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-    description: 'GamePath AI Pro Plan - Monthly',
-    amount: 1999,
-    status: 'paid',
-    invoiceUrl: '#',
-    items: []
-  },
-  {
-    id: 'inv_123457',
-    date: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
-    description: 'GamePath AI Pro Plan - Monthly',
-    amount: 1999,
-    status: 'paid',
-    invoiceUrl: '#',
-    items: []
-  }
-];
-
-const mockPaymentMethods: PaymentMethod[] = [
-  {
-    id: 'pm_123456',
-    brand: 'visa',
-    last4: '4242',
-    expiryMonth: 12,
-    expiryYear: 2025,
-    isDefault: true
-  }
-];
-
 // Hook implementation
 const useSubscription = () => {
-  const [subscription, setSubscription] = useState<Subscription>(mockSubscription);
-  const [billingHistory, setBillingHistory] = useState<BillingHistoryItem[]>(mockBillingHistory);
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(mockPaymentMethods);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [billingHistory, setBillingHistory] = useState<BillingHistoryItem[]>([]);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -93,7 +50,15 @@ const useSubscription = () => {
   useEffect(() => {
     const fetchSubscription = async () => {
       try {
-        // In a real app, you would fetch from an API here
+        const subData = await subscriptionService.getCurrentSubscription();
+        setSubscription(subData);
+        
+        const historyData = await subscriptionService.getBillingHistory();
+        setBillingHistory(historyData);
+        
+        const methodsData = await subscriptionService.getPaymentMethods();
+        setPaymentMethods(methodsData);
+        
         setIsLoading(false);
       } catch (err: any) {
         setError(err);
@@ -108,9 +73,8 @@ const useSubscription = () => {
   const refreshSubscription = async () => {
     setIsRefreshing(true);
     try {
-      // In a real app, you would fetch from an API here
-      // For now, we'll just simulate a delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const subData = await subscriptionService.getCurrentSubscription();
+      setSubscription(subData);
       setIsRefreshing(false);
     } catch (err: any) {
       setError(err);
@@ -122,12 +86,13 @@ const useSubscription = () => {
   const cancelSubscription = async () => {
     setIsCanceling(true);
     try {
-      // In a real app, you would call an API here
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setSubscription({
-        ...subscription,
-        status: 'canceled'
-      });
+      const result = await subscriptionService.cancelSubscription();
+      if (subscription) {
+        setSubscription({
+          ...subscription,
+          status: 'canceled'
+        });
+      }
       setIsCanceling(false);
       return { success: true };
     } catch (err: any) {
@@ -141,9 +106,7 @@ const useSubscription = () => {
   const openBillingPortal = async () => {
     setIsOpeningPortal(true);
     try {
-      // In a real app, you would call an API here and redirect
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      window.open('https://billing.stripe.com/p/session', '_blank');
+      const result = await subscriptionService.openCustomerPortal();
       setIsOpeningPortal(false);
       return { success: true };
     } catch (err: any) {
@@ -157,12 +120,13 @@ const useSubscription = () => {
   const updateSubscriptionPlan = async (planId: string) => {
     setIsUpdating(true);
     try {
-      // In a real app, you would call an API here
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setSubscription({
-        ...subscription,
-        plan: planId
-      });
+      const result = await subscriptionService.updateSubscriptionPlan(planId);
+      if (subscription) {
+        setSubscription({
+          ...subscription,
+          plan: planId
+        });
+      }
       setIsUpdating(false);
       return { success: true };
     } catch (err: any) {
@@ -176,17 +140,9 @@ const useSubscription = () => {
   const addPaymentMethod = async (paymentDetails: any) => {
     setIsUpdatingPayment(true);
     try {
-      // In a real app, you would call an API here
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      const newPaymentMethod = {
-        id: `pm_${Date.now()}`,
-        brand: paymentDetails.brand || 'visa',
-        last4: paymentDetails.last4 || '0000',
-        expiryMonth: paymentDetails.expiryMonth || 12,
-        expiryYear: paymentDetails.expiryYear || 2025,
-        isDefault: false
-      };
-      setPaymentMethods([...paymentMethods, newPaymentMethod]);
+      const result = await subscriptionService.addPaymentMethod();
+      const methods = await subscriptionService.getPaymentMethods();
+      setPaymentMethods(methods);
       setIsUpdatingPayment(false);
       return { success: true };
     } catch (err: any) {
@@ -200,13 +156,9 @@ const useSubscription = () => {
   const setDefaultPaymentMethod = async (paymentMethodId: string) => {
     setIsUpdatingPayment(true);
     try {
-      // In a real app, you would call an API here
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      const updatedMethods = paymentMethods.map(method => ({
-        ...method,
-        isDefault: method.id === paymentMethodId
-      }));
-      setPaymentMethods(updatedMethods);
+      const result = await subscriptionService.setDefaultPaymentMethod(paymentMethodId);
+      const methods = await subscriptionService.getPaymentMethods();
+      setPaymentMethods(methods);
       setIsUpdatingPayment(false);
       return { success: true };
     } catch (err: any) {
@@ -220,10 +172,9 @@ const useSubscription = () => {
   const deletePaymentMethod = async (paymentMethodId: string) => {
     setIsUpdatingPayment(true);
     try {
-      // In a real app, you would call an API here
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      const updatedMethods = paymentMethods.filter(method => method.id !== paymentMethodId);
-      setPaymentMethods(updatedMethods);
+      const result = await subscriptionService.deletePaymentMethod(paymentMethodId);
+      const methods = await subscriptionService.getPaymentMethods();
+      setPaymentMethods(methods);
       setIsUpdatingPayment(false);
       return { success: true };
     } catch (err: any) {
@@ -237,13 +188,39 @@ const useSubscription = () => {
   const refetchBillingHistory = async () => {
     setIsRefreshing(true);
     try {
-      // In a real app, you would fetch from an API here
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const history = await subscriptionService.getBillingHistory();
+      setBillingHistory(history);
       setIsRefreshing(false);
       return { success: true };
     } catch (err: any) {
       setError(err);
       setIsRefreshing(false);
+      return { success: false, error: err.message };
+    }
+  };
+
+  // Add checkout function
+  const checkout = async (options: { planId: string, interval: string, addOnIds?: string[] }) => {
+    try {
+      const result = await subscriptionService.checkout(
+        options.planId, 
+        options.interval, 
+        options.addOnIds
+      );
+      return { success: true };
+    } catch (err: any) {
+      setError(err);
+      return { success: false, error: err.message };
+    }
+  };
+
+  // Add openCustomerPortal function
+  const openCustomerPortal = async () => {
+    try {
+      const result = await subscriptionService.openCustomerPortal();
+      return { success: true };
+    } catch (err: any) {
+      setError(err);
       return { success: false, error: err.message };
     }
   };
@@ -267,6 +244,8 @@ const useSubscription = () => {
     addPaymentMethod,
     setDefaultPaymentMethod,
     deletePaymentMethod,
+    checkout,
+    openCustomerPortal
   };
 };
 

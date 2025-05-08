@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { FileText, RefreshCw } from "lucide-react";
-import { useSubscription } from "@/hooks/use-subscription";
+import useSubscription from "@/hooks/use-subscription";
 
 // Define the correct interface
 interface Invoice {
@@ -94,7 +94,7 @@ const BillingHistory = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {billingHistory.map((item: Invoice) => (
+                  {billingHistory.map((item: any) => (
                     <TableRow key={item.id}>
                       <TableCell>{formatDate(item.date)}</TableCell>
                       <TableCell>{item.description}</TableCell>

@@ -8,7 +8,7 @@ interface AccountLayoutProps {
   requireSubscription?: boolean;
 }
 
-const AccountLayout: React.FC<AccountLayoutProps> = ({ children, requireSubscription }) => {
+const AccountLayout: React.FC<AccountLayoutProps> = ({ children, requireSubscription = false }) => {
   return (
     <Layout requireSubscription={requireSubscription}>
       {children}

@@ -1,37 +1,87 @@
 
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { CheckoutLayout } from '@/components/checkout/CheckoutLayout';
-import { OrderSummary } from '@/components/checkout/OrderSummary';
-import { useCheckout } from '@/contexts/CheckoutContext';
+import OrderSummary from '@/components/checkout/OrderSummary';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Card } from '@/components/ui/card';
-import { ArrowRight, Check } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
+import { Check, ArrowRight } from 'lucide-react';
 
-const CheckoutPlanPage: React.FC = () => {
-  const navigate = useNavigate();
-  const { selectedPlan, billingInterval, setBillingInterval } = useCheckout();
-  
-  // If no plan selected, redirect to pricing
-  useEffect(() => {
-    if (!selectedPlan) {
-      navigate('/pricing');
-    }
-  }, [selectedPlan, navigate]);
-  
-  if (!selectedPlan) {
-    return null;
+// Mock plans data
+const plans = [
+  {
+    id: 'player',
+    name: 'Player',
+    price: 9.99,
+    description: 'For individual gamers',
+    features: [
+      'Single PC optimization',
+      'Game-specific profiles',
+      'Real-time network monitoring',
+      'Basic route optimization'
+    ]
+  },
+  {
+    id: 'co-op',
+    name: 'Co-op',
+    price: 17.99,
+    description: 'For multiple devices',
+    features: [
+      'Up to 3 devices',
+      'Game-specific profiles',
+      'Real-time network monitoring',
+      'Advanced route optimization',
+      'Priority support'
+    ],
+    recommended: true
+  },
+  {
+    id: 'alliance',
+    name: 'Alliance',
+    price: 29.99,
+    description: 'For households & teams',
+    features: [
+      'Up to 5 devices',
+      'Game-specific profiles',
+      'Real-time network monitoring',
+      'Advanced route optimization',
+      'Priority support',
+      'Team analytics dashboard',
+      'Custom game server selection'
+    ]
   }
+];
 
-  const formatPrice = (price: number): string => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2
-    }).format(price);
-  };
+// Mock billing intervals data
+const billingIntervals = [
+  {
+    id: 'monthly',
+    name: 'Monthly',
+    multiplier: 1,
+    description: 'Billed every month'
+  },
+  {
+    id: 'quarterly',
+    name: 'Quarterly',
+    multiplier: 0.9,
+    description: 'Billed every 3 months (10% off)'
+  },
+  {
+    id: 'yearly',
+    name: 'Yearly',
+    multiplier: 0.8,
+    description: 'Billed annually (20% off)'
+  }
+];
+
+const CheckoutPlanPage = () => {
+  const [selectedPlan, setSelectedPlan] = useState('co-op');
+  const [selectedBillingInterval, setSelectedBillingInterval] = useState('monthly');
+  const navigate = useNavigate();
   
   const handleContinue = () => {
     navigate('/checkout/payment');
@@ -40,110 +90,143 @@ const CheckoutPlanPage: React.FC = () => {
   const handleCancel = () => {
     navigate('/pricing');
   };
-
+  
+  // Find selected plan details
+  const plan = plans.find(p => p.id === selectedPlan) || plans[1]; // Default to co-op
+  
+  // Find selected billing interval details
+  const billingInterval = billingIntervals.find(b => b.id === selectedBillingInterval) || billingIntervals[0];
+  
+  // Calculate price
+  const price = plan.price * billingInterval.multiplier;
+  const total = price; // In a real app, this would include add-ons
+  
+  // Map billing interval id to OrderSummary interval format
+  const intervalMap: Record<string, string> = {
+    'monthly': 'month',
+    'quarterly': 'quarter',
+    'yearly': 'year'
+  };
+  
   return (
     <CheckoutLayout 
       currentStep="plan" 
-      title="Confirm Your Plan"
-      subtitle="Review your selection and billing cycle before continuing"
+      title="Choose Your Plan"
+      subtitle="Select a subscription plan that fits your needs"
     >
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
-          {/* Plan Selection Card */}
-          <Card className="p-6 bg-cyber-darkblue border border-cyber-blue/30">
-            <h3 className="text-lg font-semibold text-white mb-4">Selected Plan</h3>
-            
-            <div className="flex items-center p-4 bg-cyber-cardblue rounded-lg border border-cyber-blue/20">
-              <div className="bg-cyber-blue/20 p-3 rounded-full mr-4">
-                <Check className="h-6 w-6 text-cyber-blue" />
-              </div>
-              <div>
-                <h4 className="font-bold text-white">{selectedPlan.name}</h4>
-                <p className="text-sm text-gray-400">For {selectedPlan.userCount} {selectedPlan.userCount > 1 ? 'users' : 'user'}</p>
-              </div>
-              <div className="ml-auto">
-                <p className="font-bold text-cyber-blue text-xl">{formatPrice(selectedPlan.pricing[billingInterval])}</p>
-                <p className="text-xs text-gray-400 text-right">
-                  {billingInterval === 'monthly' ? 'per month' : 
-                   billingInterval === 'quarterly' ? 'per quarter' : 
-                   'per year'}
-                </p>
-              </div>
-            </div>
-          </Card>
-          
-          {/* Billing Cycle Card */}
-          <Card className="p-6 bg-cyber-darkblue border border-cyber-blue/30">
-            <h3 className="text-lg font-semibold text-white mb-4">Billing Cycle</h3>
+          {/* Plan Selection */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium text-white">Select Your Plan</h3>
             
             <RadioGroup 
-              value={billingInterval}
-              onValueChange={(value) => setBillingInterval(value as 'monthly' | 'quarterly' | 'annual')}
+              value={selectedPlan} 
+              onValueChange={setSelectedPlan}
+              className="grid grid-cols-1 md:grid-cols-3 gap-4"
             >
-              <div className="space-y-4">
-                <div className={`flex items-center p-4 rounded-lg border ${billingInterval === 'monthly' ? 'border-cyber-blue bg-cyber-blue/10' : 'border-cyber-blue/20 bg-cyber-cardblue'}`}>
-                  <RadioGroupItem value="monthly" id="monthly" className="text-cyber-blue" />
-                  <Label htmlFor="monthly" className="flex flex-1 ml-3">
-                    <div>
-                      <p className="font-medium text-white">Monthly</p>
-                      <p className="text-sm text-gray-400">Pay month-to-month</p>
+              {plans.map((plan) => (
+                <Label 
+                  key={plan.id}
+                  htmlFor={plan.id}
+                  className={`
+                    cursor-pointer rounded-lg border ${selectedPlan === plan.id 
+                      ? 'border-cyber-blue/50 bg-cyber-blue/10' 
+                      : 'border-gray-800 bg-gray-900/50 hover:bg-gray-800/50'
+                    } p-4 h-full flex flex-col relative
+                  `}
+                >
+                  {plan.recommended && (
+                    <Badge className="absolute top-2 right-2 bg-cyber-blue text-white">
+                      Recommended
+                    </Badge>
+                  )}
+                  <RadioGroupItem 
+                    value={plan.id} 
+                    id={plan.id} 
+                    className="absolute top-4 left-4"
+                  />
+                  <div className="pt-6">
+                    <h4 className="font-bold text-lg">{plan.name}</h4>
+                    <p className="text-sm text-gray-400 mb-2">{plan.description}</p>
+                    <div className="text-xl font-bold text-cyber-blue mb-4">
+                      ${(plan.price * billingInterval.multiplier).toFixed(2)}
+                      <span className="text-sm font-normal text-gray-400"> / {selectedBillingInterval === 'monthly' ? 'mo' : selectedBillingInterval === 'quarterly' ? 'quarter' : 'yr'}</span>
                     </div>
-                    <div className="ml-auto">
-                      <p className="font-semibold text-white">{formatPrice(selectedPlan.pricing.monthly)}/mo</p>
-                    </div>
-                  </Label>
-                </div>
-                
-                <div className={`flex items-center p-4 rounded-lg border ${billingInterval === 'quarterly' ? 'border-cyber-blue bg-cyber-blue/10' : 'border-cyber-blue/20 bg-cyber-cardblue'}`}>
-                  <RadioGroupItem value="quarterly" id="quarterly" className="text-cyber-blue" />
-                  <Label htmlFor="quarterly" className="flex flex-1 ml-3">
-                    <div>
-                      <div className="flex items-center">
-                        <p className="font-medium text-white">Quarterly</p>
-                        <span className="ml-2 px-2 py-0.5 bg-cyber-blue/20 text-cyber-blue text-xs rounded">Save ~10%</span>
-                      </div>
-                      <p className="text-sm text-gray-400">Pay every 3 months</p>
-                    </div>
-                    <div className="ml-auto">
-                      <p className="font-semibold text-white">{formatPrice(selectedPlan.pricing.quarterly)}/qtr</p>
-                    </div>
-                  </Label>
-                </div>
-                
-                <div className={`flex items-center p-4 rounded-lg border ${billingInterval === 'annual' ? 'border-cyber-blue bg-cyber-blue/10' : 'border-cyber-blue/20 bg-cyber-cardblue'}`}>
-                  <RadioGroupItem value="annual" id="annual" className="text-cyber-blue" />
-                  <Label htmlFor="annual" className="flex flex-1 ml-3">
-                    <div>
-                      <div className="flex items-center">
-                        <p className="font-medium text-white">Annual</p>
-                        <span className="ml-2 px-2 py-0.5 bg-cyber-purple/20 text-cyber-purple text-xs rounded">Save ~25%</span>
-                      </div>
-                      <p className="text-sm text-gray-400">Pay once per year</p>
-                    </div>
-                    <div className="ml-auto">
-                      <p className="font-semibold text-white">{formatPrice(selectedPlan.pricing.annual)}/yr</p>
-                    </div>
-                  </Label>
-                </div>
-              </div>
+                    
+                    <ul className="space-y-2 text-sm mt-auto">
+                      {plan.features.map((feature, i) => (
+                        <li key={i} className="flex">
+                          <Check size={16} className="mr-2 text-cyber-blue flex-shrink-0 mt-0.5" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </Label>
+              ))}
             </RadioGroup>
-          </Card>
+          </div>
           
-          <Button onClick={handleContinue} size="lg" variant="cyberAction" className="w-full md:w-auto md:ml-auto md:flex md:items-center">
-            Continue to Payment
-            <ArrowRight className="ml-2 w-4 h-4" />
-          </Button>
+          <Separator />
+          
+          {/* Billing Interval Selection */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium text-white">Billing Cycle</h3>
+            
+            <RadioGroup 
+              value={selectedBillingInterval} 
+              onValueChange={setSelectedBillingInterval}
+              className="space-y-3"
+            >
+              {billingIntervals.map((interval) => (
+                <Label 
+                  key={interval.id}
+                  htmlFor={interval.id}
+                  className={`
+                    cursor-pointer rounded-lg border ${selectedBillingInterval === interval.id 
+                      ? 'border-cyber-blue/50 bg-cyber-blue/10' 
+                      : 'border-gray-800 bg-gray-900/50 hover:bg-gray-800/50'
+                    } p-4 flex items-center justify-between
+                  `}
+                >
+                  <div className="flex items-center space-x-3">
+                    <RadioGroupItem value={interval.id} id={interval.id} />
+                    <div>
+                      <h4 className="font-medium">{interval.name}</h4>
+                      <p className="text-sm text-gray-400">{interval.description}</p>
+                    </div>
+                  </div>
+                  {interval.multiplier < 1 && (
+                    <Badge variant="outline" className="border-green-500 text-green-400">
+                      Save {((1 - interval.multiplier) * 100).toFixed(0)}%
+                    </Badge>
+                  )}
+                </Label>
+              ))}
+            </RadioGroup>
+          </div>
+          
+          <div className="pt-6">
+            <Button 
+              onClick={handleContinue} 
+              className="w-full md:w-auto"
+              variant="cyberAction"
+            >
+              Continue to Payment
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
         </div>
         
-        {/* Order Summary */}
         <div>
           <OrderSummary 
-            plan={selectedPlan.name}
-            price={selectedPlan.pricing[billingInterval]}
-            interval={billingInterval === 'monthly' ? 'month' : billingInterval === 'quarterly' ? 'quarter' : 'year'}
+            plan={plan.name}
+            price={price}
+            interval={intervalMap[selectedBillingInterval]}
             currency="USD"
             addOns={[]}
-            total={selectedPlan.pricing[billingInterval]}
+            total={total}
             onCancel={handleCancel}
           />
         </div>

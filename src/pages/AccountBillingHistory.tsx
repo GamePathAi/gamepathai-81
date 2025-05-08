@@ -15,7 +15,7 @@ interface BillingHistoryItem {
   amount: number;
   status: string;
   invoiceUrl?: string;
-  items?: any[]; // Added items property to match expected type
+  items?: any[];
 }
 
 const AccountBillingHistory = () => {
@@ -94,7 +94,7 @@ const AccountBillingHistory = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {billingHistory.map((item: BillingHistoryItem) => (
+                  {billingHistory.map((item: any) => (
                     <TableRow key={item.id}>
                       <TableCell>{formatDate(item.date)}</TableCell>
                       <TableCell>{item.description}</TableCell>

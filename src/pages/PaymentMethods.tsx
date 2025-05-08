@@ -22,7 +22,7 @@ const PaymentMethods = () => {
   const handleAddCard = async () => {
     setIsAddingCard(true);
     try {
-      await addPaymentMethod();
+      await addPaymentMethod({});
       toast.success("Payment method added successfully");
     } catch (error) {
       toast.error("Failed to add payment method");

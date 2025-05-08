@@ -1,225 +1,153 @@
 
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { toast } from "sonner";
-import { ArrowLeft, Lock } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { CheckoutLayout } from "@/components/checkout/CheckoutLayout";
-import { OrderSummary } from "@/components/checkout/OrderSummary";
-import { useCheckout } from "@/contexts/CheckoutContext";
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { CheckoutLayout } from '@/components/checkout/CheckoutLayout';
+import OrderSummary from '@/components/checkout/OrderSummary';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Separator } from '@/components/ui/separator';
+import { Lock } from 'lucide-react';
 
-const formSchema = z.object({
-  cardNumber: z.string().min(16, {
-    message: "Card number must be at least 16 characters.",
-  }),
-  expiryDate: z.string().min(5, {
-    message: "Expiry date must be in MM/YY format.",
-  }),
-  cvc: z.string().min(3, {
-    message: "CVC must be at least 3 characters.",
-  }),
-  nameOnCard: z.string().min(2, {
-    message: "Name on card must be at least 2 characters.",
-  }),
-});
+// Mock checkout data
+const checkoutData = {
+  plan: 'Pro',
+  price: 19.99,
+  interval: 'month',
+  currency: 'USD',
+  addOns: [
+    {
+      name: 'VPN Integration',
+      price: 2.99
+    }
+  ],
+  total: 22.98
+};
 
-const CheckoutPaymentPage: React.FC = () => {
+const CheckoutPaymentPage = () => {
   const navigate = useNavigate();
-  const { selectedPlan, billingInterval } = useCheckout();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      cardNumber: "",
-      expiryDate: "",
-      cvc: "",
-      nameOnCard: "",
-    },
-  });
-
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setIsSubmitting(true);
-    // Simulate payment processing
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsSubmitting(false);
-    toast.success("Payment successful!");
-    navigate("/checkout/success");
+  
+  // Mock submit handler
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    navigate('/checkout/success'); 
   };
-
+  
   const handleCancel = () => {
-    navigate("/checkout/plan");
+    navigate('/checkout/canceled');
   };
-
-  if (!selectedPlan) {
-    navigate("/pricing");
-    return null;
-  }
-
+  
   return (
-    <CheckoutLayout
-      currentStep="payment"
+    <CheckoutLayout 
+      currentStep="payment" 
       title="Payment Details"
-      subtitle="Enter your payment information to complete your purchase"
+      subtitle="Complete your subscription purchase"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
-          <Card className="bg-cyber-darkblue border border-cyber-blue/30">
-            <CardHeader>
-              <CardTitle className="text-lg">
-                <svg 
-                  className="mr-2 h-4 w-4 inline-block align-middle" 
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
-                Payment Information
-              </CardTitle>
-              <CardDescription className="text-gray-400">
-                Enter your credit card details below
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="col-span-2">
+          <form onSubmit={handleSubmit} className="space-y-8">
+            {/* Secure Checkout Notice */}
+            <Alert className="bg-cyber-blue/5 border border-cyber-blue/30">
+              <Lock className="w-4 h-4 text-cyber-blue" />
+              <AlertDescription className="text-gray-300">
+                Your payment is secure with our encrypted payment processing
+              </AlertDescription>
+            </Alert>
+            
+            {/* Payment Method Selection */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-white">Payment Method</h3>
+              
+              <RadioGroup defaultValue="card" className="space-y-4">
+                <div className="flex items-center space-x-3 border border-gray-800 p-4 rounded-lg relative">
+                  <RadioGroupItem value="card" id="card" />
+                  <Label htmlFor="card" className="flex-1 cursor-pointer">
+                    <div className="flex justify-between items-center">
+                      <span>Credit or Debit Card</span>
+                      <div className="flex gap-2">
+                        <div className="w-10 h-6 bg-gray-700 rounded"></div>
+                        <div className="w-10 h-6 bg-gray-700 rounded"></div>
+                      </div>
+                    </div>
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-3 border border-gray-800 p-4 rounded-lg relative opacity-50">
+                  <RadioGroupItem value="paypal" id="paypal" disabled />
+                  <Label htmlFor="paypal" className="flex-1 cursor-not-allowed">
+                    <div className="flex justify-between items-center">
+                      <span>PayPal</span>
+                      <div className="w-10 h-6 bg-gray-700 rounded"></div>
+                    </div>
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+            
+            <Separator />
+            
+            {/* Card Details */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-white">Card Information</h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="cardNumber">Card Number</Label>
+                  <Input id="cardNumber" placeholder="1234 5678 9012 3456" className="bg-gray-800 border-gray-700" />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="cardNumber">Card number</Label>
-                    <Input
-                      id="cardNumber"
-                      placeholder="•••• •••• •••• ••••"
-                      type="tel"
-                      {...form.register("cardNumber")}
-                    />
-                    {form.formState.errors.cardNumber && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {form.formState.errors.cardNumber.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="expiryDate">Expiry date</Label>
-                      <Input
-                        id="expiryDate"
-                        placeholder="MM/YY"
-                        type="tel"
-                        {...form.register("expiryDate")}
-                      />
-                      {form.formState.errors.expiryDate && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {form.formState.errors.expiryDate.message}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <Label htmlFor="cvc">CVC</Label>
-                      <Input
-                        id="cvc"
-                        placeholder="CVC"
-                        type="tel"
-                        {...form.register("cvc")}
-                      />
-                      {form.formState.errors.cvc && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {form.formState.errors.cvc.message}
-                        </p>
-                      )}
-                    </div>
+                    <Label htmlFor="expiryDate">Expiry Date</Label>
+                    <Input id="expiryDate" placeholder="MM/YY" className="bg-gray-800 border-gray-700" />
                   </div>
                   <div>
-                    <Label htmlFor="nameOnCard">Name on card</Label>
-                    <Input
-                      id="nameOnCard"
-                      placeholder="Name on card"
-                      type="text"
-                      {...form.register("nameOnCard")}
-                    />
-                    {form.formState.errors.nameOnCard && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {form.formState.errors.nameOnCard.message}
-                      </p>
-                    )}
+                    <Label htmlFor="cvc">CVC</Label>
+                    <Input id="cvc" placeholder="123" className="bg-gray-800 border-gray-700" />
                   </div>
                 </div>
-                <CardFooter className="flex justify-between items-center">
-                  <Button
-                    variant="secondary"
-                    onClick={() => navigate("/checkout/plan")}
-                  >
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back to Plan
-                  </Button>
-                  <Button
-                    type="submit"
-                    variant="cyberAction"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting && (
-                      <svg
-                        className="animate-spin h-5 w-5 mr-2"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        />
-                      </svg>
-                    )}
-                    Complete Payment
-                    <Lock className="ml-2 h-4 w-4" />
-                  </Button>
-                </CardFooter>
-              </form>
-            </CardContent>
-          </Card>
+                
+                <div>
+                  <Label htmlFor="nameOnCard">Name on Card</Label>
+                  <Input id="nameOnCard" placeholder="Full Name" className="bg-gray-800 border-gray-700" />
+                </div>
+              </div>
+            </div>
+            
+            {/* Billing Address */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-medium text-white">Billing Address</h3>
+                <div className="flex items-center">
+                  <Checkbox id="sameAsShipping" defaultChecked />
+                  <Label htmlFor="sameAsShipping" className="ml-2 text-sm text-gray-400">Same as account address</Label>
+                </div>
+              </div>
+            </div>
+            
+            <div className="pt-4">
+              <Button type="submit" className="w-full" variant="cyberAction">
+                <Lock className="mr-2 h-4 w-4" />
+                Complete Purchase
+              </Button>
+              <p className="text-xs text-gray-400 text-center mt-3">
+                By completing your purchase, you agree to our <Link to="/terms" className="text-cyber-blue hover:underline">Terms of Service</Link> and <Link to="/privacy" className="text-cyber-blue hover:underline">Privacy Policy</Link>
+              </p>
+            </div>
+          </form>
         </div>
-
+        
         <div>
-          <OrderSummary
-            plan={selectedPlan.name}
-            price={selectedPlan.pricing[billingInterval]}
-            interval={
-              billingInterval === "monthly"
-                ? "month"
-                : billingInterval === "quarterly"
-                ? "quarter"
-                : "year"
-            }
-            currency="USD"
-            addOns={[]}
-            total={selectedPlan.pricing[billingInterval]}
+          <OrderSummary 
+            plan={checkoutData.plan}
+            price={checkoutData.price}
+            interval={checkoutData.interval}
+            currency={checkoutData.currency}
+            addOns={checkoutData.addOns}
+            total={checkoutData.total}
             onCancel={handleCancel}
           />
         </div>
