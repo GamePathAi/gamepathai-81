@@ -1,18 +1,17 @@
 
-import React from "react";
-import Layout from "@/components/Layout";
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import Layout from '../Layout';
 
 interface AccountLayoutProps {
   children: React.ReactNode;
-  requireSubscription?: boolean;
 }
 
-const AccountLayout: React.FC<AccountLayoutProps> = ({ children, requireSubscription = false }) => {
+const AccountLayout: React.FC<AccountLayoutProps> = ({ children }) => {
   return (
-    <Layout requireSubscription={requireSubscription}>
-      <div className="w-full max-w-7xl mx-auto px-4">
-        {children}
-      </div>
+    <Layout>
+      {children}
+      <Outlet />
     </Layout>
   );
 };

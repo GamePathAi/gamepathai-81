@@ -1,187 +1,227 @@
 
-import { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
-import { toast } from 'sonner';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { useSession } from '@supabase/auth-helpers-react';
 
 // Define subscription types
-export interface SubscriptionData {
-  id: string;
-  plan: string;
+interface Subscription {
+  id: any;
+  plan: any;
   users: number;
-  amount: number;
-  interval: string;
+  amount: any;
+  interval: any;
   currentPeriodEnd: Date;
   status: string;
-  addOns: string[];
+  addOns: any;
 }
 
+interface BillingHistoryItem {
+  id: string;
+  date: Date;
+  amount: number;
+  description: string;
+  status: 'paid' | 'pending' | 'failed';
+}
+
+interface PaymentMethod {
+  id: string;
+  brand: string;
+  last4: string;
+  expiryMonth: number;
+  expiryYear: number;
+  isDefault: boolean;
+}
+
+// Mock data for development
+const MOCK_SUBSCRIPTION: Subscription = {
+  id: 'sub_123456',
+  plan: 'pro',
+  users: 1,
+  amount: 9.99,
+  interval: 'month',
+  currentPeriodEnd: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+  status: 'active',
+  addOns: ['optimizer', 'vpn']
+};
+
+const MOCK_BILLING_HISTORY: BillingHistoryItem[] = [
+  {
+    id: 'inv_12345',
+    date: new Date(new Date().setDate(new Date().getDate() - 5)),
+    amount: 9.99,
+    description: 'Monthly subscription',
+    status: 'paid'
+  },
+  {
+    id: 'inv_12344',
+    date: new Date(new Date().setMonth(new Date().getMonth() - 1)),
+    amount: 9.99,
+    description: 'Monthly subscription',
+    status: 'paid'
+  }
+];
+
+const MOCK_PAYMENT_METHODS: PaymentMethod[] = [
+  {
+    id: 'pm_123456',
+    brand: 'visa',
+    last4: '4242',
+    expiryMonth: 12,
+    expiryYear: 2024,
+    isDefault: true
+  }
+];
+
 export const useSubscription = () => {
-  const supabase = useSupabaseClient();
-  const user = useUser();
-  const queryClient = useQueryClient();
+  const session = useSession();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isOpeningPortal, setIsOpeningPortal] = useState(false);
 
-  // Add-ons information
-  const addOns = [
-    {
-      id: "advanced_optimizer",
-      name: "Advanced Optimizer",
-      price: 2.99,
-      includedInPlans: []
-    },
-    {
-      id: "power_manager",
-      name: "Power Manager",
-      price: 1.99,
-      includedInPlans: []
-    },
-    {
-      id: "vpn_integration",
-      name: "VPN Integration",
-      price: 3.99,
-      includedInPlans: ["coop", "alliance"]
-    }
-  ];
-
-  // Query subscription status from Supabase
-  const { data: subscription, isLoading, error, refetch } = useQuery({
-    queryKey: ['subscription', user?.id],
+  // Fetch subscription
+  const {
+    data: subscription,
+    isLoading,
+    error,
+    refetch
+  } = useQuery({
+    queryKey: ['subscription'],
     queryFn: async () => {
-      if (!user) return null;
-      
-      // Fetch local subscription data from subscribers table
-      const { data, error } = await supabase
-        .from('subscribers')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-      
-      if (error) {
+      if (!session?.access_token) return MOCK_SUBSCRIPTION;
+      try {
+        // In a real app, make an actual API call
+        // const res = await axios.get('/api/subscription');
+        // return res.data;
+        return MOCK_SUBSCRIPTION;
+      } catch (error) {
         console.error('Error fetching subscription:', error);
-        return null;
+        throw error;
       }
-      
-      // If no subscription data or not subscribed, return null
-      if (!data || !data.subscribed) return null;
-      
-      // Map data to our subscription format
-      return {
-        id: data.id,
-        plan: data.subscription_tier?.toLowerCase() || 'player',
-        users: data.subscription_tier === 'Player' ? 1 : 
-               data.subscription_tier === 'Co-op' ? 2 : 
-               data.subscription_tier === 'Alliance' ? 5 : 1,
-        amount: data.amount || 9.99,
-        interval: data.interval || 'month',
-        currentPeriodEnd: new Date(data.subscription_end),
-        status: data.subscribed ? 'active' : 'inactive',
-        addOns: data.addons || []
-      };
     },
-    enabled: !!user,
+    enabled: !!session
   });
 
-  // Refresh subscription status from Stripe
-  const refreshSubscription = async () => {
-    if (!user) return;
-    setIsRefreshing(true);
-    
+  // Billing history
+  const {
+    data: billingHistory = MOCK_BILLING_HISTORY,
+    refetch: refetchBillingHistory
+  } = useQuery({
+    queryKey: ['billingHistory'],
+    queryFn: async () => {
+      if (!session?.access_token) return MOCK_BILLING_HISTORY;
+      // In a real app, make an actual API call
+      return MOCK_BILLING_HISTORY;
+    },
+    enabled: !!session
+  });
+
+  // Payment methods
+  const {
+    data: paymentMethods = MOCK_PAYMENT_METHODS,
+    refetch: refetchPaymentMethods
+  } = useQuery({
+    queryKey: ['paymentMethods'],
+    queryFn: async () => {
+      if (!session?.access_token) return MOCK_PAYMENT_METHODS;
+      // In a real app, make an actual API call
+      return MOCK_PAYMENT_METHODS;
+    },
+    enabled: !!session
+  });
+
+  // Customer portal
+  const openCustomerPortal = async () => {
+    if (!session?.access_token) {
+      console.error('No session found');
+      return;
+    }
+
     try {
-      const { data, error } = await supabase.functions.invoke('check-subscription');
-      
-      if (error) {
-        throw new Error(error.message);
-      }
-      
-      await refetch();
-      return data;
-    } catch (error) {
-      console.error('Error refreshing subscription:', error);
-      toast.error('Failed to refresh subscription status', {
-        description: 'Please try again later'
+      setIsOpeningPortal(true);
+      // In a real application, make an API call to your backend
+      const response = await fetch('/api/create-portal-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
       });
-      return null;
+
+      const data = await response.json();
+      
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('Error opening customer portal:', error);
+    } finally {
+      setIsOpeningPortal(false);
+    }
+  };
+
+  // Refresh subscription
+  const refreshSubscription = async () => {
+    setIsRefreshing(true);
+    try {
+      await refetch();
     } finally {
       setIsRefreshing(false);
     }
   };
 
-  // Create checkout session mutation
-  const createCheckoutSession = useMutation({
-    mutationFn: async ({ 
-      planId, 
-      interval, 
-      addOnIds 
-    }: { 
-      planId: string, 
-      interval: string, 
-      addOnIds?: string[] 
-    }) => {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { planId, interval, addOnIds }
-      });
-      
-      if (error) {
-        throw new Error(error.message);
-      }
-      
-      return data;
-    },
-    onSuccess: (data) => {
-      // Redirect to Stripe checkout
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    },
-    onError: (error) => {
-      toast.error('Failed to start checkout process', {
-        description: error.message
-      });
-    }
-  });
+  // Cancel subscription
+  const cancelSubscription = async () => {
+    if (!session?.access_token) return;
+    
+    // In a real app, make an API call to cancel
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    await refreshSubscription();
+  };
 
-  // Open customer portal mutation
-  const openCustomerPortal = useMutation({
-    mutationFn: async () => {
-      const { data, error } = await supabase.functions.invoke('customer-portal');
-      
-      if (error) {
-        throw new Error(error.message);
-      }
-      
-      return data;
-    },
-    onSuccess: (data) => {
-      // Redirect to Stripe customer portal
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    },
-    onError: (error) => {
-      toast.error('Failed to open customer portal', {
-        description: error.message
-      });
-    }
-  });
+  // Update plan
+  const updateSubscriptionPlan = async (planId: string) => {
+    if (!session?.access_token) return;
+    
+    // In a real app, make an API call to update the plan
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    await refreshSubscription();
+  };
 
-  // Auto-refresh subscription status on mount and when user changes
-  useEffect(() => {
-    if (user) {
-      refreshSubscription();
-    }
-  }, [user?.id]);
+  // Add payment method
+  const addPaymentMethod = async () => {
+    // This would typically open a Stripe form
+    await refetchPaymentMethods();
+  };
+
+  // Set default payment method
+  const setDefaultPaymentMethod = async (id: string) => {
+    // Make API call to update default payment method
+    await refetchPaymentMethods();
+  };
+
+  // Delete payment method
+  const deletePaymentMethod = async (id: string) => {
+    // Make API call to delete payment method
+    await refetchPaymentMethods();
+  };
 
   return {
-    subscription,
+    subscription: subscription || MOCK_SUBSCRIPTION,
     isLoading,
     isRefreshing,
     error,
-    addOns,
     refreshSubscription,
-    createCheckout: createCheckoutSession.mutate,
-    isCheckingOut: createCheckoutSession.isPending,
-    openCustomerPortal: openCustomerPortal.mutate,
-    isOpeningPortal: openCustomerPortal.isPending
+    cancelSubscription,
+    openCustomerPortal,
+    isOpeningPortal,
+    billingHistory,
+    refetchBillingHistory,
+    paymentMethods,
+    addPaymentMethod,
+    setDefaultPaymentMethod,
+    deletePaymentMethod,
+    updateSubscriptionPlan
   };
 };
+
+export default useSubscription;

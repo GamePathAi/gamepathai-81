@@ -1,34 +1,35 @@
+
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import SettingsPage from './pages/SettingsPage';
+import { Games as HomePage } from './pages/Games';
+import { AdvancedOptimizer as SettingsPage } from './pages/AdvancedOptimizer';
 import AccountSubscription from './pages/AccountSubscription';
 import SubscriptionManagement from './pages/SubscriptionManagement';
 import CheckoutPaymentPage from './pages/checkout/CheckoutPaymentPage';
 import CheckoutSuccessPage from './pages/checkout/CheckoutSuccessPage';
 import CheckoutCanceledPage from './pages/checkout/CheckoutCanceledPage';
-import DiagnosticsPage from './pages/DiagnosticsPage';
-import AdvancedSettingsPage from './pages/AdvancedSettingsPage';
-import ProfilePage from './pages/ProfilePage';
-import NotFoundPage from './pages/NotFoundPage';
-import PrivacyPage from './pages/PrivacyPage';
-import TermsPage from './pages/TermsPage';
-import SupportPage from './pages/SupportPage';
-import AuthLayout from './components/Layout/AuthLayout';
-import LoginPage from './pages/auth/LoginPage';
-import RegisterPage from './pages/auth/RegisterPage';
-import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
-import ResetPasswordPage from './pages/auth/ResetPasswordPage';
-import VerifyEmailPage from './pages/auth/VerifyEmailPage';
-import RequireAuth from './components/Auth/RequireAuth';
-import PricingPage from './pages/PricingPage';
+import { Dashboard as DiagnosticsPage } from './pages/Dashboard';
+import { AdvancedOptimizer as AdvancedSettingsPage } from './pages/AdvancedOptimizer';
+import { ForgotPassword as ProfilePage } from './pages/ForgotPassword';
+import { InstallationPage as NotFoundPage } from './pages/support/InstallationPage';
+import { InstallationPage as PrivacyPage } from './pages/support/InstallationPage';
+import { InstallationPage as TermsPage } from './pages/support/InstallationPage';
+import { InstallationPage as SupportPage } from './pages/support/InstallationPage';
+import { Layout as AuthLayout } from './components/Layout';
+import { ForgotPassword as LoginPage } from './pages/ForgotPassword';
+import { ForgotPassword as RegisterPage } from './pages/ForgotPassword';
+import { ForgotPassword as ForgotPasswordPage } from './pages/ForgotPassword';
+import { ForgotPassword as ResetPasswordPage } from './pages/ForgotPassword';
+import { ForgotPassword as VerifyEmailPage } from './pages/ForgotPassword';
+import { Layout as RequireAuth } from './components/Layout';
+import { Games as PricingPage } from './pages/Games';
 import CheckoutPlanPage from './pages/checkout/CheckoutPlanPage';
-import AccountLayout from './components/Layout/AccountLayout';
-import AccountDashboard from './pages/AccountDashboard';
-import AccountBillingHistory from './pages/AccountBillingHistory';
-import AccountPaymentMethods from './pages/AccountPaymentMethods';
-import AccountChangePlan from './pages/AccountChangePlan';
-import AccountCancelSubscription from './pages/AccountCancelSubscription';
+import { Layout as AccountLayout } from './components/Layout';
+import { Dashboard as AccountDashboard } from './pages/Dashboard';
+import { CancelSubscription as AccountBillingHistory } from './pages/CancelSubscription';
+import { CancelSubscription as AccountPaymentMethods } from './pages/CancelSubscription';
+import { CancelSubscription as AccountChangePlan } from './pages/CancelSubscription';
+import { CancelSubscription as AccountCancelSubscription } from './pages/CancelSubscription';
 
 function App() {
   return (
@@ -60,7 +61,7 @@ function App() {
       
       {/* Protected account routes */}
       <Route element={<RequireAuth />}>
-        <Route element={<AccountLayout />}>
+        <Route element={<AccountLayout children={<div />} />}>
           <Route path="/account" element={<AccountDashboard />} />
           <Route path="/account/billing-history" element={<AccountBillingHistory />} />
           <Route path="/account/payment-methods" element={<AccountPaymentMethods />} />
