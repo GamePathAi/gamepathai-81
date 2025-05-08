@@ -1,165 +1,116 @@
 
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { CheckoutLayout } from '@/components/checkout/CheckoutLayout';
-import { Button } from '@/components/ui/button';
-import { useCheckout } from '@/contexts/CheckoutContext';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { CheckCircle, ChevronRight, Download, Settings, Zap } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
+import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { CheckCircle, Home, ArrowRight, RefreshCw } from "lucide-react";
+import { CheckoutLayout } from "@/components/checkout/CheckoutLayout";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 const CheckoutSuccessPage: React.FC = () => {
   const navigate = useNavigate();
-  const { selectedPlan, billingInterval, clearCheckout } = useCheckout();
-  
-  // Calculate next billing date based on billingInterval
-  const getNextBillingDate = () => {
-    const now = new Date();
-    const nextDate = new Date(now);
-    
-    if (billingInterval === 'monthly') {
-      nextDate.setMonth(now.getMonth() + 1);
-    } else if (billingInterval === 'quarterly') {
-      nextDate.setMonth(now.getMonth() + 3);
-    } else {
-      nextDate.setFullYear(now.getFullYear() + 1);
-    }
-    
-    return nextDate.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
-  
-  const handleGotoDashboard = () => {
-    clearCheckout(); // Clear checkout data since we're done
-    navigate('/dashboard');
-  };
-  
-  if (!selectedPlan) {
-    return null;
-  }
+  const supabase = useSupabaseClient();
+  const [searchParams] = useSearchParams();
+  const [isVerifying, setIsVerifying] = useState(true);
+  const [isVerified, setIsVerified] = useState(false);
+  const sessionId = searchParams.get("session_id");
 
-  const formatPrice = (price: number): string => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2
-    }).format(price);
+  // Verify subscription on page load
+  useEffect(() => {
+    async function verifySubscription() {
+      if (!sessionId) {
+        setIsVerifying(false);
+        return;
+      }
+
+      try {
+        // Trigger subscription verification in background
+        await supabase.functions.invoke("check-subscription");
+        setIsVerified(true);
+      } catch (error) {
+        console.error("Failed to verify subscription:", error);
+        toast.error("Failed to verify subscription status", {
+          description: "Please check your account settings for details."
+        });
+      } finally {
+        setIsVerifying(false);
+      }
+    }
+
+    verifySubscription();
+  }, [sessionId, supabase]);
+
+  const handleGoToAccount = () => {
+    navigate("/account/subscription");
   };
-  
+
+  const handleGoToDashboard = () => {
+    navigate("/");
+  };
+
   return (
-    <CheckoutLayout 
-      currentStep="success" 
-      title="Subscription Confirmed!"
-      subtitle="Your GamePath AI optimization journey begins now"
+    <CheckoutLayout
+      currentStep="success"
+      title="Subscription Activated!"
+      subtitle="Thank you for your subscription to GamePath AI"
     >
-      <div className="max-w-3xl mx-auto">
-        <div className="flex flex-col items-center mb-10">
-          <div className="w-20 h-20 rounded-full bg-cyber-green/20 flex items-center justify-center mb-4">
-            <CheckCircle className="h-10 w-10 text-cyber-green" />
+      <div className="max-w-2xl mx-auto text-center">
+        <div className="flex justify-center mb-6">
+          <div className="w-20 h-20 rounded-full bg-cyber-green/20 flex items-center justify-center">
+            <CheckCircle size={48} className="text-cyber-green" />
           </div>
-          <h2 className="text-2xl font-bold text-white">Welcome to GamePath AI</h2>
-          <p className="text-gray-400 mt-2">Your subscription has been successfully activated</p>
         </div>
-        
-        <Card className="p-6 bg-cyber-darkblue border border-cyber-blue/30 mb-8">
-          <h3 className="text-lg font-semibold text-white mb-4">Subscription Details</h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <p className="text-sm text-gray-400 mb-2">Plan</p>
-              <div className="flex items-center">
-                <p className="text-xl font-semibold text-white">{selectedPlan.name}</p>
-                {selectedPlan.popular && (
-                  <Badge variant="cyber" className="ml-2">Popular</Badge>
-                )}
-              </div>
-              <p className="text-sm text-gray-400 mt-1">{selectedPlan.userCount} {selectedPlan.userCount > 1 ? 'users' : 'user'}</p>
-            </div>
-            
-            <div>
-              <p className="text-sm text-gray-400 mb-2">Billing</p>
-              <p className="text-xl font-semibold text-white">
-                {formatPrice(selectedPlan.pricing[billingInterval])}
-                <span className="text-sm font-normal text-gray-400 ml-1">
-                  /{billingInterval === 'monthly' ? 'mo' : billingInterval === 'quarterly' ? 'qtr' : 'yr'}
-                </span>
-              </p>
-              <p className="text-sm text-gray-400 mt-1">Next payment on {getNextBillingDate()}</p>
+
+        <h2 className="text-2xl font-bold text-white mb-4">
+          Your subscription is now active
+        </h2>
+
+        <p className="text-gray-400 mb-6">
+          Welcome to GamePath AI! Your account has been upgraded and you now have full access to all features.
+        </p>
+
+        {isVerifying ? (
+          <div className="mb-8 flex items-center justify-center">
+            <RefreshCw size={20} className="animate-spin text-cyber-blue mr-2" />
+            <span className="text-cyber-blue">Verifying your subscription...</span>
+          </div>
+        ) : isVerified ? (
+          <div className="mb-8 py-3 px-4 bg-cyber-green/10 border border-cyber-green/30 rounded-lg inline-block">
+            <div className="flex items-center">
+              <CheckCircle size={16} className="text-cyber-green mr-2" />
+              <span className="text-cyber-green">Subscription verified successfully</span>
             </div>
           </div>
-          
-          <Separator className="my-6 bg-cyber-blue/20" />
-          
-          <div>
-            <p className="text-sm text-gray-400 mb-3">Your subscription includes:</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-start">
-                <div className="bg-cyber-blue/10 p-2 rounded-full mr-2">
-                  <Zap className="h-4 w-4 text-cyber-blue" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-white">Route Optimization</p>
-                  <p className="text-xs text-gray-400">Reduce latency up to 45%</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start">
-                <div className="bg-cyber-purple/10 p-2 rounded-full mr-2">
-                  <Settings className="h-4 w-4 text-cyber-purple" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-white">Performance Enhancement</p>
-                  <p className="text-xs text-gray-400">Boost FPS by up to 20%</p>
-                </div>
-              </div>
-            </div>
+        ) : (
+          <div className="mb-8 py-3 px-4 bg-cyber-blue/10 border border-cyber-blue/30 rounded-lg inline-block">
+            <span className="text-cyber-blue">
+              Your subscription is being processed. It may take a few moments to reflect in your account.
+            </span>
           </div>
-        </Card>
-        
-        <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-white">Next Steps</h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="p-5 bg-cyber-darkblue border border-cyber-blue/30 hover:bg-cyber-cardblue transition-colors">
-              <div className="flex items-start">
-                <div className="bg-cyber-blue/10 p-3 rounded-full mr-4">
-                  <Download className="h-5 w-5 text-cyber-blue" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-white mb-1">Download GamePath AI</h4>
-                  <p className="text-sm text-gray-400 mb-4">Install our optimization software to get started</p>
-                  <Button variant="cyberOutline" size="sm">
-                    Download Client <ChevronRight className="h-4 w-4 ml-1" />
-                  </Button>
-                </div>
-              </div>
-            </Card>
-            
-            <Card className="p-5 bg-cyber-darkblue border border-cyber-blue/30 hover:bg-cyber-cardblue transition-colors">
-              <div className="flex items-start">
-                <div className="bg-cyber-purple/10 p-3 rounded-full mr-4">
-                  <Settings className="h-5 w-5 text-cyber-purple" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-white mb-1">Dashboard Setup</h4>
-                  <p className="text-sm text-gray-400 mb-4">Configure your gaming profile and preferences</p>
-                  <Button variant="cyberOutline" size="sm" onClick={handleGotoDashboard}>
-                    Go to Dashboard <ChevronRight className="h-4 w-4 ml-1" />
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          </div>
-          
-          <div className="pt-8 flex justify-center">
-            <Button onClick={handleGotoDashboard} size="lg" variant="cyberAction">
-              Access Your Dashboard
-            </Button>
-          </div>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Button
+            variant="outline"
+            className="flex items-center justify-center"
+            onClick={handleGoToDashboard}
+          >
+            <Home size={18} className="mr-2" />
+            Go to Dashboard
+          </Button>
+          <Button
+            variant="cyberAction"
+            className="flex items-center justify-center"
+            onClick={handleGoToAccount}
+          >
+            Manage Subscription
+            <ArrowRight size={18} className="ml-2" />
+          </Button>
+        </div>
+
+        <div className="mt-12 text-sm text-gray-500">
+          A confirmation email has been sent to your registered email address.
+          If you have any questions, please contact our support team.
         </div>
       </div>
     </CheckoutLayout>

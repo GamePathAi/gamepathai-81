@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Wallet } from "lucide-react";
 import { toast } from "sonner";
@@ -19,26 +19,37 @@ import DurationSelection from "./Subscription/DurationSelection";
 import AddOnSelection from "./Subscription/AddOnSelection";
 import SubscriptionSummary from "./Subscription/SubscriptionSummary";
 import PaymentInfo from "./Subscription/PaymentInfo";
+import { useSubscription } from "@/hooks/use-subscription";
 
 interface SubscriptionSettingsProps {
   onChange: () => void;
 }
 
 const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange }) => {
-  // User's current plan state (simulated)
-  const [currentPlan, setCurrentPlan] = useState({
-    userTier: "player",
-    duration: "monthly",
-    addOns: ["vpn_integration"],
-    active: true,
-    nextBilling: new Date(2025, 4, 25)
-  });
+  const { 
+    subscription, 
+    isLoading, 
+    refreshSubscription, 
+    createCheckout,
+    openCustomerPortal
+  } = useSubscription();
 
+  // Default selected values
   const [selectedUserTier, setSelectedUserTier] = useState("player");
   const [selectedDuration, setSelectedDuration] = useState("monthly");
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
   
   const navigate = useNavigate();
+
+  // Initialize selected values from current subscription if available
+  useEffect(() => {
+    if (subscription) {
+      setSelectedUserTier(subscription.plan || "player");
+      setSelectedDuration(subscription.interval === "month" ? "monthly" : 
+                          subscription.interval === "quarter" ? "quarterly" : "yearly");
+      setSelectedAddOns(subscription.addOns || []);
+    }
+  }, [subscription]);
   
   // Handle subscription changes
   const handleSubscriptionChange = (tier: string, duration: string) => {
@@ -67,17 +78,42 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
   };
   
   const handleUpgrade = () => {
+    // Map duration to Stripe interval
+    const interval = selectedDuration === "monthly" ? "month" : 
+                     selectedDuration === "quarterly" ? "quarter" : "year";
+                     
     toast.info(`Processing subscription update`, {
-      description: "Redirecting to checkout..."
+      description: "Preparing checkout..."
     });
+    
+    createCheckout({
+      planId: selectedUserTier,
+      interval,
+      addOnIds: selectedAddOns
+    });
+    
     onChange();
   };
   
   const handleManageSubscription = () => {
-    navigate("/account/subscription");
+    if (subscription) {
+      openCustomerPortal();
+    } else {
+      navigate("/checkout/plan");
+    }
   };
   
-  const isUpgrade = currentPlan.active;
+  // Convert subscription format to local format for display
+  const currentPlan = subscription ? {
+    userTier: subscription.plan,
+    duration: subscription.interval === "month" ? "monthly" : 
+              subscription.interval === "quarter" ? "quarterly" : "yearly",
+    addOns: subscription.addOns || [],
+    active: subscription.status === "active",
+    nextBilling: subscription.currentPeriodEnd
+  } : null;
+  
+  const isUpgrade = !!subscription;
   const prices = calculateTotalPrice(selectedUserTier, selectedDuration, selectedAddOns);
 
   return (
@@ -87,56 +123,67 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = ({ onChange })
         <h3 className="text-lg font-medium">GamePath AI Subscription</h3>
       </div>
       
-      {currentPlan.active && (
-        <CurrentPlan 
-          currentPlan={currentPlan}
-          userTiers={userTiers}
-          durations={durations}
-          addOns={addOns}
-          onManageSubscription={handleManageSubscription}
-        />
-      )}
-      
-      <div className="mt-4">
-        <h4 className="text-lg mb-4">Customize your subscription</h4>
-        
-        <div className="space-y-6">
-          <UserTierSelection 
-            userTiers={userTiers} 
-            selectedUserTier={selectedUserTier}
-            basePrice={9.99}
-            onTierChange={handleTierChange}
-          />
-          
-          <DurationSelection 
-            durations={durations}
-            selectedDuration={selectedDuration}
-            selectedUserTier={selectedUserTier}
-            calculatePrice={calculatePrice}
-            onDurationChange={handleDurationChange}
-          />
-          
-          <AddOnSelection 
-            addOns={addOns}
-            selectedUserTier={selectedUserTier}
-            selectedAddOns={selectedAddOns}
-            toggleAddOn={toggleAddOn}
-          />
-          
-          <SubscriptionSummary 
-            selectedUserTier={selectedUserTier}
-            selectedDuration={selectedDuration}
-            selectedAddOns={selectedAddOns}
-            isUpgrade={isUpgrade}
-            prices={prices}
-            userTiers={userTiers}
-            durations={durations}
-            addOns={addOns}
-            formatPrice={formatPrice}
-            onUpgrade={handleUpgrade}
-          />
+      {isLoading ? (
+        <div className="animate-pulse space-y-4">
+          <div className="h-40 bg-gray-800/50 rounded-lg"></div>
+          <div className="h-60 bg-gray-800/50 rounded-lg"></div>
         </div>
-      </div>
+      ) : (
+        <>
+          {currentPlan?.active && (
+            <CurrentPlan 
+              currentPlan={currentPlan}
+              userTiers={userTiers}
+              durations={durations}
+              addOns={addOns}
+              onManageSubscription={handleManageSubscription}
+            />
+          )}
+          
+          <div className="mt-4">
+            <h4 className="text-lg mb-4">
+              {currentPlan?.active ? "Customize your subscription" : "Choose your subscription"}
+            </h4>
+            
+            <div className="space-y-6">
+              <UserTierSelection 
+                userTiers={userTiers} 
+                selectedUserTier={selectedUserTier}
+                basePrice={9.99}
+                onTierChange={handleTierChange}
+              />
+              
+              <DurationSelection 
+                durations={durations}
+                selectedDuration={selectedDuration}
+                selectedUserTier={selectedUserTier}
+                calculatePrice={calculatePrice}
+                onDurationChange={handleDurationChange}
+              />
+              
+              <AddOnSelection 
+                addOns={addOns}
+                selectedUserTier={selectedUserTier}
+                selectedAddOns={selectedAddOns}
+                toggleAddOn={toggleAddOn}
+              />
+              
+              <SubscriptionSummary 
+                selectedUserTier={selectedUserTier}
+                selectedDuration={selectedDuration}
+                selectedAddOns={selectedAddOns}
+                isUpgrade={isUpgrade}
+                prices={prices}
+                userTiers={userTiers}
+                durations={durations}
+                addOns={addOns}
+                formatPrice={formatPrice}
+                onUpgrade={handleUpgrade}
+              />
+            </div>
+          </div>
+        </>
+      )}
       
       <div className="mt-4 pt-4 border-t border-gray-800">
         <PaymentInfo onManageSubscription={handleManageSubscription} />

@@ -1,157 +1,77 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Routes, Route, Navigate } from "react-router-dom";
-import { HelmetProvider } from "react-helmet-async";
-
-import Index from "./pages/Index";
-import NetworkMetrics from "./pages/NetworkMetrics";
-import NotFound from "./pages/NotFound";
-import SystemOptimization from "./pages/SystemOptimization";
-import RouteOptimizerPage from "./pages/RouteOptimizer";
-import Performance from "./pages/Performance";
-import AdvancedOptimizer from "./pages/AdvancedOptimizer";
-import VPNIntegration from "./pages/VPNIntegration";
-import PowerManager from "./pages/PowerManager";
-import Settings from "./pages/Settings";
-import SubscriptionManagement from "./pages/SubscriptionManagement";
-import AccountSubscription from "./pages/AccountSubscription";
-import { NotificationProvider } from "./hooks/use-notifications";
-import { SubscriptionProvider } from "./hooks/use-subscription";
-import Account from "./pages/Account";
-import PaymentMethods from "./pages/PaymentMethods";
-import BillingHistory from "./pages/BillingHistory";
-import ChangePlan from "./pages/ChangePlan";
-import CancelSubscription from "./pages/CancelSubscription";
-import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
-import TermsOfService from "./pages/legal/TermsOfService";
-import CookiePolicy from "./pages/legal/CookiePolicy";
-import GDPRCompliance from "./pages/legal/GDPRCompliance";
-import Games from "./pages/Games";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import ForgotPassword from "./pages/ForgotPassword";
-import CheckoutPlanPage from "./pages/checkout/CheckoutPlanPage";
-import CheckoutPaymentPage from "./pages/checkout/CheckoutPaymentPage";
-import CheckoutProcessingPage from "./pages/checkout/CheckoutProcessingPage";
-import CheckoutSuccessPage from "./pages/checkout/CheckoutSuccessPage";
-import HomePage from "./pages/landing/HomePage";
-import DownloadPage from "./pages/landing/DownloadPage";
-import FeaturesPage from "./pages/landing/FeaturesPage";
-import PricingPage from "./pages/landing/PricingPage";
-import TechnologyPage from "./pages/landing/TechnologyPage";
-import GamePage from "./pages/landing/GamePage";
-import AboutPage from "./pages/company/AboutPage";
-import BlogPage from "./pages/company/BlogPage";
-import BlogArticlePage from "./pages/company/BlogArticlePage";
-import CareersPage from "./pages/company/CareersPage";
-import ContactPage from "./pages/company/ContactPage";
-import DocumentationPage from "./pages/resources/DocumentationPage";
-import SupportPage from "./pages/resources/SupportPage";
-import StatusPage from "./pages/resources/StatusPage";
-import FaqPage from "./pages/resources/FaqPage";
-import QuickStartGuide from "./pages/resources/docs/QuickStartGuide";
-import InstallationPage from "./pages/resources/docs/Installation";
-import BasicConfiguration from "./pages/resources/docs/BasicConfiguration";
-import PerformanceTuning from "./pages/resources/docs/PerformanceTuning";
-import NetworkOptimization from "./pages/resources/docs/NetworkOptimization";
-import CustomConfigurations from "./pages/resources/docs/CustomConfigurations";
-import SupportInstallationPage from "./pages/support/InstallationPage";
-import Dashboard from "./pages/Dashboard";
-import MonitoringDashboard from './pages/MonitoringDashboard';
-
-const queryClient = new QueryClient();
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import SettingsPage from './pages/SettingsPage';
+import AccountSubscription from './pages/AccountSubscription';
+import SubscriptionManagement from './pages/SubscriptionManagement';
+import CheckoutPaymentPage from './pages/checkout/CheckoutPaymentPage';
+import CheckoutSuccessPage from './pages/checkout/CheckoutSuccessPage';
+import CheckoutCanceledPage from './pages/checkout/CheckoutCanceledPage';
+import DiagnosticsPage from './pages/DiagnosticsPage';
+import AdvancedSettingsPage from './pages/AdvancedSettingsPage';
+import ProfilePage from './pages/ProfilePage';
+import NotFoundPage from './pages/NotFoundPage';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
+import SupportPage from './pages/SupportPage';
+import AuthLayout from './components/Layout/AuthLayout';
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
+import ResetPasswordPage from './pages/auth/ResetPasswordPage';
+import VerifyEmailPage from './pages/auth/VerifyEmailPage';
+import RequireAuth from './components/Auth/RequireAuth';
+import PricingPage from './pages/PricingPage';
+import CheckoutPlanPage from './pages/checkout/CheckoutPlanPage';
+import AccountLayout from './components/Layout/AccountLayout';
+import AccountDashboard from './pages/AccountDashboard';
+import AccountBillingHistory from './pages/AccountBillingHistory';
+import AccountPaymentMethods from './pages/AccountPaymentMethods';
+import AccountChangePlan from './pages/AccountChangePlan';
+import AccountCancelSubscription from './pages/AccountCancelSubscription';
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <HelmetProvider>
-        <TooltipProvider>
-          <NotificationProvider>
-            <SubscriptionProvider>
-              <Toaster />
-              <Sonner />
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                
-                {/* Homepage is now the root route */}
-                <Route path="/" element={<HomePage />} />
-                <Route path="/download" element={<DownloadPage />} />
-                
-                {/* Dashboard routes */}
-                <Route path="/dashboard" element={<Index />} />
-                <Route path="/index" element={<Navigate to="/dashboard" replace />} />
-                <Route path="/network-metrics" element={<NetworkMetrics />} />
-                <Route path="/system-optimization" element={<SystemOptimization />} />
-                <Route path="/route-optimizer" element={<RouteOptimizerPage />} />
-                <Route path="/performance" element={<Performance />} />
-                <Route path="/advanced-optimizer" element={<AdvancedOptimizer />} />
-                <Route path="/vpn-integration" element={<VPNIntegration />} />
-                <Route path="/power-manager" element={<PowerManager />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/subscription" element={<SubscriptionManagement />} />
-                <Route path="/account/subscription" element={<AccountSubscription />} />
-                
-                <Route path="/account" element={<Account />} />
-                <Route path="/account/payment-methods" element={<PaymentMethods />} />
-                <Route path="/account/billing-history" element={<BillingHistory />} />
-                <Route path="/account/change-plan" element={<ChangePlan />} />
-                <Route path="/account/cancel-subscription" element={<CancelSubscription />} />
-                
-                <Route path="/checkout/plan" element={<CheckoutPlanPage />} />
-                <Route path="/checkout/payment" element={<CheckoutPaymentPage />} />
-                <Route path="/checkout/processing" element={<CheckoutProcessingPage />} />
-                <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
-                
-                {/* Landing pages */}
-                <Route path="/landing" element={<Navigate to="/" replace />} />
-                <Route path="/features" element={<FeaturesPage />} />
-                <Route path="/pricing" element={<PricingPage />} />
-                <Route path="/technology" element={<TechnologyPage />} />
-                
-                <Route path="/games/:gameName" element={<GamePage />} />
-                
-                <Route path="/privacy" element={<PrivacyPolicy />} />
-                <Route path="/terms" element={<TermsOfService />} />
-                <Route path="/cookies" element={<CookiePolicy />} />
-                <Route path="/gdpr" element={<GDPRCompliance />} />
-                
-                <Route path="/games" element={<Games />} />
-                
-                <Route path="/monitoring-dashboard" element={<MonitoringDashboard />} />
-                
-                <Route path="*" element={<NotFound />} />
-                
-                {/* Company Pages */}
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/blog" element={<BlogPage />} />
-                <Route path="/blog/:slug" element={<BlogArticlePage />} />
-                <Route path="/careers" element={<CareersPage />} />
-                <Route path="/contact" element={<ContactPage />} />
-                
-                {/* Resources Pages */}
-                <Route path="/docs" element={<DocumentationPage />} />
-                <Route path="/support" element={<SupportPage />} />
-                <Route path="/support/installation" element={<SupportInstallationPage />} />
-                <Route path="/status" element={<StatusPage />} />
-                <Route path="/faq" element={<FaqPage />} />
-                
-                {/* Documentation Routes */}
-                <Route path="/docs/quick-start" element={<QuickStartGuide />} />
-                <Route path="/docs/installation" element={<InstallationPage />} />
-                <Route path="/docs/basic-configuration" element={<BasicConfiguration />} />
-                <Route path="/docs/performance-tuning" element={<PerformanceTuning />} />
-                <Route path="/docs/network-optimization" element={<NetworkOptimization />} />
-                <Route path="/docs/custom-configurations" element={<CustomConfigurations />} />
-              </Routes>
-            </SubscriptionProvider>
-          </NotificationProvider>
-        </TooltipProvider>
-      </HelmetProvider>
-    </QueryClientProvider>
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/settings" element={<SettingsPage />} />
+      <Route path="/account/subscription" element={<AccountSubscription />} />
+      <Route path="/account/subscription/manage" element={<SubscriptionManagement />} />
+      <Route path="/checkout/payment" element={<CheckoutPaymentPage />} />
+      <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
+      <Route path="/checkout/canceled" element={<CheckoutCanceledPage />} />
+      <Route path="/diagnostics" element={<DiagnosticsPage />} />
+      <Route path="/advanced-settings" element={<AdvancedSettingsPage />} />
+      <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/support" element={<SupportPage />} />
+      <Route path="/pricing" element={<PricingPage />} />
+      <Route path="/checkout/plan" element={<CheckoutPlanPage />} />
+      
+      {/* Auth routes */}
+      <Route element={<AuthLayout />}>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
+      </Route>
+      
+      {/* Protected account routes */}
+      <Route element={<RequireAuth />}>
+        <Route element={<AccountLayout />}>
+          <Route path="/account" element={<AccountDashboard />} />
+          <Route path="/account/billing-history" element={<AccountBillingHistory />} />
+          <Route path="/account/payment-methods" element={<AccountPaymentMethods />} />
+          <Route path="/account/change-plan" element={<AccountChangePlan />} />
+          <Route path="/account/cancel-subscription" element={<AccountCancelSubscription />} />
+        </Route>
+      </Route>
+      
+      {/* 404 route */}
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
   );
 }
 

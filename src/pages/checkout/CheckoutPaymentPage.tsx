@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,20 +12,28 @@ import { StripeProvider } from '@/components/checkout/StripeProvider';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { LockIcon, ShieldCheck } from 'lucide-react';
+import { toast } from 'sonner';
+import { useSupabaseClient } from '@supabase/auth-helpers-react';
 
 const PaymentForm = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const supabase = useSupabaseClient();
   const stripe = useStripe();
   const elements = useElements();
   const { selectedPlan, billingInterval, customerInfo, setCustomerInfo } = useCheckout();
   const [isProcessing, setIsProcessing] = useState(false);
   const [cardError, setCardError] = useState('');
   
+  // Extract plan information from location state if available
+  const planInfo = location.state?.planInfo;
+  
   useEffect(() => {
-    if (!selectedPlan) {
+    // Redirect if no plan selected and no plan info in state
+    if (!selectedPlan && !planInfo) {
       navigate('/pricing');
     }
-  }, [selectedPlan, navigate]);
+  }, [selectedPlan, planInfo, navigate]);
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -61,26 +69,56 @@ const PaymentForm = () => {
     }
     
     if (!stripe || !elements) {
+      setCardError("Stripe has not been initialized properly.");
       return;
     }
     
     const cardElement = elements.getElement(CardElement);
     if (!cardElement) {
+      setCardError("Card element not found.");
       return;
     }
     
     setIsProcessing(true);
     
-    // Simulate payment processing - we're not actually charging cards in this demo
-    setTimeout(() => {
+    try {
+      // Call create-checkout edge function
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: {
+          planId: planInfo?.planId || selectedPlan?.id || 'player',
+          interval: planInfo?.interval || billingInterval || 'month',
+          addOnIds: planInfo?.addOns || [],
+          customerInfo: {
+            firstName: customerInfo.firstName,
+            lastName: customerInfo.lastName,
+            email: customerInfo.email
+          }
+        }
+      });
+      
+      if (error) {
+        throw new Error(error.message);
+      }
+      
+      if (data.url) {
+        // Redirect to Stripe checkout
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL returned from server");
+      }
+    } catch (error: any) {
+      console.error("Checkout error:", error);
+      setCardError(error.message || "An error occurred during checkout");
+      toast.error("Checkout failed", {
+        description: error.message || "Please try again later"
+      });
       setIsProcessing(false);
-      navigate('/checkout/processing');
-    }, 1500);
-    
-    // In real implementation, you would use stripe.confirmCardPayment here
+    }
   };
   
-  if (!selectedPlan) return null;
+  const plan = selectedPlan || planInfo?.plan;
+  
+  if (!plan && !planInfo) return null;
   
   return (
     <form onSubmit={handleSubmit}>
@@ -197,7 +235,7 @@ const PaymentForm = () => {
         
         {/* Order Summary */}
         <div>
-          <OrderSummary />
+          <OrderSummary planInfo={planInfo} />
         </div>
       </div>
     </form>

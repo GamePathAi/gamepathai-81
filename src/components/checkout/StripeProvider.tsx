@@ -3,8 +3,8 @@ import React from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 
-// Initialize with a publishable key placeholder (will be replaced with actual key)
-const stripePromise = loadStripe('pk_test_placeholder');
+// Initialize with your Stripe publishable key
+const stripePromise = loadStripe('pk_test_51P9QsMECpKbvUNIVh3quOljtRHHirTbDH5nxneq8gRwONvERTJIuKefxZxYyvOIX9iADrOlYbJNsRTPwI3muoqJ1004dEfvbxU');
 
 interface StripeProviderProps {
   children: React.ReactNode;
