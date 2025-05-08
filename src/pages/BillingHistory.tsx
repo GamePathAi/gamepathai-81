@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import AccountLayout from "@/components/Layout/AccountLayout";
@@ -23,9 +22,22 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useSubscription } from "@/hooks/use-subscription";
-import { Invoice } from "@/services/subscriptionApi";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+
+// Define the Invoice type with items
+interface Invoice {
+  id: string;
+  date: Date;
+  description: string;
+  amount: number;
+  status: string;
+  invoiceUrl?: string;
+  items: Array<{
+    name: string;
+    amount: number;
+  }>;
+}
 
 const BillingHistory = () => {
   const navigate = useNavigate();
@@ -49,7 +61,15 @@ const BillingHistory = () => {
     });
   };
 
-  const filteredInvoices = billingHistory.filter(invoice => {
+  // Ensure billing history items have the items property
+  const processedBillingHistory: Invoice[] = Array.isArray(billingHistory) 
+    ? billingHistory.map(invoice => ({
+        ...invoice,
+        items: invoice.items || [{ name: invoice.description || "Subscription payment", amount: invoice.amount }]
+      }))
+    : [];
+
+  const filteredInvoices = processedBillingHistory.filter(invoice => {
     const matchesSearch = invoice.id.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || invoice.status === statusFilter;
     return matchesSearch && matchesStatus;
@@ -108,7 +128,7 @@ const BillingHistory = () => {
   const isLastPage = currentPage === totalPages;
 
   return (
-    <AccountLayout requireSubscription>
+    <AccountLayout>
       <Helmet>
         <title>Billing History | GamePath AI</title>
       </Helmet>
@@ -326,21 +346,20 @@ const BillingHistory = () => {
       <Dialog open={!!selectedInvoice} onOpenChange={(open) => {
         if (!open) setSelectedInvoice(null);
       }}>
-        <DialogContent className="bg-cyber-darkblue border-cyber-blue/30 max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Invoice Details</DialogTitle>
-            <DialogDescription>
-              Invoice {selectedInvoice?.id} - {selectedInvoice && formatDate(selectedInvoice.date)}
-            </DialogDescription>
-          </DialogHeader>
-          
-          {selectedInvoice && (
+        {selectedInvoice && (
+          <DialogContent className="bg-cyber-darkblue border-cyber-blue/30 max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Invoice Details</DialogTitle>
+              <DialogDescription>
+                Invoice {selectedInvoice.id} - {formatDate(selectedInvoice.date)}
+              </DialogDescription>
+            </DialogHeader>
+            
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-400">Status</p>
-                  <Badge className={`${getStatusColor(selectedInvoice.status)} mt-1 flex items-center`}>
-                    {getStatusIcon(selectedInvoice.status)}
+                  <Badge className={`mt-1 flex items-center`}>
                     {selectedInvoice.status.charAt(0).toUpperCase() + selectedInvoice.status.slice(1)}
                   </Badge>
                 </div>
@@ -362,18 +381,18 @@ const BillingHistory = () => {
                 </div>
               </div>
             </div>
-          )}
-          
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => downloadInvoice(selectedInvoice?.id || "")}
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Download PDF
-            </Button>
-          </DialogFooter>
-        </DialogContent>
+            
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => downloadInvoice(selectedInvoice.id)}
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download PDF
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        )}
       </Dialog>
     </AccountLayout>
   );

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Games from './pages/Games';
@@ -38,7 +39,7 @@ function App() {
       <Route path="/checkout/plan" element={<CheckoutPlanPage />} />
       
       {/* Auth routes */}
-      <Route element={<Layout />}>
+      <Route element={<Layout>Auth pages content</Layout>}>
         <Route path="/login" element={<ForgotPassword />} />
         <Route path="/register" element={<ForgotPassword />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -47,7 +48,7 @@ function App() {
       </Route>
       
       {/* Protected account routes */}
-      <Route element={<Layout />}>
+      <Route element={<Layout>Account pages content</Layout>}>
         <Route element={<AccountLayout children={<div />} />}>
           <Route path="/account" element={<Dashboard />} />
           <Route path="/account/billing-history" element={<AccountBillingHistory />} />

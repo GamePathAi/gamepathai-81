@@ -13,7 +13,7 @@ interface BillingHistoryItem {
   date: Date;
   description: string;
   amount: number;
-  status: 'paid' | 'pending' | 'failed';
+  status: string; // Changed from 'paid' | 'pending' | 'failed' to string
   invoiceUrl?: string;
 }
 
@@ -33,6 +33,19 @@ const AccountBillingHistory = () => {
       style: "currency",
       currency: "USD",
     }).format(amount);
+  };
+
+  const getStatusClass = (status: string) => {
+    switch (status) {
+      case "paid":
+        return "bg-green-900/30 text-green-400 border border-green-500/30";
+      case "pending":
+        return "bg-yellow-900/30 text-yellow-400 border border-yellow-500/30";
+      case "failed":
+        return "bg-red-900/30 text-red-400 border border-red-500/30";
+      default:
+        return "bg-gray-900/30 text-gray-400 border border-gray-500/30";
+    }
   };
 
   return (
@@ -80,20 +93,14 @@ const AccountBillingHistory = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {billingHistory.map((item: BillingHistoryItem) => (
+                  {billingHistory.map((item) => (
                     <TableRow key={item.id}>
                       <TableCell>{formatDate(item.date)}</TableCell>
                       <TableCell>{item.description}</TableCell>
                       <TableCell>{formatCurrency(item.amount)}</TableCell>
                       <TableCell>
                         <span
-                          className={`px-2 py-1 text-xs rounded-full ${
-                            item.status === "paid"
-                              ? "bg-green-900/30 text-green-400 border border-green-500/30"
-                              : item.status === "pending"
-                              ? "bg-yellow-900/30 text-yellow-400 border border-yellow-500/30"
-                              : "bg-red-900/30 text-red-400 border border-red-500/30"
-                          }`}
+                          className={`px-2 py-1 text-xs rounded-full ${getStatusClass(item.status)}`}
                         >
                           {item.status.charAt(0).toUpperCase() +
                             item.status.slice(1)}

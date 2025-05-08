@@ -36,6 +36,10 @@ const CheckoutPlanPage: React.FC = () => {
   const handleContinue = () => {
     navigate('/checkout/payment');
   };
+  
+  const handleCancel = () => {
+    navigate('/pricing');
+  };
 
   return (
     <CheckoutLayout 
@@ -133,7 +137,15 @@ const CheckoutPlanPage: React.FC = () => {
         
         {/* Order Summary */}
         <div>
-          <OrderSummary />
+          <OrderSummary 
+            plan={selectedPlan.name}
+            price={selectedPlan.pricing[billingInterval]}
+            interval={billingInterval === 'monthly' ? 'month' : billingInterval === 'quarterly' ? 'quarter' : 'year'}
+            currency="USD"
+            addOns={[]}
+            total={selectedPlan.pricing[billingInterval]}
+            onCancel={handleCancel}
+          />
         </div>
       </div>
     </CheckoutLayout>
