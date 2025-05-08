@@ -1,14 +1,13 @@
+
 /**
  * Core ML API client implementation
  * Handles basic fetch operations with ML-specific configurations
  */
 import { toast } from "sonner";
-
-// Constants
-const ML_BASE_URL = "/ml"; // Use /ml prefix for all ML requests
-const isDev = process.env.NODE_ENV === 'development';
-const MAX_RETRIES = 2;
-const RETRY_DELAY = 2000; // 2 seconds
+import { ML_BASE_URL, isDev, MAX_RETRIES, RETRY_DELAY, REQUEST_TIMEOUT } from "./config";
+import { createMlHeaders } from "./headers";
+import { handleApiError } from "./errorHandling";
+import { isBackendRunning } from "./healthCheck";
 
 /**
  * ML API client with specialized configuration for machine learning operations
@@ -26,23 +25,11 @@ export const mlApiClient = {
       console.log(`🧠 ML API Request: ${url}`);
     }
     
-    const headers = {
-      "Content-Type": "application/json",
-      "X-ML-Operation": "1",
-      "X-No-Redirect": "1",
-      "Cache-Control": "no-cache, no-store",
-      "X-ML-Client": "react-web-client",
-      ...(options.headers || {})
-    };
-    
-    const token = localStorage.getItem("auth_token");
-    if (token) {
-      headers["Authorization"] = `Bearer ${token}`;
-    }
+    const headers = createMlHeaders(options.headers as Record<string, string> || {});
     
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 seconds timeout for ML
+      const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
       
       console.log(`🔍 Requesting from ML endpoint: ${url}`, { 
         method: options.method || 'GET',
@@ -67,34 +54,7 @@ export const mlApiClient = {
       }
       
       if (!response.ok) {
-        // Check if we need to handle 404 specially in development
-        if (response.status === 404 && isDev) {
-          console.warn(`⚠️ ML endpoint ${url} not found. Is the backend running?`);
-          toast.warning("Backend not detected", {
-            description: "Ensure the Python backend is running on port 8000"
-          });
-          throw {
-            status: 404,
-            message: "Backend not running - start with backend/start.sh" 
-          };
-        }
-        
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('text/html')) {
-          console.error(`🚨 ML API returned HTML instead of JSON (status ${response.status})`);
-          throw new Error(`ML API returned HTML instead of JSON (status ${response.status})`);
-        }
-        
-        try {
-          const errorData = await response.json();
-          console.error(`🚨 ML API error response:`, errorData);
-          throw {...errorData, status: response.status};
-        } catch (parseError) {
-          throw {
-            status: response.status,
-            message: `ML API error (status ${response.status})`
-          };
-        }
+        return await handleApiError(response, url);
       }
       
       return await response.json() as T;
@@ -166,37 +126,6 @@ export const mlApiClient = {
     throw lastError;
   },
   
-  /**
-   * Check if the backend is running
-   */
-  async isBackendRunning(): Promise<boolean> {
-    return new Promise<boolean>((resolve) => {
-      try {
-        fetch(`${ML_BASE_URL}/health`, {
-          method: 'GET',
-          headers: {
-            'Cache-Control': 'no-cache, no-store',
-            'X-No-Redirect': '1'
-          },
-          cache: 'no-store'
-        })
-        .then(response => {
-          resolve(response.status >= 200 && response.status < 300);
-        })
-        .catch(() => {
-          console.warn("Backend health check failed: network error");
-          resolve(false);
-        });
-        
-        // Add timeout handling
-        setTimeout(() => {
-          console.warn("Backend health check timed out");
-          resolve(false);
-        }, 5000);
-      } catch (error) {
-        console.warn("Backend health check failed:", error);
-        resolve(false);
-      }
-    });
-  }
+  // Re-export the isBackendRunning method for API consistency
+  isBackendRunning
 };
