@@ -1,64 +1,46 @@
 
-import { BillingHistoryItem, PaymentMethod, Subscription, Plan } from './types';
+import { Plan } from './types';
 
-// Mock subscription data
-export const mockSubscription: Subscription = {
-  id: "sub_1234567890",
-  plan: "Pro Plan",
-  users: 1,
-  amount: 9.99,
-  interval: "month",
-  currentPeriodEnd: new Date(new Date().setMonth(new Date().getMonth() + 1)),
-  status: "active",
-  addOns: ["vpn_integration"]
-};
-
-// Mock billing history data
-export const mockBillingHistory: BillingHistoryItem[] = [
-  {
-    id: "in_1234567890",
-    date: new Date(new Date().setDate(new Date().getDate() - 30)),
-    description: "Pro Plan - Monthly Subscription",
-    amount: 9.99,
-    status: "paid",
-    invoiceUrl: "https://example.com/invoice/1234567890"
-  },
-  {
-    id: "in_0987654321",
-    date: new Date(new Date().setDate(new Date().getDate() - 60)),
-    description: "Pro Plan - Monthly Subscription",
-    amount: 9.99,
-    status: "paid",
-    invoiceUrl: "https://example.com/invoice/0987654321"
-  }
-];
-
-// Mock payment methods data
-export const mockPaymentMethods: PaymentMethod[] = [
-  {
-    id: "pm_1234567890",
-    brand: "visa",
-    last4: "4242",
-    expiryMonth: 12,
-    expiryYear: 2025,
-    isDefault: true
-  }
-];
-
-// Mock plans data
+// Mock plans data matching the Stripe plans (Player, Co-op, Alliance)
 export const mockPlans: Plan[] = [
-  { 
-    id: "price_1NpXjdLkdIwHu7ixOxz1S9DZ", 
-    name: "Basic Plan", 
-    price: 4.99, 
-    interval: "month",
-    features: ["Feature 1", "Feature 2"] 
+  {
+    id: 'player',
+    name: 'Player',
+    price: 9.99,
+    interval: 'month',
+    features: [
+      'Single PC optimization',
+      'Game-specific profiles',
+      'Real-time network monitoring',
+      'Basic route optimization'
+    ]
   },
-  { 
-    id: "price_2NpXjdLkdIwHu7ixOxz1S9DZ", 
-    name: "Pro Plan", 
-    price: 9.99, 
-    interval: "month",
-    features: ["Feature 1", "Feature 2", "Feature 3", "Feature 4"] 
+  {
+    id: 'coop',
+    name: 'Co-op',
+    price: 17.99,
+    interval: 'month',
+    features: [
+      'Up to 3 devices',
+      'Game-specific profiles',
+      'Real-time network monitoring',
+      'Advanced route optimization',
+      'Priority support'
+    ]
+  },
+  {
+    id: 'alliance',
+    name: 'Alliance',
+    price: 29.99,
+    interval: 'month',
+    features: [
+      'Up to 5 devices',
+      'Game-specific profiles',
+      'Real-time network monitoring',
+      'Advanced route optimization',
+      'Priority support',
+      'Team analytics dashboard',
+      'Custom game server selection'
+    ]
   }
 ];

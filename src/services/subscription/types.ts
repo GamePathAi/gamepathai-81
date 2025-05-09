@@ -2,10 +2,16 @@
 export interface Plan {
   id: string;
   name: string;
-  description?: string;
   price: number;
   interval: 'month' | 'quarter' | 'year';
   features: string[];
+}
+
+export interface AddOn {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
 }
 
 export interface Subscription {
@@ -15,8 +21,8 @@ export interface Subscription {
   amount: number;
   interval: 'month' | 'quarter' | 'year';
   currentPeriodEnd: Date;
-  status: string;
-  addOns: any[];
+  status: 'active' | 'canceled' | 'past_due' | 'trialing' | 'incomplete';
+  addOns?: string[];
 }
 
 export interface CheckoutOptions {
@@ -27,25 +33,26 @@ export interface CheckoutOptions {
 
 export interface SubscriptionResponse {
   success: boolean;
-  error?: string;
   url?: string;
-}
-
-export interface BillingHistoryItem {
-  id: string;
-  date: Date;
-  description: string;
-  amount: number;
-  status: string;
-  invoiceUrl?: string;
-  items?: any[];
+  message?: string;
+  error?: string;
 }
 
 export interface PaymentMethod {
   id: string;
+  type: string;
   brand: string;
   last4: string;
-  expiryMonth: number;
-  expiryYear: number;
+  expMonth: number;
+  expYear: number;
   isDefault: boolean;
+}
+
+export interface BillingHistoryItem {
+  id: string;
+  amount: number;
+  status: 'paid' | 'pending' | 'failed';
+  date: Date;
+  invoiceUrl?: string;
+  description: string;
 }

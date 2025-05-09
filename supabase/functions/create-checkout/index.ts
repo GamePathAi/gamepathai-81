@@ -14,36 +14,36 @@ const logStep = (step: string, details?: any) => {
   console.log(`[CREATE-CHECKOUT] ${step}${detailsStr}`);
 };
 
-// Map Lovable plan IDs to Stripe price IDs
+// Map Lovable plan IDs to Stripe price IDs - Update these with your actual IDs from Stripe dashboard
 const PLAN_PRICE_MAP: Record<string, Record<string, string>> = {
   player: {
-    month: "price_player_monthly", // Replace with actual Stripe price IDs
-    quarter: "price_player_quarterly",
-    year: "price_player_yearly"
+    month: "price_1P9QwZECpKbvUNIVNIom9YJl", // Player plan monthly
+    quarter: "price_1P9QwZECpKbvUNIV4GyRHfgE", // Player plan quarterly
+    year: "price_1P9QwZECpKbvUNIVGQ7M5V5w" // Player plan yearly
   },
   coop: {
-    month: "price_coop_monthly",
-    quarter: "price_coop_quarterly",
-    year: "price_coop_yearly"
+    month: "price_1P9QxgECpKbvUNIVDFBAHuXg", // Co-op plan monthly
+    quarter: "price_1P9QxgECpKbvUNIV4LzXGJ66", // Co-op plan quarterly 
+    year: "price_1P9QxgECpKbvUNIVDdnYNvNM" // Co-op plan yearly
   },
   alliance: {
-    month: "price_alliance_monthly",
-    quarter: "price_alliance_quarterly",
-    year: "price_alliance_yearly"
+    month: "price_1P9QyQECpKbvUNIV0WPciyOC", // Alliance plan monthly
+    quarter: "price_1P9QyQECpKbvUNIVWiIJvQvM", // Alliance plan quarterly
+    year: "price_1P9QyQECpKbvUNIVZiaBuQrm" // Alliance plan yearly
   }
 };
 
-// Map add-ons to Stripe price IDs
+// Map add-ons to Stripe price IDs - Update these with actual add-on IDs
 const ADDON_PRICE_MAP: Record<string, string> = {
-  advanced_optimizer: "price_advanced_optimizer",
-  power_manager: "price_power_manager",
-  vpn_integration: "price_vpn_integration"
+  advanced_optimizer: "price_1P9R0OECpKbvUNIV2TBbSLpU",
+  power_manager: "price_1P9R0OECpKbvUNIVt4LSpkiN",
+  vpn_integration: "price_1P9R0OECpKbvUNIVKWArrdCE"
 };
 
 // Add-ons that are included in specific plans
 const INCLUDED_ADDONS: Record<string, string[]> = {
   coop: ["vpn_integration"],
-  alliance: ["vpn_integration"]
+  alliance: ["vpn_integration", "advanced_optimizer"]
 };
 
 serve(async (req) => {

@@ -2,7 +2,7 @@
 import React from "react";
 import LandingHeader from "./LandingHeader";
 import LandingFooter from "./LandingFooter";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "sonner";
 
 interface LandingLayoutProps {
   children: React.ReactNode;

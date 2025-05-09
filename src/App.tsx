@@ -1,3 +1,4 @@
+
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { StripeProvider } from './components/checkout/StripeProvider';
@@ -11,6 +12,9 @@ import Settings from './pages/Settings';
 import RouteOptimizerPage from './pages/RouteOptimizer';
 import NotFound from './pages/NotFound';
 import HomePage from './pages/HomePage';
+import PricingPage from './pages/landing/PricingPage';
+import CheckoutPlanPage from './pages/checkout/CheckoutPlanPage';
+import CheckoutPaymentPage from './pages/checkout/CheckoutPaymentPage';
 
 // Define proper types for ErrorBoundary
 interface ErrorBoundaryProps {
@@ -74,8 +78,15 @@ function App() {
         <Toaster position="top-right" />
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
-            {/* Landing page without sidebar */}
+            {/* Landing pages without sidebar */}
             <Route path="/" element={<HomePage />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            
+            {/* Checkout flow */}
+            <Route path="/checkout/plan" element={<CheckoutPlanPage />} />
+            <Route path="/checkout/payment" element={<CheckoutPaymentPage />} />
+            <Route path="/checkout/success" element={<div>Payment Successful!</div>} />
+            <Route path="/checkout/canceled" element={<div>Payment Canceled</div>} />
 
             {/* Routes with cyberpunk sidebar */}
             <Route path="/dashboard" element={<AppLayout><Dashboard /></AppLayout>} />
