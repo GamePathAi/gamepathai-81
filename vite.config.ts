@@ -1,8 +1,13 @@
 
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import react from '@vitejs/plugin-react-swc';
 import path from 'path';
 import { componentTagger } from "lovable-tagger";
+
+// Import configuration modules from the config directory
+import { getProxyConfig } from "./config/vite/proxy";
+import { getHostConfig } from "./config/vite/hosts";
+import { getDefineConfig } from "./config/vite/define";
 
 export default defineConfig(({ mode }) => ({
   plugins: [
@@ -14,20 +19,16 @@ export default defineConfig(({ mode }) => ({
       '@': path.resolve(__dirname, './src')
     }
   },
+  base: process.env.IS_ELECTRON === 'true' ? './' : '/',
+  
+  // Use modularized configurations
+  define: getDefineConfig(mode),
   server: {
-    host: "::",
-    port: 8080,
-    allowedHosts: [
-      'localhost',
-      '127.0.0.1',
-      '1f36dc50-ac38-4134-b1ae-182f758d0235.lovableproject.com'
-    ],
-    proxy: {
-      '/api': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
-        secure: false
-      }
-    }
+    host: true, // Listen on all addresses
+    port: 8080, 
+    hmr: false, // Force disable HMR to prevent redirects
+    allowedHosts: getHostConfig(),
+    proxy: getProxyConfig(mode)
   }
 }));
+
