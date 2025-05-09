@@ -50,7 +50,7 @@ export const useSubscriptionActions = (
   const updateSubscriptionPlan = async (planId: string) => {
     setIsUpdating(true);
     try {
-      const result = await subscriptionService.updateSubscriptionPlan(planId);
+      const result = await subscriptionService.updateSubscriptionPlan();
       if (localSubscription) {
         setLocalSubscription({
           ...localSubscription,

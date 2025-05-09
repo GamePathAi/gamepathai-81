@@ -62,4 +62,4 @@ const useSubscription = () => {
 export default useSubscription;
 
 // Export types for convenience
-export { Subscription, BillingHistoryItem, PaymentMethod } from '../types/subscription';
+export type { Subscription, BillingHistoryItem, PaymentMethod } from '../types/subscription';

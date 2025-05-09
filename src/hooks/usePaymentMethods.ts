@@ -29,7 +29,7 @@ export const usePaymentMethods = (
   const setDefaultPaymentMethod = async (paymentMethodId: string) => {
     setIsUpdatingPayment(true);
     try {
-      const result = await subscriptionService.setDefaultPaymentMethod(paymentMethodId);
+      const result = await subscriptionService.setDefaultPaymentMethod();
       const methods = await subscriptionService.getPaymentMethods();
       setPaymentMethods(methods);
       setIsUpdatingPayment(false);
@@ -45,7 +45,7 @@ export const usePaymentMethods = (
   const deletePaymentMethod = async (paymentMethodId: string) => {
     setIsUpdatingPayment(true);
     try {
-      const result = await subscriptionService.deletePaymentMethod(paymentMethodId);
+      const result = await subscriptionService.deletePaymentMethod();
       const methods = await subscriptionService.getPaymentMethods();
       setPaymentMethods(methods);
       setIsUpdatingPayment(false);

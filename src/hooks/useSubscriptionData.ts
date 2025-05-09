@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { subscriptionService } from '../services/subscriptionService';
-import { Subscription, BillingHistoryItem, PaymentMethod } from '../types/subscription';
+import { Subscription, BillingHistoryItem, PaymentMethod } from '../services/subscription/types';
 import { validateInterval } from '../utils/subscription-utils';
 
 export const useSubscriptionData = () => {
