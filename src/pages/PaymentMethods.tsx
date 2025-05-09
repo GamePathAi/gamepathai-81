@@ -52,7 +52,7 @@ const PaymentMethods = () => {
                       <div>
                         <span className="font-medium">{method.brand.toUpperCase()}</span> •••• {method.last4}
                         <span className="ml-2 text-sm text-gray-600">
-                          Expires {method.expiryMonth}/{method.expiryYear}
+                          Expires {method.expMonth}/{method.expYear}
                         </span>
                         {method.isDefault && (
                           <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">

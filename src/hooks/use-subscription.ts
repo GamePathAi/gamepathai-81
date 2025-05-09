@@ -2,6 +2,7 @@
 import { useSubscriptionData } from './useSubscriptionData';
 import { useSubscriptionActions } from './useSubscriptionActions';
 import { usePaymentMethods } from './usePaymentMethods';
+import { Subscription, BillingHistoryItem, PaymentMethod } from '@/services/subscription/types';
 
 const useSubscription = () => {
   const { 
@@ -62,4 +63,4 @@ const useSubscription = () => {
 export default useSubscription;
 
 // Export types for convenience
-export type { Subscription, BillingHistoryItem, PaymentMethod } from '../types/subscription';
+export type { Subscription, BillingHistoryItem, PaymentMethod } from '@/services/subscription/types';

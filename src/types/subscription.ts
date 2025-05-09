@@ -7,7 +7,7 @@ export interface Subscription {
   interval: 'month' | 'quarter' | 'year';
   currentPeriodEnd: Date;
   status: string;
-  addOns: any[];
+  addOns?: string[];
 }
 
 export interface BillingHistoryItem {
@@ -24,7 +24,7 @@ export interface PaymentMethod {
   id: string;
   brand: string;
   last4: string;
-  expiryMonth: number;
-  expiryYear: number;
+  expMonth: number;
+  expYear: number;
   isDefault: boolean;
 }

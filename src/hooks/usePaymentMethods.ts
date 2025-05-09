@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { subscriptionService } from '../services/subscriptionService';
-import { PaymentMethod } from '../types/subscription';
+import { PaymentMethod } from '../services/subscription/types';
 
 export const usePaymentMethods = (
   setPaymentMethods: React.Dispatch<React.SetStateAction<PaymentMethod[]>>,

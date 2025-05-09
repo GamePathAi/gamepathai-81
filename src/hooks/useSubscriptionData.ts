@@ -1,8 +1,7 @@
 
-import { useEffect, useState } from 'react';
-import { subscriptionService } from '../services/subscriptionService';
-import { Subscription, BillingHistoryItem, PaymentMethod } from '../services/subscription/types';
-import { validateInterval } from '../utils/subscription-utils';
+import { useState, useEffect } from 'react';
+import { subscriptionService } from '@/services/subscriptionService';
+import { Subscription, PaymentMethod, BillingHistoryItem } from '@/services/subscription/types';
 
 export const useSubscriptionData = () => {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
@@ -12,64 +11,55 @@ export const useSubscriptionData = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  // Fetch subscription data
   useEffect(() => {
-    const fetchSubscription = async () => {
+    // Initial data fetch
+    const fetchData = async () => {
       try {
-        const subData = await subscriptionService.getCurrentSubscription();
-        // Validate the interval before setting state
-        const validatedSubData = {
-          ...subData,
-          interval: validateInterval(subData.interval)
-        };
-        setSubscription(validatedSubData);
-        
-        const historyData = await subscriptionService.getBillingHistory();
-        setBillingHistory(historyData);
-        
-        const methodsData = await subscriptionService.getPaymentMethods();
-        setPaymentMethods(methodsData);
-        
-        setIsLoading(false);
+        setIsLoading(true);
+        const subscriptionData = await subscriptionService.getCurrentSubscription();
+        const billingHistoryData = await subscriptionService.getBillingHistory();
+        const paymentMethodsData = await subscriptionService.getPaymentMethods();
+
+        setSubscription(subscriptionData);
+        setBillingHistory(billingHistoryData);
+        setPaymentMethods(paymentMethodsData);
+        setError(null);
       } catch (err: any) {
+        console.error('Failed to fetch subscription data:', err);
         setError(err);
+      } finally {
         setIsLoading(false);
       }
     };
 
-    fetchSubscription();
+    fetchData();
   }, []);
 
   // Refresh subscription data
   const refreshSubscription = async () => {
     setIsRefreshing(true);
     try {
-      const subData = await subscriptionService.getCurrentSubscription();
-      // Validate the interval before setting state
-      const validatedSubData = {
-        ...subData,
-        interval: validateInterval(subData.interval)
-      };
-      setSubscription(validatedSubData);
-      setIsRefreshing(false);
+      const data = await subscriptionService.getCurrentSubscription();
+      setSubscription(data);
+      setError(null);
+      return { success: true, data };
     } catch (err: any) {
       setError(err);
+      return { success: false, error: err };
+    } finally {
       setIsRefreshing(false);
     }
   };
 
   // Refresh billing history
   const refetchBillingHistory = async () => {
-    setIsRefreshing(true);
     try {
-      const history = await subscriptionService.getBillingHistory();
-      setBillingHistory(history);
-      setIsRefreshing(false);
-      return { success: true };
+      const data = await subscriptionService.getBillingHistory();
+      setBillingHistory(data);
+      return data;
     } catch (err: any) {
-      setError(err);
-      setIsRefreshing(false);
-      return { success: false, error: err.message };
+      console.error('Failed to refetch billing history:', err);
+      return [];
     }
   };
 

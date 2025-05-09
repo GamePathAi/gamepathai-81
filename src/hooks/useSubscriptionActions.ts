@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
-import { subscriptionService } from '../services/subscriptionService';
-import { Subscription } from '../types/subscription';
+import { subscriptionService } from '@/services/subscriptionService';
+import { Subscription } from '@/services/subscription/types';
 
 export const useSubscriptionActions = (
   subscription: Subscription | null,
@@ -10,85 +10,87 @@ export const useSubscriptionActions = (
   const [isUpdating, setIsUpdating] = useState(false);
   const [isCanceling, setIsCanceling] = useState(false);
   const [isOpeningPortal, setIsOpeningPortal] = useState(false);
-  const [localSubscription, setLocalSubscription] = useState<Subscription | null>(subscription);
 
   // Cancel subscription
-  const cancelSubscription = async () => {
+  const cancelSubscription = async (): Promise<boolean> => {
     setIsCanceling(true);
     try {
       const result = await subscriptionService.cancelSubscription();
-      if (localSubscription) {
-        setLocalSubscription({
-          ...localSubscription,
-          status: 'canceled'
-        });
-      }
       setIsCanceling(false);
-      return { success: true };
+      return result.success;
     } catch (err: any) {
       setError(err);
       setIsCanceling(false);
-      return { success: false, error: err.message };
+      return false;
     }
   };
 
   // Open billing portal
-  const openBillingPortal = async () => {
+  const openBillingPortal = async (): Promise<boolean> => {
     setIsOpeningPortal(true);
     try {
       const result = await subscriptionService.openCustomerPortal();
+      if (result.success && result.url) {
+        window.location.href = result.url;
+      }
       setIsOpeningPortal(false);
-      return { success: true };
+      return result.success;
     } catch (err: any) {
       setError(err);
       setIsOpeningPortal(false);
-      return { success: false, error: err.message };
+      return false;
     }
   };
 
   // Update subscription plan
-  const updateSubscriptionPlan = async (planId: string) => {
+  const updateSubscriptionPlan = async (): Promise<boolean> => {
     setIsUpdating(true);
     try {
       const result = await subscriptionService.updateSubscriptionPlan();
-      if (localSubscription) {
-        setLocalSubscription({
-          ...localSubscription,
-          plan: planId
-        });
+      setIsUpdating(false);
+      return result.success;
+    } catch (err: any) {
+      setError(err);
+      setIsUpdating(false);
+      return false;
+    }
+  };
+
+  // Checkout for a new subscription
+  const checkout = async (
+    planId: string,
+    interval: 'month' | 'quarter' | 'year',
+    addOnIds?: string[]
+  ): Promise<boolean> => {
+    setIsUpdating(true);
+    try {
+      const result = await subscriptionService.checkout(planId, interval, addOnIds);
+      if (result.success && result.url) {
+        window.location.href = result.url;
       }
       setIsUpdating(false);
-      return { success: true };
+      return result.success;
     } catch (err: any) {
       setError(err);
       setIsUpdating(false);
-      return { success: false, error: err.message };
+      return false;
     }
   };
 
-  // Add checkout function
-  const checkout = async (options: { planId: string, interval: 'month' | 'quarter' | 'year', addOnIds?: string[] }) => {
-    try {
-      const result = await subscriptionService.checkout(
-        options.planId, 
-        options.interval, 
-        options.addOnIds
-      );
-      return { success: true };
-    } catch (err: any) {
-      setError(err);
-      return { success: false, error: err.message };
-    }
-  };
-
-  // Add openCustomerPortal function
-  const openCustomerPortal = async () => {
+  // Open customer portal
+  const openCustomerPortal = async (): Promise<boolean> => {
+    setIsOpeningPortal(true);
     try {
       const result = await subscriptionService.openCustomerPortal();
-      return { success: true };
+      if (result.success && result.url) {
+        window.location.href = result.url;
+      }
+      setIsOpeningPortal(false);
+      return result.success;
     } catch (err: any) {
       setError(err);
-      return { success: false, error: err.message };
+      setIsOpeningPortal(false);
+      return false;
     }
   };
 
