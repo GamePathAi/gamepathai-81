@@ -2,7 +2,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
 
 // Import configuration modules
 import { getProxyConfig } from "./proxy";
@@ -13,8 +12,6 @@ import { getDefineConfig } from "./define";
 export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
-    mode === 'development' &&
-    componentTagger(),
   ].filter(Boolean),
   
   resolve: {
@@ -33,5 +30,23 @@ export default defineConfig(({ mode }) => ({
     hmr: false, // Force disable HMR to prevent redirects
     allowedHosts: getHostConfig(),
     proxy: getProxyConfig(mode)
+  },
+  
+  // Exclude problematic dependencies
+  optimizeDeps: {
+    exclude: [
+      'electron', 
+      'electron-builder', 
+      '@electron/node-gyp',
+      '@rollup/rollup-linux-x64-gnu',
+      '@rollup/rollup-darwin-x64',
+      '@rollup/rollup-win32-x64-msvc'
+    ]
+  },
+  
+  build: {
+    rollupOptions: {
+      external: ['electron', 'electron-builder', '@electron/node-gyp']
+    }
   }
 }));

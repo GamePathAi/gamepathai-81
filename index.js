@@ -1,7 +1,12 @@
 
-// Entry point for Electron - with conditional loading to avoid issues
+// Entry point for Electron - with defensive approach to avoid build issues
 try {
-  require('./electron/main');
+  // Only try to load Electron-related modules if we're in the right environment
+  if (process.versions && process.versions.electron) {
+    require('./electron/main');
+  } else {
+    console.log('Not running in Electron environment, skipping Electron initialization');
+  }
 } catch (error) {
-  console.warn('Electron main process not available:', error.message);
+  console.warn('Electron initialization error:', error.message);
 }
