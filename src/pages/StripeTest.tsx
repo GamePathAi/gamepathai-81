@@ -5,14 +5,14 @@ import Layout from '../components/Layout';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { toast } from 'sonner';
-import { Loader2, CreditCard, Calendar, CheckCircle, AlertCircle } from 'lucide-react';
+import { Loader2, CreditCard, Calendar, CheckCircle, AlertCircle, AlertTriangle } from 'lucide-react';
 
 const StripeTest: React.FC = () => {
   const [selectedInterval, setSelectedInterval] = useState<'month' | 'quarter' | 'year'>('month');
   const [selectedPlanId, setSelectedPlanId] = useState<string>('');
   
   const {
-    plans,
+    plans = [],
     isLoadingPlans,
     subscription,
     isLoadingSubscription,
@@ -20,7 +20,8 @@ const StripeTest: React.FC = () => {
     isCheckingOut,
     refreshSubscription,
     isRefreshing,
-    openCustomerPortal
+    openCustomerPortal,
+    error
   } = useSubscription();
 
   const handleCheckout = () => {
@@ -51,6 +52,26 @@ const StripeTest: React.FC = () => {
     if (!date) return 'N/A';
     return new Date(date).toLocaleDateString();
   };
+  
+  if (error) {
+    return (
+      <Layout>
+        <div className="container mx-auto py-8 px-4">
+          <div className="border border-red-500 bg-red-500/10 rounded-lg p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <AlertTriangle className="text-red-500" />
+              <h2 className="text-xl font-bold text-red-500">Error Loading Subscription Data</h2>
+            </div>
+            <p className="mb-4 text-zinc-300">There was a problem connecting to the subscription service. This is likely because the backend is unavailable or there's an issue with the API.</p>
+            <p className="mb-4 text-zinc-400">Error details: {error.message}</p>
+            <Button variant="outline" onClick={handleRefresh}>
+              Try Again
+            </Button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -68,6 +89,17 @@ const StripeTest: React.FC = () => {
             {isLoadingPlans ? (
               <div className="flex items-center justify-center h-40">
                 <Loader2 className="h-8 w-8 animate-spin text-zinc-500" />
+              </div>
+            ) : plans.length === 0 ? (
+              <div className="text-center p-6 border border-dashed border-zinc-700 rounded-lg">
+                <AlertCircle className="mx-auto h-8 w-8 text-amber-500 mb-2" />
+                <p className="text-zinc-400">No plans available</p>
+                <p className="text-sm text-zinc-500 mt-1">
+                  This could be because the backend service is not responding
+                </p>
+                <Button className="mt-4" variant="outline" size="sm" onClick={() => refreshSubscription()}>
+                  Retry
+                </Button>
               </div>
             ) : (
               <>

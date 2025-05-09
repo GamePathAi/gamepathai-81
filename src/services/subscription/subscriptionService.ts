@@ -1,50 +1,41 @@
 
-import { Subscription, SubscriptionResponse, CheckoutOptions } from './types';
-import { mockSubscription } from './mockData';
-import { supabase } from '@/lib/supabase';
+import { Subscription, CheckoutOptions, SubscriptionResponse } from './types';
+import { toast } from 'sonner';
 
-/**
- * Service for subscription management
- */
+// Mock data for testing without a backend
+const mockSubscription: Subscription = {
+  id: 'sub_123',
+  plan: 'pro',
+  users: 5,
+  amount: 99.99,
+  interval: 'month',
+  currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+  status: 'active',
+  addOns: ['priority_support', 'custom_routes']
+};
+
+// Simulated API delay
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 export const subscriptionService = {
   /**
-   * Get current user subscription
+   * Get current user subscription with error handling
    */
-  getCurrentSubscription: async (): Promise<Subscription> => {
+  getCurrentSubscription: async (): Promise<Subscription | null> => {
     try {
-      // Try to fetch from Supabase function
-      const { data, error } = await supabase.functions.invoke('check-subscription');
+      // In a real app, this would be an API call
+      await delay(1000); // Simulate API delay
       
-      if (error) {
-        console.error('Failed to fetch subscription from API:', error);
-        throw error;
-      }
-      
-      if (data && data.subscribed) {
-        return {
-          id: data.subscription_id || 'sub_current',
-          plan: data.plan || 'Unknown Plan',
-          users: data.users || 1,
-          amount: data.amount || 0,
-          interval: data.interval || 'month',
-          currentPeriodEnd: new Date(data.subscription_end),
-          status: 'active',
-          addOns: data.addons || []
-        };
-      }
-      
-      // Fallback to mock if no active subscription
-      console.log('No active subscription found, using mock data');
+      // For testing: return the mock subscription
       return mockSubscription;
     } catch (error) {
-      console.error('Failed to fetch current subscription:', error);
-      // Fallback to mock data in case of error
-      return mockSubscription;
+      console.error('Error fetching subscription:', error);
+      throw new Error('Failed to fetch subscription data');
     }
   },
 
   /**
-   * Checkout for a new subscription
+   * Checkout for a new subscription with error handling
    */
   checkout: async (
     planId: string, 
@@ -52,77 +43,40 @@ export const subscriptionService = {
     addOnIds?: string[]
   ): Promise<SubscriptionResponse> => {
     try {
-      // Call Supabase function to create checkout session
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { planId, interval, addOnIds }
-      });
+      // In a real app, this would create a checkout session with Stripe
+      await delay(1500); // Simulate API delay
       
-      if (error) {
-        console.error('Failed to create checkout session:', error);
-        throw error;
-      }
+      console.log('Checkout initiated:', { planId, interval, addOnIds });
       
-      if (data && data.url) {
-        // Redirect to Stripe checkout
-        window.location.href = data.url;
-        return { success: true };
-      } else {
-        throw new Error('No checkout URL returned');
-      }
+      // For testing: simulate a successful response with a mock checkout URL
+      return {
+        success: true,
+        url: 'https://example.com/checkout/session?id=cs_test_123456789'
+      };
     } catch (error) {
-      console.error('Failed to create checkout session:', error);
-      throw error;
+      console.error('Checkout error:', error);
+      toast.error('Failed to initiate checkout');
+      throw new Error('Failed to create checkout session');
     }
   },
 
   /**
-   * Cancel subscription
-   */
-  cancelSubscription: async (): Promise<SubscriptionResponse> => {
-    try {
-      // Use customer portal instead of direct cancellation
-      return await subscriptionService.openCustomerPortal();
-    } catch (error) {
-      console.error('Failed to cancel subscription:', error);
-      throw error;
-    }
-  },
-
-  /**
-   * Update subscription plan
-   */
-  updateSubscriptionPlan: async (): Promise<SubscriptionResponse> => {
-    try {
-      // Use customer portal for plan changes
-      return await subscriptionService.openCustomerPortal();
-    } catch (error) {
-      console.error('Failed to update subscription:', error);
-      throw error;
-    }
-  },
-
-  /**
-   * Open customer portal
+   * Open customer portal with error handling
    */
   openCustomerPortal: async (): Promise<SubscriptionResponse> => {
     try {
-      const { data, error } = await supabase.functions.invoke('customer-portal');
+      // In a real app, this would create a customer portal session with Stripe
+      await delay(1000); // Simulate API delay
       
-      if (error) {
-        console.error('Failed to open customer portal:', error);
-        throw error;
-      }
-      
-      if (data && data.url) {
-        // Redirect to Stripe customer portal
-        window.location.href = data.url;
-        return { success: true };
-      } else {
-        throw new Error('No portal URL returned');
-      }
+      // For testing: simulate a successful response with a mock portal URL
+      return {
+        success: true,
+        url: 'https://example.com/customer/portal?session=cs_test_987654321'
+      };
     } catch (error) {
-      console.error('Failed to open customer portal:', error);
-      throw error;
+      console.error('Customer portal error:', error);
+      toast.error('Failed to open customer portal');
+      throw new Error('Failed to create customer portal session');
     }
   }
 };
