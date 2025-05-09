@@ -1,194 +1,224 @@
 
-import React, { useEffect, useState } from 'react';
-import { useSubscription } from '@/hooks/useSubscription';
-import Layout from '@/components/Layout';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Separator } from '@/components/ui/separator';
-import { AlertTriangle, CheckCircle, CreditCard, RefreshCw } from 'lucide-react';
+import React, { useState } from 'react';
+import { useSubscription } from '../hooks/useSubscription';
+import Layout from '../components/Layout';
+import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
 import { toast } from 'sonner';
+import { Loader2, CreditCard, Calendar, CheckCircle, AlertCircle } from 'lucide-react';
 
-const StripeTest = () => {
-  const [selectedPlan, setSelectedPlan] = useState<string>('player');
+const StripeTest: React.FC = () => {
   const [selectedInterval, setSelectedInterval] = useState<'month' | 'quarter' | 'year'>('month');
-  const [isLoading, setIsLoading] = useState(false);
+  const [selectedPlanId, setSelectedPlanId] = useState<string>('');
   
-  const { 
-    plans, 
-    subscription, 
-    checkout, 
-    refreshSubscription, 
+  const {
+    plans,
+    isLoadingPlans,
+    subscription,
+    isLoadingSubscription,
+    checkout,
     isCheckingOut,
+    refreshSubscription,
+    isRefreshing,
     openCustomerPortal
   } = useSubscription();
 
-  const handleCheckout = async () => {
-    try {
-      setIsLoading(true);
-      await checkout({ planId: selectedPlan, interval: selectedInterval });
-      toast.success('Redirecting to checkout...');
-    } catch (error) {
-      console.error('Checkout failed:', error);
-      toast.error('Failed to start checkout');
-    } finally {
-      setIsLoading(false);
+  const handleCheckout = () => {
+    if (!selectedPlanId) {
+      toast.error("Please select a plan");
+      return;
     }
+    
+    checkout({ 
+      planId: selectedPlanId, 
+      interval: selectedInterval 
+    });
+    
+    toast.info("Redirecting to Stripe checkout...");
   };
 
   const handleRefresh = async () => {
-    try {
-      setIsLoading(true);
-      await refreshSubscription();
-      toast.success('Subscription refreshed');
-    } catch (error) {
-      console.error('Failed to refresh subscription:', error);
-      toast.error('Failed to refresh subscription data');
-    } finally {
-      setIsLoading(false);
-    }
+    await refreshSubscription();
+    toast.success("Subscription data refreshed");
   };
 
-  const handleManageSubscription = async () => {
-    try {
-      setIsLoading(true);
-      await openCustomerPortal();
-      toast.success('Opening customer portal...');
-    } catch (error) {
-      console.error('Failed to open customer portal:', error);
-      toast.error('Failed to open customer portal');
-    } finally {
-      setIsLoading(false);
-    }
+  const handlePortal = () => {
+    openCustomerPortal();
+    toast.info("Redirecting to customer portal...");
+  };
+
+  const formatDate = (date: Date | undefined) => {
+    if (!date) return 'N/A';
+    return new Date(date).toLocaleDateString();
   };
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-6">Stripe Integration Test</h1>
-        
-        {subscription && subscription.status === 'active' && (
-          <Alert className="mb-6 bg-green-950 text-green-100 border-green-500">
-            <CheckCircle className="h-5 w-5 text-green-500" />
-            <AlertTitle>Active Subscription</AlertTitle>
-            <AlertDescription>
-              You have an active {subscription.plan} subscription that will renew on {subscription.currentPeriodEnd.toLocaleDateString()}.
-            </AlertDescription>
-            <div className="mt-4 flex gap-4">
-              <Button variant="outline" size="sm" onClick={handleManageSubscription} 
-                disabled={isLoading}>
-                <CreditCard className="mr-2 h-4 w-4" />
-                Manage Subscription
-              </Button>
-              <Button variant="outline" size="sm" onClick={handleRefresh}
-                disabled={isLoading}>
-                <RefreshCw className="mr-2 h-4 w-4" />
-                Refresh Status
+      <div className="container mx-auto py-8 px-4">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">Stripe Integration Test</h1>
+          <p className="text-zinc-400">Use this page to test the Stripe integration for subscriptions</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Plan Selection Section */}
+          <div className="border border-zinc-800 rounded-lg p-6">
+            <h2 className="text-xl font-bold mb-4">Select a Plan</h2>
+            
+            {isLoadingPlans ? (
+              <div className="flex items-center justify-center h-40">
+                <Loader2 className="h-8 w-8 animate-spin text-zinc-500" />
+              </div>
+            ) : (
+              <>
+                <div className="flex gap-2 mb-6">
+                  <Button 
+                    variant={selectedInterval === 'month' ? 'default' : 'outline'} 
+                    onClick={() => setSelectedInterval('month')}
+                  >
+                    Monthly
+                  </Button>
+                  <Button 
+                    variant={selectedInterval === 'year' ? 'default' : 'outline'} 
+                    onClick={() => setSelectedInterval('year')}
+                  >
+                    Yearly
+                  </Button>
+                </div>
+                
+                <div className="space-y-4">
+                  {plans?.map((plan) => (
+                    <div 
+                      key={plan.id}
+                      className={`border p-4 rounded-lg cursor-pointer transition-all ${
+                        selectedPlanId === plan.id 
+                          ? 'border-primary bg-primary/10' 
+                          : 'border-zinc-800 hover:border-zinc-700'
+                      }`}
+                      onClick={() => setSelectedPlanId(plan.id)}
+                    >
+                      <div className="flex justify-between items-center">
+                        <h3 className="font-medium">{plan.name}</h3>
+                        <div className="font-bold">
+                          ${plan.price}/{selectedInterval === 'month' ? 'mo' : 'yr'}
+                        </div>
+                      </div>
+                      <div className="mt-2 text-sm text-zinc-400">
+                        {plan.features?.join(', ')}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <Button 
+                  className="w-full mt-6" 
+                  onClick={handleCheckout}
+                  disabled={!selectedPlanId || isCheckingOut}
+                >
+                  {isCheckingOut && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Proceed to Checkout
+                </Button>
+              </>
+            )}
+          </div>
+
+          {/* Current Subscription Section */}
+          <div className="border border-zinc-800 rounded-lg p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Current Subscription</h2>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+              >
+                {isRefreshing ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  "Refresh"
+                )}
               </Button>
             </div>
-          </Alert>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <Card className="border-cyber-blue/30">
-            <CardHeader>
-              <CardTitle>Choose a Plan</CardTitle>
-              <CardDescription>Select the plan you want to subscribe to</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <RadioGroup 
-                value={selectedPlan} 
-                onValueChange={setSelectedPlan}
-                className="space-y-4"
-              >
-                <div className="flex items-center space-x-2 border p-4 rounded-lg hover:bg-gray-900">
-                  <RadioGroupItem value="player" id="player" />
-                  <Label htmlFor="player">Player - $9.99/month</Label>
+            
+            {isLoadingSubscription ? (
+              <div className="flex items-center justify-center h-40">
+                <Loader2 className="h-8 w-8 animate-spin text-zinc-500" />
+              </div>
+            ) : subscription ? (
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge variant={subscription.status === 'active' ? 'success' : 'default'}>
+                    {subscription.status}
+                  </Badge>
                 </div>
-                <div className="flex items-center space-x-2 border p-4 rounded-lg hover:bg-gray-900">
-                  <RadioGroupItem value="co-op" id="co-op" />
-                  <Label htmlFor="co-op">Co-op - $17.99/month</Label>
+                
+                <div className="space-y-2 mt-4">
+                  <div className="flex justify-between">
+                    <span className="text-zinc-400">Plan</span>
+                    <span className="font-medium">{subscription.plan}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-zinc-400">Price</span>
+                    <span className="font-medium">${subscription.amount}/{subscription.interval}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-zinc-400">Current Period End</span>
+                    <span className="font-medium">{formatDate(subscription.currentPeriodEnd)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-zinc-400">Users</span>
+                    <span className="font-medium">{subscription.users}</span>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-2 border p-4 rounded-lg hover:bg-gray-900">
-                  <RadioGroupItem value="alliance" id="alliance" />
-                  <Label htmlFor="alliance">Alliance - $34.99/month</Label>
-                </div>
-              </RadioGroup>
-              
-              <Separator className="my-6" />
-              
-              <div className="space-y-4">
-                <Label>Billing Interval</Label>
-                <RadioGroup 
-                  value={selectedInterval} 
-                  onValueChange={(value) => setSelectedInterval(value as 'month' | 'quarter' | 'year')}
-                  className="flex space-x-4"
+                
+                <Button 
+                  className="w-full mt-6" 
+                  variant="outline"
+                  onClick={handlePortal}
                 >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="month" id="month" />
-                    <Label htmlFor="month">Monthly</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="quarter" id="quarter" />
-                    <Label htmlFor="quarter">Quarterly</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="year" id="year" />
-                    <Label htmlFor="year">Yearly</Label>
-                  </div>
-                </RadioGroup>
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  Manage Subscription
+                </Button>
               </div>
-            </CardContent>
-            <CardFooter>
-              <Button 
-                onClick={handleCheckout} 
-                disabled={isLoading || isCheckingOut}
-                variant="cyberAction"
-                className="w-full"
-              >
-                {isLoading || isCheckingOut ? 'Processing...' : 'Subscribe Now'}
-              </Button>
-            </CardFooter>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Testing Instructions</CardTitle>
-              <CardDescription>Follow these steps to test the Stripe integration</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Alert variant="destructive">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertTitle>Test Mode</AlertTitle>
-                <AlertDescription>
-                  This is in Stripe test mode. No real charges will be made.
-                </AlertDescription>
-              </Alert>
+            ) : (
+              <div className="text-center p-6">
+                <div className="text-zinc-400 mb-4">No active subscription found</div>
+                <div className="text-sm text-zinc-500">Select a plan to get started</div>
+              </div>
+            )}
+          </div>
+        </div>
 
-              <div className="space-y-2">
-                <h3 className="font-medium">Test Cards:</h3>
-                <ul className="list-disc list-inside space-y-1 text-sm">
-                  <li><code className="bg-gray-800 px-1 py-0.5 rounded">4242 4242 4242 4242</code> - Successful payment</li>
-                  <li><code className="bg-gray-800 px-1 py-0.5 rounded">4000 0000 0000 0002</code> - Declined payment</li>
-                  <li>Expiration: Any future date</li>
-                  <li>CVC: Any 3 digits</li>
-                </ul>
+        <div className="mt-12 border border-zinc-800 rounded-lg p-6">
+          <h2 className="text-xl font-bold mb-4">Stripe Test Cards</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="border border-zinc-800 rounded-lg p-4">
+              <div className="font-mono bg-zinc-900 p-2 rounded mb-2">4242 4242 4242 4242</div>
+              <div className="flex items-center text-sm text-green-500">
+                <CheckCircle className="h-4 w-4 mr-1" />
+                <span>Payment succeeds</span>
               </div>
+            </div>
 
-              <div className="space-y-2">
-                <h3 className="font-medium">Testing Steps:</h3>
-                <ol className="list-decimal list-inside space-y-1 text-sm">
-                  <li>Select a plan and billing interval</li>
-                  <li>Click "Subscribe Now"</li>
-                  <li>Complete checkout with test card</li>
-                  <li>You'll be redirected back to success page</li>
-                  <li>Click "Refresh Status" to verify subscription</li>
-                </ol>
+            <div className="border border-zinc-800 rounded-lg p-4">
+              <div className="font-mono bg-zinc-900 p-2 rounded mb-2">4000 0000 0000 9995</div>
+              <div className="flex items-center text-sm text-amber-500">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                <span>Payment requires authentication</span>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+
+            <div className="border border-zinc-800 rounded-lg p-4">
+              <div className="font-mono bg-zinc-900 p-2 rounded mb-2">4000 0000 0000 0002</div>
+              <div className="flex items-center text-sm text-red-500">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                <span>Payment fails</span>
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 text-sm text-zinc-400">
+            <p><strong>Test mode:</strong> Use any future expiry date, any 3-digit CVC, and any postal code.</p>
+          </div>
         </div>
       </div>
     </Layout>

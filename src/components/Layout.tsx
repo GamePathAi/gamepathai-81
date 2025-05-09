@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "sonner";
 
 interface LayoutProps {
   children?: React.ReactNode;

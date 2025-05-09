@@ -16,10 +16,7 @@ const badgeVariants = cva(
         destructive:
           "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
         outline: "text-foreground",
-        cyber: "border-cyber-blue/30 bg-cyber-blue/10 text-cyber-blue",
-        cyberPurple: "border-cyber-purple/30 bg-cyber-purple/10 text-cyber-purple",
-        cyberGreen: "border-cyber-green/30 bg-cyber-green/10 text-cyber-green",
-        cyberOrange: "border-cyber-orange/30 bg-cyber-orange/10 text-cyber-orange",
+        success: "border-transparent bg-green-600 text-white hover:bg-green-700",
       },
     },
     defaultVariants: {

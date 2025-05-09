@@ -1,11 +1,22 @@
 
-// Define types for subscription service
 export interface Plan {
   id: string;
   name: string;
+  description?: string;
   price: number;
   interval: 'month' | 'quarter' | 'year';
   features: string[];
+}
+
+export interface Subscription {
+  id: string;
+  plan: string;
+  users: number;
+  amount: number;
+  interval: 'month' | 'quarter' | 'year';
+  currentPeriodEnd: Date;
+  status: string;
+  addOns: any[];
 }
 
 export interface CheckoutOptions {
@@ -16,7 +27,8 @@ export interface CheckoutOptions {
 
 export interface SubscriptionResponse {
   success: boolean;
-  message?: string;
+  error?: string;
+  url?: string;
 }
 
 export interface BillingHistoryItem {
@@ -36,15 +48,4 @@ export interface PaymentMethod {
   expiryMonth: number;
   expiryYear: number;
   isDefault: boolean;
-}
-
-export interface Subscription {
-  id: string;
-  plan: string;
-  users: number;
-  amount: number;
-  interval: 'month' | 'quarter' | 'year';
-  currentPeriodEnd: Date;
-  status: string;
-  addOns: any[];
 }
