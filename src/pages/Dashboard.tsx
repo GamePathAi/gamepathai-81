@@ -1,13 +1,11 @@
-
 import React, { useState, useEffect } from "react";
-import { Zap, AlertTriangle } from "lucide-react";
+import { Zap } from "lucide-react";
 import { toast } from "sonner";
 import { testBackendConnection } from "@/services/api";
 import { mlDiagnostics } from "@/services/ml";
 import { detectRedirectScripts, setupNavigationMonitor } from "@/utils/url";
 
 // Import components
-import Header from "@/components/Header";
 import ConnectionOptimizer from "@/components/ConnectionOptimizer";
 import RouteOptimizer from "@/components/RouteOptimizer";
 import DashboardMetrics from "@/components/dashboard/DashboardMetrics";
@@ -144,65 +142,60 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Add Header at the top of the Dashboard */}
-      <Header />
+    <div className="flex-1 p-4">
+      {/* Backend Status Modal */}
+      <BackendStatusModal 
+        open={showBackendModal} 
+        onOpenChange={setShowBackendModal} 
+      />
       
-      <div className="container mx-auto p-4 flex-1">
-        {/* Backend Status Modal */}
-        <BackendStatusModal 
-          open={showBackendModal} 
-          onOpenChange={setShowBackendModal} 
-        />
-        
-        {/* Alert Section */}
-        <AlertSection 
-          backendStatus={backendStatus}
-          redirectsDetected={redirectsDetected}
-          interfereingExtensions={interfereingExtensions}
-          handleRetryConnection={handleRetryConnection}
-          setShowBackendModal={setShowBackendModal}
-          setShowMlDiagnostics={setShowMlDiagnostics}
-        />
-        
-        {/* Dashboard Header */}
-        <DashboardHeader 
-          backendStatus={backendStatus}
-          isOptimizing={isOptimizing}
-          handleOptimizeAll={handleOptimizeAll}
-        />
-        
-        {/* Show ML diagnostics panel if requested */}
-        {showMlDiagnostics && (
-          <div className="mb-6">
-            <MLDiagnosticsPanel />
-          </div>
-        )}
-        
-        {/* Main Metrics Section */}
-        <DashboardMetrics />
-        
-        {/* Games and System Metrics Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-          <GamesList />
-          <SystemMetrics />
+      {/* Alert Section */}
+      <AlertSection 
+        backendStatus={backendStatus}
+        redirectsDetected={redirectsDetected}
+        interfereingExtensions={interfereingExtensions}
+        handleRetryConnection={handleRetryConnection}
+        setShowBackendModal={setShowBackendModal}
+        setShowMlDiagnostics={setShowMlDiagnostics}
+      />
+      
+      {/* Dashboard Header */}
+      <DashboardHeader 
+        backendStatus={backendStatus}
+        isOptimizing={isOptimizing}
+        handleOptimizeAll={handleOptimizeAll}
+      />
+      
+      {/* Show ML diagnostics panel if requested */}
+      {showMlDiagnostics && (
+        <div className="mb-6">
+          <MLDiagnosticsPanel />
         </div>
-        
-        {/* Optimization Tools Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <ConnectionOptimizer />
-          <RouteOptimizer />
-        </div>
-        
-        {/* Toggle ML Diagnostics Button */}
-        <MlDiagnosticsButton 
-          showMlDiagnostics={showMlDiagnostics}
-          setShowMlDiagnostics={setShowMlDiagnostics}
-        />
-        
-        {/* Premium Features Banner */}
-        <PremiumFeatures />
+      )}
+      
+      {/* Main Metrics Section */}
+      <DashboardMetrics />
+      
+      {/* Games and System Metrics Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+        <GamesList />
+        <SystemMetrics />
       </div>
+      
+      {/* Optimization Tools Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <ConnectionOptimizer />
+        <RouteOptimizer />
+      </div>
+      
+      {/* Toggle ML Diagnostics Button */}
+      <MlDiagnosticsButton 
+        showMlDiagnostics={showMlDiagnostics}
+        setShowMlDiagnostics={setShowMlDiagnostics}
+      />
+      
+      {/* Premium Features Banner */}
+      <PremiumFeatures />
     </div>
   );
 };

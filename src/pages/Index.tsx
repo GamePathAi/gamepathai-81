@@ -1,14 +1,16 @@
 
-import React from "react";
-import Layout from "@/components/Layout";
-import Dashboard from "@/pages/Dashboard";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
-  return (
-    <Layout>
-      <Dashboard />
-    </Layout>
-  );
+  const navigate = useNavigate();
+  
+  // Redirect to dashboard when landing on index
+  useEffect(() => {
+    navigate('/dashboard');
+  }, [navigate]);
+  
+  return null; // No need to render anything as we're redirecting
 };
 
 export default Index;

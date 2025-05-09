@@ -21,7 +21,7 @@ const HomePage = () => {
             <Button 
               variant="cyberAction" 
               size="lg" 
-              onClick={() => navigate('/diagnostics')}
+              onClick={() => navigate('/dashboard')}
             >
               Dashboard
               <ArrowRight className="ml-2 h-4 w-4" />

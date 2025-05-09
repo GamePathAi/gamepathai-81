@@ -1,8 +1,8 @@
-
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { StripeProvider } from './components/checkout/StripeProvider';
 import React, { Suspense } from 'react';
+import AppLayout from './components/AppLayout';
 import Layout from './components/Layout';
 import StripeTest from './pages/StripeTest';
 import Index from './pages/Index';
@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import Settings from './pages/Settings';
 import RouteOptimizerPage from './pages/RouteOptimizer';
 import NotFound from './pages/NotFound';
+import HomePage from './pages/HomePage';
 
 // Define proper types for ErrorBoundary
 interface ErrorBoundaryProps {
@@ -73,11 +74,22 @@ function App() {
         <Toaster position="top-right" />
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            {/* Landing page without sidebar */}
+            <Route path="/" element={<HomePage />} />
+
+            {/* Routes with cyberpunk sidebar */}
+            <Route path="/dashboard" element={<AppLayout><Dashboard /></AppLayout>} />
+            <Route path="/network-metrics" element={<AppLayout><div className="container mx-auto p-4">Network Metrics Page</div></AppLayout>} />
+            <Route path="/system-optimization" element={<AppLayout><div className="container mx-auto p-4">System Optimization Page</div></AppLayout>} />
+            <Route path="/route-optimizer" element={<AppLayout><RouteOptimizerPage /></AppLayout>} />
+            <Route path="/performance" element={<AppLayout><div className="container mx-auto p-4">Performance Page</div></AppLayout>} />
+            <Route path="/settings" element={<AppLayout><Settings /></AppLayout>} />
+            <Route path="/advanced-optimizer" element={<AppLayout><div className="container mx-auto p-4 text-center"><h1 className="text-2xl mb-4">Advanced Optimizer</h1><p className="text-cyber-orange">Premium Feature</p></div></AppLayout>} />
+            <Route path="/power-manager" element={<AppLayout><div className="container mx-auto p-4 text-center"><h1 className="text-2xl mb-4">Power Manager</h1><p className="text-cyber-orange">Premium Feature</p></div></AppLayout>} />
+            <Route path="/vpn-integration" element={<AppLayout><div className="container mx-auto p-4 text-center"><h1 className="text-2xl mb-4">VPN Integration</h1><p className="text-cyber-orange">Premium Feature</p></div></AppLayout>} />
+            
+            {/* Other routes without the cyber sidebar */}
             <Route path="/stripe-test" element={<StripeTest />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/route-optimizer" element={<RouteOptimizerPage />} />
             
             {/* 404 route */}
             <Route path="*" element={<NotFound />} />
