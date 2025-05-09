@@ -8,10 +8,10 @@ import i18n from "./lib/i18n";
 import App from "./App.tsx";
 import "./index.css";
 
-// Importar a fonte Inter
-import "@fontsource/inter/400.css";  // Fonte regular
-import "@fontsource/inter/600.css";  // Fonte semi-bold
-import "@fontsource/inter/700.css";  // Fonte bold
+// Import fonts
+import "@fontsource/inter/400.css";  // Regular font
+import "@fontsource/inter/600.css";  // Semi-bold font
+import "@fontsource/inter/700.css";  // Bold font
 
 // Import i18n configuration before rendering the app
 import "./lib/i18n.ts";
@@ -34,7 +34,7 @@ setTimeout(runDiagnostics, 2000);
 console.log('%c🎮 GamePath AI - Development Mode', 'color: #3a86ff; font-size: 16px; font-weight: bold;');
 console.log('%c📋 Type runGamePathDiagnostics() to test backend connectivity', 'color: #38b000; font-size: 14px;');
 
-// Criar cliente de consulta para React Query
+// Create query client for React Query
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -45,6 +45,7 @@ const queryClient = new QueryClient({
   }
 });
 
+// Only have one BrowserRouter in the entire application
 createRoot(document.getElementById("root")!).render(
   <HelmetProvider>
     <BrowserRouter>

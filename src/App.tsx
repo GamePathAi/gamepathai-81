@@ -1,23 +1,32 @@
 
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { StripeProvider } from './components/checkout/StripeProvider';
 import React, { Suspense } from 'react';
 import Layout from './components/Layout';
 import StripeTest from './pages/StripeTest';
 
+// Define proper types for ErrorBoundary
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
 // Error boundary component to prevent blank screens
-class ErrorBoundary extends React.Component {
-  constructor(props) {
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     return { hasError: true };
   }
 
-  componentDidCatch(error, errorInfo) {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
     console.error("Error caught by boundary:", error, errorInfo);
   }
 
@@ -53,31 +62,30 @@ const LoadingFallback = () => (
 
 function App() {
   return (
-    <BrowserRouter>
-      <ErrorBoundary>
-        <StripeProvider>
-          <Toaster position="top-right" />
-          <Suspense fallback={<LoadingFallback />}>
-            <Routes>
-              <Route path="/stripe-test" element={<StripeTest />} />
-              
-              {/* Default route redirects to our Stripe test page */}
-              <Route path="/" element={<Navigate to="/stripe-test" replace />} />
-              
-              {/* 404 route */}
-              <Route path="*" element={
-                <Layout>
-                  <div className="flex flex-col items-center justify-center h-full">
-                    <h1 className="text-2xl font-bold">404 - Page Not Found</h1>
-                    <p className="mt-4">The page you're looking for doesn't exist.</p>
-                  </div>
-                </Layout>
-              } />
-            </Routes>
-          </Suspense>
-        </StripeProvider>
-      </ErrorBoundary>
-    </BrowserRouter>
+    // BrowserRouter is now only in main.tsx
+    <ErrorBoundary>
+      <StripeProvider>
+        <Toaster position="top-right" />
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
+            <Route path="/stripe-test" element={<StripeTest />} />
+            
+            {/* Default route redirects to our Stripe test page */}
+            <Route path="/" element={<Navigate to="/stripe-test" replace />} />
+            
+            {/* 404 route */}
+            <Route path="*" element={
+              <Layout>
+                <div className="flex flex-col items-center justify-center h-full">
+                  <h1 className="text-2xl font-bold">404 - Page Not Found</h1>
+                  <p className="mt-4">The page you're looking for doesn't exist.</p>
+                </div>
+              </Layout>
+            } />
+          </Routes>
+        </Suspense>
+      </StripeProvider>
+    </ErrorBoundary>
   );
 }
 
