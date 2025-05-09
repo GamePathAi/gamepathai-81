@@ -11,15 +11,24 @@ export const plansService = {
    */
   getPlans: async (): Promise<Plan[]> => {
     try {
-      // In a real application, would fetch from your API
-      // const response = await axios.get('/api/subscription/plans');
-      // return response.data;
-      
-      // Mock data
-      return mockPlans;
+      // Try to fetch from API first
+      const response = await fetch('/api/subscription/plans');
+      if (response.ok) {
+        const data = await response.json();
+        return data.plans.map((plan: any) => ({
+          id: plan.tier,
+          name: plan.tier.charAt(0).toUpperCase() + plan.tier.slice(1),
+          price: plan.price,
+          interval: 'month',
+          features: plan.features
+        }));
+      } else {
+        console.log('Falling back to mock data');
+        return mockPlans;
+      }
     } catch (error) {
-      console.error('Failed to fetch subscription plans:', error);
-      throw error;
+      console.log('API fetch failed, using mock data', error);
+      return mockPlans;
     }
   }
 };

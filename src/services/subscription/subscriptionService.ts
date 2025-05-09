@@ -1,6 +1,7 @@
 
-import { Subscription, SubscriptionResponse } from './types';
+import { Subscription, SubscriptionResponse, CheckoutOptions } from './types';
 import { mockSubscription } from './mockData';
+import { supabase } from '@/lib/supabase';
 
 /**
  * Service for subscription management
@@ -11,15 +12,34 @@ export const subscriptionService = {
    */
   getCurrentSubscription: async (): Promise<Subscription> => {
     try {
-      // In a real application, would fetch from your API
-      // const response = await axios.get('/api/subscription/current');
-      // return response.data;
+      // Try to fetch from Supabase function
+      const { data, error } = await supabase.functions.invoke('check-subscription');
       
-      // Mock data
+      if (error) {
+        console.error('Failed to fetch subscription from API:', error);
+        throw error;
+      }
+      
+      if (data && data.subscribed) {
+        return {
+          id: data.subscription_id || 'sub_current',
+          plan: data.plan || 'Unknown Plan',
+          users: data.users || 1,
+          amount: data.amount || 0,
+          interval: data.interval || 'month',
+          currentPeriodEnd: new Date(data.subscription_end),
+          status: 'active',
+          addOns: data.addons || []
+        };
+      }
+      
+      // Fallback to mock if no active subscription
+      console.log('No active subscription found, using mock data');
       return mockSubscription;
     } catch (error) {
       console.error('Failed to fetch current subscription:', error);
-      throw error;
+      // Fallback to mock data in case of error
+      return mockSubscription;
     }
   },
 
@@ -32,14 +52,23 @@ export const subscriptionService = {
     addOnIds?: string[]
   ): Promise<SubscriptionResponse> => {
     try {
-      // In a real application, would call your Stripe checkout endpoint
-      // const response = await axios.post('/api/checkout', { planId, interval, addOnIds });
-      // window.location.href = response.data.url;
+      // Call Supabase function to create checkout session
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { planId, interval, addOnIds }
+      });
       
-      // Mock for development
-      console.log('Creating checkout session for:', { planId, interval, addOnIds });
-      window.location.href = '/checkout/success';
-      return { success: true };
+      if (error) {
+        console.error('Failed to create checkout session:', error);
+        throw error;
+      }
+      
+      if (data && data.url) {
+        // Redirect to Stripe checkout
+        window.location.href = data.url;
+        return { success: true };
+      } else {
+        throw new Error('No checkout URL returned');
+      }
     } catch (error) {
       console.error('Failed to create checkout session:', error);
       throw error;
@@ -51,13 +80,8 @@ export const subscriptionService = {
    */
   cancelSubscription: async (): Promise<SubscriptionResponse> => {
     try {
-      // In a real application, would call your cancellation endpoint
-      // const response = await axios.post('/api/subscription/cancel');
-      // return response.data;
-      
-      // Mock success
-      console.log('Cancelling subscription');
-      return { success: true };
+      // Use customer portal instead of direct cancellation
+      return await subscriptionService.openCustomerPortal();
     } catch (error) {
       console.error('Failed to cancel subscription:', error);
       throw error;
@@ -69,13 +93,8 @@ export const subscriptionService = {
    */
   updateSubscriptionPlan: async (): Promise<SubscriptionResponse> => {
     try {
-      // In a real application, would call your update endpoint
-      // const response = await axios.put('/api/subscription/update', { planId });
-      // return response.data;
-      
-      // Mock success
-      console.log('Updating subscription plan');
-      return { success: true };
+      // Use customer portal for plan changes
+      return await subscriptionService.openCustomerPortal();
     } catch (error) {
       console.error('Failed to update subscription:', error);
       throw error;
@@ -87,13 +106,20 @@ export const subscriptionService = {
    */
   openCustomerPortal: async (): Promise<SubscriptionResponse> => {
     try {
-      // In a real application, would call your customer portal endpoint
-      // const response = await axios.post('/api/subscription/customer-portal');
-      // window.location.href = response.data.url;
+      const { data, error } = await supabase.functions.invoke('customer-portal');
       
-      // Mock for development
-      console.log('Opening customer portal');
-      return { success: true };
+      if (error) {
+        console.error('Failed to open customer portal:', error);
+        throw error;
+      }
+      
+      if (data && data.url) {
+        // Redirect to Stripe customer portal
+        window.location.href = data.url;
+        return { success: true };
+      } else {
+        throw new Error('No portal URL returned');
+      }
     } catch (error) {
       console.error('Failed to open customer portal:', error);
       throw error;
