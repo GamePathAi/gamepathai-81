@@ -20,21 +20,26 @@ function App() {
   // Initialize electron-specific features only if running in Electron
   useEffect(() => {
     // Check if we're running in Electron
-    const isElectron = typeof window !== 'undefined' && window.electron !== undefined;
+    const isElectron = typeof window !== 'undefined' && 
+                       window.electron !== undefined;
     
     if (isElectron && window.electron) {
       try {
-        // Initialize hardware monitoring if available
-        window.electron.startHardwareMonitoring?.(2000).catch(err => {
-          console.warn('Hardware monitoring not available:', err);
-        });
-        
-        // Cleanup on unmount
-        return () => {
-          window.electron?.stopHardwareMonitoring?.().catch(err => {
-            console.warn('Error stopping hardware monitoring:', err);
+        // Only try to call electron methods if they exist
+        if (typeof window.electron.startHardwareMonitoring === 'function') {
+          window.electron.startHardwareMonitoring(2000).catch(err => {
+            console.warn('Hardware monitoring not available:', err);
           });
-        };
+          
+          // Cleanup on unmount
+          return () => {
+            if (window.electron && typeof window.electron.stopHardwareMonitoring === 'function') {
+              window.electron.stopHardwareMonitoring().catch(err => {
+                console.warn('Error stopping hardware monitoring:', err);
+              });
+            }
+          };
+        }
       } catch (error) {
         console.warn('Electron API error:', error);
       }
@@ -50,22 +55,10 @@ function App() {
             <Route path="/" element={<Download />} />
             <Route path="/download" element={<Download />} />
 
-            <Route
-              path="/account"
-              element={<Account />}
-            />
-            <Route
-              path="/settings"
-              element={<Settings />}
-            />
-            <Route
-              path="/change-plan"
-              element={<ChangePlan />}
-            />
-            <Route
-              path="/stripe-test"
-              element={<StripeTest />}
-            />
+            <Route path="/account" element={<Account />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/change-plan" element={<ChangePlan />} />
+            <Route path="/stripe-test" element={<StripeTest />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />

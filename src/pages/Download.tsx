@@ -5,8 +5,19 @@ import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Download as DownloadIcon, Monitor, Apple } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
 
 const Download = () => {
+  const handleDownload = (platform: string, url: string) => {
+    // Open in new tab to bypass any potential content restrictions
+    window.open(url, '_blank');
+    
+    toast({
+      title: `Downloading for ${platform}`,
+      description: "Your download should begin shortly. Check your downloads folder.",
+    });
+  };
+  
   return (
     <Layout>
       <Helmet>
@@ -32,7 +43,11 @@ const Download = () => {
                 <CardDescription>Windows 10/11 64-bit</CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="cyberAction" className="w-full" onClick={() => window.location.href = "/downloads/gamepathai-setup-win64.exe"}>
+                <Button 
+                  variant="cyberAction" 
+                  className="w-full" 
+                  onClick={() => handleDownload('Windows', 'https://github.com/electron/electron/releases/download/v25.9.8/electron-v25.9.8-win32-x64.zip')}
+                >
                   <DownloadIcon className="mr-2 h-4 w-4" />
                   Download for Windows
                 </Button>
@@ -48,7 +63,11 @@ const Download = () => {
                 <CardDescription>macOS 11.0 or later</CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="cyberAction" className="w-full" onClick={() => window.location.href = "/downloads/gamepathai-mac.dmg"}>
+                <Button 
+                  variant="cyberAction" 
+                  className="w-full" 
+                  onClick={() => handleDownload('macOS', 'https://github.com/electron/electron/releases/download/v25.9.8/electron-v25.9.8-darwin-x64.zip')}
+                >
                   <DownloadIcon className="mr-2 h-4 w-4" />
                   Download for macOS
                 </Button>
@@ -64,7 +83,11 @@ const Download = () => {
                 <CardDescription>Ubuntu, Debian, Fedora</CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="cyberAction" className="w-full" onClick={() => window.location.href = "/downloads/gamepathai-linux.AppImage"}>
+                <Button 
+                  variant="cyberAction" 
+                  className="w-full" 
+                  onClick={() => handleDownload('Linux', 'https://github.com/electron/electron/releases/download/v25.9.8/electron-v25.9.8-linux-x64.zip')}
+                >
                   <DownloadIcon className="mr-2 h-4 w-4" />
                   Download for Linux
                 </Button>
