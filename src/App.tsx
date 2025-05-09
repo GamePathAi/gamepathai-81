@@ -3,6 +3,23 @@ import { Toaster } from 'sonner';
 import { StripeProvider } from './components/checkout/StripeProvider';
 import React from 'react';
 import StripeTest from './pages/StripeTest';
+import Layout from './components/Layout';
+import Games from './pages/Games';
+import AdvancedOptimizer from './pages/Settings';
+import AccountSubscription from './pages/AccountSubscription';
+import SubscriptionManagement from './pages/SubscriptionManagement';
+import CheckoutPaymentPage from './pages/CheckoutPaymentPage';
+import CheckoutSuccessPage from './pages/CheckoutSuccessPage';
+import CheckoutCanceledPage from './pages/CheckoutCanceledPage';
+import Dashboard from './pages/Dashboard';
+import ForgotPassword from './pages/ForgotPassword';
+import InstallationPage from './pages/Index';
+import CheckoutPlanPage from './pages/CheckoutPlanPage';
+import AccountLayout from './components/Layout/AccountLayout';
+import AccountBillingHistory from './pages/AccountBillingHistory';
+import PaymentMethods from './pages/PaymentMethods';
+import ChangePlan from './pages/ChangePlan';
+import CancelSubscription from './pages/CancelSubscription';
 
 function App() {
   return (

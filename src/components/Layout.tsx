@@ -1,9 +1,6 @@
 
 import React from "react";
-import Header from "./Header";
-import Sidebar from "./Sidebar";
 import { Toaster } from "@/components/ui/sonner";
-import useSubscription from "@/hooks/use-subscription";
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -11,37 +8,23 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children, requireSubscription = false }) => {
-  const { isLoading } = useSubscription();
-  
-  // Show loading state if requiring subscription data and it's still loading
-  if (requireSubscription && isLoading) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <div className="flex flex-1 overflow-hidden">
-          <Sidebar />
-          <main className="flex-1 overflow-auto p-4">
-            <div className="animate-pulse space-y-6">
-              <div className="h-8 w-1/4 bg-gray-700 rounded mb-2"></div>
-              <div className="h-4 w-3/4 bg-gray-700 rounded mb-8"></div>
-              <div className="h-[400px] w-full bg-gray-700 rounded"></div>
-            </div>
-          </main>
-        </div>
-        <Toaster position="top-right" />
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
-        <main className="flex-1 overflow-auto p-4">
-          {children}
-        </main>
-      </div>
+    <div className="min-h-screen flex flex-col bg-zinc-950 text-zinc-50">
+      <header className="border-b border-zinc-800 py-4 px-6">
+        <div className="container mx-auto flex justify-between items-center">
+          <h1 className="text-xl font-bold">Stripe Integration Test</h1>
+        </div>
+      </header>
+      
+      <main className="flex-1 container mx-auto p-4">
+        {children}
+      </main>
+      
+      <footer className="border-t border-zinc-800 py-4 px-6 text-center text-sm text-zinc-500">
+        <div className="container mx-auto">
+          &copy; {new Date().getFullYear()} GamePath AI. All rights reserved.
+        </div>
+      </footer>
       <Toaster position="top-right" />
     </div>
   );

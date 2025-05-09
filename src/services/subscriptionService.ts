@@ -1,31 +1,38 @@
 
+import { subscriptionService as subServiceImpl } from './subscription/subscriptionService';
 import { plansService } from './subscription/plansService';
-import { subscriptionService as subService } from './subscription/subscriptionService';
-import { billingService } from './subscription/billingService';
-import { paymentService } from './subscription/paymentService';
+import { Subscription, CheckoutOptions } from './subscription/types';
 
-// Re-export all subscription services as one combined service
 export const subscriptionService = {
-  // Plans
-  getPlans: plansService.getPlans,
-  
-  // Subscription
-  getCurrentSubscription: subService.getCurrentSubscription,
-  checkout: subService.checkout,
-  cancelSubscription: subService.cancelSubscription,
-  updateSubscriptionPlan: subService.updateSubscriptionPlan,
-  openCustomerPortal: subService.openCustomerPortal,
-  
-  // Billing
-  getBillingHistory: billingService.getBillingHistory,
-  
-  // Payment Methods
-  getPaymentMethods: paymentService.getPaymentMethods,
-  addPaymentMethod: paymentService.addPaymentMethod,
-  setDefaultPaymentMethod: paymentService.setDefaultPaymentMethod,
-  deletePaymentMethod: paymentService.deletePaymentMethod
-};
+  /**
+   * Get current user subscription
+   */
+  getCurrentSubscription: async (): Promise<Subscription> => {
+    return subServiceImpl.getCurrentSubscription();
+  },
 
-// Re-export types for convenience
-export type { Plan, Subscription, BillingHistoryItem, PaymentMethod, CheckoutOptions, SubscriptionResponse } 
-  from './subscription/types';
+  /**
+   * Get available subscription plans
+   */
+  getPlans: async () => {
+    return plansService.getPlans();
+  },
+
+  /**
+   * Checkout for a new subscription
+   */
+  checkout: async (
+    planId: string, 
+    interval: 'month' | 'quarter' | 'year', 
+    addOnIds?: string[]
+  ) => {
+    return subServiceImpl.checkout(planId, interval, addOnIds);
+  },
+
+  /**
+   * Open customer portal
+   */
+  openCustomerPortal: async () => {
+    return subServiceImpl.openCustomerPortal();
+  }
+};
