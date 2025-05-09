@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet-async";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download as DownloadIcon, Windows, Apple, Linux } from "lucide-react";
+import { Download as DownloadIcon, Monitor, Apple } from "lucide-react";
 
 const Download = () => {
   return (
@@ -26,7 +26,7 @@ const Download = () => {
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Windows className="h-5 w-5" />
+                  <Monitor className="h-5 w-5" />
                   Windows
                 </CardTitle>
                 <CardDescription>Windows 10/11 64-bit</CardDescription>
@@ -58,7 +58,7 @@ const Download = () => {
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Linux className="h-5 w-5" />
+                  <Monitor className="h-5 w-5" />
                   Linux
                 </CardTitle>
                 <CardDescription>Ubuntu, Debian, Fedora</CardDescription>

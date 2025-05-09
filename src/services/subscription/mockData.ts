@@ -1,5 +1,5 @@
 
-import { Subscription, BillingHistoryItem, PaymentMethod } from '@/types/subscription';
+import { Subscription, BillingHistoryItem, PaymentMethod, Plan } from '@/types/subscription';
 
 export const mockSubscription: Subscription = {
   id: 'sub_123456',
@@ -46,7 +46,8 @@ export const mockPaymentMethods: PaymentMethod[] = [
     last4: '4242',
     expMonth: 12,
     expYear: 2025,
-    isDefault: true
+    isDefault: true,
+    type: 'card'
   },
   {
     id: 'pm_123457',
@@ -54,6 +55,31 @@ export const mockPaymentMethods: PaymentMethod[] = [
     last4: '8210',
     expMonth: 9,
     expYear: 2026,
-    isDefault: false
+    isDefault: false,
+    type: 'card'
+  }
+];
+
+export const mockPlans: Plan[] = [
+  {
+    id: 'player',
+    name: 'Player',
+    price: 999,
+    interval: 'month',
+    features: ['Basic optimization', '1 device', 'Email support']
+  },
+  {
+    id: 'co-op',
+    name: 'Co-op',
+    price: 1798,
+    interval: 'month',
+    features: ['Advanced optimization', '3 devices', 'Priority support', 'Network booster']
+  },
+  {
+    id: 'alliance',
+    name: 'Alliance',
+    price: 3499,
+    interval: 'month',
+    features: ['Ultimate optimization', '5 devices', 'VIP support', 'All add-ons included']
   }
 ];
