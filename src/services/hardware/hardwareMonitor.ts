@@ -1,145 +1,127 @@
 
-interface HardwareData {
+import { mockElectronAPI } from '../electron/mockElectron';
+
+// Define hardware data type
+export interface HardwareData {
   cpu: {
     usage: number;
     temperature: number;
-    cores: { usage: number; temperature: number }[];
+    cores: Array<{
+      usage: number;
+      temperature: number;
+    }>;
   };
   memory: {
-    total: number; // in GB
+    total: number;
     used: number;
-    usage: number; // percentage
+    usage: number;
   };
   gpu: {
     usage: number;
-    memory: { total: number; used: number };
+    memory: {
+      total: number;
+      used: number;
+    };
     temperature: number;
   } | null;
   disk: {
-    read_speed: number; // MB/s
+    read_speed: number;
     write_speed: number;
   };
 }
 
+type HardwareUpdateCallback = (data: HardwareData) => void;
+
+// Service for hardware monitoring
 class HardwareMonitorService {
-  private listeners: ((data: HardwareData) => void)[] = [];
+  private listeners: HardwareUpdateCallback[] = [];
   private isMonitoring = false;
-  private monitorInterval: number | null = null;
-  
-  constructor() {
-    this.setupElectronListeners();
+  private unsubscribe: (() => void) | null = null;
+
+  // Get the appropriate API (real Electron or mock)
+  private getAPI() {
+    return (typeof window !== 'undefined' && window.electron) ? window.electron : mockElectronAPI;
   }
-  
-  private setupElectronListeners() {
-    if (window.electron) {
-      // Set up listener for hardware data from Electron main process
-      window.electron.onHardwareUpdate((data: HardwareData) => {
+
+  // Start monitoring hardware
+  async startMonitoring(interval = 1000): Promise<boolean> {
+    if (this.isMonitoring) return true;
+
+    try {
+      const api = this.getAPI();
+      
+      // Attempt to start hardware monitoring
+      await api.startHardwareMonitoring?.(interval);
+      
+      // Subscribe to hardware updates
+      this.unsubscribe = api.onHardwareUpdate((data: HardwareData) => {
         this.notifyListeners(data);
       });
-    }
-  }
-  
-  startMonitoring(interval = 1000): Promise<boolean> {
-    // Already monitoring
-    if (this.isMonitoring) return Promise.resolve(true);
-    
-    // Electron environment
-    if (window.electron) {
-      return window.electron.startHardwareMonitoring(interval)
-        .then(() => {
-          this.isMonitoring = true;
-          return true;
-        })
-        .catch((error) => {
-          console.error("Failed to start hardware monitoring:", error);
-          return false;
-        });
-    }
-    
-    // Web environment - simulate hardware data
-    console.log("Hardware monitoring is simulated in web environment");
-    this.monitorInterval = window.setInterval(() => {
-      const mockData: HardwareData = {
-        cpu: {
-          usage: 30 + Math.random() * 40,
-          temperature: 50 + Math.random() * 20,
-          cores: Array(8).fill(0).map(() => ({
-            usage: 30 + Math.random() * 40,
-            temperature: 50 + Math.random() * 20
-          }))
-        },
-        memory: {
-          total: 16,
-          used: 4 + Math.random() * 8,
-          usage: (4 + Math.random() * 8) / 16 * 100
-        },
-        gpu: {
-          usage: 20 + Math.random() * 60,
-          memory: {
-            total: 8,
-            used: 2 + Math.random() * 4
-          },
-          temperature: 55 + Math.random() * 25
-        },
-        disk: {
-          read_speed: Math.random() * 100,
-          write_speed: Math.random() * 50
-        }
-      };
       
-      this.notifyListeners(mockData);
-    }, interval) as unknown as number;
-    
-    this.isMonitoring = true;
-    return Promise.resolve(true);
+      this.isMonitoring = true;
+      return true;
+    } catch (err) {
+      console.error('Error starting hardware monitoring:', err);
+      return false;
+    }
   }
-  
-  stopMonitoring(): Promise<boolean> {
-    if (!this.isMonitoring) {
-      return Promise.resolve(false);
+
+  // Stop monitoring hardware
+  async stopMonitoring(): Promise<boolean> {
+    if (!this.isMonitoring) return true;
+
+    try {
+      const api = this.getAPI();
+      
+      // Clean up subscription
+      if (this.unsubscribe) {
+        this.unsubscribe();
+        this.unsubscribe = null;
+      }
+      
+      // Stop hardware monitoring
+      await api.stopHardwareMonitoring?.();
+      
+      this.isMonitoring = false;
+      return true;
+    } catch (err) {
+      console.error('Error stopping hardware monitoring:', err);
+      return false;
     }
-    
-    // Electron environment
-    if (window.electron) {
-      return window.electron.stopHardwareMonitoring()
-        .then(() => {
-          this.isMonitoring = false;
-          return true;
-        })
-        .catch((error) => {
-          console.error("Failed to stop hardware monitoring:", error);
-          return false;
-        });
-    }
-    
-    // Web environment
-    if (this.monitorInterval !== null) {
-      window.clearInterval(this.monitorInterval);
-      this.monitorInterval = null;
-    }
-    
-    this.isMonitoring = false;
-    return Promise.resolve(true);
   }
-  
-  addListener(callback: (data: HardwareData) => void) {
+
+  // Add a listener for hardware updates
+  addListener(callback: HardwareUpdateCallback): void {
     this.listeners.push(callback);
   }
-  
-  removeListener(callback: (data: HardwareData) => void) {
-    this.listeners = this.listeners.filter(listener => listener !== callback);
+
+  // Remove a listener
+  removeListener(callback: HardwareUpdateCallback): void {
+    this.listeners = this.listeners.filter(cb => cb !== callback);
   }
-  
-  private notifyListeners(data: HardwareData) {
-    this.listeners.forEach(listener => {
+
+  // Notify all listeners of a hardware update
+  private notifyListeners(data: HardwareData): void {
+    this.listeners.forEach(callback => {
       try {
-        listener(data);
-      } catch (error) {
-        console.error("Error in hardware monitor listener:", error);
+        callback(data);
+      } catch (err) {
+        console.error('Error in hardware update listener:', err);
       }
     });
   }
+
+  // Get current hardware info
+  async getHardwareInfo(): Promise<HardwareData | null> {
+    try {
+      const api = this.getAPI();
+      return await api.getHardwareInfo();
+    } catch (err) {
+      console.error('Error getting hardware info:', err);
+      return null;
+    }
+  }
 }
 
+// Export a singleton instance
 export const hardwareMonitorService = new HardwareMonitorService();
-export type { HardwareData };

@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from 'react';
+import { mockElectronAPI } from '../services/electron/mockElectron';
 
 // Type definition for hardware info returned from Electron
 interface HardwareInfo {
@@ -45,6 +46,9 @@ export function useElectron() {
     
     if (electronAvailable && window.electron) {
       setPlatformInfo(window.electron.platform || 'unknown');
+    } else {
+      // Use mock implementation
+      setPlatformInfo('browser');
     }
     
     setLoading(false);
@@ -52,13 +56,14 @@ export function useElectron() {
 
   // Hardware monitoring effect
   useEffect(() => {
-    if (!isElectron || !window.electron) return;
+    // Use either real electron API or mock
+    const electronAPI = (isElectron && window.electron) ? window.electron : mockElectronAPI;
     
     let unsubscribe: (() => void) | null = null;
     
     try {
       // Get initial hardware info
-      window.electron.getHardwareInfo()
+      electronAPI.getHardwareInfo()
         .then(info => setHardwareInfo(info))
         .catch(err => {
           console.warn('Error getting hardware info:', err);
@@ -66,7 +71,7 @@ export function useElectron() {
         });
       
       // Subscribe to hardware updates
-      unsubscribe = window.electron.onHardwareUpdate((data) => {
+      unsubscribe = electronAPI.onHardwareUpdate((data) => {
         setHardwareInfo(data);
       });
     } catch (err) {

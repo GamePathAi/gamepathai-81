@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Routes, Route, BrowserRouter, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from "@/components/ui/toaster";
 
@@ -14,24 +14,24 @@ import Download from "./pages/Download";
 import { AuthProvider } from "./contexts/AuthContext";
 import NotFound from "./pages/NotFound";
 
-// Check if we're running in Electron
-const isElectron = window.electron !== undefined;
-
 function App() {
   const [isInitialized, setIsInitialized] = useState(true);
   
   // Initialize electron-specific features only if running in Electron
   useEffect(() => {
+    // Check if we're running in Electron
+    const isElectron = typeof window !== 'undefined' && window.electron !== undefined;
+    
     if (isElectron && window.electron) {
       try {
         // Initialize hardware monitoring if available
-        window.electron.startHardwareMonitoring(2000).catch(err => {
+        window.electron.startHardwareMonitoring?.(2000).catch(err => {
           console.warn('Hardware monitoring not available:', err);
         });
         
         // Cleanup on unmount
         return () => {
-          window.electron.stopHardwareMonitoring().catch(err => {
+          window.electron?.stopHardwareMonitoring?.().catch(err => {
             console.warn('Error stopping hardware monitoring:', err);
           });
         };
