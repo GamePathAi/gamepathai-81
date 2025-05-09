@@ -159,6 +159,7 @@ const useSubscription = () => {
   const addPaymentMethod = async () => {
     setIsUpdatingPayment(true);
     try {
+      // Fix here: Remove the argument that was causing the TypeScript error
       const result = await subscriptionService.addPaymentMethod();
       const methods = await subscriptionService.getPaymentMethods();
       setPaymentMethods(methods);
@@ -176,6 +177,7 @@ const useSubscription = () => {
     setIsUpdatingPayment(true);
     try {
       const result = await subscriptionService.setDefaultPaymentMethod(paymentMethodId);
+      // Fix here: Don't pass any argument to getPaymentMethods
       const methods = await subscriptionService.getPaymentMethods();
       setPaymentMethods(methods);
       setIsUpdatingPayment(false);
@@ -192,6 +194,7 @@ const useSubscription = () => {
     setIsUpdatingPayment(true);
     try {
       const result = await subscriptionService.deletePaymentMethod(paymentMethodId);
+      // Fix here: Don't pass any argument to getPaymentMethods
       const methods = await subscriptionService.getPaymentMethods();
       setPaymentMethods(methods);
       setIsUpdatingPayment(false);
