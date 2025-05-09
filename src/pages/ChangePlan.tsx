@@ -82,7 +82,8 @@ const ChangePlan = () => {
   const handleChangePlan = async () => {
     setIsSubmitting(true);
     try {
-      await updateSubscriptionPlan(selectedPlan);
+      // Call updateSubscriptionPlan without any arguments since that's what the interface expects
+      await updateSubscriptionPlan();
       toast.success("Subscription plan updated", {
         description: "Your new plan will be active immediately",
       });
