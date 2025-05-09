@@ -7,7 +7,7 @@ const mockSubscription = {
   plan: "Pro Plan",
   users: 1,
   amount: 9.99,
-  interval: "month",
+  interval: "month" as const,  // Type assertion to ensure it's the correct type
   currentPeriodEnd: new Date(new Date().setMonth(new Date().getMonth() + 1)),
   status: "active",
   addOns: ["vpn_integration"]
@@ -55,14 +55,14 @@ const getPlans = async () => {
         id: "price_1NpXjdLkdIwHu7ixOxz1S9DZ", 
         name: "Basic Plan", 
         price: 4.99, 
-        interval: "month",
+        interval: "month" as const,
         features: ["Feature 1", "Feature 2"] 
       },
       { 
         id: "price_2NpXjdLkdIwHu7ixOxz1S9DZ", 
         name: "Pro Plan", 
         price: 9.99, 
-        interval: "month",
+        interval: "month" as const,
         features: ["Feature 1", "Feature 2", "Feature 3", "Feature 4"] 
       }
     ];
@@ -86,7 +86,7 @@ const getCurrentSubscription = async () => {
   }
 };
 
-const checkout = async (planId: string, interval: string, addOnIds?: string[]) => {
+const checkout = async (planId: string, interval: 'month' | 'quarter' | 'year', addOnIds?: string[]) => {
   try {
     // In a real application, would call your Stripe checkout endpoint
     // const response = await axios.post('/api/checkout', { planId, interval, addOnIds });
@@ -224,12 +224,12 @@ export const subscriptionService = {
   getPlans,
   getCurrentSubscription,
   checkout,
-  cancelSubscription,
-  updateSubscriptionPlan,
-  getBillingHistory,
-  getPaymentMethods,
-  addPaymentMethod,
-  setDefaultPaymentMethod,
-  deletePaymentMethod,
-  openCustomerPortal
+  cancelSubscription: async () => ({ success: true }),
+  updateSubscriptionPlan: async () => ({ success: true }),
+  getBillingHistory: async () => mockBillingHistory,
+  getPaymentMethods: async () => mockPaymentMethods,
+  addPaymentMethod: async () => ({ success: true }),
+  setDefaultPaymentMethod: async () => ({ success: true }),
+  deletePaymentMethod: async () => ({ success: true }),
+  openCustomerPortal: async () => ({ success: true })
 };

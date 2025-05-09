@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom';
 import Layout from '../Layout';
 
 interface AccountLayoutProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   requireSubscription?: boolean;
 }
 

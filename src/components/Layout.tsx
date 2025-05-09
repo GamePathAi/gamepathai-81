@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import useSubscription from "@/hooks/use-subscription";
 
 interface LayoutProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   requireSubscription?: boolean;
 }
 

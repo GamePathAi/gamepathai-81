@@ -33,6 +33,15 @@ interface PaymentMethod {
   isDefault: boolean;
 }
 
+// Helper function to ensure interval is valid
+const validateInterval = (interval: string): 'month' | 'quarter' | 'year' => {
+  if (interval === 'month' || interval === 'quarter' || interval === 'year') {
+    return interval;
+  }
+  // Default to month if invalid
+  return 'month';
+};
+
 // Hook implementation
 const useSubscription = () => {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
@@ -51,7 +60,12 @@ const useSubscription = () => {
     const fetchSubscription = async () => {
       try {
         const subData = await subscriptionService.getCurrentSubscription();
-        setSubscription(subData);
+        // Validate the interval before setting state
+        const validatedSubData = {
+          ...subData,
+          interval: validateInterval(subData.interval)
+        };
+        setSubscription(validatedSubData);
         
         const historyData = await subscriptionService.getBillingHistory();
         setBillingHistory(historyData);
@@ -74,7 +88,12 @@ const useSubscription = () => {
     setIsRefreshing(true);
     try {
       const subData = await subscriptionService.getCurrentSubscription();
-      setSubscription(subData);
+      // Validate the interval before setting state
+      const validatedSubData = {
+        ...subData,
+        interval: validateInterval(subData.interval)
+      };
+      setSubscription(validatedSubData);
       setIsRefreshing(false);
     } catch (err: any) {
       setError(err);
@@ -200,7 +219,7 @@ const useSubscription = () => {
   };
 
   // Add checkout function
-  const checkout = async (options: { planId: string, interval: string, addOnIds?: string[] }) => {
+  const checkout = async (options: { planId: string, interval: 'month' | 'quarter' | 'year', addOnIds?: string[] }) => {
     try {
       const result = await subscriptionService.checkout(
         options.planId, 

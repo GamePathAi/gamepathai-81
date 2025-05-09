@@ -58,8 +58,13 @@ const plans = [
   },
 ];
 
-// Mock billing cycle options
-const billingCycles = [
+// Mock billing cycle options with strong typing
+const billingCycles: {
+  id: 'month' | 'quarter' | 'year';
+  name: string;
+  multiplier: number;
+  discount: number;
+}[] = [
   { id: "month", name: "Monthly", multiplier: 1, discount: 0 },
   { id: "quarter", name: "Quarterly", multiplier: 3, discount: 0.17 },
   { id: "year", name: "Yearly", multiplier: 12, discount: 0.37 },
@@ -67,8 +72,10 @@ const billingCycles = [
 
 const ChangePlan = () => {
   const { subscription, updateSubscriptionPlan } = useSubscription();
-  const [selectedPlan, setSelectedPlan] = useState(subscription.plan || "player");
-  const [billingCycle, setBillingCycle] = useState(subscription.interval || "month");
+  const [selectedPlan, setSelectedPlan] = useState(subscription?.plan || "player");
+  const [billingCycle, setBillingCycle] = useState<'month' | 'quarter' | 'year'>(
+    (subscription?.interval as 'month' | 'quarter' | 'year') || "month"
+  );
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -87,7 +94,14 @@ const ChangePlan = () => {
     }
   };
 
-  const calculatePrice = (basePrice: number, cycle: string) => {
+  // Handler for billing cycle change with proper type casting
+  const handleBillingCycleChange = (cycle: string) => {
+    if (cycle === 'month' || cycle === 'quarter' || cycle === 'year') {
+      setBillingCycle(cycle);
+    }
+  };
+
+  const calculatePrice = (basePrice: number, cycle: 'month' | 'quarter' | 'year') => {
     const selectedCycle = billingCycles.find((c) => c.id === cycle);
     if (!selectedCycle) return basePrice;
     
@@ -96,7 +110,7 @@ const ChangePlan = () => {
     return totalBeforeDiscount - discount;
   };
 
-  const formatPrice = (price: number, cycle: string) => {
+  const formatPrice = (price: number, cycle: 'month' | 'quarter' | 'year') => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
@@ -104,10 +118,12 @@ const ChangePlan = () => {
   };
 
   const selectedPlanData = plans.find((p) => p.id === selectedPlan) || plans[0];
-  const currentPlanData = plans.find((p) => p.id === subscription.plan) || plans[0];
+  const currentPlanData = plans.find((p) => p.id === subscription?.plan) || plans[0];
   const selectedCycleData = billingCycles.find((c) => c.id === billingCycle) || billingCycles[0];
+  
+  const currentInterval = subscription?.interval || 'month';
   const priceDifference = calculatePrice(selectedPlanData.price, billingCycle) - 
-                         calculatePrice(currentPlanData.price, subscription.interval);
+                         calculatePrice(currentPlanData.price, currentInterval as 'month' | 'quarter' | 'year');
 
   return (
     <AccountLayout>
@@ -138,7 +154,7 @@ const ChangePlan = () => {
                   {billingCycles.map((cycle) => (
                     <button
                       key={cycle.id}
-                      onClick={() => setBillingCycle(cycle.id)}
+                      onClick={() => handleBillingCycleChange(cycle.id)}
                       className={`px-4 py-2 rounded-md text-sm ${
                         billingCycle === cycle.id
                           ? "bg-cyber-purple text-white"
@@ -237,7 +253,7 @@ const ChangePlan = () => {
 
               <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 pt-4">
                 <div>
-                  {subscription.plan !== selectedPlan && (
+                  {subscription?.plan !== selectedPlan && (
                     <p className="text-sm text-gray-400">
                       {priceDifference > 0
                         ? `You will be charged an additional ${formatPrice(
@@ -256,13 +272,13 @@ const ChangePlan = () => {
                 <Button
                   variant="cyberAction"
                   disabled={
-                    subscription.plan === selectedPlan &&
-                    subscription.interval === billingCycle
+                    subscription?.plan === selectedPlan &&
+                    subscription?.interval === billingCycle
                   }
                   onClick={() => setConfirmDialogOpen(true)}
                 >
-                  {subscription.plan === selectedPlan &&
-                  subscription.interval === billingCycle
+                  {subscription?.plan === selectedPlan &&
+                  subscription?.interval === billingCycle
                     ? "Current Plan"
                     : "Update Plan"}
                 </Button>
@@ -288,10 +304,10 @@ const ChangePlan = () => {
                 <div className="font-medium text-white">{currentPlanData.name}</div>
                 <div className="text-sm text-gray-400">
                   {formatPrice(
-                    calculatePrice(currentPlanData.price, subscription.interval) /
-                      (subscription.interval === "month"
+                    calculatePrice(currentPlanData.price, currentInterval as 'month' | 'quarter' | 'year') /
+                      (currentInterval === "month"
                         ? 1
-                        : subscription.interval === "quarter"
+                        : currentInterval === "quarter"
                         ? 3
                         : 12),
                     "month"
