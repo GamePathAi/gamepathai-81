@@ -5,6 +5,11 @@ import { StripeProvider } from './components/checkout/StripeProvider';
 import React, { Suspense } from 'react';
 import Layout from './components/Layout';
 import StripeTest from './pages/StripeTest';
+import Index from './pages/Index';
+import Dashboard from './pages/Dashboard';
+import Settings from './pages/Settings';
+import RouteOptimizerPage from './pages/RouteOptimizer';
+import NotFound from './pages/NotFound';
 
 // Define proper types for ErrorBoundary
 interface ErrorBoundaryProps {
@@ -68,20 +73,14 @@ function App() {
         <Toaster position="top-right" />
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/stripe-test" element={<StripeTest />} />
-            
-            {/* Default route redirects to our Stripe test page */}
-            <Route path="/" element={<Navigate to="/stripe-test" replace />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/route-optimizer" element={<RouteOptimizerPage />} />
             
             {/* 404 route */}
-            <Route path="*" element={
-              <Layout>
-                <div className="flex flex-col items-center justify-center h-full">
-                  <h1 className="text-2xl font-bold">404 - Page Not Found</h1>
-                  <p className="mt-4">The page you're looking for doesn't exist.</p>
-                </div>
-              </Layout>
-            } />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
       </StripeProvider>
