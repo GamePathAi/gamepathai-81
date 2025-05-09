@@ -2,7 +2,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
-import { componentTagger } from "lovable-tagger";
 
 // Import configuration modules from the config directory
 import { getProxyConfig } from "./config/vite/proxy";
@@ -12,7 +11,6 @@ import { getDefineConfig } from "./config/vite/define";
 export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
-    mode === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
@@ -37,5 +35,18 @@ export default defineConfig(({ mode }) => ({
     hmr: false, // Force disable HMR to prevent redirects
     allowedHosts: getHostConfig(),
     proxy: getProxyConfig(mode)
+  },
+  
+  // Ensure we're not using any platform-specific dependencies
+  optimizeDeps: {
+    exclude: ['electron', 'electron-builder', '@electron/node-gyp']
+  },
+  
+  // Skip source maps in production
+  build: {
+    sourcemap: mode !== 'production',
+    rollupOptions: {
+      external: ['electron', 'electron-builder', '@electron/node-gyp'],
+    }
   }
 }));

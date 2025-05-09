@@ -11,9 +11,9 @@ import ChangePlan from "./pages/ChangePlan";
 import StripeTest from "./pages/StripeTest";
 import Download from "./pages/Download";
 import PricingPage from "./pages/landing/PricingPage";
-
-import { AuthProvider } from "./contexts/AuthContext";
+import DownloadPage from "./pages/landing/DownloadPage";
 import NotFound from "./pages/NotFound";
+import { AuthProvider } from "./contexts/AuthContext";
 
 function App() {
   const [isInitialized, setIsInitialized] = useState(true);
@@ -56,7 +56,7 @@ function App() {
             <Route path="/" element={<Download />} />
             <Route path="/download" element={<Download />} />
             <Route path="/pricing" element={<PricingPage />} />
-
+            <Route path="/downloads" element={<DownloadPage />} />
             <Route path="/account" element={<Account />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/change-plan" element={<ChangePlan />} />
