@@ -2,6 +2,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import { componentTagger } from "lovable-tagger";
 
 // Import configuration modules
 import { getProxyConfig } from "./proxy";
@@ -12,6 +13,7 @@ import { getDefineConfig } from "./define";
 export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
+    mode === 'development' && componentTagger(),
   ].filter(Boolean),
   
   resolve: {
@@ -46,7 +48,21 @@ export default defineConfig(({ mode }) => ({
   
   build: {
     rollupOptions: {
-      external: ['electron', 'electron-builder', '@electron/node-gyp']
+      external: [
+        'electron', 
+        'electron-builder', 
+        '@electron/node-gyp',
+        /@rollup\/rollup-.*/
+      ],
+      onwarn(warning, warn) {
+        // Suppress warnings about missing rollup binaries
+        if (warning.code === 'MISSING_OPTIONAL_DEPENDENCY' && 
+            warning.message && 
+            warning.message.includes('@rollup/')) {
+          return;
+        }
+        warn(warning);
+      }
     }
   }
 }));
