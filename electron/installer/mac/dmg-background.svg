@@ -1,0 +1,31 @@
+
+<svg width="540" height="380" viewBox="0 0 540 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="540" height="380" fill="#0A0A1B"/>
+  <!-- Grid Pattern -->
+  <path d="M0 0h540M0 38h540M0 76h540M0 114h540M0 152h540M0 190h540M0 228h540M0 266h540M0 304h540M0 342h540M0 380h540" stroke="#1A1A2E" stroke-width="0.5"/>
+  <path d="M54 0v380M108 0v380M162 0v380M216 0v380M270 0v380M324 0v380M378 0v380M432 0v380M486 0v380M540 0v380" stroke="#1A1A2E" stroke-width="0.5"/>
+  
+  <!-- Circuit Board Pattern -->
+  <path d="M270 100v50M240 150h60M270 150v50M240 200h30M300 200h-30" stroke="#33C3F0" stroke-width="1"/>
+  <path d="M270 100c0-5.523-4.477-10-10-10s-10 4.477-10 10" stroke="#8B5CF6" stroke-width="1"/>
+  <path d="M270 100c0-5.523 4.477-10 10-10s10 4.477 10 10" stroke="#8B5CF6" stroke-width="1"/>
+
+  <!-- Logo Hexagon -->
+  <path d="M270 75l35 20v40l-35 20l-35-20v-40l35-20z" stroke="url(#hexGradient)" stroke-width="2"/>
+  
+  <!-- Text -->
+  <text x="270" y="280" font-family="Arial, sans-serif" font-size="24" fill="#FFFFFF" text-anchor="middle">GamePath AI</text>
+  <text x="270" y="310" font-family="Arial, sans-serif" font-size="14" fill="#8B9CB6" text-anchor="middle">Drag to Applications folder to install</text>
+  
+  <!-- Arrow -->
+  <path d="M330 190l40 0M370 190l-10 -5M370 190l-10 5" stroke="#33C3F0" stroke-width="2"/>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="hexGradient" x1="235" y1="75" x2="305" y2="155" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#33C3F0"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+  </defs>
+</svg>

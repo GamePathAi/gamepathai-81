@@ -10,22 +10,101 @@
     "electron/**/*",
     "package.json"
   ],
+  "extraResources": [
+    {
+      "from": "public/images",
+      "to": "resources/images",
+      "filter": ["*.png", "*.jpg", "*.webp", "*.svg"]
+    },
+    {
+      "from": "electron/installer",
+      "to": "resources/installer"
+    }
+  ],
+  "beforeBuild": "electron/installer/installer.js",
+  "afterSign": "electron/notarize.js",
   "mac": {
     "target": [
       "dmg"
     ],
-    "category": "public.app-category.utilities"
+    "category": "public.app-category.utilities",
+    "icon": "electron/icons/icon.icns",
+    "hardenedRuntime": true,
+    "gatekeeperAssess": false,
+    "entitlements": "electron/entitlements.plist",
+    "entitlementsInherit": "electron/entitlements.plist",
+    "darkModeSupport": true,
+    "dmg": {
+      "background": "build/installer/mac/dmg-background.svg",
+      "icon": "electron/icons/icon.icns",
+      "iconSize": 100,
+      "window": {
+        "width": 540,
+        "height": 380
+      },
+      "contents": [
+        {
+          "x": 130,
+          "y": 190
+        },
+        {
+          "x": 410,
+          "y": 190,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    }
   },
   "win": {
     "target": [
       "nsis"
-    ]
+    ],
+    "icon": "electron/icons/icon.ico"
   },
   "linux": {
     "target": [
       "AppImage", 
       "deb"
     ],
-    "category": "Utility"
+    "category": "Utility",
+    "icon": "electron/icons/icon.png",
+    "desktop": {
+      "Name": "GamePath AI",
+      "Comment": "AI-powered gaming network optimizer",
+      "Categories": "Utility;Network;Game"
+    }
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "perMachine": false,
+    "installerIcon": "electron/icons/icon.ico",
+    "uninstallerIcon": "electron/icons/icon.ico",
+    "installerHeader": "build/installer/windows/header.bmp",
+    "installerSidebar": "build/installer/windows/welcome.bmp",
+    "uninstallerSidebar": "build/installer/windows/welcome.bmp",
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "GamePath AI",
+    "include": "build/installer/windows/installer.nsh",
+    "menuCategory": "GamePath AI",
+    "displayLanguageSelector": true,
+    "license": "LICENSE.txt",
+    "artifactName": "${productName}_${version}_Setup.${ext}"
+  },
+  "appImage": {
+    "license": "LICENSE.txt",
+    "category": "Utility;Network;Game",
+    "artifactName": "${productName}_${version}.${ext}"
+  },
+  "deb": {
+    "depends": ["gconf2", "gconf-service", "libnotify4", "libxtst6", "libnss3"],
+    "afterInstall": "electron/installer/linux/after-install.sh",
+    "artifactName": "${productName}_${version}_${arch}.${ext}"
+  },
+  "publish": {
+    "provider": "github",
+    "releaseType": "release"
   }
 }

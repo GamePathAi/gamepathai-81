@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GamePath AI</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0a0a1b;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      user-select: none;
+    }
+    .container {
+      text-align: center;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: rgba(18, 18, 35, 0.5);
+      border: 1px solid rgba(51, 195, 240, 0.3);
+      box-shadow: 0 0 20px rgba(51, 195, 240, 0.2);
+      backdrop-filter: blur(5px);
+    }
+    .logo {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 0 10px rgba(51, 195, 240, 0.5));
+    }
+    h1 {
+      margin: 5px 0;
+      font-size: 24px;
+      background: linear-gradient(to right, #33C3F0, #8B5CF6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    p {
+      margin: 8px 0;
+      font-size: 14px;
+      color: #8B9CB6;
+    }
+    .progress {
+      width: 80%;
+      height: 4px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      margin: 20px auto 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .progress-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: linear-gradient(to right, #33C3F0, #8B5CF6);
+      width: 30%;
+      border-radius: 2px;
+      animation: loading 2s infinite ease-in-out;
+    }
+    .progress-glow {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 60px;
+      background: linear-gradient(to right, transparent, rgba(51, 195, 240, 0.8), transparent);
+      filter: blur(3px);
+      animation: glow 2s infinite linear;
+    }
+    @keyframes loading {
+      0% { width: 0%; }
+      50% { width: 70%; }
+      100% { width: 100%; }
+    }
+    @keyframes glow {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(500%); }
+    }
+
+    #logo-svg {
+      width: 100px;
+      height: 100px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <svg id="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Outer hexagon border with glow effect -->
+      <path
+        d="M50 5L87.5 25V75L50 95L12.5 75V25L50 5Z"
+        stroke="url(#hexGradient)"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="animate-pulse-slow"
+      />
+
+      <!-- Inner circuit pattern -->
+      <path
+        d="M30 40L50 30L70 40M50 30V15M30 60L50 70L70 60M50 70V85M25 50H75"
+        stroke="#8B5CF6"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+
+      <!-- Central node with pulsing effect -->
+      <circle 
+        cx="50" 
+        cy="50" 
+        r="8" 
+        fill="url(#centerGradient)"
+      />
+      
+      <!-- Small connector nodes -->
+      <circle cx="30" cy="40" r="3" fill="#33C3F0" />
+      <circle cx="70" cy="40" r="3" fill="#33C3F0" />
+      <circle cx="30" cy="60" r="3" fill="#33C3F0" />
+      <circle cx="70" cy="60" r="3" fill="#33C3F0" />
+      <circle cx="50" cy="15" r="3" fill="#D946EF" />
+      <circle cx="50" cy="85" r="3" fill="#D946EF" />
+      <circle cx="25" cy="50" r="3" fill="#D946EF" />
+      <circle cx="75" cy="50" r="3" fill="#D946EF" />
+
+      <!-- Gradients definitions -->
+      <defs>
+        <linearGradient id="hexGradient" x1="15" y1="15" x2="85" y2="85" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#33C3F0" />
+          <stop offset="1" stop-color="#8B5CF6" />
+        </linearGradient>
+        <radialGradient id="centerGradient" cx="50" cy="50" r="8" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#33C3F0" />
+          <stop offset="1" stop-color="#8B5CF6" />
+        </radialGradient>
+      </defs>
+
+      <style>
+        @keyframes pulse-slow {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.6; }
+        }
+        .animate-pulse-slow {
+          animation: pulse-slow 4s infinite;
+        }
+        circle {
+          animation: pulse-slow 2s infinite;
+        }
+      </style>
+    </svg>
+    <h1>GamePath AI</h1>
+    <p>Starting up...</p>
+    <div class="progress">
+      <div class="progress-bar"></div>
+      <div class="progress-glow"></div>
+    </div>
+  </div>
+</body>
+</html>

@@ -8,8 +8,33 @@ const si = require('systeminformation');
 // Keep a global reference of the window object
 let mainWindow;
 
+// Handle creating/removing shortcuts on Windows when installing/uninstalling
+if (require('electron-squirrel-startup')) {
+  app.quit();
+}
+
 // Configure CSP
 setupCsp();
+
+// Show splash screen during startup
+let splashScreen;
+
+function createSplashScreen() {
+  splashScreen = new BrowserWindow({
+    width: 500,
+    height: 300,
+    transparent: true,
+    frame: false,
+    alwaysOnTop: true,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  });
+
+  splashScreen.loadFile(path.join(__dirname, 'splash.html'));
+  splashScreen.center();
+}
 
 // AWS backend URL
 const AWS_BACKEND_URL = 'http://gamepathai-dev-lb-1728469102.us-east-1.elb.amazonaws.com';
@@ -22,6 +47,9 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    show: false, // Hide until ready
+    backgroundColor: '#0a0a1b',
+    icon: path.join(__dirname, 'icons', process.platform === 'win32' ? 'icon.ico' : 'icon.png'),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -37,6 +65,17 @@ function createWindow() {
   });
   
   mainWindow.loadURL(startUrl);
+
+  // When window is ready, show and close splash
+  mainWindow.webContents.on('did-finish-load', () => {
+    if (splashScreen) {
+      splashScreen.close();
+      splashScreen = null;
+    }
+    
+    // Show main window with fade-in effect
+    mainWindow.show();
+  });
   
   // Open DevTools in development
   if (process.env.NODE_ENV === 'development') {
@@ -207,7 +246,15 @@ ipcMain.handle('detect-games', async () => {
   }
 });
 
-app.on('ready', createWindow);
+app.whenReady().then(() => {
+  // Show splash during startup
+  createSplashScreen();
+  
+  // Create main window after short delay (to show splash)
+  setTimeout(() => {
+    createWindow();
+  }, 1500);
+});
 
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') {
@@ -218,5 +265,24 @@ app.on('window-all-closed', function () {
 app.on('activate', function () {
   if (mainWindow === null) {
     createWindow();
+  }
+});
+
+// Handle protocol for deep linking (gamepathai://)
+if (process.defaultApp) {
+  if (process.argv.length >= 2) {
+    app.setAsDefaultProtocolClient('gamepathai', process.execPath, [path.resolve(process.argv[1])]);
+  }
+} else {
+  app.setAsDefaultProtocolClient('gamepathai');
+}
+
+// Handle protocol activation (deep links)
+app.on('open-url', (event, url) => {
+  event.preventDefault();
+  if (mainWindow) {
+    // Parse URL and send to renderer
+    const urlData = new URL(url);
+    mainWindow.webContents.send('deep-link', urlData.toString());
   }
 });
