@@ -10,6 +10,7 @@ import Settings from "./pages/Settings";
 import ChangePlan from "./pages/ChangePlan";
 import StripeTest from "./pages/StripeTest";
 import Download from "./pages/Download";
+import PricingPage from "./pages/landing/PricingPage";
 
 import { AuthProvider } from "./contexts/AuthContext";
 import NotFound from "./pages/NotFound";
@@ -54,6 +55,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<Download />} />
             <Route path="/download" element={<Download />} />
+            <Route path="/pricing" element={<PricingPage />} />
 
             <Route path="/account" element={<Account />} />
             <Route path="/settings" element={<Settings />} />

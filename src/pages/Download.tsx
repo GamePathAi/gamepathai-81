@@ -1,11 +1,13 @@
 
 import React from "react";
+import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download as DownloadIcon, Monitor, Apple } from "lucide-react";
+import { Download as DownloadIcon, Monitor, Apple, Shield, Zap } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
+import TechnologyCTA from "@/components/technology/TechnologyCTA";
 
 const Download = () => {
   const handleDownload = (platform: string, url: string) => {
@@ -102,6 +104,48 @@ const Download = () => {
               </p>
             </CardContent>
           </Card>
+
+          <div className="mt-12 space-y-6">
+            <h2 className="text-2xl font-bold text-center">Looking for premium features?</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-cyber-purple" />
+                    Enhanced Security
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-300 mb-4">Get advanced VPN protection and anti-DDoS features with our premium plans</p>
+                  <Link to="/pricing">
+                    <Button variant="outline" className="w-full">View Premium Features</Button>
+                  </Link>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Zap className="h-5 w-5 text-cyber-blue" />
+                    Performance Boost
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-300 mb-4">Access advanced optimization algorithms with our subscription plans</p>
+                  <Link to="/pricing">
+                    <Button variant="outline" className="w-full">See Pricing Plans</Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+          
+          <div className="mt-8">
+            <TechnologyCTA 
+              title="Ready to unlock the full potential?"
+              description="Get access to all premium features and optimization algorithms with our affordable subscription plans."
+            />
+          </div>
         </div>
       </div>
     </Layout>

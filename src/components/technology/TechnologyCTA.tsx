@@ -6,12 +6,16 @@ import { Button } from "@/components/ui/button";
 interface TechnologyCTAProps {
   title?: string;
   description?: string;
+  visible?: boolean;
 }
 
 const TechnologyCTA: React.FC<TechnologyCTAProps> = ({ 
   title = "Ready to elevate your gaming experience?",
-  description = "Experience significant latency reduction and performance improvements with our adaptive gaming technology."
+  description = "Experience significant latency reduction and performance improvements with our adaptive gaming technology.",
+  visible = true
 }) => {
+  if (!visible) return null;
+  
   return (
     <div className="rounded-xl bg-cyber-darkblue border border-cyber-blue/30 p-8 shadow-lg">
       <h3 className="text-xl font-bold mb-4">{title}</h3>
