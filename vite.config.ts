@@ -22,7 +22,15 @@ export default defineConfig(({ mode }) => ({
   base: process.env.IS_ELECTRON === 'true' ? './' : '/',
   
   // Use modularized configurations
-  define: getDefineConfig(mode),
+  define: {
+    ...getDefineConfig(mode),
+    // Add additional Electron-specific environment variables when needed
+    ...(process.env.IS_ELECTRON === 'true' ? {
+      'process.env.IS_ELECTRON': JSON.stringify('true'),
+      'process.env.ELECTRON_ENV': JSON.stringify(mode)
+    } : {})
+  },
+  
   server: {
     host: true, // Listen on all addresses
     port: 8080, 
@@ -31,4 +39,3 @@ export default defineConfig(({ mode }) => ({
     proxy: getProxyConfig(mode)
   }
 }));
-
