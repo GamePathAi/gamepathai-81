@@ -1,197 +1,106 @@
 
-import React, { useState } from "react";
-import { Helmet } from "react-helmet-async";
-import AccountLayout from "@/components/Layout/AccountLayout";
-import useSubscription from "@/hooks/use-subscription";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { PlusCircle, CreditCard, CheckCircle2, Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import React, { useEffect, useState } from 'react';
+import AccountLayout from '@/components/Layout/AccountLayout';
+import useSubscription from '@/hooks/use-subscription';
 
 const PaymentMethods = () => {
-  const {
-    paymentMethods,
-    isLoading,
-    addPaymentMethod,
-    setDefaultPaymentMethod,
-    deletePaymentMethod
-  } = useSubscription();
-  const [isAddingCard, setIsAddingCard] = useState(false);
+  const { paymentMethods, addPaymentMethod, setDefaultPaymentMethod, deletePaymentMethod, isUpdatingPayment } = useSubscription();
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleAddCard = async () => {
-    setIsAddingCard(true);
+  useEffect(() => {
+    // Initialize component data
+    setIsLoading(false);
+  }, []);
+
+  const handleAddPaymentMethod = async () => {
     try {
-      await addPaymentMethod({});
-      toast.success("Payment method added successfully");
+      await addPaymentMethod();
     } catch (error) {
-      toast.error("Failed to add payment method");
-    } finally {
-      setIsAddingCard(false);
+      console.error("Failed to add payment method:", error);
     }
   };
 
-  const handleSetDefault = async (id: string) => {
+  const handleSetDefaultPaymentMethod = async (paymentMethodId: string) => {
     try {
-      await setDefaultPaymentMethod(id);
-      toast.success("Default payment method updated");
+      await setDefaultPaymentMethod(paymentMethodId);
     } catch (error) {
-      toast.error("Failed to update default payment method");
+      console.error("Failed to set default payment method:", error);
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDeletePaymentMethod = async (paymentMethodId: string) => {
     try {
-      await deletePaymentMethod(id);
-      toast.success("Payment method removed");
+      await deletePaymentMethod(paymentMethodId);
     } catch (error) {
-      toast.error("Failed to remove payment method");
-    }
-  };
-
-  const getCreditCardIcon = (brand: string) => {
-    switch (brand.toLowerCase()) {
-      case "visa":
-        return "💳";
-      case "mastercard":
-        return "💳";
-      case "amex":
-        return "💳";
-      case "discover":
-        return "💳";
-      default:
-        return "💳";
+      console.error("Failed to delete payment method:", error);
     }
   };
 
   return (
     <AccountLayout>
-      <Helmet>
-        <title>Payment Methods | GamePath AI</title>
-      </Helmet>
-
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Payment Methods</h1>
-            <p className="text-gray-400">Manage your payment methods</p>
-          </div>
-
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="cyberAction" size="sm">
-                <PlusCircle size={16} className="mr-2" />
-                Add Payment Method
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-cyber-darkblue border-cyber-blue/30">
-              <DialogHeader>
-                <DialogTitle>Add Payment Method</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <p className="text-sm text-gray-400">
-                  In a real application, this would open a Stripe card form.
-                </p>
-                <div className="flex justify-end">
-                  <Button
-                    variant="cyberAction"
-                    onClick={handleAddCard}
-                    disabled={isAddingCard}
-                  >
-                    {isAddingCard ? (
-                      <>
-                        <span className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></span>
-                        Adding...
-                      </>
-                    ) : (
-                      "Add Card"
-                    )}
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Your Payment Methods</CardTitle>
-            <CardDescription>
-              Cards saved securely through Stripe
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="flex justify-center py-8">
-                <div className="animate-spin h-8 w-8 border-b-2 border-white rounded-full"></div>
-              </div>
-            ) : paymentMethods && paymentMethods.length > 0 ? (
-              <div className="space-y-4">
-                {paymentMethods.map((method) => (
-                  <div
-                    key={method.id}
-                    className="flex items-center justify-between p-4 bg-gray-800/50 rounded-md border border-gray-700"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-gray-700 rounded-md flex items-center justify-center text-xl">
-                        {getCreditCardIcon(method.brand)}
-                      </div>
+      <div className="container mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-4">Payment Methods</h1>
+        {isLoading ? (
+          <p>Loading payment methods...</p>
+        ) : (
+          <>
+            <div className="bg-white rounded-lg shadow p-4">
+              {paymentMethods && paymentMethods.length > 0 ? (
+                <ul className="divide-y">
+                  {paymentMethods.map((method) => (
+                    <li key={method.id} className="py-4 flex justify-between items-center">
                       <div>
-                        <p className="font-medium text-white">
-                          {method.brand.charAt(0).toUpperCase() +
-                            method.brand.slice(1)}{" "}
-                          •••• {method.last4}
-                        </p>
-                        <p className="text-sm text-gray-400">
-                          Expires {method.expiryMonth.toString().padStart(2, "0")}/{method.expiryYear}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      {method.isDefault ? (
-                        <span className="px-3 py-1 bg-green-900/30 text-green-400 text-xs rounded-full border border-green-500/30 flex items-center">
-                          <CheckCircle2 size={12} className="mr-1" />
-                          Default
+                        <span className="font-medium">{method.brand.toUpperCase()}</span> •••• {method.last4}
+                        <span className="ml-2 text-sm text-gray-600">
+                          Expires {method.expiryMonth}/{method.expiryYear}
                         </span>
-                      ) : (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleSetDefault(method.id)}
+                        {method.isDefault && (
+                          <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Default
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex space-x-2">
+                        {!method.isDefault && (
+                          <button
+                            onClick={() => handleSetDefaultPaymentMethod(method.id)}
+                            disabled={isUpdatingPayment}
+                            className="text-sm text-blue-600 hover:text-blue-800"
+                          >
+                            Set as Default
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleDeletePaymentMethod(method.id)}
+                          disabled={isUpdatingPayment || method.isDefault}
+                          className={`text-sm ${
+                            method.isDefault
+                              ? 'text-gray-400 cursor-not-allowed'
+                              : 'text-red-600 hover:text-red-800'
+                          }`}
                         >
-                          Set as Default
-                        </Button>
-                      )}
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handleDelete(method.id)}
-                      >
-                        <Trash2 size={16} />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <CreditCard className="mx-auto h-12 w-12 text-gray-500 mb-3" />
-                <h3 className="text-lg font-medium text-white">
-                  No payment methods
-                </h3>
-                <p className="text-sm text-gray-400 mb-4">
-                  Add a credit card to manage your subscription
-                </p>
-                <Button
-                  variant="outline"
-                  onClick={() => document.querySelector<HTMLButtonElement>("button[role='combobox']")?.click()}
-                >
-                  Add Payment Method
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                          Delete
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-gray-500 text-center py-4">No payment methods available.</p>
+              )}
+            </div>
+            
+            <div className="mt-4">
+              <button
+                onClick={handleAddPaymentMethod}
+                disabled={isUpdatingPayment}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded"
+              >
+                {isUpdatingPayment ? 'Adding...' : 'Add Payment Method'}
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </AccountLayout>
   );
