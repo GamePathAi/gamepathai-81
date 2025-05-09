@@ -5,9 +5,10 @@ import { Helmet } from 'react-helmet-async';
 interface LayoutProps {
   children: ReactNode;
   title?: string;
+  requireSubscription?: boolean;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children, title }) => {
+const Layout: React.FC<LayoutProps> = ({ children, title, requireSubscription }) => {
   return (
     <>
       {title && (
