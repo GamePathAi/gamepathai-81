@@ -1,55 +1,47 @@
 
-import { Plan, PaymentMethod, BillingHistoryItem } from './types';
+import { Subscription, BillingHistoryItem, PaymentMethod } from '@/types/subscription';
 
-// Mock plans data matching the Stripe plans (Player, Co-op, Alliance)
-export const mockPlans: Plan[] = [
+export const mockSubscription: Subscription = {
+  id: 'sub_123456',
+  plan: 'co-op',
+  users: 3,
+  amount: 1798,
+  interval: 'month',
+  currentPeriodEnd: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+  status: 'active',
+  addOns: ['network-booster', 'priority-support']
+};
+
+export const mockBillingHistory: BillingHistoryItem[] = [
   {
-    id: 'player',
-    name: 'Player',
-    price: 9.99,
-    interval: 'month',
-    features: [
-      'Single PC optimization',
-      'Game-specific profiles',
-      'Real-time network monitoring',
-      'Basic route optimization'
-    ]
+    id: 'inv_123456',
+    date: new Date(new Date().setDate(new Date().getDate() - 5)),
+    description: 'Co-op Plan Subscription',
+    amount: 1798,
+    status: 'paid',
+    invoiceUrl: 'https://checkout.stripe.com/invoice/123',
   },
   {
-    id: 'coop',
-    name: 'Co-op',
-    price: 17.99,
-    interval: 'month',
-    features: [
-      'Up to 3 devices',
-      'Game-specific profiles',
-      'Real-time network monitoring',
-      'Advanced route optimization',
-      'Priority support'
-    ]
+    id: 'inv_123455',
+    date: new Date(new Date().setDate(new Date().getDate() - 35)),
+    description: 'Co-op Plan Subscription',
+    amount: 1798,
+    status: 'paid',
+    invoiceUrl: 'https://checkout.stripe.com/invoice/122',
   },
   {
-    id: 'alliance',
-    name: 'Alliance',
-    price: 29.99,
-    interval: 'month',
-    features: [
-      'Up to 5 devices',
-      'Game-specific profiles',
-      'Real-time network monitoring',
-      'Advanced route optimization',
-      'Priority support',
-      'Team analytics dashboard',
-      'Custom game server selection'
-    ]
+    id: 'inv_123454',
+    date: new Date(new Date().setDate(new Date().getDate() - 65)),
+    description: 'Player Plan Subscription',
+    amount: 999,
+    status: 'paid',
+    invoiceUrl: 'https://checkout.stripe.com/invoice/121',
   }
 ];
 
-// Mock payment methods
 export const mockPaymentMethods: PaymentMethod[] = [
   {
     id: 'pm_123456',
-    type: 'card',
     brand: 'visa',
     last4: '4242',
     expMonth: 12,
@@ -57,40 +49,11 @@ export const mockPaymentMethods: PaymentMethod[] = [
     isDefault: true
   },
   {
-    id: 'pm_654321',
-    type: 'card',
+    id: 'pm_123457',
     brand: 'mastercard',
-    last4: '8765',
-    expMonth: 6,
+    last4: '8210',
+    expMonth: 9,
     expYear: 2026,
     isDefault: false
-  }
-];
-
-// Mock billing history
-export const mockBillingHistory: BillingHistoryItem[] = [
-  {
-    id: 'in_123456',
-    date: new Date(2025, 3, 1),
-    status: 'paid',
-    amount: 17.99,
-    description: 'Co-op Monthly Subscription',
-    invoiceUrl: 'https://example.com/invoice/123456'
-  },
-  {
-    id: 'in_123457',
-    date: new Date(2025, 2, 1),
-    status: 'paid',
-    amount: 17.99,
-    description: 'Co-op Monthly Subscription',
-    invoiceUrl: 'https://example.com/invoice/123457'
-  },
-  {
-    id: 'in_123458',
-    date: new Date(2025, 1, 1),
-    status: 'failed',
-    amount: 17.99,
-    description: 'Co-op Monthly Subscription',
-    invoiceUrl: 'https://example.com/invoice/123458'
   }
 ];

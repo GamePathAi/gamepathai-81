@@ -1,67 +1,57 @@
 
 import { useState, useEffect } from 'react';
-import { subscriptionService } from '@/services/subscriptionService';
-import { Subscription, PaymentMethod, BillingHistoryItem } from '@/services/subscription/types';
+import { Subscription, BillingHistoryItem, PaymentMethod } from '@/types/subscription';
+import { mockSubscription, mockBillingHistory, mockPaymentMethods } from '@/services/subscription/mockData';
 
 export const useSubscriptionData = () => {
-  const [subscription, setSubscription] = useState<Subscription | null>(null);
-  const [billingHistory, setBillingHistory] = useState<BillingHistoryItem[]>([]);
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [subscription, setSubscription] = useState<Subscription | null>(mockSubscription);
+  const [billingHistory, setBillingHistory] = useState<BillingHistoryItem[]>(mockBillingHistory);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(mockPaymentMethods);
+  const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    // Initial data fetch
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const subscriptionData = await subscriptionService.getCurrentSubscription();
-        const billingHistoryData = await subscriptionService.getBillingHistory();
-        const paymentMethodsData = await subscriptionService.getPaymentMethods();
-
-        setSubscription(subscriptionData);
-        setBillingHistory(billingHistoryData);
-        setPaymentMethods(paymentMethodsData);
-        setError(null);
-      } catch (err: any) {
-        console.error('Failed to fetch subscription data:', err);
-        setError(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  // Refresh subscription data
   const refreshSubscription = async () => {
     setIsRefreshing(true);
     try {
-      const data = await subscriptionService.getCurrentSubscription();
-      setSubscription(data);
-      setError(null);
-      return { success: true, data };
-    } catch (err: any) {
-      setError(err);
-      return { success: false, error: err };
-    } finally {
+      // In a real implementation, this would call an API
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // For now, just use mock data
+      setSubscription(mockSubscription);
+      setIsRefreshing(false);
+    } catch (err) {
+      setError(err as Error);
       setIsRefreshing(false);
     }
   };
 
-  // Refresh billing history
   const refetchBillingHistory = async () => {
     try {
-      const data = await subscriptionService.getBillingHistory();
-      setBillingHistory(data);
-      return data;
-    } catch (err: any) {
-      console.error('Failed to refetch billing history:', err);
-      return [];
+      // In a real implementation, this would call an API
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // For now, just use mock data
+      setBillingHistory(mockBillingHistory);
+    } catch (err) {
+      setError(err as Error);
     }
   };
+
+  useEffect(() => {
+    // Initial data load
+    setIsLoading(true);
+    Promise.all([
+      new Promise(resolve => setTimeout(() => resolve(setSubscription(mockSubscription)), 300)),
+      new Promise(resolve => setTimeout(() => resolve(setBillingHistory(mockBillingHistory)), 300)),
+      new Promise(resolve => setTimeout(() => resolve(setPaymentMethods(mockPaymentMethods)), 300)),
+    ])
+      .then(() => setIsLoading(false))
+      .catch((err) => {
+        setError(err as Error);
+        setIsLoading(false);
+      });
+  }, []);
 
   return {
     subscription,

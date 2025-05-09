@@ -8,7 +8,7 @@ export const getProxyConfig = (mode: string) => ({
     target: 'http://localhost:8000',
     changeOrigin: true,
     secure: false,
-    rewrite: (path: string) => path.replace(/^\/api/, ''),
+    rewrite: (path: string) => path.replace(/^\/api/, '/api'),
     configure: (proxy: any, _options: any) => {
       // Add detailed logging
       proxy.on('proxyReq', (proxyReq: any, req: any, _res: any) => {
@@ -36,6 +36,7 @@ export const getProxyConfig = (mode: string) => ({
     target: 'http://localhost:8000',
     changeOrigin: true,
     secure: false,
+    rewrite: (path: string) => path.replace(/^\/ml/, '/ml'),
     configure: (proxy: any, _options: any) => {
       proxy.on('error', (err: any, _req: any, _res: any) => {
         console.error('🔥 ML Proxy error:', err);
