@@ -14,8 +14,32 @@ import Download from "./pages/Download";
 import { AuthProvider } from "./contexts/AuthContext";
 import NotFound from "./pages/NotFound";
 
+// Check if we're running in Electron
+const isElectron = window.electron !== undefined;
+
 function App() {
   const [isInitialized, setIsInitialized] = useState(true);
+  
+  // Initialize electron-specific features only if running in Electron
+  useEffect(() => {
+    if (isElectron && window.electron) {
+      try {
+        // Initialize hardware monitoring if available
+        window.electron.startHardwareMonitoring(2000).catch(err => {
+          console.warn('Hardware monitoring not available:', err);
+        });
+        
+        // Cleanup on unmount
+        return () => {
+          window.electron.stopHardwareMonitoring().catch(err => {
+            console.warn('Error stopping hardware monitoring:', err);
+          });
+        };
+      } catch (error) {
+        console.warn('Electron API error:', error);
+      }
+    }
+  }, []);
   
   return (
     <div className="app min-h-screen bg-cyber-darkblue text-gray-100">
