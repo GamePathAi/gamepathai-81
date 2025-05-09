@@ -156,7 +156,7 @@ const useSubscription = () => {
   };
 
   // Add payment method
-  const addPaymentMethod = async (paymentDetails: any) => {
+  const addPaymentMethod = async () => {
     setIsUpdatingPayment(true);
     try {
       const result = await subscriptionService.addPaymentMethod();

@@ -19,6 +19,8 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { initializeApp } from "./utils/appInitializer";
 import { periodicCleanup } from "./utils/cspHelper";
 import { runDiagnostics } from "./utils/diagnostics";
+import { NotificationProvider } from "./hooks/use-notifications";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 // Initialize application configurations
 initializeApp();
@@ -48,7 +50,11 @@ createRoot(document.getElementById("root")!).render(
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <CheckoutProvider>
-            <App />
+            <TooltipProvider>
+              <NotificationProvider>
+                <App />
+              </NotificationProvider>
+            </TooltipProvider>
           </CheckoutProvider>
         </AuthProvider>
       </QueryClientProvider>
